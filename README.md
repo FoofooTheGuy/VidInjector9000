@@ -1,2 +1,36 @@
 # VidInjector9000
-A semi-automatic injector for 3DS video CIAs
+A semi-automatic injector for 3DS video CIAs focussed on presentation
+
+Usage
+--
+1. Extract the VidInjector9000.tar.bz2 and run Vidinector9000.bat
+2. Follow the instructions in the batch file
+3. Bask in the glory of the official looking banner!
+
+You may ask...
+--
+**Q: Why did you even make this?**
+
+A: Banners! I like high quality.
+
+**Q: How is this different from all the other injectors?**
+
+A: I'm not sure, I tried a certain injector, and it just didn't work, I tried another, and it didn't function to my liking.
+
+**Q: Why does it keep throwing errors at my compatible files?**
+
+A: Make sure that there are no spaces in your file paths, apparently computers don't like those...
+
+**Q: Why is there an entire tool for basically just generating a random number?**
+
+A: It's a long story and it could be done in batch, but I am better at using C++ than Batch.
+
+Credits and Stuff
+--
+[videoinject](https://github.com/ihaveamac/videoinject): Example functions and inspiration
+[3dstool](https://github.com/dnasdw/3dstool): Banner extraction tool
+[bannertool](https://github.com/Steveice10/bannertool): Compiling icon.bin
+[ctrtool and makerom](https://github.com/3DSGuy/Project_CTR): Extracting CIA tool and building CIA tool
+[Ohana3DS](https://github.com/dnasdw/Ohana3DS): Importing custom banners
+[ImageMagick](https://imagemagick.org/): Manipulating images tool
+TIDthing: My lack of Batch knowledge
