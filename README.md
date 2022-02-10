@@ -11,7 +11,7 @@ You may ask...
 --
 **Q: Why did you even make this?**
 
-A: Banners! I like high quality.
+A: Banners! I like high quality images.
 
 **Q: How is this different from all the other injectors?**
 
