@@ -15,7 +15,7 @@ A: I made this so that the process of injecting with 3D banners is more streamli
 
 **Q: How is this different from all the other injectors?**
 
-A: I'm not sure, I tried a certain injector, and it just didn't work, I tried another, and it didn't function to my liking.
+A: I'm not sure, I tried a certain injector, and it just didn't work, so I tried another. It worked, but it didn't function to my liking.
 
 **Q: Why does it keep throwing errors at my compatible files?**
 
