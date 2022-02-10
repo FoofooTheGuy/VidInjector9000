@@ -1,5 +1,5 @@
 # VidInjector9000
-A semi-automatic injector for 3DS video CIAs focussed on presentation
+A semi-automatic injector for 3DS video CIAs focused on presentation
 
 Usage
 --
