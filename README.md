@@ -11,7 +11,7 @@ You may ask...
 --
 **Q: Why did you even make this?**
 
-A: I made this so that the process of injecting with 3D banners is more streamlined
+A: I made this so that the process of injecting with 3D banners is more streamlined.
 
 **Q: How is this different from all the other injectors?**
 
@@ -23,7 +23,7 @@ A: Make sure that there are no spaces in your file paths, apparently computers d
 
 **Q: Why is there an entire tool for basically just generating a random number?**
 
-A: It's a long story and it could be done in batch, but I am better at using C++ than Batch.
+A: It's a long story and it could be done in pure batch but I am just more comfortable with C++ than with Batch.
 
 Credits and Stuff
 --
