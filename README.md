@@ -28,9 +28,15 @@ A: It's a long story and it could be done in batch, but I am better at using C++
 Credits and Stuff
 --
 [videoinject](https://github.com/ihaveamac/videoinject): Example functions and inspiration
+
 [3dstool](https://github.com/dnasdw/3dstool): Banner extraction tool
+
 [bannertool](https://github.com/Steveice10/bannertool): Compiling icon.bin
+
 [ctrtool and makerom](https://github.com/3DSGuy/Project_CTR): Extracting CIA tool and building CIA tool
+
 [Ohana3DS](https://github.com/dnasdw/Ohana3DS): Importing custom banners
+
 [ImageMagick](https://imagemagick.org/): Manipulating images tool
+
 TIDthing: My lack of Batch knowledge
