@@ -19,7 +19,7 @@ A: This is simple and gives you much control over your injections.
 
 **Q: Why does it keep throwing errors at my compatible files?**
 
-A: Make sure that there are no spaces in your file paths, apparently computers don't like those...
+A: Make sure that there are no spaces (or any other weird characters) in your file paths, apparently computers don't like those...
 
 **Q: Why is there an entire tool for basically just generating a random number?**
 
