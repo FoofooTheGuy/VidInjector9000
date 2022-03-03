@@ -30,12 +30,12 @@ Credits and Stuff
 --
 [videoinject](https://github.com/ihaveamac/videoinject): Example functions and inspiration
 
-[3dstool](https://github.com/dnasdw/3dstool): Banner extraction tool
+[3dstool](https://github.com/dnasdw/3dstool): Banner extraction
 
 [bannertool](https://github.com/Steveice10/bannertool): Compiling icon.bin
 
-[ctrtool and makerom](https://github.com/3DSGuy/Project_CTR): Extracting CIA tool and building CIA tool
+[ctrtool and makerom](https://github.com/3DSGuy/Project_CTR): Extracting/building CIA
 
 [Ohana3DS](https://github.com/dnasdw/Ohana3DS): Importing custom banners
 
-[ImageMagick](https://imagemagick.org/): Manipulating images tool
+[ImageMagick](https://imagemagick.org/): Manipulating images
