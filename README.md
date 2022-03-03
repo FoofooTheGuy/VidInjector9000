@@ -26,10 +26,6 @@ A: I made this so that the process of injecting with 3D banners is more streamli
 
 A: This is simple and gives you much control over your injections.
 
-**Q: Why is there an entire tool for basically just generating a random number?**
-
-A: It's a long story and it could be done in pure batch but I am just more comfortable with C++ than with Batch.
-
 Credits and Stuff
 --
 [videoinject](https://github.com/ihaveamac/videoinject): Example functions and inspiration
