@@ -14,6 +14,10 @@ You may ask...
 
 A: Yes.
 
+**Q: Why does it keep throwing errors at my compatible files?**
+
+A: Make sure that there are no spaces (or any other weird characters) in your file paths. Apparently computers don't like those...
+
 **Q: Why did you even make this?**
 
 A: I made this so that the process of injecting with 3D banners is more streamlined.
@@ -21,10 +25,6 @@ A: I made this so that the process of injecting with 3D banners is more streamli
 **Q: How is this different from all the other injectors?**
 
 A: This is simple and gives you much control over your injections.
-
-**Q: Why does it keep throwing errors at my compatible files?**
-
-A: Make sure that there are no spaces (or any other weird characters) in your file paths, apparently computers don't like those...
 
 **Q: Why is there an entire tool for basically just generating a random number?**
 
