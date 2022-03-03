@@ -10,7 +10,7 @@ Usage
 You may ask...
 --
 
-**Q: Does the input CIA have to be decrypted first?**
+**Q: Does the input CIA have to be decrypted?**
 
 A: Yes.
 
