@@ -28,7 +28,6 @@ ctrtool.exe --exefsdir="%~dp0exefs" --romfsdir="%~dp0romfs" --exheader="%~dp0exh
 del "%~dp0temp.0000%%~x0"
 )
 echo Done!
-
 echo.
 echo Importing and Extracting banner...
 copy "%~dp0Vidinector9000Resources\files\banner.bin" "%~dp0exefs"
@@ -188,13 +187,10 @@ if not defined hexTID echo You must enter a value. Try again.&goto enterTID
 set "test=!hexTID!"
 for %%C in (0 1 2 3 4 5 6 7 8 9 A B C D E F) do if defined test set "test=!test:%%C=!"
 if defined test echo Invalid input ^(%test%^). Try again.&goto enterTID
-TIDthing.exe %hexTID%
-for /f "usebackq eol= tokens=* delims= " %%a in (`findstr /n ^^^^ "output.txt"`) do (
-    set line=%%a
-    set "line=!line:*:=!"
+set /A decTID=0x%hexTID%
+if "%decTID%" == "0" do (
+set /A decTID=%RANDOM% * 983039 / 32768 + 786432
 )
-set decTID=%line%
-del output.txt
 if "%decTID%" == "789760" (
 echo Oops, you ran into a blacklisted ID^!, try again.&goto enterTID
 )else if "%decTID%" == "844236" (
@@ -252,7 +248,6 @@ del exheader.bin
 color 07
 echo.
 echo Vidinjector9000 will now close.
-echo.
 pause
 exit /B
 
