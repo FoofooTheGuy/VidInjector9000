@@ -9,6 +9,11 @@ Usage
 
 You may ask...
 --
+
+**Q: Does the input CIA have to be decrypted first?**
+
+A: Yes.
+
 **Q: Why did you even make this?**
 
 A: I made this so that the process of injecting with 3D banners is more streamlined.
