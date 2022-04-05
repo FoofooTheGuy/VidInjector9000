@@ -16,7 +16,7 @@ A: Yes.
 
 **Q: Why does it keep throwing errors at my compatible files?**
 
-A: Make sure that there are no spaces (or any other weird characters) in your file paths. Apparently computers don't like those... (If it continues to throw errors, reinstall the tool)
+A: Make sure that there are no spaces (or any other weird characters) in your file paths. Apparently computers don't like those... (If it continues to throw errors, reinstall the program)
 
 **Q: Why did you even make this?**
 
