@@ -36,6 +36,6 @@ Credits and Stuff
 
 [ctrtool and makerom](https://github.com/3DSGuy/Project_CTR): Extracting/building CIA
 
-[3dstex](https://github.com/Cruel/3dstex): creating banners
+[3dstex](https://github.com/Cruel/3dstex): creating banner image
 
 [ImageMagick](https://imagemagick.org/): Manipulating images
