@@ -36,6 +36,6 @@ Credits and Stuff
 
 [ctrtool and makerom](https://github.com/3DSGuy/Project_CTR): Extracting/building CIA
 
-[Ohana3DS](https://github.com/dnasdw/Ohana3DS): Importing custom banners
+[3dstex](https://github.com/Cruel/3dstex): creating banners
 
 [ImageMagick](https://imagemagick.org/): Manipulating images
