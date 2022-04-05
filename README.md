@@ -3,7 +3,7 @@ A step-by-step injector for 3DS video CIAs focused on presentation
 
 Usage
 --
-1. Extract [VidInjector9000.tar.bz2](https://github.com/FoofooTheGuy/VidInjector9000/releases/latest/download/VidInjector9000.tar.bz2) and run VidInjector9000.bat.
+1. Download [VidInjector9000](https://github.com/FoofooTheGuy/VidInjector9000/archive/refs/tags/v1.3.0.tar.gz) and run VidInjector9000.bat.
 2. Follow the instructions in the batch file.
 3. Bask in the glory of the official looking banner!
 
