@@ -18,21 +18,15 @@ for /f %%i in ('%pwshcmd%') do call :sum "%%i" ret
 title VidInjector 9000 by Foofoo_the_guy
 
 set "ciaName=%ret%"
-echo Extracting "%ciaName%"...
+echo Extracting %ciaName%...
 echo.
-cd Vidinector9000Resources\tools
+cd Vidinjector9000Resources\tools
 ::extraction scripts copied from ihaveamac
 ctrtool.exe --content="%~dp0temp" "%ciaName%"
 for %%0 in (%~dp0temp.0000*.*) do (
 ctrtool.exe --exefsdir="%~dp0exefs" --romfsdir="%~dp0romfs" --exheader="%~dp0exheader.bin" "%~dp0temp.0000%%~x0"
 del "%~dp0temp.0000%%~x0"
 )
-echo Done!
-echo.
-echo Importing and Extracting banner...
-copy "%~dp0Vidinector9000Resources\files\banner.bin" "%~dp0exefs"
-::extract banner
-3dstool.exe -xvtf banner "%~dp0exefs\banner.bin" --banner-dir "%~dp0Banner"
 echo Done!
 color 07
 ::copy video to romfs
@@ -71,34 +65,14 @@ for /f %%i in ('%pwshcmd%') do call :sum "%%i" ret
 title VidInjector 9000 by Foofoo_the_guy
 
 set "bannerName=%ret%"
-"%~dp0Vidinector9000Resources\tools\imagemagick\magick.exe" "%bannerName%" -resize 200x120! -background black -compose Copy -gravity northwest -extent 256x128 "%~dp0Banner\COMMON0.png"
+mkdir "%~dp0Banner"
+"%~dp0Vidinjector9000Resources\tools\imagemagick\magick.exe" "%bannerName%" -resize 200x120! -background black -compose Copy -gravity northwest -extent 256x128 -flip "%~dp0Banner\COMMON0.png"
 
-color 07
-echo.
-echo.
-echo Now, you will have to use Ohana3DS to inject the banner.
-echo Press continue, and Ohana3DS will open, then do these steps:
-echo.
-echo 1. Click on the anime girl
-echo.
-echo 2. Click on the "Textures" tab on the Left side
-echo.
-echo 3. Drag and drop "%~dp0Banner\banner0.bcmdl" onto the program
-echo ^(or go to the textures tab and click "Open" on the bottommost tray and
-echo locate that file^)
-echo.
-echo 4. Click "Import" on the bottommost tray
-echo.
-echo 5. Select "%~dp0Banner\COMMON0.png"
-echo.
-echo 6. Click Save
-echo.
-echo 7. Close Ohana3DS
-echo.
-pause
-
-color 08
-Ohana3DS.exe
+3dstex-win-x86.exe -ro rgb565 "%~dp0Banner\COMMON0.png" "%~dp0Banner\output.bin"
+copy /b "%~dp0Vidinjector9000Resources\files\banner0.bimg.part1" + "%~dp0Banner\output.bin" "%~dp0Banner\banner0.bcmdl"
+copy /b "%~dp0Banner\banner0.bcmdl" + "%~dp0Vidinjector9000Resources\files\banner0.bimg.part3" "%~dp0Banner\banner0.bcmdl"
+copy /b "%~dp0Vidinjector9000Resources\files\banner.bcwav" "%~dp0Banner\banner.bcwav"
+copy /b "%~dp0Vidinjector9000Resources\files\banner.cbmd" "%~dp0Banner\banner.cbmd"
 
 ::compile banner
 echo.
@@ -122,7 +96,7 @@ title VidInjector 9000 by Foofoo_the_guy
 
 set "iconName=%ret%"
 mkdir "%~dp0Icon"
-"%~dp0Vidinector9000Resources\tools\imagemagick\magick.exe" convert "%iconName%" -resize 48x48! -background black -flatten "%~dp0Icon\Icon.png"
+"%~dp0Vidinjector9000Resources\tools\imagemagick\magick.exe" convert "%iconName%" -resize 48x48! -background black -flatten "%~dp0Icon\Icon.png"
 echo.
 color 07
 echo Enter the short name of your injection:
@@ -164,7 +138,7 @@ SET "STR=!STR:~%N%!"
 IF DEFINED STR GOTO LOOP
 set output=%RES:~0,-1%0
 setlocal DisableDelayedExpansion
-::https://stackoverflow.com/a/41810676
+::https://stackoverflow.com/a/41810676 <--- this is wrong i forgot where i got this
 >temp.bin echo(FFFE23004A0050002C00230045004E002C002300460052002C002300470045002C002300490054002C002300530050002C002300430048002C0023004B004F002C002300440055002C00230050004F002C002300520055002C002300540057000D000A00%output%%output%%output%%output%%output%%output%%output%%output%%output%%output%%output%%output%
 certutil -f -decodehex temp.bin %~dp0romfs\movie\movie_title.csv >nul
 del temp.bin
@@ -174,7 +148,6 @@ setlocal EnableDelayedExpansion
 :enterTID
 set hexTID=0
 set decTID=0
-set line=
 color 07
 echo.
 echo Enter 5 hex integers for the ID of your cia ^(C0000 - EFFFF^) or
@@ -192,28 +165,31 @@ if "%decTID%" == "0" (
 echo Generating random&set /A decTID=%RANDOM% * 983039 / 32768 + 786432
 )
 if "%decTID%" == "789760" (
-echo Oops, you ran into a blacklisted ID^!, try again.&goto enterTID
+echo.&echo Oops, you ran into a blacklisted ID^!, try again.&goto enterTID
 )else if "%decTID%" == "844236" (
-echo Oops, you ran into a blacklisted ID^!, try again.&goto enterTID
+echo.&echo Oops, you ran into a blacklisted ID^!, try again.&goto enterTID
 )else if "%decTID%" == "889374" (
-echo Oops, you ran into a blacklisted ID^!, try again.&goto enterTID
+echo.&echo Oops, you ran into a blacklisted ID^!, try again.&goto enterTID
 )else if "%decTID%" == "892929" (
-echo Oops, you ran into a blacklisted ID^!, try again.&goto enterTID
+echo.&echo Oops, you ran into a blacklisted ID^!, try again.&goto enterTID
 )else if "%decTID%" == "892930" (
-echo Oops, you ran into a blacklisted ID^!, try again.&goto enterTID
+echo.&echo Oops, you ran into a blacklisted ID^!, try again.&goto enterTID
 )else if "%decTID%" == "892931" (
-echo Oops, you ran into a blacklisted ID^!, try again.&goto enterTID
+echo.&echo Oops, you ran into a blacklisted ID^!, try again.&goto enterTID
 )else if "%decTID%" == "948826" (
-echo Oops, you ran into a blacklisted ID^!, try again.&goto enterTID
+echo.&echo Oops, you ran into a blacklisted ID^!, try again.&goto enterTID
 )else if "%decTID%" == "966912" (
-echo Oops, you ran into a blacklisted ID^!, try again.&goto enterTID
+echo.&echo Oops, you ran into a blacklisted ID^!, try again.&goto enterTID
 )else if "%decTID%" == "973200" (
-echo Oops, you ran into a blacklisted ID^!, try again.&goto enterTID
+echo.&echo Oops, you ran into a blacklisted ID^!, try again.&goto enterTID
 )else if "%decTID%" == "983020" (
-echo Oops, you ran into a blacklisted ID^!, try again.&goto enterTID
+echo.&echo Oops, you ran into a blacklisted ID^!, try again.&goto enterTID
 )else if "%decTID%" == "983021" (
-echo Oops, you ran into a blacklisted ID^!, try again.
-goto enterTID
+echo.&echo Oops, you ran into a blacklisted ID^!, try again.&goto enterTID
+)else if "%decTID%" lss "786432" (
+echo.&echo Oops, you ran into a blacklisted ID^!, try again.&goto enterTID
+)else if "%decTID%" gtr "983039" (
+echo.&echo Oops, you ran into a blacklisted ID^!, try again.&goto enterTID
 )
 ::https://www.dostips.com/forum/viewtopic.php?t=2261
 call cmd /c exit /b %decTID%
@@ -225,7 +201,7 @@ echo Building CIA...
 cd %~dp0
 mkdir "output"
 ::build cia! :D
-%~dp0Vidinector9000Resources\tools\makerom.exe -f cia -o "output\%LongName% [000400000%hexTID%00].cia" -banner "exefs\banner.bin" -icon "exefs\icon.bin" -code "exefs\code.bin" -exheader "exheader.bin" -rsf %~dp0Vidinector9000Resources\files\template.rsf -DAPP_UNIQUE_ID=%decTID%
+%~dp0Vidinjector9000Resources\tools\makerom.exe -f cia -o "output\%LongName% [000400000%hexTID%00].cia" -banner "exefs\banner.bin" -icon "exefs\icon.bin" -code "exefs\code.bin" -exheader "exheader.bin" -rsf %~dp0Vidinjector9000Resources\files\template.rsf -DAPP_UNIQUE_ID=%decTID%
 
 echo.
 echo Injection Complete^! output CIA is is "%~dp0output\%LongName% [000400000%hexTID%00].cia"
@@ -249,11 +225,11 @@ color 07
 echo.
 echo Vidinjector9000 will now close.
 pause
-exit /B
+exit
 
 ::this is from https://stackoverflow.com/a/61741362 too
 :sum [mud] [ret]
 echo "%~1"
 set FileName="%~1"
-set ret=%FileName%
+set "ret=%FileName%"
 exit /B
