@@ -38,4 +38,4 @@ Credits and Stuff
 
 [3dstex](https://github.com/Cruel/3dstex): creating banner image
 
-[ImageMagick](https://imagemagick.org/): Manipulating images
+[ImageMagick (Specifically ImageMagick-7.1.0-portable-Q16-x64)](https://imagemagick.org/): Manipulating images
