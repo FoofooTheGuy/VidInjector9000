@@ -1,4 +1,4 @@
-# VidInjector9001
+# VidInjector9000
 A step-by-step injector for 3DS video CIAs focused on presentation
 
 Usage
