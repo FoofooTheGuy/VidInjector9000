@@ -1,30 +1,27 @@
-# VidInjector9000
+# VidInjector9001
 A step-by-step injector for 3DS video CIAs focused on presentation
 
 Usage
 --
-1. Download [VidInjector9000](https://github.com/FoofooTheGuy/VidInjector9000/releases/latest) and run VidInjector9000.bat.
-2. Follow the instructions in the batch file.
+1. Download [VidInjector9001](https://github.com/FoofooTheGuy/VidInjector9000/releases/latest) and run VidInjector9001.exe.
+2. Type the letter corresponding to which part you want to do and follow the directions on screen.
 3. Bask in the glory of the official looking banner!
 
 You may ask...
 --
 
-**Q: Does the input CIA have to be decrypted?**
-
-A: Yes.
-
-**Q: Why does it keep throwing errors at my compatible files?**
-
-A: Make sure that there are no spaces (or any other weird characters) in your file paths. Apparently computers don't like those... (If it continues to throw errors, reinstall the program)
-
 **Q: Why did you even make this?**
 
-A: I made this so that the process of injecting with 3D banners is more streamlined.
+A: I made this so that the process of injecting with 3D banners is more streamlined. Also, VidInjector9000 2.0 (aka VidInjector9001) can create multi video injects with MultiVidInjector5000!
 
 **Q: How is this different from all the other injectors?**
 
 A: This is simple and gives you much control over your injections.
+
+Building (MinGW)
+--
+1. Install [MinGW](https://sourceforge.net/projects/mingw/files/latest/download) to your computer
+2. drag VidInjector9001.cpp onto build.bat so that it builds it (or run build.bat with VidInjector9001.cpp as the argument)
 
 Credits and Stuff
 --
