@@ -21,7 +21,7 @@ A: This is simple and gives you much control over your injections.
 Building (MinGW)
 --
 1. Install [MinGW](https://sourceforge.net/projects/mingw/files/latest/download) to your computer
-2. drag VidInjector9001.cpp onto [build.bat](https://github.com/FoofooTheGuy/VidInjector9000/blob/main/VidInjector9000/build.bat) so that it builds it (or run build.bat with VidInjector9001.cpp as the argument)
+2. drag VidInjector9001.cpp onto [build.bat](https://github.com/FoofooTheGuy/VidInjector9000/raw/main/VidInjector9000/build.bat) so that it builds it (or run build.bat with VidInjector9001.cpp as the argument)
 
 Credits and Stuff
 --
