@@ -14,6 +14,7 @@ std::string longname;//you need this global because i said so also because make 
 static bool MultiVid;//false if single video, true if multi video
 char completed[8] { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', };
 char scompleted[3] { ' ', ' ', ' ', };
+int main();//so i can call it from functions
 //these arrays are global because we use them twice
 unsigned char oshirase[14] = {
 	0xFF, 0xFE, 0x23, 0x00, 0x20, 0x00, 0x4A, 0x30,
@@ -4543,6 +4544,7 @@ void makeCIA() {
 		system("rmdir exefs /s /q");
 		system("rmdir romfs /s /q");
 		remove("exheader.bin");
+		main();
 	}
 	pause
 }
