@@ -10,7 +10,7 @@
 unsigned long amount = 0;
 std::string name = "";
 std::string type;
-std::string longname;//you need this global because i said so also because make cia needs them too
+std::string longname;//you need this global because i said so also because make cia needs it too
 static bool MultiVid;//false if single video, true if multi video
 char completed[8] { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', };
 char scompleted[3] { ' ', ' ', ' ', };
