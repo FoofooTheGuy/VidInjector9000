@@ -18,6 +18,16 @@ A: I made this so that the process of injecting with 3D banners is more streamli
 
 A: This is simple and gives you much control over your injections.
 
+Known Issues
+--
+#### Multi Video injects do not work on the regions China, Taiwan and Korea because there are no [language files](https://github.com/FoofooTheGuy/VidInjector9000/tree/main/VidInjector9000/Vidinjector9000Resources/files/templates/MultiVideo/romfs/lang) for those.
+I am unable to add them myself because I don't know those languages so I would appreciate it if someone would translate the files and contribute:
+
+(VidInjector9000/VidInjector9000/Vidinjector9000Resources/files/templates/SingleVideo/romfs/lang/)
+- CN_Simp_Chinese/message.msbt
+- KR_Hangeul/message.msbt
+- TW_Trad_Chinese/message.msbt
+
 Building (MinGW)
 --
 1. Install [MinGW](https://sourceforge.net/projects/mingw/files/latest/download) to your computer
