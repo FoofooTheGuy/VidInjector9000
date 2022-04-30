@@ -91,19 +91,22 @@ inline bool exists_test0 (const std::string& name) {//https://stackoverflow.com/
     return f.good();
 }
 
-bool stoul_s(unsigned long &output, std::string input, size_t* idx = 0, int base = 10) {
-	try { output = std::stoul(input, idx, base); }
-	catch (const std::exception& e)
-	{
-		return false;
-	}
-	return true;
-}
-
 std::string tolowerstr(std::string str) {
 	for (char &i : str)
 		i = tolower(i);
 	return str;
+}
+
+bool stoul_s(unsigned long &output, std::string input, bool isHex) {
+    std::string lowinput(tolowerstr(input));
+    if(isHex) {
+        if(lowinput.find_first_of("0123456789abcdef") == std::string::npos) return false;
+        else output = std::stoul(lowinput, nullptr, 16);
+    } else {
+        if(lowinput.find_first_of("0123456789") == std::string::npos) return false;
+        else output = std::stoul(lowinput);
+    }
+    return true;
 }
 	
 std::string UTF8toUTF16(std::string input) {
@@ -139,7 +142,7 @@ void setAmount() {
 		cls
 		std::cout << "Enter the amount of videos you have:\n";
 		std::getline(std::cin, name);
-		if(!stoul_s(amount, name)) {
+		if(!stoul_s(amount, name, false)) {
 			std::cout << "invalid input, try again\n";
 			pause
 		} else {
@@ -155,8 +158,7 @@ void setAmount() {
 }
 
 void Movie_title() {
-	if(MultiVid) type = "MultiVidInjector5000";
-	else type = "VidInjector9001";
+	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
 	system_g("title [" + type + "] Generate movie_title.csv");
 	cls
 	std::string filetxt("\xFF\xFE" + UTF8toUTF16("#JP,#EN,#FR,#GE,#IT,#SP,#CH,#KO,#DU,#PO,#RU,#TW\x0D\x0A"));
@@ -253,7 +255,7 @@ void msettingsTL() {
 	
 	name = "";
 	while(name == "") {
-		std::cout << "Enter the Name of the video\n";
+		std::cout << "Enter the Name of the series\n";
 		std::getline(std::cin, name);
 		if(name == "") cls
 	}
@@ -394,8 +396,7 @@ void tobimg() {
 }
 
 void moflexMover() {
-	if(MultiVid) type = "MultiVidInjector5000";
-	else type = "VidInjector9001";
+	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
 	system_g("title [" + type + "] Injecting .moflex");
 	cls
 	static bool pass = false;
@@ -4370,8 +4371,7 @@ void makebanner() {
 		0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0,
 	};
 	//haha artificial line amount go brrr
-	if(MultiVid) type = "MultiVidInjector5000";
-	else type = "VidInjector9001";
+	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
 	system_g("title [" + type + "] Generate banner");
 	cls
 	_mkdir("exefs");
@@ -4419,8 +4419,7 @@ void makebanner() {
 }
 
 void makeIcon() {
-	if(MultiVid) type = "MultiVidInjector5000";
-	else type = "VidInjector9001";
+	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
 	system_g("title [" + type + "] Generate icon");
 	cls
 	std::string shortname;
@@ -4465,8 +4464,7 @@ void makeIcon() {
 }
 
 void makeCIA() {
-	if(MultiVid) type = "MultiVidInjector5000";
-	else type = "VidInjector9001";
+	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
 	system_g("title [" + type + "] Generate CIA");
 	cls
 	unsigned long TID = 0xF0000;
@@ -4492,7 +4490,7 @@ void makeCIA() {
 		cls
 		std::cout << "Enter 5 hex integers for the ID of your cia (C0000 - EFFFF) or\njust type \"0\" for a random title ID.\n(TID is in format 000400000XXXXX00 (that's hex), the rest will auto fill)\n";
 		std::getline(std::cin, name);
-		if(!stoul_s(TID, name, nullptr, 16)) {
+		if(!stoul_s(TID, name, true)) {
 			std::cout << "Invalid input, try again\n";
 			TID = 0xF0000;//is this required?
 			pause
@@ -4552,8 +4550,7 @@ void makeCIA() {
 //2nd menu
 void finalize()
 {
-	if(MultiVid) type = "MultiVidInjector5000";
-	else type = "VidInjector9001";
+	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
 	system_g("title [" + type + "] Finalizing");
 	cls
 	if(MultiVid) {
@@ -4576,8 +4573,7 @@ void finalize()
 	}
 	while(1) {
 		cls
-		if(MultiVid) type = "| X: Go to the multi video menu            |\n";
-		else type = "| X: Go to the single video menu           |\n";
+		type = MultiVid ? "| X: Go to the multi video menu            |\n" : "| X: Go to the single video menu           |\n";
 		printf("Type a letter:\n\n"
 		" __________________________________________\n"
 		"|                                          |\n"
