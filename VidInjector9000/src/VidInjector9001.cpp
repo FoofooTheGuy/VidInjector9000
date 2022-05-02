@@ -440,6 +440,7 @@ void makeCIA() {
 		cls
 		std::cout << "Enter 5 hex integers for the ID of your cia (C0000 - EFFFF) or\njust type \"0\" for a random title ID.\n(TID is in format 000400000XXXXX00 (that's hex), the rest will auto fill)\n";
 		std::getline(std::cin, name);
+		if(name.size() > 5) name = "F0000";//stupid proofing
 		if(!stoul_s(TID, name, true)) {
 			std::cout << "Invalid input, try again\n";
 			TID = 0xF0000;//is this required?
