@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <direct.h>
+#include <chrono>
 #include <time.h>
 
 //put headers in here
@@ -4053,8 +4054,7 @@ extern unsigned char bannerfooter[18432] {//MASSIVE BOY
 
 void setAmount();
 void Movie_title();
-void msettingsTL();
-void ssettingsTL();
+void makesettingsTL();
 void copyright();
 void tobimg();
 void moflexMover();
