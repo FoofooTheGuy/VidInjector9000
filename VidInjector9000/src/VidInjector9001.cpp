@@ -453,10 +453,10 @@ void makeCIA() {
 		}
 		switch(TID)
 		{
-			case 0xc0d00://
+			case 0xc0d00://Side-Scrolling Example
 			case 0xce1cc://CHMM
 			case 0xd921e://homebrew launcher loader
-			case 0xda001://
+			case 0xda001://Smash Bros Dummy Application
 			case 0xda002://3ds quick shutdown
 			case 0xda003://Wifi Toggle
 			case 0xe7a5a://NASA ALL
