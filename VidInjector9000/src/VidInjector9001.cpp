@@ -33,19 +33,39 @@ std::string tolowerstr(std::string str) {
 	return str;
 }
 
-bool stoul_s(unsigned long &output, std::string input, bool isHex) {
+bool stoul_s(unsigned long &output, std::string input, bool isHex = false) {
     std::string lowinput(tolowerstr(input));
     if(isHex) {
-        if(lowinput.find_first_of("0123456789abcdef") == std::string::npos) return false;
+        if(lowinput.find_first_of("0123456789abcdef") != 0) return false;
         else output = std::stoul(lowinput, nullptr, 16);
     } else {
-        if(lowinput.find_first_of("0123456789") == std::string::npos) return false;
+        if(lowinput.find_first_of("0123456789") != 0) return false;
         else output = std::stoul(lowinput);
     }
     return true;
 }
+
+unsigned long currentTime() {//originally from https://stackoverflow.com/a/30898778
+	time_t now = time(0);
+	struct tm tstruct;
+	char stime[80];
+	tstruct = *localtime(&now);
+	time_t t = time(0);   // get time now
+	struct tm * nowtime = localtime( & t );
+	char date[7];
+
+	sprintf(date, "%i%i%i", nowtime->tm_mon + 1, nowtime->tm_mday + 1, nowtime->tm_year + 1900);
+	strftime(stime, sizeof(stime), "%H%M%S", &tstruct);
+
+	unsigned long dOut = 0;
+	unsigned long sOut = 0;
+	if(!stoul_s(dOut, std::string(date))) return 0;
+	if(!stoul_s(sOut, std::string(stime))) return 0;
+
+	return dOut + sOut;
+}
 	
-std::string UTF8toUTF16(std::string input) {
+std::string UTF8toUTF16(std::string input) {//(Kinda)
 	std::string output;
     for (size_t i = 0; i < strlen(input); i++) {
 		output += input[i];
@@ -78,12 +98,12 @@ void setAmount() {
 		cls
 		std::cout << "Enter the amount of videos you have:\n";
 		std::getline(std::cin, name);
-		if(!stoul_s(amount, name, false)) {
-			std::cout << "invalid input, try again\n";
+		if(!stoul_s(amount, name)) {
+			std::cout << "invalid input. Try again\n";
 			pause
 		} else {
 			movie_bnrname << "\xFF\xFE" + UTF8toUTF16(std::to_string(amount) + "\x0D\x0A");
-			for (int i = 0; i < amount; i++) {
+			for (unsigned long i = 0; i < amount; i++) {
 				movie_bnrname << UTF8toUTF16("movie_" + std::to_string(i) + ".bimg\x0D\x0A");
 			}
 			movie_bnrname.close();
@@ -126,8 +146,9 @@ void Movie_title() {
 	pause
 }
 
-void msettingsTL() {
-	system("title [MultiVidInjector5000] Generate settingsTL.csv");
+void makesettingsTL() {
+	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
+	system_g("title [" + type + "] Generate settingsTL.csv");
 	cls
 
 	if (amount == 0) {
@@ -140,51 +161,13 @@ void msettingsTL() {
 	
 	name = "";
 	while(name == "") {
-		std::cout << "Enter the name of the series\n";
+		if(MultiVid) std::cout << "Enter the name of the series\n";
+		else std::cout << "Enter the name of the video\n";
 		std::getline(std::cin, name);
 		if(name == "") cls
 	}
-	publisher = "";
-	while(publisher == "") {
-		std::cout << "Enter the Publisher of the video\n";
-		std::getline(std::cin, publisher);
-		if(publisher == "") cls
-	}
-	
-	std::ofstream settingsTL("romfs/settings/settingsTL.csv", std::ios_base::out | std::ios_base::binary);
-	for (int i = 0; i < 14; i++)
-		settingsTL << oshirase[i];
-	settingsTL << UTF8toUTF16("URL\x0D\x0A# JP:\x0D\x0Anone\x0D\x0A\x0D\x0A# EN:\x0D\x0Anone\x0D\x0A\x0D\x0A# FR:\x0D\x0Anone\x0D\x0A\x0D\x0A# GE:\x0D\x0Anone\x0D\x0A\x0D\x0A# IT:\x0D\x0Anone\x0D\x0A\x0D\x0A# SP:\x0D\x0Anone\x0D\x0A\x0D\x0A# CN:\x0D\x0Anone\x0D\x0A\x0D\x0A# KO:\x0D\x0Anone\x0D\x0A\x0D\x0A# DU:\x0D\x0Anone\x0D\x0A\x0D\x0A# PO:\x0D\x0Anone\x0D\x0A\x0D\x0A# RU:\x0D\x0Anone\x0D\x0A\x0D\x0A# TW:\x0D\x0Anone\x0D\x0A\x0D\x0A# ");
-	for (int i = 0; i < 28; i++)
-		settingsTL << AppNameLongName[i];
-	settingsTL << UTF8toUTF16("# JP:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# EN:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# FR:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# GE:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# IT:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# SP:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# CN:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# KO:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# DU:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# PO:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# RU:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# TW:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A");
-	for (int i = 0; i < 350; i++)
-		settingsTL << otherJunk[i];
-	for (int i = 0; i < 16; i++)
-		settingsTL << amountofvideos[i];
-	settingsTL << UTF8toUTF16(std::to_string(amount)) << UTF8toUTF16("\x0D\x0A\x0D\x0A# ");
-	for (int i = 0; i < 24; i++)
-		settingsTL << publisherName[i];
-	settingsTL << UTF8toUTF16("# JP:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# EN:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# FR:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# GE:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# IT:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# SP:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# CN:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# KO:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# DU:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# PO:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# RU:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# TW:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A");
-	for (int i = 0; i < 284; i++)
-		settingsTL << theRest[i];
-	settingsTL.close();
-	completed[2] = 'X';
-	pause
-}
-
-void ssettingsTL() {
-	system("title [VidInjector9001] Generate settingsTL.csv");
-	cls
 	
 	_mkdir("romfs/settings");
-	name = "";
-	while(name == "") {
-		std::cout << "Enter the Name of the video\n";
-		std::getline(std::cin, name);
-		if(name == "") cls
-	}
-	
 	std::ofstream settingsTL("romfs/settings/settingsTL.csv", std::ios_base::out | std::ios_base::binary);
 	for (int i = 0; i < 14; i++)
 		settingsTL << oshirase[i];
@@ -194,8 +177,26 @@ void ssettingsTL() {
 	settingsTL << UTF8toUTF16("# JP:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# EN:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# FR:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# GE:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# IT:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# SP:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# CN:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# KO:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# DU:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# PO:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# RU:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# TW:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A");
 	for (int i = 0; i < 350; i++)
 		settingsTL << otherJunk[i];
+	if(MultiVid) {
+		publisher = "";
+		while(publisher == "") {
+			std::cout << "Enter the Publisher of the video\n";
+			std::getline(std::cin, publisher);
+			if(publisher == "") cls
+		}
+		
+		for (int i = 0; i < 16; i++)
+			settingsTL << amountofvideos[i];
+		settingsTL << UTF8toUTF16(std::to_string(amount)) << UTF8toUTF16("\x0D\x0A\x0D\x0A# ");
+		for (int i = 0; i < 24; i++)
+			settingsTL << publisherName[i];
+		settingsTL << UTF8toUTF16("# JP:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# EN:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# FR:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# GE:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# IT:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# SP:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# CN:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# KO:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# DU:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# PO:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# RU:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# TW:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A");
+		for (int i = 0; i < 284; i++)
+			settingsTL << theRest[i];
+		completed[2] = 'X';
+	}
+	else scompleted[1] = 'X';
 	settingsTL.close();
-	scompleted[1] = 'X';
 	pause
 }
 
@@ -243,7 +244,7 @@ void tobimg() {
 			std::getline(std::cin, name);
 			removeQuotes(name);
 			if(!exists_test0(name)) {
-				std::cout << "Error with the file (" + name + ")\n";
+				std::cout << "Error with the file (" + name + ") Try again.\n";
 				name = "";
 				pause
 			}
@@ -261,7 +262,7 @@ void tobimg() {
 		//write data to the file one byte at a time because for some dang reason vector::data(); was being annoying with it WHYHWYHWHYWHYWHY
 		for (int i = 0; i < 32; i++)
 			finalbimgfile << bimgheader[i];
-		for (int i = 0; i < buffer.size(); i++)
+		for (size_t i = 0; i < buffer.size(); i++)
 			finalbimgfile << buffer.at(i);
 		//sweep everything away
 		bimgfile.close();
@@ -332,7 +333,7 @@ void makebanner() {
 		std::getline(std::cin, name);
 		removeQuotes(name);
 		if(!exists_test0(name)) {
-			std::cout << "Error with the file (" + name + ")\n";
+			std::cout << "Error with the file (" + name + ") Try again.\n";
 			name = "";
 			pause
 		}
@@ -349,7 +350,7 @@ void makebanner() {
 	std::ofstream bannerbcmdl("exefs\\banner0.bcmdl", std::ios_base::out | std::ios_base::binary);
 	for (int i = 0; i < 12928; i++)
 		bannerbcmdl << bannerheader[i];
-	for (int i = 0; i < buffer.size(); i++)
+	for (size_t i = 0; i < buffer.size(); i++)
 		bannerbcmdl << buffer.at(i);
 	for (int i = 0; i < 18432; i++)
 		bannerbcmdl << bannerfooter[i];
@@ -381,7 +382,7 @@ void makeIcon() {
 		std::getline(std::cin, name);
 		removeQuotes(name);
 		if(!exists_test0(name)) {
-			std::cout << "Error with the file (" + name + ")\n";
+			std::cout << "Error with the file (" + name + ") Try again.\n";
 			name = "";
 			pause
 		}
@@ -417,6 +418,7 @@ void makeCIA() {
 	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
 	system_g("title [" + type + "] Generate CIA");
 	cls
+	srand(currentTime());
 	unsigned long TID = 0xF0000;
 	if(MultiVid) {
 		for (int i = 0; i < 6; i++)
@@ -440,50 +442,48 @@ void makeCIA() {
 		cls
 		std::cout << "Enter 5 hex integers for the ID of your cia (C0000 - EFFFF) or\njust type \"0\" for a random title ID.\n(TID is in format 000400000XXXXX00 (that's hex), the rest will auto fill)\n";
 		std::getline(std::cin, name);
-		if(name.size() > 5) name = "F0000";//stupid proofing
+		if(name.size() > 5) name = "F0000";//more stupid-proofing
 		if(!stoul_s(TID, name, true)) {
 			std::cout << "Invalid input, try again\n";
 			TID = 0xF0000;//is this required?
 			pause
-		} else {
-			if (TID == 0) {
-				srand(time(0));
-				TID = rand() % 0x30000 + 0xC0000;//0xC0000 is minimum, 0xEFFFF is maximum (0x30000+0xC0000=F0000)
-			}
+		}
+		if (TID == 0) {
+			TID = rand() % (0xF0000 - 0xC0000) + 0xC0000;//0xC0000 is minimum, 0xEFFFF is maximum, 0xF0000 makes it include 0xEFFFF in it)
 		}
 		switch(TID)
 		{
-			case 0xc0d00://why are these blacklisted? idk. ask ihaveamac lol
-			case 0xce1cc:
-			case 0xd921e:
-			case 0xda001:
-			case 0xda002:
-			case 0xda003:
-			case 0xe7a5a:
-			case 0xec100:
-			case 0xed990:
-			case 0xeffec:
-			case 0xeffed:
+			case 0xc0d00://
+			case 0xce1cc://CHMM
+			case 0xd921e://homebrew launcher loader
+			case 0xda001://
+			case 0xda002://3ds quick shutdown
+			case 0xda003://Wifi Toggle
+			case 0xe7a5a://NASA ALL
+			case 0xec100://PKSM
+			case 0xed990://NotifyMii
+			case 0xeffec://FileKong
+			case 0xeffed://TriaAl
 			case 0:
 			{
-				std::cout << "Oops, you ran into a blacklisted ID!, try again.\n";
+				printf("Oops, you ran into a blacklisted ID! (%05lX) Try again.\n", TID);
 				TID = 0xF0000;
 				pause
 			}
 			break;
 			default:
-				if(TID < 0xF0000 && TID > 0xC0001) printf("%05X Passed all checks!\n", TID);
+				if(TID < 0xF0000 && TID > 0xC0001) printf("%05lX Passed all checks!\n", TID);
 				else {
-				std::cout << "Oops, you ran into a blacklisted ID!, try again.\n";
-				TID = 0xF0000;
-				pause
+					printf("Oops, you ran into a blacklisted ID! (%05lX) Try again.\n", TID);
+					TID = 0xF0000;
+					pause
 				}
 		}
 	}
 	std::cout << "Generating CIA...\n";
 	_mkdir("output");
 	char buffer[6];
-    sprintf(buffer, "%05X", TID);
+    sprintf(buffer, "%05lX", TID);
 	system_g("Vidinjector9000Resources\\tools\\makerom.exe -f cia -o \"output\\" + longname + " [000400000" + std::string(buffer) + "00].cia\" -banner \"exefs\\banner.bin\" -icon \"exefs\\icon.bin\" -code \"exefs\\code.bin\" -exheader \"exheader.bin\" -rsf \"Vidinjector9000Resources\\files\\template.rsf\" -DAPP_UNIQUE_ID=" + std::to_string(TID));
 	pause
 	cls
@@ -568,7 +568,7 @@ void MultiVideo() {
 		std::getline(std::cin, name);
 		if(tolowerstr(name) == "a") setAmount();//0
 		else if(tolowerstr(name) == "t") Movie_title();//1
-		else if(tolowerstr(name) == "s") msettingsTL();//2
+		else if(tolowerstr(name) == "s") makesettingsTL();//2
 		else if(tolowerstr(name) == "c") copyright();//3
 		else if(tolowerstr(name) == "b") tobimg();//4
 		else if(tolowerstr(name) == "m") moflexMover();//5
@@ -600,7 +600,7 @@ void SingleVideo() {
 		"|__________________________________________|\n\n", scompleted[0], scompleted[1], scompleted[2]);
 		std::getline(std::cin, name);
 		if(tolowerstr(name) == "t") Movie_title();//0
-		else if(tolowerstr(name) == "s") ssettingsTL();//1
+		else if(tolowerstr(name) == "s") makesettingsTL();//1
 		else if(tolowerstr(name) == "m") moflexMover();//2
 		else if(tolowerstr(name) == "f") finalize();
 		else if(tolowerstr(name) == "x") return;
