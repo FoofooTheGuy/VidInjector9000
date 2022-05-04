@@ -204,14 +204,23 @@ void copyright() {
 	system("title [MultiVidInjector5000] Copyright options");
 	cls
 	name = "";
+	_mkdir("romfs/settings");
 	while(name == "") {
-		std::cout << "Enter the text for the button:\n(By default, it says Copyright)\n";
+		std::ofstream information_buttons("romfs/settings/information_buttons.csv", std::ios_base::out | std::ios_base::binary);
+		std::cout << "Do you want the menu to have the Copyright button? [Y/N]\n";
 		std::getline(std::cin, name);
 		if(name == "") cls
+		else if(tolowerstr(name) == "y") {
+			information_buttons << "\xFF\xFE" << UTF8toUTF16("Copyright");
+			information_buttons.close();
+		}
+		else {
+			information_buttons << "\xFF\xFE";
+			information_buttons.close();
+			completed[3] = 'X';
+			return;
+		}
 	}
-	_mkdir("romfs/settings");
-	std::ofstream information_buttons("romfs/settings/information_buttons.csv", std::ios_base::out | std::ios_base::binary);
-	information_buttons << "\xFF\xFE" << UTF8toUTF16(name);
 	cls
 	name = "";
 	while(name == "") {
@@ -221,7 +230,6 @@ void copyright() {
 	}
 	std::ofstream copyrighttxt("romfs/settings/copyright.txt", std::ios_base::out | std::ios_base::binary);
 	copyrighttxt << "\xFF\xFE" << UTF8toUTF16(name);
-	information_buttons.close();
 	copyrighttxt.close();
 	completed[3] = 'X';
 	pause
