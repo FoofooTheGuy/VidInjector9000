@@ -90,7 +90,7 @@ void system_g(std::string input) {//system_g()! It's system() but good!
 void setAmount() {
 	system("title [MultiVidInjector5000] Set video amount");
 	static bool good = false;
-	if (good) good = false;
+	good = false;//in case you do it again, idk why the line above this isnt enough also why should anyone be able to do it again? bruhh
 	if (amount) amount = 0;
 	_mkdir("romfs/settings");
 	std::ofstream movie_bnrname("romfs/settings/movie_bnrname.csv", std::ios_base::out | std::ios_base::binary);
@@ -98,16 +98,16 @@ void setAmount() {
 		cls
 		std::cout << "Enter the amount of videos you have:\n";
 		std::getline(std::cin, name);
-		if(!stoul_s(amount, name)) {
-			std::cout << "invalid input. Try again\n";
+		if(name.size() > 2 || !stoul_s(amount, name) || amount > 27) {
+			std::cout << "Invalid input/Amount cannot be greater than 27. Try again\n";
 			pause
 		} else {
-			movie_bnrname << "\xFF\xFE" + UTF8toUTF16(std::to_string(amount) + "\x0D\x0A");
-			for (unsigned long i = 0; i < amount; i++) {
-				movie_bnrname << UTF8toUTF16("movie_" + std::to_string(i) + ".bimg\x0D\x0A");
-			}
-			movie_bnrname.close();
-			good = true;
+		movie_bnrname << "\xFF\xFE" + UTF8toUTF16(std::to_string(amount) + "\x0D\x0A");
+		for (unsigned long i = 0; i < amount; i++) {
+			movie_bnrname << UTF8toUTF16("movie_" + std::to_string(i) + ".bimg\x0D\x0A");
+		}
+		movie_bnrname.close();
+		good = true;
 		}
 	}
 	completed[0] = 'X';
@@ -431,7 +431,7 @@ void makeCIA() {
 	if(MultiVid) {
 		for (unsigned int i = 0; i < sizeof(completed); i++)
 			if(completed[i] == ' ') {
-				printf("Not all jobs have been done. (Job #%i) Do you really want to continue? [Y/N]\n", i);
+				printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
 				std::getline(std::cin, name);
 				if(tolowerstr(name) == "y") break;
 				else return;
@@ -440,7 +440,7 @@ void makeCIA() {
 	else {
 		for (unsigned int i = 0; i < sizeof(scompleted); i++)
 			if(scompleted[i] == ' ') {
-				printf("Not all jobs have been done. (Job #%i) Do you really want to continue? [Y/N]\n", i);
+				printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
 				std::getline(std::cin, name);
 				if(tolowerstr(name) == "y") break;
 				else return;
@@ -514,7 +514,7 @@ void finalize() {
 	if(MultiVid) {
 		for (unsigned int i = 0; i < sizeof(completed)-2; i++)
 			if(completed[i] == ' ') {
-				printf("Not all jobs have been done. (Job #%i) Do you really want to continue? [Y/N]\n", i);
+				printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
 				std::getline(std::cin, name);
 				if(tolowerstr(name) == "y") break;
 				else return;
@@ -523,7 +523,7 @@ void finalize() {
 	else {
 		for (unsigned int i = 0; i < sizeof(scompleted)-2; i++)
 			if(scompleted[i] == ' ') {
-				printf("Not all jobs have been done. (Job #%i) Do you really want to continue? [Y/N]\n", i);
+				printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
 				std::getline(std::cin, name);
 				if(tolowerstr(name) == "y") break;
 				else return;
