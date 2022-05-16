@@ -169,13 +169,13 @@ void makesettingsTL() {
 	
 	_mkdir("romfs/settings");
 	std::ofstream settingsTL("romfs/settings/settingsTL.csv", std::ios_base::out | std::ios_base::binary);
-	for (int i = 0; i < 14; i++)
+	for (unsigned int i = 0; i < sizeof(oshirase); i++)
 		settingsTL << oshirase[i];
 	settingsTL << UTF8toUTF16("URL\x0D\x0A# JP:\x0D\x0Anone\x0D\x0A\x0D\x0A# EN:\x0D\x0Anone\x0D\x0A\x0D\x0A# FR:\x0D\x0Anone\x0D\x0A\x0D\x0A# GE:\x0D\x0Anone\x0D\x0A\x0D\x0A# IT:\x0D\x0Anone\x0D\x0A\x0D\x0A# SP:\x0D\x0Anone\x0D\x0A\x0D\x0A# CN:\x0D\x0Anone\x0D\x0A\x0D\x0A# KO:\x0D\x0Anone\x0D\x0A\x0D\x0A# DU:\x0D\x0Anone\x0D\x0A\x0D\x0A# PO:\x0D\x0Anone\x0D\x0A\x0D\x0A# RU:\x0D\x0Anone\x0D\x0A\x0D\x0A# TW:\x0D\x0Anone\x0D\x0A\x0D\x0A# ");
-	for (int i = 0; i < 28; i++)
+	for (unsigned int i = 0; i < sizeof(AppNameLongName); i++)
 		settingsTL << AppNameLongName[i];
 	settingsTL << UTF8toUTF16("# JP:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# EN:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# FR:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# GE:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# IT:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# SP:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# CN:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# KO:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# DU:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# PO:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# RU:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# TW:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A");
-	for (int i = 0; i < 350; i++)
+	for (unsigned int i = 0; i < sizeof(otherJunk); i++)
 		settingsTL << otherJunk[i];
 	if(MultiVid) {
 		publisher = "";
@@ -185,13 +185,13 @@ void makesettingsTL() {
 			if(publisher == "") cls
 		}
 		
-		for (int i = 0; i < 16; i++)
+		for (unsigned int i = 0; i < sizeof(amountofvideos); i++)
 			settingsTL << amountofvideos[i];
 		settingsTL << UTF8toUTF16(std::to_string(amount)) << UTF8toUTF16("\x0D\x0A\x0D\x0A# ");
-		for (int i = 0; i < 24; i++)
+		for (unsigned int i = 0; i < sizeof(publisherName); i++)
 			settingsTL << publisherName[i];
 		settingsTL << UTF8toUTF16("# JP:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# EN:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# FR:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# GE:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# IT:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# SP:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# CN:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# KO:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# DU:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# PO:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# RU:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# TW:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A");
-		for (int i = 0; i < 284; i++)
+		for (unsigned int i = 0; i < sizeof(theRest); i++)
 			settingsTL << theRest[i];
 		completed[2] = 'X';
 	}
@@ -268,7 +268,7 @@ void tobimg() {
 		
 		std::ofstream finalbimgfile("romfs\\movie\\movie_" + std::to_string(i) + ".bimg", std::ios_base::out | std::ios_base::binary);
 		//write data to the file one byte at a time because for some dang reason vector::data(); was being annoying with it WHYHWYHWHYWHYWHY
-		for (int i = 0; i < 32; i++)
+		for (unsigned int i = 0; i < sizeof(bimgheader); i++)
 			finalbimgfile << bimgheader[i];
 		for (size_t i = 0; i < buffer.size(); i++)
 			finalbimgfile << buffer.at(i);
@@ -356,11 +356,11 @@ void makebanner() {
 	std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(bimgfile), {});//https://stackoverflow.com/a/5420568
 	//create bcmdl
 	std::ofstream bannerbcmdl("exefs\\banner0.bcmdl", std::ios_base::out | std::ios_base::binary);
-	for (int i = 0; i < 12928; i++)
+	for (unsigned int i = 0; i < sizeof(bannerheader); i++)
 		bannerbcmdl << bannerheader[i];
 	for (size_t i = 0; i < buffer.size(); i++)
 		bannerbcmdl << buffer.at(i);
-	for (int i = 0; i < 18432; i++)
+	for (unsigned int i = 0; i < sizeof(bannerfooter); i++)
 		bannerbcmdl << bannerfooter[i];
 	bimgfile.close();
 	bannerbcmdl.close();
@@ -429,18 +429,18 @@ void makeCIA() {
 	srand(currentTime());
 	unsigned long TID = 0xF0000;
 	if(MultiVid) {
-		for (int i = 0; i < 6; i++)
+		for (unsigned int i = 0; i < sizeof(completed); i++)
 			if(completed[i] == ' ') {
-				std::cout << "Not all jobs have been done, do you really want to continue? [Y/N]\n";
+				printf("Not all jobs have been done. (Job #%i) Do you really want to continue? [Y/N]\n", i);
 				std::getline(std::cin, name);
 				if(tolowerstr(name) == "y") break;
 				else return;
 			}
 	}
 	else {
-		for (int i = 0; i < 3; i++)
+		for (unsigned int i = 0; i < sizeof(scompleted); i++)
 			if(scompleted[i] == ' ') {
-				std::cout << "Not all jobs have been done, do you really want to continue? [Y/N]\n";
+				printf("Not all jobs have been done. (Job #%i) Do you really want to continue? [Y/N]\n", i);
 				std::getline(std::cin, name);
 				if(tolowerstr(name) == "y") break;
 				else return;
@@ -512,18 +512,18 @@ void finalize() {
 	system_g("title [" + type + "] Finalizing");
 	cls
 	if(MultiVid) {
-		for (int i = 0; i < 6; i++)
+		for (unsigned int i = 0; i < sizeof(completed)-2; i++)
 			if(completed[i] == ' ') {
-				std::cout << "Not all jobs have been done, do you really want to continue? [Y/N]\n";
+				printf("Not all jobs have been done. (Job #%i) Do you really want to continue? [Y/N]\n", i);
 				std::getline(std::cin, name);
 				if(tolowerstr(name) == "y") break;
 				else return;
 			}
 	}
 	else {
-		for (int i = 0; i < 3; i++)
+		for (unsigned int i = 0; i < sizeof(scompleted)-2; i++)
 			if(scompleted[i] == ' ') {
-				std::cout << "Not all jobs have been done, do you really want to continue? [Y/N]\n";
+				printf("Not all jobs have been done. (Job #%i) Do you really want to continue? [Y/N]\n", i);
 				std::getline(std::cin, name);
 				if(tolowerstr(name) == "y") break;
 				else return;
@@ -621,9 +621,9 @@ int main() {
 		system("title VidInjector9001 by Foofoo_the_guy");
 		cls
 		//wipe the stuff
-		for (int i = 0; i <= 7; i++)
+		for (unsigned int i = 0; i < sizeof(completed); i++)
 			completed[i] = ' ';
-		for (int i = 0; i <= 2; i++)
+		for (unsigned int i = 0; i < sizeof(scompleted); i++)
 			scompleted[i] = ' ';
 		system("rmdir exefs /s /q");
 		system("rmdir romfs /s /q");
