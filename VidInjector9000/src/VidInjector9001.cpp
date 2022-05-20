@@ -230,7 +230,7 @@ utf8_to_utf16(uint16_t      *out,
 std::string UTF8toUTF16(std::string input) {//not to be confused with utf8_to_utf16
 	std::string output = "";
 	uint8_t *utf8 = new uint8_t[input.size()];
-	uint16_t *utf16 = new uint16_t[input.size() * 2];//add 2 because null-terminor i guess
+	uint16_t *utf16 = new uint16_t[input.size() * 2];
 	memcpy(utf8, input.c_str(), input.size());
 	utf8_to_utf16(utf16, utf8, input.size());
 	char utf16str[strlen(input) * 2];
@@ -287,7 +287,6 @@ void Movie_title() {
 	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
 	system_g("title [" + type + "] Generate movie_title.csv");
 	cls
-	std::string filetxt("\xFF\xFE" + UTF8toUTF16("#JP,#EN,#FR,#GE,#IT,#SP,#CH,#KO,#DU,#PO,#RU,#TW\x0D\x0A"));
 	if (amount == 0) {
 		std::cout << "Set video amount first!\n";
 		pause
@@ -295,7 +294,7 @@ void Movie_title() {
 	}
 	_mkdir("romfs/movie");
 	std::ofstream movie_title("romfs/movie/movie_title.csv", std::ios_base::out | std::ios_base::binary);
-	movie_title << filetxt;
+	movie_title << "\xFF\xFE" + UTF8toUTF16("#JP,#EN,#FR,#GE,#IT,#SP,#CH,#KO,#DU,#PO,#RU,#TW\x0D\x0A");
 	for (unsigned long i = 0; i < amount; i++) {
 		name = "";
 		while(name == "") {
@@ -304,11 +303,10 @@ void Movie_title() {
 			std::getline(std::cin, name);
 			if(name == "") cls
 		}
-		for (int j = 0; j < 12; j++) {//do it 12 times because it needs to
-			if (j != 11) movie_title << UTF8toUTF16(name + ",");
-			else movie_title << UTF8toUTF16(name);
+		for (int j = 0; j < 11; j++) {//do it 12 times because it needs to
+			movie_title << UTF8toUTF16(name + ",");
 		}
-		movie_title << UTF8toUTF16("\x0D\x0A");
+		movie_title << UTF8toUTF16(name + "\x0D\x0A");
 	}
 	movie_title.close();
 	if(MultiVid) completed[1] = 'X';
@@ -339,14 +337,100 @@ void makesettingsTL() {
 	
 	_mkdir("romfs/settings");
 	std::ofstream settingsTL("romfs/settings/settingsTL.csv", std::ios_base::out | std::ios_base::binary);
-	for (unsigned int i = 0; i < sizeof(oshirase); i++)
-		settingsTL << oshirase[i];
-	settingsTL << UTF8toUTF16("URL\x0D\x0A# JP:\x0D\x0Anone\x0D\x0A\x0D\x0A# EN:\x0D\x0Anone\x0D\x0A\x0D\x0A# FR:\x0D\x0Anone\x0D\x0A\x0D\x0A# GE:\x0D\x0Anone\x0D\x0A\x0D\x0A# IT:\x0D\x0Anone\x0D\x0A\x0D\x0A# SP:\x0D\x0Anone\x0D\x0A\x0D\x0A# CN:\x0D\x0Anone\x0D\x0A\x0D\x0A# KO:\x0D\x0Anone\x0D\x0A\x0D\x0A# DU:\x0D\x0Anone\x0D\x0A\x0D\x0A# PO:\x0D\x0Anone\x0D\x0A\x0D\x0A# RU:\x0D\x0Anone\x0D\x0A\x0D\x0A# TW:\x0D\x0Anone\x0D\x0A\x0D\x0A# ");
-	for (unsigned int i = 0; i < sizeof(AppNameLongName); i++)
-		settingsTL << AppNameLongName[i];
-	settingsTL << UTF8toUTF16("# JP:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# EN:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# FR:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# GE:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# IT:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# SP:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# CN:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# KO:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# DU:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# PO:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# RU:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A# TW:\x0D\x0A" + name + "\x0D\x0A\x0D\x0A");
-	for (unsigned int i = 0; i < sizeof(otherJunk); i++)
-		settingsTL << otherJunk[i];
+	settingsTL << "\xFF\xFE" + 
+				  UTF8toUTF16("# おしらせURL\x0D\x0A"//this is unreadable but oh well HAHHHEHEHEHHE
+							  "# JP:\x0D\x0Anone\x0D\x0A"
+							  "\x0D\x0A"
+							  "# EN:\x0D\x0A"
+							  "none\x0D\x0A"
+							  "\x0D\x0A"
+							  "# FR:\x0D\x0A"
+							  "none\x0D\x0A"
+							  "\x0D\x0A"
+							  "# GE:\x0D\x0A"
+							  "none\x0D\x0A"
+							  "\x0D\x0A"
+							  "# IT:\x0D\x0A"
+							  "none\x0D\x0A"
+							  "\x0D\x0A"
+							  "# SP:\x0D\x0A"
+							  "none\x0D\x0A"
+							  "\x0D\x0A"
+							  "# CN:\x0D\x0A"
+							  "none\x0D\x0A"
+							  "\x0D\x0A"
+							  "# KO:\x0D\x0A"
+							  "none\x0D\x0A"
+							  "\x0D\x0A"
+							  "# DU:\x0D\x0A"
+							  "none\x0D\x0A"
+							  "\x0D\x0A"
+							  "# PO:\x0D\x0A"
+							  "none\x0D\x0A"
+							  "\x0D\x0A"
+							  "# RU:\x0D\x0A"
+							  "none\x0D\x0A"
+							  "\x0D\x0A"
+							  "# TW:\x0D\x0A"
+							  "none\x0D\x0A"
+							  "\x0D\x0A"
+							  "# アプリ名（ロングネーム）\x0D\x0A"
+							  "# JP:\x0D\x0A"
+							  + name + "\x0D\x0A"
+							  "\x0D\x0A"
+							  "# EN:\x0D\x0A"
+							  + name + "\x0D\x0A"
+							  "\x0D\x0A"
+							  "# FR:\x0D\x0A"
+							  + name + "\x0D\x0A"
+							  "\x0D\x0A"
+							  "# GE:\x0D\x0A"
+							  + name + "\x0D\x0A"
+							  "\x0D\x0A"
+							  "# IT:\x0D\x0A"
+							  + name + "\x0D\x0A"
+							  "\x0D\x0A"
+							  "# SP:\x0D\x0A"
+							  + name + "\x0D\x0A"
+							  "\x0D\x0A"
+							  "# CN:\x0D\x0A"
+							  + name + "\x0D\x0A"
+							  "\x0D\x0A"
+							  "# KO:\x0D\x0A"
+							  + name + "\x0D\x0A"
+							  "\x0D\x0A"
+							  "# DU:\x0D\x0A"
+							  + name + "\x0D\x0A"
+							  "\x0D\x0A"
+							  "# PO:\x0D\x0A"
+							  + name + "\x0D\x0A"
+							  "\x0D\x0A"
+							  "# RU:\x0D\x0A"
+							  + name + "\x0D\x0A"
+							  "\x0D\x0A"
+							  "# TW:\x0D\x0A"
+							  + name + "\x0D\x0A"
+							  "\x0D\x0A"
+							  "# 拡張セーブデータのID（16進数）\x0D\x0A"
+							  "12345\x0D\x0A"//idk if any other game uses 12345 as its save data ID, nor do i understand if it matters, so sorry if this breaks everything
+							  "\x0D\x0A"
+							  "# NADLタスクのID\x0D\x0A"
+							  "none\x0D\x0A"
+							  "\x0D\x0A"
+							  "# タスクの実行間隔（h）（10進数）\x0D\x0A"
+							  "0\x0D\x0A"
+							  "\x0D\x0A"
+							  "# タスクの実行回数（10進数）\x0D\x0A"
+							  "0\x0D\x0A"
+							  "\x0D\x0A"
+							  "# おしらせのあり、なし\x0D\x0A"
+							  "false\x0D\x0A"
+							  "\x0D\x0A"
+							  "# 早送り、巻戻しボタンのあり、なし\x0D\x0A"
+							  "true\x0D\x0A"
+							  "\x0D\x0A"
+							  "# 優しさ演出のあり、なし\x0D\x0A"
+							  "true\x0D\x0A");
 	if(MultiVid) {
 		publisher = "";
 		while(publisher == "") {
@@ -354,15 +438,82 @@ void makesettingsTL() {
 			std::getline(std::cin, publisher);
 			if(publisher == "") cls
 		}
-		
-		for (unsigned int i = 0; i < sizeof(amountofvideos); i++)
-			settingsTL << amountofvideos[i];
-		settingsTL << UTF8toUTF16(std::to_string(amount)) << UTF8toUTF16("\x0D\x0A\x0D\x0A# ");
-		for (unsigned int i = 0; i < sizeof(publisherName); i++)
-			settingsTL << publisherName[i];
-		settingsTL << UTF8toUTF16("# JP:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# EN:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# FR:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# GE:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# IT:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# SP:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# CN:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# KO:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# DU:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# PO:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# RU:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A# TW:\x0D\x0A" + publisher + "\x0D\x0A\x0D\x0A");
-		for (unsigned int i = 0; i < sizeof(theRest); i++)
-			settingsTL << theRest[i];
+		settingsTL << UTF8toUTF16("\x0D\x0A"
+								  "# 動画の数\x0D\x0A"
+								  + std::to_string(amount) + "\x0D\x0A"
+								  "\x0D\x0A"
+								  "# 動画パブリッシャー名\x0D\x0A"
+								  "# JP:\x0D\x0A"
+								  + publisher + "\x0D\x0A"
+								  "\x0D\x0A"
+								  "# EN:\x0D\x0A"
+								  + publisher + "\x0D\x0A"
+								  "\x0D\x0A"
+								  "# FR:\x0D\x0A"
+								  + publisher + "\x0D\x0A"
+								  "\x0D\x0A"
+								  "# GE:\x0D\x0A"
+								  + publisher + "\x0D\x0A"
+								  "\x0D\x0A"
+								  "# IT:\x0D\x0A"
+								  + publisher + "\x0D\x0A"
+								  "\x0D\x0A"
+								  "# SP:\x0D\x0A"
+								  + publisher + "\x0D\x0A"
+								  "\x0D\x0A"
+								  "# CN:\x0D\x0A"
+								  + publisher + "\x0D\x0A"
+								  "\x0D\x0A"
+								  "# KO:\x0D\x0A"
+								  + publisher + "\x0D\x0A"
+								  "\x0D\x0A"
+								  "# DU:\x0D\x0A"
+								  + publisher + "\x0D\x0A"
+								  "\x0D\x0A"
+								  "# PO:\x0D\x0A"
+								  + publisher + "\x0D\x0A"
+								  "\x0D\x0A"
+								  "# RU:\x0D\x0A"
+								  + publisher + "\x0D\x0A"
+								  "\x0D\x0A"
+								  "# TW:\x0D\x0A"
+								  + publisher + "\x0D\x0A"
+								  "\x0D\x0A"
+								  "# WEBブラウザ用のURL\x0D\x0A"
+								  "# JP:\x0D\x0A"
+								  "\x0D\x0A"
+								  "\x0D\x0A"
+								  "# EN:\x0D\x0A"
+								  "\x0D\x0A"
+								  "\x0D\x0A"
+								  "# FR:\x0D\x0A"
+								  "\x0D\x0A"
+								  "\x0D\x0A"
+								  "# GE:\x0D\x0A"
+								  "\x0D\x0A"
+								  "\x0D\x0A"
+								  "# IT:\x0D\x0A"
+								  "\x0D\x0A"
+								  "\x0D\x0A"
+								  "# SP:\x0D\x0A"
+								  "\x0D\x0A"
+								  "\x0D\x0A"
+								  "# CN:\x0D\x0A"
+								  "\x0D\x0A"
+								  "\x0D\x0A"
+								  "# KO:\x0D\x0A"
+								  "\x0D\x0A"
+								  "\x0D\x0A"
+								  "# DU:\x0D\x0A"
+								  "\x0D\x0A"
+								  "\x0D\x0A"
+								  "# PO:\x0D\x0A"
+								  "\x0D\x0A"
+								  "\x0D\x0A"
+								  "# RU:\x0D\x0A"
+								  "\x0D\x0A"
+								  "\x0D\x0A"
+								  "# TW:");
 		completed[2] = 'X';
 	}
 	else scompleted[1] = 'X';
@@ -477,9 +628,8 @@ void moflexMover() {
 			std::string extension = name;
 			extension.erase (extension.begin(), extension.end()-7);
 			std::ifstream inmoflex (name, std::ios::binary);
-			for (int i = 0; i < 4; i++)
-				inmoflex >> Checker[i];//https://stackoverflow.com/a/2974735
 			for (int i = 0; i < 4; i++) {
+				inmoflex >> Checker[i];//https://stackoverflow.com/a/2974735
 				if(extension != ".moflex" || Checker[i] != moflexMagic[i]) {
 					std::cout << "The input file (" << name << ") is broken or not in moflex format. Try again.\n";
 					name == "";
