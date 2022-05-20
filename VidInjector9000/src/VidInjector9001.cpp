@@ -51,7 +51,7 @@ unsigned long currentTime() {//originally from https://stackoverflow.com/a/30898
 	char stime[80];
 	tstruct = *localtime(&now);
 	time_t t = time(0);   // get time now
-	struct tm * nowtime = localtime( & t );
+	struct tm * nowtime = localtime(&t);
 	char date[7];
 
 	sprintf(date, "%i%i%i", nowtime->tm_mon + 1, nowtime->tm_mday + 1, nowtime->tm_year + 1900);
@@ -64,19 +64,189 @@ unsigned long currentTime() {//originally from https://stackoverflow.com/a/30898
 
 	return dOut + sOut;
 }
-	
-std::string UTF8toUTF16(std::string input) {//(Kinda)
-	std::string output;
-    for (size_t i = 0; i < strlen(input); i++) {
-		output += input[i];
-		output += '\x00';//pee pee poo poo hahah LOL
+
+//this UTF stuff is from libctru lol
+#ifdef SIZE_MAX
+#define SSIZE_MAX ((SIZE_MAX) >> 1)
+#endif
+
+//https://github.com/devkitPro/libctru/raw/4e25fb1d6c2ea124a9011c4b65f76f2968a9fb97/libctru/source/util/utf/encode_utf16.c
+ssize_t
+encode_utf16(uint16_t *out,
+             uint32_t in)
+{
+  if(in < 0x10000)
+  {
+    if(out != NULL)
+      *out++ = in;
+    return 1;
+  }
+  else if(in < 0x110000)
+  {
+    if(out != NULL)
+    {
+      *out++ = (in >> 10) + 0xD7C0;
+      *out++ = (in & 0x3FF) + 0xDC00;
     }
+    return 2;
+  }
+
+  return -1;
+}
+
+//https://github.com/devkitPro/libctru/raw/4e25fb1d6c2ea124a9011c4b65f76f2968a9fb97/libctru/source/util/utf/decode_utf8.c
+ssize_t
+decode_utf8(uint32_t      *out,
+            const uint8_t *in)
+{
+  uint8_t code1, code2, code3, code4;
+
+  code1 = *in++;
+  if(code1 < 0x80)
+  {
+    /* 1-byte sequence */
+    *out = code1;
+    return 1;
+  }
+  else if(code1 < 0xC2)
+  {
+    return -1;
+  }
+  else if(code1 < 0xE0)
+  {
+    /* 2-byte sequence */
+    code2 = *in++;
+    if((code2 & 0xC0) != 0x80)
+    {
+      return -1;
+    }
+
+    *out = (code1 << 6) + code2 - 0x3080;
+    return 2;
+  }
+  else if(code1 < 0xF0)
+  {
+    /* 3-byte sequence */
+    code2 = *in++;
+    if((code2 & 0xC0) != 0x80)
+    {
+      return -1;
+    }
+    if(code1 == 0xE0 && code2 < 0xA0)
+    {
+      return -1;
+    }
+
+    code3 = *in++;
+    if((code3 & 0xC0) != 0x80)
+    {
+      return -1;
+    }
+
+    *out = (code1 << 12) + (code2 << 6) + code3 - 0xE2080;
+    return 3;
+  }
+  else if(code1 < 0xF5)
+  {
+    /* 4-byte sequence */
+    code2 = *in++;
+    if((code2 & 0xC0) != 0x80)
+    {
+      return -1;
+    }
+    if(code1 == 0xF0 && code2 < 0x90)
+    {
+      return -1;
+    }
+    if(code1 == 0xF4 && code2 >= 0x90)
+    {
+      return -1;
+    }
+
+    code3 = *in++;
+    if((code3 & 0xC0) != 0x80)
+    {
+      return -1;
+    }
+
+    code4 = *in++;
+    if((code4 & 0xC0) != 0x80)
+    {
+      return -1;
+    }
+
+    *out = (code1 << 18) + (code2 << 12) + (code3 << 6) + code4 - 0x3C82080;
+    return 4;
+  }
+
+  return -1;
+}
+
+//https://github.com/devkitPro/libctru/raw/4e25fb1d6c2ea124a9011c4b65f76f2968a9fb97/libctru/source/util/utf/utf8_to_utf16.c
+ssize_t
+utf8_to_utf16(uint16_t      *out,
+              const uint8_t *in,
+              size_t        len)
+{
+  ssize_t  rc = 0;
+  ssize_t  units;
+  uint32_t code;
+  uint16_t encoded[2];
+
+  do
+  {
+    units = decode_utf8(&code, in);
+    if(units == -1)
+      return -1;
+
+    if(code > 0)
+    {
+      in += units;
+
+      units = encode_utf16(encoded, code);
+      if(units == -1)
+        return -1;
+
+      if(out != NULL)
+      {
+        if(rc + units <= len)
+        {
+          *out++ = encoded[0];
+          if(units > 1)
+            *out++ = encoded[1];
+        }
+      }
+
+      if(SSIZE_MAX - units >= rc)
+        rc += units;
+      else
+        return -1;
+    }
+  } while(code > 0);
+
+  return rc;
+}
+
+std::string UTF8toUTF16(std::string input) {//not to be confused with utf8_to_utf16
+	std::string output = "";
+	uint8_t *utf8 = new uint8_t[input.size()];
+	uint16_t *utf16 = new uint16_t[input.size() * 2];//add 2 because null-terminor i guess
+	memcpy(utf8, input.c_str(), input.size());
+	utf8_to_utf16(utf16, utf8, input.size());
+	char utf16str[strlen(input) * 2];
+	memcpy(utf16str, utf16, strlen(input) * 2);
+
+	for (size_t i = 0; i < strlen(input) * 2; i++)
+		output += utf16str[i];
+	
+	delete[] utf8;
+	delete[] utf16;
 	return output;
 }
 
 void removeQuotes(std::string &str) {
 	std::string out;
-	for (size_t i = 0; i < strlen(str); i++) {
+	for (size_t i = 0; i < str.size(); i++) {
 		if(str[i] != '\"') out += str[i];//pass through without the " if it has it there
 	}
 	str = out;
@@ -99,15 +269,15 @@ void setAmount() {
 		std::cout << "Enter the amount of videos you have:\n";
 		std::getline(std::cin, name);
 		if(name.size() > 2 || !stoul_s(amount, name) || amount > 27) {
-			std::cout << "Invalid input/Amount cannot be greater than 27. Try again\n";
+			std::cout << "Invalid input/The amount cannot be greater than 27. Try again\n";
 			pause
 		} else {
-		movie_bnrname << "\xFF\xFE" + UTF8toUTF16(std::to_string(amount) + "\x0D\x0A");
-		for (unsigned long i = 0; i < amount; i++) {
-			movie_bnrname << UTF8toUTF16("movie_" + std::to_string(i) + ".bimg\x0D\x0A");
-		}
-		movie_bnrname.close();
-		good = true;
+			movie_bnrname << "\xFF\xFE" + UTF8toUTF16(std::to_string(amount) + "\x0D\x0A");
+			for (unsigned long i = 0; i < amount; i++) {
+				movie_bnrname << UTF8toUTF16("movie_" + std::to_string(i) + ".bimg\x0D\x0A");
+			}
+			movie_bnrname.close();
+			good = true;
 		}
 	}
 	completed[0] = 'X';
