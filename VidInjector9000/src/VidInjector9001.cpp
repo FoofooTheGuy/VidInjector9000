@@ -303,10 +303,10 @@ void Movie_title() {
 			std::getline(std::cin, name);
 			if(name == "") cls
 		}
-		for (int j = 0; j < 11; j++) {//do it 12 times because it needs to
+		for (int j = 0; j < 11; j++) {//do it 11 times because it needs to
 			movie_title << UTF8toUTF16(name + ",");
 		}
-		movie_title << UTF8toUTF16(name + "\x0D\x0A");
+		movie_title << UTF8toUTF16(name + "\x0D\x0A");//put the last stuff
 	}
 	movie_title.close();
 	if(MultiVid) completed[1] = 'X';
@@ -635,9 +635,7 @@ void moflexMover() {
 					name == "";
 					pause
 					break;
-				} else {
-					pass = true;
-				}
+				} else pass = true;
 			}
 		}
 		if(MultiVid) system_g("copy /b \"" + name + "\" \"romfs\\movie\\movie_" + std::to_string(i) + ".moflex\"");
@@ -754,7 +752,7 @@ void makeCIA() {
 				printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
 				std::getline(std::cin, name);
 				if(tolowerstr(name) == "y") break;
-				else return;
+				return;
 			}
 	}
 	else {
@@ -763,7 +761,7 @@ void makeCIA() {
 				printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
 				std::getline(std::cin, name);
 				if(tolowerstr(name) == "y") break;
-				else return;
+				return;
 			}
 	}
 	while(TID == 0xF0000) {
@@ -773,8 +771,8 @@ void makeCIA() {
 		if(name.size() > 5) name = "F0000";//more stupid-proofing
 		if(!stoul_s(TID, name, true)) {
 			std::cout << "Invalid input, try again\n";
-			TID = 0xF0000;//is this required?
 			pause
+			continue;
 		}
 		if (TID == 0) {
 			TID = rand() % (0xF0000 - 0xC0000) + 0xC0000;//0xC0000 is minimum, 0xEFFFF is maximum, 0xF0000 makes it include 0xEFFFF in it)
@@ -795,18 +793,19 @@ void makeCIA() {
 			case 0:
 			{
 				printf("Oops, you ran into a blacklisted ID! (%05lX) Try again.\n", TID);
-				TID = 0xF0000;
 				pause
+				continue;
 			}
 			break;
 			default:
 				if(TID < 0xF0000 && TID > 0xC0001) printf("%05lX Passed all checks!\n", TID);
 				else {
 					printf("Oops, you ran into a blacklisted ID! (%05lX) Try again.\n", TID);
-					TID = 0xF0000;
 					pause
+					continue;
 				}
 		}
+		TID = 0xF0000;
 	}
 	std::cout << "Generating CIA...\n";
 	_mkdir("output");
@@ -837,7 +836,7 @@ void finalize() {
 				printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
 				std::getline(std::cin, name);
 				if(tolowerstr(name) == "y") break;
-				else return;
+				return;
 			}
 	}
 	else {
@@ -846,7 +845,7 @@ void finalize() {
 				printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
 				std::getline(std::cin, name);
 				if(tolowerstr(name) == "y") break;
-				else return;
+				return;
 			}
 	}
 	while(1) {
