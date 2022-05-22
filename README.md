@@ -10,6 +10,10 @@ Usage
 You may ask...
 --
 
+**Q: How do I make moflex files?**
+
+A: Use Mobiclip Multicore Encoder. The most straight forward way to get that is on the Nintendo Developer Portal, but there are mirrors online somewhere...
+
 **Q: Why did you even make this?**
 
 A: I made this so that the process of injecting with 3D banners is more streamlined. Also, VidInjector9000 2.0 (aka VidInjector9001) can create multi video injects with MultiVidInjector5000!
