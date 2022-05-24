@@ -339,7 +339,8 @@ void makesettingsTL() {
 	std::ofstream settingsTL("romfs/settings/settingsTL.csv", std::ios_base::out | std::ios_base::binary);
 	settingsTL << "\xFF\xFE" + 
 				  UTF8toUTF16("# おしらせURL\x0D\x0A"//this is unreadable but oh well HAHHHEHEHEHHE
-							  "# JP:\x0D\x0Anone\x0D\x0A"
+							  "# JP:\x0D\x0A"
+							  "none\x0D\x0A"
 							  "\x0D\x0A"
 							  "# EN:\x0D\x0A"
 							  "none\x0D\x0A"
@@ -805,6 +806,7 @@ void makeCIA() {
 					continue;
 				}
 		}
+		break;
 		TID = 0xF0000;
 	}
 	std::cout << "Generating CIA...\n";
