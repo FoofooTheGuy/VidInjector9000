@@ -4,6 +4,7 @@
 #include <direct.h>
 #include <time.h>
 #include <string.h>
+#include "code.h"
 
 //put headers in here
 unsigned char bimgheader[32] = {
@@ -3955,4 +3956,5 @@ void makeCIA();
 void finalize();
 void MultiVideo();
 void SingleVideo();
+bool Generate_Code(bool Multi);
 int main();

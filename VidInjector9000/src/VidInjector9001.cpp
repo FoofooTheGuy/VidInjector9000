@@ -256,6 +256,24 @@ void system_g(std::string input) {//system_g()! It's system() but good!
 	system(input.c_str());
 }
 
+bool Generate_Code(bool Multi) {
+	std::string path = "exefs/code.bin";
+	puts("Generating code.bin...");
+	_mkdir("exefs");
+	if(Multi) {
+		std::ofstream codebin(path, std::ios_base::out | std::ios_base::binary);
+		for (unsigned int i = 0; i < sizeof(Multivid); i++)
+			codebin << Multivid[i];
+	}
+	else {
+		std::ofstream codebin(path, std::ios_base::out | std::ios_base::binary);
+		for (unsigned int i = 0; i < sizeof(Singlevid); i++)
+			codebin << Singlevid[i];
+	}
+	if(exists_test0(path)) return true;
+	return false;
+}
+
 //big functions
 void setAmount() {
 	system("title [MultiVidInjector5000] Set video amount");
@@ -806,7 +824,7 @@ void makeCIA() {
 					continue;
 				}
 		}
-		break;
+		break;//this will only be called if it doesn't do continue
 		TID = 0xF0000;
 	}
 	std::cout << "Generating CIA...\n";
@@ -852,7 +870,7 @@ void finalize() {
 	}
 	while(1) {
 		cls
-		type = MultiVid ? "| X: Go to the multi video menu            |\n" : "| X: Go to the single video menu           |\n";
+		type = MultiVid ? "multi video menu            |" : "single video menu           |";
 		printf("Type a letter:\n\n"
 		" __________________________________________\n"
 		"|                                          |\n"
@@ -860,7 +878,7 @@ void finalize() {
 		"| I: Generate icon                     [%c] |\n"
 		"|                                          |\n"
 		"| C: Generate CIA                          |\n"
-		"%s"
+		"| X: Go to the %s\n"
 		"|__________________________________________|\n\n", completed[7], completed[6], type.c_str());
 		std::getline(std::cin, name);
 		if(tolowerstr(name) == "b") makebanner();//6
@@ -875,7 +893,11 @@ void MultiVideo() {
 	cls
 	MultiVid = true;
 	amount = 0;
-	system("xcopy Vidinjector9000Resources\\files\\templates\\MultiVideo\\exefs exefs\\ /y /e");
+	if(!Generate_Code(true)) {
+		puts("Failed to generate files.");
+		pause
+		return;
+	}
 	system("xcopy Vidinjector9000Resources\\files\\templates\\MultiVideo\\romfs romfs\\ /y /e");
 	system("copy Vidinjector9000Resources\\files\\templates\\MultiVideo\\exheader.bin exheader.bin");
 	while(1) {
@@ -911,7 +933,11 @@ void SingleVideo() {
 	cls
 	MultiVid = false;
 	amount = 1;//huhuhu ez way to reuse the functions
-	system("xcopy Vidinjector9000Resources\\files\\templates\\SingleVideo\\exefs exefs\\ /y /e");
+	if(!Generate_Code(false)) {
+		puts("Failed to generate files.");
+		pause
+		return;
+	}
 	system("xcopy Vidinjector9000Resources\\files\\templates\\SingleVideo\\romfs romfs\\ /y /e");
 	system("copy Vidinjector9000Resources\\files\\templates\\SingleVideo\\exheader.bin exheader.bin");
 	while(1) {
