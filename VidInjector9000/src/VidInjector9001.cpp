@@ -811,7 +811,7 @@ void makeCIA() {
 			}
 	}
 	else {
-		for (unsigned int i = 0; i < sizeof(scompleted); i++)
+		for (unsigned int i = 0; i < sizeof(scompleted)-1; i++)
 			if(scompleted[i] == ' ') {
 				printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
 				std::getline(std::cin, name);
