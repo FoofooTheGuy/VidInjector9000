@@ -8,8 +8,8 @@ std::string name = "";
 std::string type;
 std::string longname;//you need this global because i said so also because make cia needs it too
 static bool MultiVid;//false if single video, true if multi video
-char completed[8] { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', };
-char scompleted[3] { ' ', ' ', ' ', };
+char completed[9] { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', };
+char scompleted[6] { ' ', ' ', ' ', ' ', ' ', ' ', };
 
 //small functions
 std::size_t strlen(const std::string& str) {//http://www.cplusplus.com/forum/beginner/192031/#msg925794
@@ -710,7 +710,10 @@ void makebanner() {
 	remove("exefs/banner.bcwav");
 	remove("exefs/banner0.bcmdl");
 	remove("exefs/banner.cbmd");
-	completed[7] = 'X';
+	completed[6] = 'X';
+	completed[8] = ' ';
+	scompleted[3] = 'X';//i realized this has to be like this for the checks
+	scompleted[4] = ' ';
 	pause
 }
 
@@ -755,7 +758,40 @@ void makeIcon() {
 	system_g("Vidinjector9000Resources\\tools\\imagemagick\\magick.exe convert \"" + name + "\" -resize 48x48! -background black -flatten \"exefs\\Icon.png\"");
 	system_g("Vidinjector9000Resources\\tools\\bannertool.exe makesmdh -i \"exefs\\Icon.png\" -s \"" + shortname + "\" -l \"" + longname + "\" -p \"" + publisher + "\" -f visible,nosavebackups -o \"exefs/icon.bin");
 	remove("exefs\\Icon.png");
-	completed[6] = 'X';
+	completed[7] = 'X';
+	scompleted[4] = 'X';
+	pause
+}
+
+void customBanner() {
+	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
+	system_g("title [" + type + "] Generate banner");
+
+	static bool pass = false;
+	unsigned char Checker[4];
+
+	while(!pass) {
+		cls
+
+		std::cout << "Enter/drag and drop your banner:\n(pre-built file)\n";
+		std::getline(std::cin, name);
+		removeQuotes(name);
+		std::ifstream inbanner (name, std::ios::binary);
+		for (int i = 0; i < 4; i++) {
+			inbanner >> Checker[i];//https://stackoverflow.com/a/2974735
+			if(Checker[i] != bannerMagic[i]) {
+				std::cout << "The input file (" << name << ") is not a valid banner. Try again.\n";
+				name == "";
+				pause
+				break;
+			} else pass = true;
+		}
+	}
+	system_g("copy /b \"" + name + "\" \"exefs\\banner.bin\"");
+	completed[6] = '-';
+	completed[8] = 'X';
+	scompleted[3] = '-';
+	scompleted[5] = 'X';
 	pause
 }
 
@@ -766,7 +802,7 @@ void makeCIA() {
 	srand(currentTime());
 	unsigned long TID = 0xF0000;
 	if(MultiVid) {
-		for (unsigned int i = 0; i < sizeof(completed); i++)
+		for (unsigned int i = 0; i < sizeof(completed)-1; i++)
 			if(completed[i] == ' ') {
 				printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
 				std::getline(std::cin, name);
@@ -851,7 +887,7 @@ void finalize() {
 	system_g("title [" + type + "] Finalizing");
 	cls
 	if(MultiVid) {
-		for (unsigned int i = 0; i < sizeof(completed)-2; i++)
+		for (unsigned int i = 0; i < sizeof(completed)-3; i++)
 			if(completed[i] == ' ') {
 				printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
 				std::getline(std::cin, name);
@@ -860,7 +896,7 @@ void finalize() {
 			}
 	}
 	else {
-		for (unsigned int i = 0; i < sizeof(scompleted)-2; i++)
+		for (unsigned int i = 0; i < sizeof(scompleted)-3; i++)
 			if(scompleted[i] == ' ') {
 				printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
 				std::getline(std::cin, name);
@@ -876,13 +912,15 @@ void finalize() {
 		"|                                          |\n"
 		"| B: Generate banner                   [%c] |\n"
 		"| I: Generate icon                     [%c] |\n"
+		"| U: Use a custom banner file          [%c] |\n"//do U because i cant do C or B or idk it just means "use"
 		"|                                          |\n"
 		"| C: Generate CIA                          |\n"
 		"| X: Go to the %s\n"
-		"|__________________________________________|\n\n", completed[7], completed[6], type.c_str());
+		"|__________________________________________|\n\n", completed[6], completed[7], completed[8], type.c_str());
 		std::getline(std::cin, name);
 		if(tolowerstr(name) == "b") makebanner();//6
 		else if(tolowerstr(name) == "i") makeIcon();//7
+		else if(tolowerstr(name) == "u") customBanner();//8
 		else if(tolowerstr(name) == "c") makeCIA();
 		else if(tolowerstr(name) == "x") return;
 	}
