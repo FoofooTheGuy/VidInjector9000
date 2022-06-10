@@ -344,13 +344,32 @@ void makesettingsTL() {
 	}
 
 	std::string publisher = "";
+	std::string buttons = "";
+	std::string gentleness = "";
 	
 	name = "";
 	while(name == "") {
 		if(MultiVid) std::cout << "Enter the name of the series\n";
 		else std::cout << "Enter the name of the video\n";
 		std::getline(std::cin, name);
-		if(name == "") cls
+		cls
+	}
+
+	buttons = "";
+	while(buttons == "") {
+		std::cout << "Do you want fast forward and rewind buttons? [Y/N]\n";
+		std::getline(std::cin, buttons);
+		if(tolowerstr(buttons) == "y") buttons = "true";
+		else buttons = "false";
+		cls
+	}
+
+	gentleness = "";
+	while(gentleness == "") {
+		std::cout << "Do you want the bottom screen to fade after a while? [Y/N]\n";
+		std::getline(std::cin, gentleness);
+		if(tolowerstr(gentleness) == "y") gentleness = "true";
+		else gentleness = "false";
 	}
 	
 	_mkdir("romfs/settings");
@@ -442,14 +461,14 @@ void makesettingsTL() {
 							  "# タスクの実行回数（10進数）\x0D\x0A"
 							  "0\x0D\x0A"
 							  "\x0D\x0A"
-							  "# おしらせのあり、なし\x0D\x0A"
+							  "# おしらせのあり、なし\x0D\x0A"//not sure what this is, but if you enable it in single vid it instantly crashes
 							  "false\x0D\x0A"
 							  "\x0D\x0A"
 							  "# 早送り、巻戻しボタンのあり、なし\x0D\x0A"
-							  "true\x0D\x0A"
+							  + buttons + "\x0D\x0A"
 							  "\x0D\x0A"
 							  "# 優しさ演出のあり、なし\x0D\x0A"
-							  "true\x0D\x0A");
+							  + gentleness + "\x0D\x0A");
 	if(MultiVid) {
 		publisher = "";
 		while(publisher == "") {
