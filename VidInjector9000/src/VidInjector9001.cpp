@@ -27,6 +27,27 @@ inline bool exists_test0 (const std::string& name) {//https://stackoverflow.com/
     return f.good();
 }
 
+long long int getFolderSize(std::string path)//https://stackoverflow.com/a/15497931
+{
+    // command to be executed
+    std::string cmd("du -sb ");
+    cmd.append(path);
+    cmd.append(" | cut -f1 2>&1");
+
+    // execute above command and get the output
+    FILE *stream = popen(cmd.c_str(), "r");
+    if (stream) {
+        const int max_size = 256;
+        char readbuf[max_size];
+        if (fgets(readbuf, max_size, stream) != NULL) {
+            return atoll(readbuf);
+        }   
+        pclose(stream);            
+    }           
+    // return error val
+    return -1;
+}
+
 std::string tolowerstr(std::string str) {
 	for (char &i : str)
 		i = tolower(i);
@@ -470,6 +491,7 @@ void makesettingsTL() {
 							  "# 優しさ演出のあり、なし\x0D\x0A"
 							  + gentleness + "\x0D\x0A");
 	if(MultiVid) {
+		cls
 		publisher = "";
 		while(publisher == "") {
 			std::cout << "Enter the Publisher of the video\n";
@@ -838,6 +860,13 @@ void makeCIA() {
 				return;
 			}
 	}
+	
+	if(getFolderSize("romfs") + getFolderSize("exefs") >= 4000000000) {//fat32 file size limit
+		std::cout << "ERROR: The estimated file size (" << (getFolderSize("romfs") + getFolderSize("exefs")) << ") of the cia file is too big and will\nnot install to a 3ds nor work in the emulator.\n";
+		pause
+		return;
+	}
+	
 	while(TID == 0xF0000) {
 		cls
 		std::cout << "Enter 5 hex integers for the ID of your cia (C0000 - EFFFF) or\njust type \"0\" for a random title ID.\n(TID is in format 000400000XXXXX00 (that's hex), the rest will auto fill)\n";
