@@ -29,16 +29,10 @@ bool pathExists(const std::filesystem::path& p)//https://en.cppreference.com/w/c
     return false;
 }
 
-void copyfile(std::string inpath, std::string outpath) {
+void copyfile(std::string inpath, std::string outpath) {//also works with directories
 	if(pathExists(outpath))
 		std::filesystem::remove_all(outpath);
-	std::filesystem::copy(inpath, outpath);
-}
-
-void copydir(std::string inpath, std::string outpath) {
-	if(pathExists(outpath))
-		std::filesystem::remove_all(outpath);
-    std::filesystem::copy(inpath, outpath, std::filesystem::copy_options::update_existing | std::filesystem::copy_options::recursive); 
+    std::filesystem::copy(inpath, outpath, std::filesystem::copy_options::recursive); 
 }
 
 void GetDirSize(std::filesystem::path dir, unsigned long long &size) {
@@ -998,7 +992,7 @@ void MultiVideo() {
 		pause
 		return;
 	}
-	copydir("Vidinjector9000Resources/files/templates/MultiVideo/romfs", "romfs");
+	copyfile("Vidinjector9000Resources/files/templates/MultiVideo/romfs", "romfs");
 	copyfile("Vidinjector9000Resources/files/templates/MultiVideo/exheader.bin", "exheader.bin");
 	while(1) {
 		system("title MultiVidInjector5000 by Foofoo_the_guy");
@@ -1038,7 +1032,7 @@ void SingleVideo() {
 		pause
 		return;
 	}
-	copydir("Vidinjector9000Resources/files/templates/SingleVideo/romfs", "romfs");
+	copyfile("Vidinjector9000Resources/files/templates/SingleVideo/romfs", "romfs");
 	copyfile("Vidinjector9000Resources/files/templates/SingleVideo/exheader.bin", "exheader.bin");
 	while(1) {
 		system("title VidInjector9001 by Foofoo_the_guy");
