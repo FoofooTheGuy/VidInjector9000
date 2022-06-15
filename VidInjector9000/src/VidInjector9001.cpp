@@ -3,6 +3,7 @@
 //globals
 #define pause system("pause");
 #define cls system("cls");
+
 unsigned long amount = 0;
 std::string name = "";
 std::string type;
@@ -22,17 +23,30 @@ std::size_t strlen(const std::string& str) {//http://www.cplusplus.com/forum/beg
 	return length;
 }
 
-inline bool exists_test0 (const std::string& name) {//https://stackoverflow.com/a/12774387
-    std::ifstream f(name.c_str());
-    return f.good();
+bool pathExists(const std::filesystem::path& p)//https://en.cppreference.com/w/cpp/filesystem/exists
+{
+	if(std::filesystem::exists(p)) return true;
+    return false;
 }
 
-long long int getFolderSize(std::string path)//https://stackoverflow.com/a/15497931
+void copyfile(std::string inpath, std::string outpath) {
+	if(pathExists(outpath))
+		std::filesystem::remove_all(outpath);
+	std::filesystem::copy(inpath, outpath);
+}
+
+void copydir(std::string inpath, std::string outpath) {
+	if(pathExists(outpath))
+		std::filesystem::remove_all(outpath);
+    std::filesystem::copy(inpath, outpath, std::filesystem::copy_options::update_existing | std::filesystem::copy_options::recursive); 
+}
+
+long long int getFolderSize(std::string path)//https://stackoverflow.com/a/15497931 but edited a little
 {
     // command to be executed
     std::string cmd("du -sb ");
-    cmd.append(path);
-    cmd.append(" | cut -f1 2>&1");
+    cmd += path;
+    cmd += " | cut -f1 2>&1";
 
     // execute above command and get the output
     FILE *stream = popen(cmd.c_str(), "r");
@@ -41,9 +55,9 @@ long long int getFolderSize(std::string path)//https://stackoverflow.com/a/15497
         char readbuf[max_size];
         if (fgets(readbuf, max_size, stream) != NULL) {
             return atoll(readbuf);
-        }   
-        pclose(stream);            
-    }           
+        }
+        pclose(stream);
+    }
     // return error val
     return -1;
 }
@@ -280,7 +294,7 @@ void system_g(std::string input) {//system_g()! It's system() but good!
 bool Generate_Code(bool Multi) {
 	std::string path = "exefs/code.bin";
 	puts("Generating code.bin...");
-	_mkdir("exefs");
+	std::filesystem::create_directory("exefs");
 	if(Multi) {
 		std::ofstream codebin(path, std::ios_base::out | std::ios_base::binary);
 		for (unsigned int i = 0; i < sizeof(Multivid); i++)
@@ -291,7 +305,7 @@ bool Generate_Code(bool Multi) {
 		for (unsigned int i = 0; i < sizeof(Singlevid); i++)
 			codebin << Singlevid[i];
 	}
-	if(exists_test0(path)) return true;
+	if(pathExists(path)) return true;
 	return false;
 }
 
@@ -301,7 +315,7 @@ void setAmount() {
 	static bool good = false;
 	good = false;//in case you do it again, idk why the line above this isnt enough also why should anyone be able to do it again? bruhh
 	if (amount) amount = 0;
-	_mkdir("romfs/settings");
+	std::filesystem::create_directories("romfs/settings");
 	std::ofstream movie_bnrname("romfs/settings/movie_bnrname.csv", std::ios_base::out | std::ios_base::binary);
 	while(!good) {
 		cls
@@ -331,7 +345,7 @@ void Movie_title() {
 		pause
 		return;
 	}
-	_mkdir("romfs/movie");
+	std::filesystem::create_directories("romfs/movie");
 	std::ofstream movie_title("romfs/movie/movie_title.csv", std::ios_base::out | std::ios_base::binary);
 	movie_title << "\xFF\xFE" + UTF8toUTF16("#JP,#EN,#FR,#GE,#IT,#SP,#CH,#KO,#DU,#PO,#RU,#TW\x0D\x0A");
 	for (unsigned long i = 0; i < amount; i++) {
@@ -381,7 +395,8 @@ void makesettingsTL() {
 		std::cout << "Do you want fast forward and rewind buttons? [Y/N]\n";
 		std::getline(std::cin, buttons);
 		if(tolowerstr(buttons) == "y") buttons = "true";
-		else buttons = "false";
+		else if(tolowerstr(buttons) == "n") buttons = "false";
+		else buttons = "";
 		cls
 	}
 
@@ -390,10 +405,14 @@ void makesettingsTL() {
 		std::cout << "Do you want the bottom screen to fade after a while? [Y/N]\n";
 		std::getline(std::cin, gentleness);
 		if(tolowerstr(gentleness) == "y") gentleness = "true";
-		else gentleness = "false";
+		else if(tolowerstr(gentleness) == "n") gentleness = "false";
+		else {
+			gentleness = "";
+			cls
+		}
 	}
 	
-	_mkdir("romfs/settings");
+	std::filesystem::create_directories("romfs/settings");
 	std::ofstream settingsTL("romfs/settings/settingsTL.csv", std::ios_base::out | std::ios_base::binary);
 	settingsTL << "\xFF\xFE" + 
 				  UTF8toUTF16("# おしらせURL\x0D\x0A"//this is unreadable but oh well HAHHHEHEHEHHE
@@ -585,7 +604,7 @@ void copyright() {
 	system("title [MultiVidInjector5000] Copyright options");
 	cls
 	name = "";
-	_mkdir("romfs/settings");
+	std::filesystem::create_directories("romfs/settings");
 	while(name == "") {
 		std::ofstream information_buttons("romfs/settings/information_buttons.csv", std::ios_base::out | std::ios_base::binary);
 		std::cout << "Do you want the menu to have the Copyright button? [Y/N]\n";
@@ -624,7 +643,7 @@ void tobimg() {
 		pause
 		return;
 	}
-	_mkdir("romfs/movie");
+	std::filesystem::create_directories("romfs/movie");
 	for (unsigned long i = 0; i < amount; i++) {
 		name = "";
 		while(name == "") {
@@ -632,7 +651,7 @@ void tobimg() {
 			std::cout << "Enter/drag and drop image for video #" << i+1 << "\n(The image should be 200x120 for best results)\n";
 			std::getline(std::cin, name);
 			removeQuotes(name);
-			if(!exists_test0(name)) {
+			if(!pathExists(name)) {
 				std::cout << "Error with the file (" + name + ") Try again.\n";
 				name = "";
 				pause
@@ -642,7 +661,7 @@ void tobimg() {
 		//cmd code stuff heh
 		system_g("Vidinjector9000Resources\\tools\\imagemagick\\magick.exe \"" + name + "\" -resize 200x120! -background black -compose Copy -gravity northwest -extent 256x128 -flip \"romfs\\movie\\COMMON0.png\"");
 		system_g("Vidinjector9000Resources\\tools\\3dstex-win-x86.exe -ro rgb565 \"romfs\\movie\\COMMON0.png\" \"romfs\\movie\\movie_" + std::to_string(i) + ".bimg.part2\"");
-		system("del romfs\\movie\\COMMON0.png");
+		remove("romfs/movie/COMMON0.png");
 		
 		std::ifstream bimgfile ("romfs\\movie\\movie_" + std::to_string(i) + ".bimg.part2", std::ios::binary);
 		std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(bimgfile), {});//https://stackoverflow.com/a/5420568
@@ -657,7 +676,7 @@ void tobimg() {
 		bimgfile.close();
 		finalbimgfile.close();
 		buffer.clear();
-		system_g("del romfs\\movie\\movie_" + std::to_string(i) + ".bimg.part2");
+		std::filesystem::remove("romfs/movie/movie_" + std::to_string(i) + ".bimg.part2");//instead of fixing this so that remove() works im gonna use std::filesystem HEHEHEHEHHEH
 		std::cout << std::endl;
 	}
 	completed[4] = 'X';
@@ -675,7 +694,7 @@ void moflexMover() {
 		pause
 		return;
 	}
-	_mkdir("romfs/movie");
+	std::filesystem::create_directories("romfs/movie");
 	for (unsigned long i = 0; i < amount; i++) {
 		while(!pass) {
 			cls
@@ -698,8 +717,8 @@ void moflexMover() {
 				} else pass = true;
 			}
 		}
-		if(MultiVid) system_g("copy /b \"" + name + "\" \"romfs\\movie\\movie_" + std::to_string(i) + ".moflex\"");
-		else system_g("copy /b \"" + name + "\" \"romfs\\movie\\movie.moflex\"");
+		if(MultiVid) copyfile(name, "romfs/movie/movie_" + std::to_string(i) + ".moflex");
+		else copyfile(name, "romfs/movie/movie.moflex");
 		pass = false;
 	}
 	if(MultiVid) completed[5] = 'X';
@@ -711,14 +730,14 @@ void makebanner() {
 	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
 	system_g("title [" + type + "] Generate banner");
 	cls
-	_mkdir("exefs");
+	std::filesystem::create_directory("exefs");
 	name = "";
 	while(name == "") {
 		cls
 		std::cout << "Enter/drag and drop your home screen banner image:\n(The image should be 200x120 for best results)\n";
 		std::getline(std::cin, name);
 		removeQuotes(name);
-		if(!exists_test0(name)) {
+		if(!pathExists(name)) {
 			std::cout << "Error with the file (" + name + ") Try again.\n";
 			name = "";
 			pause
@@ -727,7 +746,7 @@ void makebanner() {
 	
 	system_g("Vidinjector9000Resources\\tools\\imagemagick\\magick.exe \"" + name + "\" -resize 200x120! -background black -compose Copy -gravity northwest -extent 256x128 -flip \"exefs\\COMMON0.png\"");
 	system_g("Vidinjector9000Resources\\tools\\3dstex-win-x86.exe -ro rgb565 \"exefs\\COMMON0.png\" \"exefs\\banner.bimg.part\"");
-	system("del exefs\\COMMON0.png");
+	remove("exefs/COMMON0.png");
 	std::cout << std::endl;//haha pwetty cmd
 	
 	std::ifstream bimgfile ("exefs\\banner.bimg.part", std::ios::binary);
@@ -744,8 +763,8 @@ void makebanner() {
 	bannerbcmdl.close();
 	remove("exefs/banner.bimg.part");
 	//build banner
-	system("copy /b \"Vidinjector9000Resources\\files\\banner.bcwav\" \"exefs\\banner.bcwav\"");
-	system("copy /b \"Vidinjector9000Resources\\files\\banner.cbmd\" \"exefs\\banner.cbmd\"");
+	copyfile("Vidinjector9000Resources/files/banner.bcwav", "exefs/banner.bcwav");
+	copyfile("Vidinjector9000Resources/files/banner.cbmd", "exefs/banner.cbmd");
 	system("Vidinjector9000Resources\\tools\\3dstool.exe -cvtf banner \"exefs\\banner.bin\" --banner-dir \"exefs\"");
 	//clean up time
 	remove("exefs/banner.bcwav");
@@ -770,7 +789,7 @@ void makeIcon() {
 		std::cout << "Enter/drag and drop your icon image:\n(The image should be 48x48 for best results)\n";
 		std::getline(std::cin, name);
 		removeQuotes(name);
-		if(!exists_test0(name)) {
+		if(!pathExists(name)) {
 			std::cout << "Error with the file (" + name + ") Try again.\n";
 			name = "";
 			pause
@@ -798,7 +817,7 @@ void makeIcon() {
 	
 	system_g("Vidinjector9000Resources\\tools\\imagemagick\\magick.exe convert \"" + name + "\" -resize 48x48! -background black -flatten \"exefs\\Icon.png\"");
 	system_g("Vidinjector9000Resources\\tools\\bannertool.exe makesmdh -i \"exefs\\Icon.png\" -s \"" + shortname + "\" -l \"" + longname + "\" -p \"" + publisher + "\" -f visible,nosavebackups -o \"exefs/icon.bin");
-	remove("exefs\\Icon.png");
+	remove("exefs/Icon.png");
 	completed[7] = 'X';
 	scompleted[4] = 'X';
 	pause
@@ -828,7 +847,7 @@ void customBanner() {
 			} else pass = true;
 		}
 	}
-	system_g("copy /b \"" + name + "\" \"exefs\\banner.bin\"");
+	copyfile(name, "exefs/banner.bin");
 	completed[6] = '-';
 	completed[8] = 'X';
 	scompleted[3] = '-';
@@ -912,7 +931,7 @@ void makeCIA() {
 		TID = 0xF0000;
 	}
 	std::cout << "Generating CIA...\n";
-	_mkdir("output");
+	std::filesystem::create_directory("output");
 	char buffer[6];
     sprintf(buffer, "%05lX", TID);
 	system_g("Vidinjector9000Resources\\tools\\makerom.exe -f cia -o \"output\\" + longname + " [000400000" + std::string(buffer) + "00].cia\" -banner \"exefs\\banner.bin\" -icon \"exefs\\icon.bin\" -code \"exefs\\code.bin\" -exheader \"exheader.bin\" -rsf \"Vidinjector9000Resources\\files\\template.rsf\" -DAPP_UNIQUE_ID=" + std::to_string(TID));
@@ -921,8 +940,8 @@ void makeCIA() {
 	std::cout << "Do you want this to delete the following folders/files? [Y/N]\n- exefs\n- romfs\n- exheader.bin\n";
 	std::getline(std::cin, name);
 	if(tolowerstr(name) == "y") {
-		system("rmdir exefs /s /q");
-		system("rmdir romfs /s /q");
+		std::filesystem::remove_all("exefs");
+		std::filesystem::remove_all("romfs");
 		remove("exheader.bin");
 		main();
 	}
@@ -984,8 +1003,8 @@ void MultiVideo() {
 		pause
 		return;
 	}
-	system("xcopy Vidinjector9000Resources\\files\\templates\\MultiVideo\\romfs romfs\\ /y /e");
-	system("copy Vidinjector9000Resources\\files\\templates\\MultiVideo\\exheader.bin exheader.bin");
+	copydir("Vidinjector9000Resources/files/templates/MultiVideo/romfs", "romfs");
+	copyfile("Vidinjector9000Resources/files/templates/MultiVideo/exheader.bin", "exheader.bin");
 	while(1) {
 		system("title MultiVidInjector5000 by Foofoo_the_guy");
 		cls
@@ -1024,8 +1043,8 @@ void SingleVideo() {
 		pause
 		return;
 	}
-	system("xcopy Vidinjector9000Resources\\files\\templates\\SingleVideo\\romfs romfs\\ /y /e");
-	system("copy Vidinjector9000Resources\\files\\templates\\SingleVideo\\exheader.bin exheader.bin");
+	copydir("Vidinjector9000Resources/files/templates/SingleVideo/romfs", "romfs");
+	copyfile("Vidinjector9000Resources/files/templates/SingleVideo/exheader.bin", "exheader.bin");
 	while(1) {
 		system("title VidInjector9001 by Foofoo_the_guy");
 		cls
@@ -1058,8 +1077,8 @@ int main() {
 			completed[i] = ' ';
 		for (unsigned int i = 0; i < sizeof(scompleted); i++)
 			scompleted[i] = ' ';
-		system("rmdir exefs /s /q");
-		system("rmdir romfs /s /q");
+		std::filesystem::remove_all("exefs");
+		std::filesystem::remove_all("romfs");
 		remove("exheader.bin");
 		
 		cls
