@@ -41,25 +41,17 @@ void copydir(std::string inpath, std::string outpath) {
     std::filesystem::copy(inpath, outpath, std::filesystem::copy_options::update_existing | std::filesystem::copy_options::recursive); 
 }
 
-long long int getFolderSize(std::string path)//https://stackoverflow.com/a/15497931 but edited a little
-{
-    // command to be executed
-    std::string cmd("du -sb ");
-    cmd += path;
-    cmd += " | cut -f1 2>&1";
+void GetDirSize(std::filesystem::path dir, unsigned long long &size) {
+	for (const auto & entry : std::filesystem::directory_iterator(dir)) {
+		//std::cout << entry.path() << std::endl;
+		std::filesystem::path p = entry;
 
-    // execute above command and get the output
-    FILE *stream = popen(cmd.c_str(), "r");
-    if (stream) {
-        const int max_size = 256;
-        char readbuf[max_size];
-        if (fgets(readbuf, max_size, stream) != NULL) {
-            return atoll(readbuf);
-        }
-        pclose(stream);
-    }
-    // return error val
-    return -1;
+		try {
+			size += std::filesystem::file_size(p);
+		} catch(std::filesystem::filesystem_error& e) {
+			GetDirSize(entry.path(), size);
+		}
+	}
 }
 
 std::string tolowerstr(std::string str) {
@@ -856,11 +848,13 @@ void customBanner() {
 }
 
 void makeCIA() {
+	unsigned long min = 0xC0000;
+	unsigned long max = 0xF0000;
 	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
 	system_g("title [" + type + "] Generate CIA");
 	cls
 	srand(currentTime());
-	unsigned long TID = 0xF0000;
+	unsigned long TID = max;
 	if(MultiVid) {
 		for (unsigned int i = 0; i < sizeof(completed)-1; i++)
 			if(completed[i] == ' ') {
@@ -879,14 +873,17 @@ void makeCIA() {
 				return;
 			}
 	}
-	
-	if(getFolderSize("romfs") + getFolderSize("exefs") >= 4000000000) {//fat32 file size limit
-		std::cout << "ERROR: The estimated file size (" << (getFolderSize("romfs") + getFolderSize("exefs")) << ") of the cia file is too big and will\nnot install to a 3ds nor work in the emulator.\n";
+	unsigned long long romfsize = 0;
+	unsigned long long exefsize = 0;
+	GetDirSize("romfs", romfsize);
+	GetDirSize("exefs", exefsize);
+	if(romfsize + exefsize >= 4000000000) {//fat32 file size limit
+		std::cout << "ERROR: The estimated file size (" << (romfsize + exefsize) << ") of the cia file is too big and will\nnot install to a 3ds nor work in the emulator.\n";
 		pause
 		return;
 	}
 	
-	while(TID == 0xF0000) {
+	while(TID == max) {
 		cls
 		std::cout << "Enter 5 hex integers for the ID of your cia (C0000 - EFFFF) or\njust type \"0\" for a random title ID.\n(TID is in format 000400000XXXXX00 (that's hex), the rest will auto fill)\n";
 		std::getline(std::cin, name);
@@ -894,10 +891,10 @@ void makeCIA() {
 		if(!stoul_s(TID, name, true)) {
 			std::cout << "Invalid input, try again\n";
 			pause
-			continue;
+			TID = max;
 		}
 		if (TID == 0) {
-			TID = rand() % (0xF0000 - 0xC0000) + 0xC0000;//0xC0000 is minimum, 0xEFFFF is maximum, 0xF0000 makes it include 0xEFFFF in it)
+			TID = rand() % (max - min) + min;//0xC0000 is minimum, 0xEFFFF is maximum, 0xF0000 makes it include 0xEFFFF in it)
 		}
 		switch(TID)
 		{
@@ -916,19 +913,17 @@ void makeCIA() {
 			{
 				printf("Oops, you ran into a blacklisted ID! (%05lX) Try again.\n", TID);
 				pause
-				continue;
+				TID = max;
 			}
 			break;
 			default:
-				if(TID < 0xF0000 && TID > 0xC0001) printf("%05lX Passed all checks!\n", TID);
+				if(TID < max && TID > min+1) printf("%05lX Passed all checks!\n", TID);
 				else {
 					printf("Oops, you ran into a blacklisted ID! (%05lX) Try again.\n", TID);
 					pause
-					continue;
+					TID = max;
 				}
 		}
-		break;//this will only be called if it doesn't do continue
-		TID = 0xF0000;
 	}
 	std::cout << "Generating CIA...\n";
 	std::filesystem::create_directory("output");
