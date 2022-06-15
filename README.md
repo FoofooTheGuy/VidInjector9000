@@ -34,7 +34,8 @@ I am unable to add them myself because I don't know those languages so I would a
 
 Building (MinGW)
 --
-1. Put the contents of [MinGW](https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/8.1.0/threads-win32/sjlj/x86_64-8.1.0-release-win32-sjlj-rt_v6-rev0.7z) on your computer.
+0. A better guide can be found [here](https://www.geeksforgeeks.org/complete-guide-to-install-c17-in-windows/)
+1. Download the latest [MinGW](https://nuwen.net/mingw.html) and put the contents on your computer.
 2. Add the bin folder to PATH
 3. drag [VidInjector9001.cpp](https://github.com/FoofooTheGuy/VidInjector9000/raw/main/VidInjector9000/src/VidInjector9001.cpp) onto [build.bat](https://github.com/FoofooTheGuy/VidInjector9000/raw/main/VidInjector9000/src/build.bat) so that it builds it (or run build.bat with VidInjector9001.cpp as the argument)
 
