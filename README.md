@@ -1,6 +1,11 @@
 # VidInjector9000
 A step-by-step injector for 3DS video CIAs focused on presentation
 
+Outdated walk through
+---
+[![image](https://user-images.githubusercontent.com/32585652/174321022-ce01cfc4-d90d-4a85-b1fd-d3962a39dba1.png)
+How to Create Nintendo 3DS Video Injections with VidInjector9001](https://www.youtube.com/watch?v=JSvrmVNuGLA)
+
 Usage
 --
 1. Download [VidInjector9001.zip](https://github.com/FoofooTheGuy/VidInjector9000/releases/latest/download/VidInjector9001.zip), extract it somewhere, and run VidInjector9001.exe.
