@@ -3,7 +3,7 @@ A step-by-step injector for 3DS video CIAs focused on presentation
 
 Outdated walk through
 ---
-[![image](https://user-images.githubusercontent.com/32585652/174321022-ce01cfc4-d90d-4a85-b1fd-d3962a39dba1.png)
+[<img width="1012" height="569" src="https://i.ytimg.com/vi/JSvrmVNuGLA/maxresdefault.jpg">
 How to Create Nintendo 3DS Video Injections with VidInjector9001](https://www.youtube.com/watch?v=JSvrmVNuGLA)
 
 Usage
