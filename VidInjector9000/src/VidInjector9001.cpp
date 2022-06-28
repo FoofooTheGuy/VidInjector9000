@@ -36,7 +36,7 @@ void copyfile(std::string inpath, std::string outpath) {//also works with direct
 }
 
 void GetDirSize(std::filesystem::path dir, unsigned long long &size) {
-	for (const auto & entry : std::filesystem::directory_iterator(dir)) {
+	for (const auto &entry : std::filesystem::directory_iterator(dir)) {
 		//std::cout << entry.path() << std::endl;
 		std::filesystem::path p = entry;
 
@@ -804,6 +804,7 @@ void makeIcon() {
 	system_g("Vidinjector9000Resources\\tools\\imagemagick\\magick.exe convert \"" + name + "\" -resize 48x48! -background black -flatten \"exefs\\Icon.png\"");
 	system_g("Vidinjector9000Resources\\tools\\bannertool.exe makesmdh -i \"exefs\\Icon.png\" -s \"" + shortname + "\" -l \"" + longname + "\" -p \"" + publisher + "\" -f visible,nosavebackups -o \"exefs/icon.bin");
 	remove("exefs/Icon.png");
+	if(MultiVid) copyfile("exefs/icon.bin", "romfs/icon.icn");
 	completed[7] = 'X';
 	scompleted[4] = 'X';
 	pause
