@@ -52,7 +52,7 @@ Credits and Stuff
 
 [bannertool](https://github.com/Steveice10/bannertool): Compiling icon.bin
 
-[ctrtool and makerom](https://github.com/3DSGuy/Project_CTR): Extracting/building CIA
+[makerom](https://github.com/3DSGuy/Project_CTR): building CIA
 
 [3dstex](https://github.com/Cruel/3dstex): creating banner image
 
