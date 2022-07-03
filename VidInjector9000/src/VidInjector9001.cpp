@@ -267,9 +267,8 @@ std::string UTF8toUTF16(std::string input) {//not to be confused with utf8_to_ut
 
 void removeQuotes(std::string &str) {
 	std::string out;
-	for (size_t i = 0; i < str.size(); i++) {
-		if(str[i] != '\"') out += str[i];//pass through without the " if it has it there
-	}
+	for (const auto &c : str)
+		if(c != '\"') out += c;//pass through without the " if it has it there
 	str = out;
 }
 
@@ -283,13 +282,13 @@ bool Generate_Code(bool Multi) {
 	std::filesystem::create_directory("exefs");
 	if(Multi) {
 		std::ofstream codebin(path, std::ios_base::out | std::ios_base::binary);
-		for (unsigned int i = 0; i < sizeof(Multivid); i++)
-			codebin << Multivid[i];
+		for (const auto &i : Multivid)
+			codebin << i;
 	}
 	else {
 		std::ofstream codebin(path, std::ios_base::out | std::ios_base::binary);
-		for (unsigned int i = 0; i < sizeof(Singlevid); i++)
-			codebin << Singlevid[i];
+		for (const auto &i : Singlevid)
+			codebin << i;
 	}
 	if(pathExists(path)) return true;
 	return false;
@@ -654,11 +653,11 @@ void tobimg() {
 		
 		std::ofstream finalbimgfile("romfs\\movie\\movie_" + std::to_string(i) + ".bimg", std::ios_base::out | std::ios_base::binary);
 		//write data to the file one byte at a time because for some dang reason vector::data(); was being annoying with it WHYHWYHWHYWHYWHY
-		for (unsigned int i = 0; i < sizeof(bimgheader); i++)
-			finalbimgfile << bimgheader[i];
-		for (size_t i = 0; i < buffer.size(); i++)
-			finalbimgfile << buffer.at(i);
-		//sweep everything away
+		for (const auto &i : bimgheader)
+			finalbimgfile << i;
+		for (const auto &c : buffer)
+			finalbimgfile << c;
+		//sweep everything away (do i need to?)
 		bimgfile.close();
 		finalbimgfile.close();
 		buffer.clear();
@@ -739,12 +738,12 @@ void makebanner() {
 	std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(bimgfile), {});//https://stackoverflow.com/a/5420568
 	//create bcmdl
 	std::ofstream bannerbcmdl("exefs\\banner0.bcmdl", std::ios_base::out | std::ios_base::binary);
-	for (unsigned int i = 0; i < sizeof(bannerheader); i++)
-		bannerbcmdl << bannerheader[i];
-	for (size_t i = 0; i < buffer.size(); i++)
-		bannerbcmdl << buffer.at(i);
-	for (unsigned int i = 0; i < sizeof(bannerfooter); i++)
-		bannerbcmdl << bannerfooter[i];
+	for (const auto& i : bannerheader)
+		bannerbcmdl << i;
+	for (const auto& i : buffer)
+		bannerbcmdl << i;
+	for (const auto& i : bannerfooter)
+		bannerbcmdl << i;
 	bimgfile.close();
 	bannerbcmdl.close();
 	remove("exefs/banner.bimg.part");
@@ -1063,10 +1062,10 @@ int main() {
 		system("title VidInjector9001 by Foofoo_the_guy");
 		cls
 		//wipe the stuff
-		for (unsigned int i = 0; i < sizeof(completed); i++)
-			completed[i] = ' ';
-		for (unsigned int i = 0; i < sizeof(scompleted); i++)
-			scompleted[i] = ' ';
+		for (auto& c : completed)
+			c = ' ';
+		for (auto& c : scompleted)
+			c = ' ';
 		std::filesystem::remove_all("exefs");
 		std::filesystem::remove_all("romfs");
 		remove("exheader.bin");
