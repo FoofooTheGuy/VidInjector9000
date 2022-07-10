@@ -9,6 +9,7 @@ std::string name = "";
 std::string type;
 std::string longname;//you need this global because i said so also because make cia needs it too
 static bool MultiVid;//false if single video, true if multi video
+static bool Debug;//false if off true if on
 char completed[9] { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', };
 char scompleted[6] { ' ', ' ', ' ', ' ', ' ', ' ', };
 
@@ -272,8 +273,9 @@ void removeQuotes(std::string &str) {
 	str = out;
 }
 
-void system_g(std::string input) {//system_g()! It's system() but good!
+std::string system_g(std::string input) {//system_g()! It's system() but good!
 	system(input.c_str());
+	return input;
 }
 
 bool Generate_Code(bool Multi) {
@@ -644,8 +646,10 @@ void tobimg() {
 		}
 		
 		//cmd code stuff heh
-		system_g("Vidinjector9000Resources\\tools\\imagemagick\\magick.exe \"" + name + "\" -resize 200x120! -background black -compose Copy -gravity northwest -extent 256x128 -flip \"romfs\\movie\\COMMON0.png\"");
-		system_g("Vidinjector9000Resources\\tools\\3dstex-win-x86.exe -ro rgb565 \"romfs\\movie\\COMMON0.png\" \"romfs\\movie\\movie_" + std::to_string(i) + ".bimg.part2\"");
+		std::string cmd = system_g("Vidinjector9000Resources\\tools\\imagemagick\\magick.exe \"" + name + "\" -resize 200x120! -background black -compose Copy -gravity northwest -extent 256x128 -flip \"romfs\\movie\\COMMON0.png\"");
+		if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
+		cmd = system_g("Vidinjector9000Resources\\tools\\3dstex-win-x86.exe -ro rgb565 \"romfs\\movie\\COMMON0.png\" \"romfs\\movie\\movie_" + std::to_string(i) + ".bimg.part2\"");
+		if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
 		remove("romfs/movie/COMMON0.png");
 		
 		std::ifstream bimgfile ("romfs\\movie\\movie_" + std::to_string(i) + ".bimg.part2", std::ios::binary);
@@ -729,8 +733,10 @@ void makebanner() {
 		}
 	}
 	
-	system_g("Vidinjector9000Resources\\tools\\imagemagick\\magick.exe \"" + name + "\" -resize 200x120! -background black -compose Copy -gravity northwest -extent 256x128 -flip \"exefs\\COMMON0.png\"");
-	system_g("Vidinjector9000Resources\\tools\\3dstex-win-x86.exe -ro rgb565 \"exefs\\COMMON0.png\" \"exefs\\banner.bimg.part\"");
+	std::string cmd = system_g("Vidinjector9000Resources\\tools\\imagemagick\\magick.exe \"" + name + "\" -resize 200x120! -background black -compose Copy -gravity northwest -extent 256x128 -flip \"exefs\\COMMON0.png\"");
+	if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
+	cmd = system_g("Vidinjector9000Resources\\tools\\3dstex-win-x86.exe -ro rgb565 \"exefs\\COMMON0.png\" \"exefs\\banner.bimg.part\"");
+	if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
 	remove("exefs/COMMON0.png");
 	std::cout << std::endl;//haha pwetty cmd
 	
@@ -800,8 +806,10 @@ void makeIcon() {
 		if(publisher == "") cls
 	}
 	
-	system_g("Vidinjector9000Resources\\tools\\imagemagick\\magick.exe convert \"" + name + "\" -resize 48x48! -background black -flatten \"exefs\\Icon.png\"");
-	system_g("Vidinjector9000Resources\\tools\\bannertool.exe makesmdh -i \"exefs\\Icon.png\" -s \"" + shortname + "\" -l \"" + longname + "\" -p \"" + publisher + "\" -f visible,nosavebackups -o \"exefs/icon.bin");
+	std::string cmd = system_g("Vidinjector9000Resources\\tools\\imagemagick\\magick.exe convert \"" + name + "\" -resize 48x48! -background black -flatten \"exefs\\Icon.png\"");
+	if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
+	cmd = system_g("Vidinjector9000Resources\\tools\\bannertool.exe makesmdh -i \"exefs\\Icon.png\" -s \"" + shortname + "\" -l \"" + longname + "\" -p \"" + publisher + "\" -f visible,nosavebackups -o \"exefs/icon.bin");
+	if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
 	remove("exefs/Icon.png");
 	if(MultiVid) copyfile("exefs/icon.bin", "romfs/icon.icn");
 	completed[7] = 'X';
@@ -923,7 +931,8 @@ void makeCIA() {
 	std::filesystem::create_directory("output");
 	char buffer[6];
     sprintf(buffer, "%05lX", TID);
-	system_g("Vidinjector9000Resources\\tools\\makerom.exe -f cia -o \"output\\" + longname + " [000400000" + std::string(buffer) + "00].cia\" -banner \"exefs\\banner.bin\" -icon \"exefs\\icon.bin\" -code \"exefs\\code.bin\" -exheader \"exheader.bin\" -rsf \"Vidinjector9000Resources\\files\\template.rsf\" -DAPP_UNIQUE_ID=" + std::to_string(TID));
+	std::string cmd = system_g("Vidinjector9000Resources\\tools\\makerom.exe -f cia -o \"output\\" + longname + " [000400000" + std::string(buffer) + "00].cia\" -banner \"exefs\\banner.bin\" -icon \"exefs\\icon.bin\" -code \"exefs\\code.bin\" -exheader \"exheader.bin\" -rsf \"Vidinjector9000Resources\\files\\template.rsf\" -DAPP_UNIQUE_ID=" + std::to_string(TID));
+	if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
 	pause
 	cls
 	std::cout << "Do you want this to delete the following folders/files? [Y/N]\n- exefs\n- romfs\n- exheader.bin\n";
@@ -935,6 +944,26 @@ void makeCIA() {
 		main();
 	}
 	pause
+}
+
+void Settings() {
+	while(1) {
+		cls
+		printf("Type a letter:\n\n"
+		" __________________________________________\n"
+		"|                                          |\n"
+		"| Software Version: 2.1.2                  |\n"
+		"|                                          |\n"
+		"| D: Toggle Debug Information       [");
+							if(Debug) printf("ON]   |\n");
+							else      printf("OFF]  |\n");
+		printf("|                                          |\n"
+		"| X: Go to the main menu                   |\n"
+		"|__________________________________________|\n\n");
+		std::getline(std::cin, name);
+		if(tolowerstr(name) == "d") Debug = Debug ? false : true;//if true, make it false and if false, make it true
+		else if(tolowerstr(name) == "x") return;
+	}
 }
 
 //2nd menu
@@ -1076,10 +1105,12 @@ int main() {
 		"|                                          |\n"
 		"| S: Singular Video Injector               |\n"
 		"| M: Multiple Video Injector               |\n"
+		"| P: Program Settings                      |\n"
 		"|__________________________________________|\n\n");
 		std::getline(std::cin, name);
 		if(tolowerstr(name) == "s") SingleVideo();//0
 		else if(tolowerstr(name) == "m") MultiVideo();//1
+		else if(tolowerstr(name) == "p") Settings();//2
 	}
 	return 0;
 }
