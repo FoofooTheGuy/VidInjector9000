@@ -33,7 +33,8 @@ bool pathExists(const std::filesystem::path& p)//https://en.cppreference.com/w/c
 void copyfile(std::string inpath, std::string outpath) {//also works with directories
 	if(pathExists(outpath))
 		std::filesystem::remove_all(outpath);
-    std::filesystem::copy(inpath, outpath, std::filesystem::copy_options::recursive); 
+	if(pathExists(inpath))
+		std::filesystem::copy(inpath, outpath, std::filesystem::copy_options::recursive); 
 }
 
 void GetDirSize(std::filesystem::path dir, unsigned long long &size) {
@@ -270,6 +271,13 @@ void removeQuotes(std::string &str) {
 	std::string out;
 	for (const auto &c : str)
 		if(c != '\"') out += c;//pass through without the " if it has it there
+	str = out;
+}
+void removeInvalids(std::string &str) {//remove more invalid characters
+	std::string out;
+	for (const auto &c : str) {
+		if(c != '\\' && c != '/' && c != ':' && c != '<' && c != '>' && c != '*' && c != '?' && c != '|') out += c;
+	}
 	str = out;
 }
 
@@ -774,6 +782,7 @@ void makeIcon() {
 	cls
 	std::string shortname;
 	std::string publisher;
+	remove("exefs/Icon.bin");
 	name = "";
 	while (name == "") {
 		cls
@@ -812,8 +821,10 @@ void makeIcon() {
 	if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
 	remove("exefs/Icon.png");
 	if(MultiVid) copyfile("exefs/icon.bin", "romfs/icon.icn");
-	completed[7] = 'X';
-	scompleted[4] = 'X';
+	if(pathExists("exefs/icon.bin")) {//more stupid-proofing
+		completed[7] = 'X';
+		scompleted[4] = 'X';
+	}
 	pause
 }
 
@@ -928,6 +939,8 @@ void makeCIA() {
 		}
 	}
 	std::cout << "Generating CIA...\n";
+	removeQuotes(longname);
+	removeInvalids(longname);
 	std::filesystem::create_directory("output");
 	char buffer[6];
     sprintf(buffer, "%05lX", TID);
