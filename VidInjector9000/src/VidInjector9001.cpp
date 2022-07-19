@@ -890,7 +890,7 @@ void makeCIA() {
 	unsigned long long exefsize = 0;
 	GetDirSize("romfs", romfsize);
 	GetDirSize("exefs", exefsize);
-	if(romfsize + exefsize >= 4000000000) {//fat32 file size limit
+	if(romfsize + exefsize >= 4294967295) {//fat32 file size limit
 		std::cout << "ERROR: The estimated file size (" << (romfsize + exefsize) << ") of the cia file is too big and will\nnot install to a 3ds nor work in the emulator.\n";
 		pause
 		return;
