@@ -328,6 +328,11 @@ void setAmount() {
 			good = true;
 		}
 	}
+	if(!pathExists("romfs/settings/movie_bnrname.csv")) {
+		std::cout << "ERROR: Failed to generate romfs/settings/movie_bnrname.csv\n";
+		pause
+		return;
+	}
 	completed[0] = 'X';
 }
 
@@ -357,6 +362,11 @@ void Movie_title() {
 		movie_title << UTF8toUTF16(name + "\x0D\x0A");//put the last stuff
 	}
 	movie_title.close();
+	if(!pathExists("romfs/movie/movie_title.csv")) {
+		std::cout << "ERROR: Failed to generate romfs/movie/movie_title.csv\n";
+		pause
+		return;
+	}
 	if(MultiVid) completed[1] = 'X';
 	else scompleted[0] = 'X';
 	pause
@@ -410,100 +420,100 @@ void makesettingsTL() {
 	std::filesystem::create_directories("romfs/settings");
 	std::ofstream settingsTL("romfs/settings/settingsTL.csv", std::ios_base::out | std::ios_base::binary);
 	settingsTL << "\xFF\xFE" + 
-				  UTF8toUTF16("# おしらせURL\x0D\x0A"//this is unreadable but oh well HAHHHEHEHEHHE
-							  "# JP:\x0D\x0A"
-							  "none\x0D\x0A"
-							  "\x0D\x0A"
-							  "# EN:\x0D\x0A"
-							  "none\x0D\x0A"
-							  "\x0D\x0A"
-							  "# FR:\x0D\x0A"
-							  "none\x0D\x0A"
-							  "\x0D\x0A"
-							  "# GE:\x0D\x0A"
-							  "none\x0D\x0A"
-							  "\x0D\x0A"
-							  "# IT:\x0D\x0A"
-							  "none\x0D\x0A"
-							  "\x0D\x0A"
-							  "# SP:\x0D\x0A"
-							  "none\x0D\x0A"
-							  "\x0D\x0A"
-							  "# CN:\x0D\x0A"
-							  "none\x0D\x0A"
-							  "\x0D\x0A"
-							  "# KO:\x0D\x0A"
-							  "none\x0D\x0A"
-							  "\x0D\x0A"
-							  "# DU:\x0D\x0A"
-							  "none\x0D\x0A"
-							  "\x0D\x0A"
-							  "# PO:\x0D\x0A"
-							  "none\x0D\x0A"
-							  "\x0D\x0A"
-							  "# RU:\x0D\x0A"
-							  "none\x0D\x0A"
-							  "\x0D\x0A"
-							  "# TW:\x0D\x0A"
-							  "none\x0D\x0A"
-							  "\x0D\x0A"
-							  "# アプリ名（ロングネーム）\x0D\x0A"
-							  "# JP:\x0D\x0A"
-							  + name + "\x0D\x0A"
-							  "\x0D\x0A"
-							  "# EN:\x0D\x0A"
-							  + name + "\x0D\x0A"
-							  "\x0D\x0A"
-							  "# FR:\x0D\x0A"
-							  + name + "\x0D\x0A"
-							  "\x0D\x0A"
-							  "# GE:\x0D\x0A"
-							  + name + "\x0D\x0A"
-							  "\x0D\x0A"
-							  "# IT:\x0D\x0A"
-							  + name + "\x0D\x0A"
-							  "\x0D\x0A"
-							  "# SP:\x0D\x0A"
-							  + name + "\x0D\x0A"
-							  "\x0D\x0A"
-							  "# CN:\x0D\x0A"
-							  + name + "\x0D\x0A"
-							  "\x0D\x0A"
-							  "# KO:\x0D\x0A"
-							  + name + "\x0D\x0A"
-							  "\x0D\x0A"
-							  "# DU:\x0D\x0A"
-							  + name + "\x0D\x0A"
-							  "\x0D\x0A"
-							  "# PO:\x0D\x0A"
-							  + name + "\x0D\x0A"
-							  "\x0D\x0A"
-							  "# RU:\x0D\x0A"
-							  + name + "\x0D\x0A"
-							  "\x0D\x0A"
-							  "# TW:\x0D\x0A"
-							  + name + "\x0D\x0A"
-							  "\x0D\x0A"
-							  "# 拡張セーブデータのID（16進数）\x0D\x0A"
-							  "12345\x0D\x0A"//idk if any other game uses 12345 as its save data ID, nor do i understand if it matters, so sorry if this breaks everything
-							  "\x0D\x0A"
-							  "# NADLタスクのID\x0D\x0A"
-							  "none\x0D\x0A"
-							  "\x0D\x0A"
-							  "# タスクの実行間隔（h）（10進数）\x0D\x0A"
-							  "0\x0D\x0A"
-							  "\x0D\x0A"
-							  "# タスクの実行回数（10進数）\x0D\x0A"
-							  "0\x0D\x0A"
-							  "\x0D\x0A"
-							  "# おしらせのあり、なし\x0D\x0A"//not sure what this is, but if you enable it in single vid it instantly crashes
-							  "false\x0D\x0A"
-							  "\x0D\x0A"
-							  "# 早送り、巻戻しボタンのあり、なし\x0D\x0A"
-							  + buttons + "\x0D\x0A"
-							  "\x0D\x0A"
-							  "# 優しさ演出のあり、なし\x0D\x0A"
-							  + gentleness + "\x0D\x0A");
+				UTF8toUTF16("# おしらせURL\x0D\x0A"//hard to read because of line breaks but hey better than hex
+							"# JP:\x0D\x0A"
+							"none\x0D\x0A"
+							"\x0D\x0A"
+							"# EN:\x0D\x0A"
+							"none\x0D\x0A"
+							"\x0D\x0A"
+							"# FR:\x0D\x0A"
+							"none\x0D\x0A"
+							"\x0D\x0A"
+							"# GE:\x0D\x0A"
+							"none\x0D\x0A"
+							"\x0D\x0A"
+							"# IT:\x0D\x0A"
+							"none\x0D\x0A"
+							"\x0D\x0A"
+							"# SP:\x0D\x0A"
+							"none\x0D\x0A"
+							"\x0D\x0A"
+							"# CN:\x0D\x0A"
+							"none\x0D\x0A"
+							"\x0D\x0A"
+							"# KO:\x0D\x0A"
+							"none\x0D\x0A"
+							"\x0D\x0A"
+							"# DU:\x0D\x0A"
+							"none\x0D\x0A"
+							"\x0D\x0A"
+							"# PO:\x0D\x0A"
+							"none\x0D\x0A"
+							"\x0D\x0A"
+							"# RU:\x0D\x0A"
+							"none\x0D\x0A"
+							"\x0D\x0A"
+							"# TW:\x0D\x0A"
+							"none\x0D\x0A"
+							"\x0D\x0A"
+							"# アプリ名（ロングネーム）\x0D\x0A"
+							"# JP:\x0D\x0A"
+							+ name + "\x0D\x0A"
+							"\x0D\x0A"
+							"# EN:\x0D\x0A"
+							+ name + "\x0D\x0A"
+							"\x0D\x0A"
+							"# FR:\x0D\x0A"
+							+ name + "\x0D\x0A"
+							"\x0D\x0A"
+							"# GE:\x0D\x0A"
+							+ name + "\x0D\x0A"
+							"\x0D\x0A"
+							"# IT:\x0D\x0A"
+							+ name + "\x0D\x0A"
+							"\x0D\x0A"
+							"# SP:\x0D\x0A"
+							+ name + "\x0D\x0A"
+							"\x0D\x0A"
+							"# CN:\x0D\x0A"
+							+ name + "\x0D\x0A"
+							"\x0D\x0A"
+							"# KO:\x0D\x0A"
+							+ name + "\x0D\x0A"
+							"\x0D\x0A"
+							"# DU:\x0D\x0A"
+							+ name + "\x0D\x0A"
+							"\x0D\x0A"
+							"# PO:\x0D\x0A"
+							+ name + "\x0D\x0A"
+							"\x0D\x0A"
+							"# RU:\x0D\x0A"
+							+ name + "\x0D\x0A"
+							"\x0D\x0A"
+							"# TW:\x0D\x0A"
+							+ name + "\x0D\x0A"
+							"\x0D\x0A"
+							"# 拡張セーブデータのID（16進数）\x0D\x0A"
+							"12345\x0D\x0A"//idk if any other game uses 12345 as its save data ID, nor do i understand if it matters, so sorry if this breaks everything
+							"\x0D\x0A"
+							"# NADLタスクのID\x0D\x0A"
+							"none\x0D\x0A"
+							"\x0D\x0A"
+							"# タスクの実行間隔（h）（10進数）\x0D\x0A"
+							"0\x0D\x0A"
+							"\x0D\x0A"
+							"# タスクの実行回数（10進数）\x0D\x0A"
+							"0\x0D\x0A"
+							"\x0D\x0A"
+							"# おしらせのあり、なし\x0D\x0A"//not sure what this is, but if you enable it in single vid it instantly crashes
+							"false\x0D\x0A"
+							"\x0D\x0A"
+							"# 早送り、巻戻しボタンのあり、なし\x0D\x0A"
+							+ buttons + "\x0D\x0A"
+							"\x0D\x0A"
+							"# 優しさ演出のあり、なし\x0D\x0A"
+							+ gentleness + "\x0D\x0A");
 	if(MultiVid) {
 		cls
 		publisher = "";
@@ -513,84 +523,88 @@ void makesettingsTL() {
 			if(publisher == "") cls
 		}
 		settingsTL << UTF8toUTF16("\x0D\x0A"
-								  "# 動画の数\x0D\x0A"
-								  + std::to_string(amount) + "\x0D\x0A"
-								  "\x0D\x0A"
-								  "# 動画パブリッシャー名\x0D\x0A"
-								  "# JP:\x0D\x0A"
-								  + publisher + "\x0D\x0A"
-								  "\x0D\x0A"
-								  "# EN:\x0D\x0A"
-								  + publisher + "\x0D\x0A"
-								  "\x0D\x0A"
-								  "# FR:\x0D\x0A"
-								  + publisher + "\x0D\x0A"
-								  "\x0D\x0A"
-								  "# GE:\x0D\x0A"
-								  + publisher + "\x0D\x0A"
-								  "\x0D\x0A"
-								  "# IT:\x0D\x0A"
-								  + publisher + "\x0D\x0A"
-								  "\x0D\x0A"
-								  "# SP:\x0D\x0A"
-								  + publisher + "\x0D\x0A"
-								  "\x0D\x0A"
-								  "# CN:\x0D\x0A"
-								  + publisher + "\x0D\x0A"
-								  "\x0D\x0A"
-								  "# KO:\x0D\x0A"
-								  + publisher + "\x0D\x0A"
-								  "\x0D\x0A"
-								  "# DU:\x0D\x0A"
-								  + publisher + "\x0D\x0A"
-								  "\x0D\x0A"
-								  "# PO:\x0D\x0A"
-								  + publisher + "\x0D\x0A"
-								  "\x0D\x0A"
-								  "# RU:\x0D\x0A"
-								  + publisher + "\x0D\x0A"
-								  "\x0D\x0A"
-								  "# TW:\x0D\x0A"
-								  + publisher + "\x0D\x0A"
-								  "\x0D\x0A"
-								  "# WEBブラウザ用のURL\x0D\x0A"
-								  "# JP:\x0D\x0A"
-								  "\x0D\x0A"
-								  "\x0D\x0A"
-								  "# EN:\x0D\x0A"
-								  "\x0D\x0A"
-								  "\x0D\x0A"
-								  "# FR:\x0D\x0A"
-								  "\x0D\x0A"
-								  "\x0D\x0A"
-								  "# GE:\x0D\x0A"
-								  "\x0D\x0A"
-								  "\x0D\x0A"
-								  "# IT:\x0D\x0A"
-								  "\x0D\x0A"
-								  "\x0D\x0A"
-								  "# SP:\x0D\x0A"
-								  "\x0D\x0A"
-								  "\x0D\x0A"
-								  "# CN:\x0D\x0A"
-								  "\x0D\x0A"
-								  "\x0D\x0A"
-								  "# KO:\x0D\x0A"
-								  "\x0D\x0A"
-								  "\x0D\x0A"
-								  "# DU:\x0D\x0A"
-								  "\x0D\x0A"
-								  "\x0D\x0A"
-								  "# PO:\x0D\x0A"
-								  "\x0D\x0A"
-								  "\x0D\x0A"
-								  "# RU:\x0D\x0A"
-								  "\x0D\x0A"
-								  "\x0D\x0A"
-								  "# TW:");
-		completed[2] = 'X';
+								"# 動画の数\x0D\x0A"
+								+ std::to_string(amount) + "\x0D\x0A"
+								"\x0D\x0A"
+								"# 動画パブリッシャー名\x0D\x0A"
+								"# JP:\x0D\x0A"
+								+ publisher + "\x0D\x0A"
+								"\x0D\x0A"
+								"# EN:\x0D\x0A"
+								+ publisher + "\x0D\x0A"
+								"\x0D\x0A"
+								"# FR:\x0D\x0A"
+								+ publisher + "\x0D\x0A"
+								"\x0D\x0A"
+								"# GE:\x0D\x0A"
+								+ publisher + "\x0D\x0A"
+								"\x0D\x0A"
+								"# IT:\x0D\x0A"
+								+ publisher + "\x0D\x0A"
+								"\x0D\x0A"
+								"# SP:\x0D\x0A"
+								+ publisher + "\x0D\x0A"
+								"\x0D\x0A"
+								"# CN:\x0D\x0A"
+								+ publisher + "\x0D\x0A"
+								"\x0D\x0A"
+								"# KO:\x0D\x0A"
+								+ publisher + "\x0D\x0A"
+								"\x0D\x0A"
+								"# DU:\x0D\x0A"
+								+ publisher + "\x0D\x0A"
+								"\x0D\x0A"
+								"# PO:\x0D\x0A"
+								+ publisher + "\x0D\x0A"
+								"\x0D\x0A"
+								"# RU:\x0D\x0A"
+								+ publisher + "\x0D\x0A"
+								"\x0D\x0A"
+								"# TW:\x0D\x0A"
+								+ publisher + "\x0D\x0A"
+								"\x0D\x0A"
+								"# WEBブラウザ用のURL\x0D\x0A"
+								"# JP:\x0D\x0A"
+								"\x0D\x0A"
+								"\x0D\x0A"
+								"# EN:\x0D\x0A"
+								"\x0D\x0A"
+								"\x0D\x0A"
+								"# FR:\x0D\x0A"
+								"\x0D\x0A"
+								"\x0D\x0A"
+								"# GE:\x0D\x0A"
+								"\x0D\x0A"
+								"\x0D\x0A"
+								"# IT:\x0D\x0A"
+								"\x0D\x0A"
+								"\x0D\x0A"
+								"# SP:\x0D\x0A"
+								"\x0D\x0A"
+								"\x0D\x0A"
+								"# CN:\x0D\x0A"
+								"\x0D\x0A"
+								"\x0D\x0A"
+								"# KO:\x0D\x0A"
+								"\x0D\x0A"
+								"\x0D\x0A"
+								"# DU:\x0D\x0A"
+								"\x0D\x0A"
+								"\x0D\x0A"
+								"# PO:\x0D\x0A"
+								"\x0D\x0A"
+								"\x0D\x0A"
+								"# RU:\x0D\x0A"
+								"\x0D\x0A"
+								"\x0D\x0A"
+								"# TW:");
+		if(pathExists("romfs/settings/settingsTL.csv")) completed[2] = 'X';
+		else std::cout << "ERROR: Failed to generate romfs/settings/settingsTL.csv\n";
 	}
-	else scompleted[1] = 'X';
+	else {
+		if(pathExists("romfs/settings/settingsTL.csv")) scompleted[1] = 'X';
+		else std::cout << "ERROR: Failed to generate romfs/settings/settingsTL.csv\n";
+	}
 	settingsTL.close();
 	pause
 }
@@ -626,6 +640,11 @@ void copyright() {
 	std::ofstream copyrighttxt("romfs/settings/copyright.txt", std::ios_base::out | std::ios_base::binary);
 	copyrighttxt << "\xFF\xFE" << UTF8toUTF16(name);
 	copyrighttxt.close();
+	if(!pathExists("romfs/settings/copyright.txt")) {//how tho like what, your hard drive is 100% full???
+		std::cout << "ERROR: Failed to generate romfs/settings/copyright.txt\n";
+		pause
+		return;
+	}
 	completed[3] = 'X';
 	pause
 }
@@ -660,10 +679,10 @@ void tobimg() {
 		if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
 		remove("romfs/movie/COMMON0.png");
 		
-		std::ifstream bimgfile ("romfs\\movie\\movie_" + std::to_string(i) + ".bimg.part2", std::ios::binary);
+		std::ifstream bimgfile ("romfs/movie/movie_" + std::to_string(i) + ".bimg.part2", std::ios::binary);
 		std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(bimgfile), {});//https://stackoverflow.com/a/5420568
 		
-		std::ofstream finalbimgfile("romfs\\movie\\movie_" + std::to_string(i) + ".bimg", std::ios_base::out | std::ios_base::binary);
+		std::ofstream finalbimgfile("romfs/movie/movie_" + std::to_string(i) + ".bimg", std::ios_base::out | std::ios_base::binary);
 		//write data to the file one byte at a time because for some dang reason vector::data(); was being annoying with it WHYHWYHWHYWHYWHY
 		for (const auto &i : bimgheader)
 			finalbimgfile << i;
@@ -674,6 +693,10 @@ void tobimg() {
 		finalbimgfile.close();
 		buffer.clear();
 		std::filesystem::remove("romfs/movie/movie_" + std::to_string(i) + ".bimg.part2");//instead of fixing this so that remove() works im gonna use std::filesystem HEHEHEHEHHEH
+		if(!pathExists("romfs/movie/movie_" + std::to_string(i) + ".bimg")) {
+			std::cout << "ERROR: Failed to generate romfs/movie/movie_" + std::to_string(i) + ".bimg\n";
+			pause
+		}
 		std::cout << std::endl;
 	}
 	completed[4] = 'X';
@@ -714,8 +737,20 @@ void moflexMover() {
 				} else pass = true;
 			}
 		}
-		if(MultiVid) copyfile(name, "romfs/movie/movie_" + std::to_string(i) + ".moflex");
-		else copyfile(name, "romfs/movie/movie.moflex");
+		if(MultiVid) {
+			copyfile(name, "romfs/movie/movie_" + std::to_string(i) + ".moflex");
+			if(!pathExists("romfs/movie/movie_" + std::to_string(i) + ".moflex")) {//this probably only happens if there's no disk space
+				std::cout << "ERROR: Failed to copy \"" + name + "\" to romfs/movie/movie_" + std::to_string(i) + ".moflex\n";
+				pause
+			}
+		}
+		else {
+			copyfile(name, "romfs/movie/movie.moflex");
+			if(!pathExists("romfs/movie/movie.moflex")) {//this probably only happens if there's no disk space
+				std::cout << "ERROR: Failed to copy \"" + name + "\" to romfs/movie/movie.moflex\n";
+				pause
+			}
+		}
 		pass = false;
 	}
 	if(MultiVid) completed[5] = 'X';
@@ -769,6 +804,12 @@ void makebanner() {
 	remove("exefs/banner.bcwav");
 	remove("exefs/banner0.bcmdl");
 	remove("exefs/banner.cbmd");
+
+	if(!pathExists("exefs/banner.bin")) {
+		std::cout << "ERROR: Failed to generate exefs/banner.bin\n";
+		pause
+		return;
+	}
 	completed[6] = 'X';
 	completed[8] = ' ';
 	scompleted[3] = 'X';//i realized this has to be like this for the checks
@@ -820,11 +861,22 @@ void makeIcon() {
 	cmd = system_g("Vidinjector9000Resources\\tools\\bannertool.exe makesmdh -i \"exefs\\Icon.png\" -s \"" + shortname + "\" -l \"" + longname + "\" -p \"" + publisher + "\" -f visible,nosavebackups -o \"exefs/icon.bin");
 	if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
 	remove("exefs/Icon.png");
-	if(MultiVid) copyfile("exefs/icon.bin", "romfs/icon.icn");
-	if(pathExists("exefs/icon.bin")) {//more stupid-proofing
-		completed[7] = 'X';
-		scompleted[4] = 'X';
+
+	if(MultiVid) {
+		copyfile("exefs/icon.bin", "romfs/icon.icn");
+		if(!pathExists("romfs/icon.icn")) {
+			std::cout << "ERROR: Failed to copy exefs/icon.bin to romfs/icon.icn\n";
+			pause
+			return;
+		}
 	}
+	if(!pathExists("exefs/icon.bin")) {//more stupid-proofing
+		std::cout << "ERROR: Failed to generate exefs/icon.bin\n";
+		pause
+		return;
+	}
+	completed[7] = 'X';
+	scompleted[4] = 'X';
 	pause
 }
 
@@ -853,6 +905,11 @@ void customBanner() {
 		}
 	}
 	copyfile(name, "exefs/banner.bin");
+	if(!pathExists("exefs/banner.bin")) {
+		std::cout << "ERROR: Failed to copy \"" + name + "\" to exefs/banner.bin.\n";
+		pause
+		return;
+	}
 	completed[6] = '-';
 	completed[8] = 'X';
 	scompleted[3] = '-';
@@ -944,17 +1001,17 @@ void makeCIA() {
 	removeInvalids(longname);
 	std::filesystem::create_directory("output");
 	char buffer[6];
-    sprintf(buffer, "%05lX", TID);
+	sprintf(buffer, "%05lX", TID);
 	std::string cmd = system_g("Vidinjector9000Resources\\tools\\makerom.exe -f cia -o \"output\\" + longname + " [000400000" + std::string(buffer) + "00].cia\" -banner \"exefs\\banner.bin\" -icon \"exefs\\icon.bin\" -code \"exefs\\code.bin\" -exheader \"exheader.bin\" -rsf \"Vidinjector9000Resources\\files\\template.rsf\" -DAPP_UNIQUE_ID=" + std::to_string(TID));
 	if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
+	if(!pathExists("output/" + longname + " [000400000" + std::string(buffer) + "00].cia")) {
+		std::cout << "ERROR: Failed to build: \"output\\" + longname + " [000400000" + std::string(buffer) + "00].cia\"\n";
+	}
 	pause
 	cls
 	std::cout << "Do you want this to delete the following folders/files? [Y/N]\n- exefs\n- romfs\n- exheader.bin\n";
 	std::getline(std::cin, name);
 	if(tolowerstr(name) == "y") {
-		std::filesystem::remove_all("exefs");
-		std::filesystem::remove_all("romfs");
-		remove("exheader.bin");
 		main();
 	}
 	pause
@@ -1061,7 +1118,18 @@ void MultiVideo() {
 		else if(tolowerstr(name) == "b") tobimg();//4
 		else if(tolowerstr(name) == "m") moflexMover();//5
 		else if(tolowerstr(name) == "f") finalize();
-		else if(tolowerstr(name) == "x") return;
+		else if(tolowerstr(name) == "x") {
+			cls
+			name = "";
+			while(name == "") {
+				std::cout << "Exit now? You will lose progress. [Y/N]\n";
+				std::getline(std::cin, name);
+				if(tolowerstr(name) == "y") return;
+				else if(tolowerstr(name) == "n") break;
+				else name = "";
+				cls
+			}
+		}
 	}
 }
 
@@ -1069,7 +1137,7 @@ void MultiVideo() {
 void SingleVideo() {
 	cls
 	MultiVid = false;
-	amount = 1;//huhuhu ez way to reuse the functions
+	amount = 1;//huhuhu ez way to reuse the functions (i made multi video first)
 	if(!Generate_Code(false)) {
 		puts("Failed to generate files.");
 		pause
@@ -1095,7 +1163,18 @@ void SingleVideo() {
 		else if(tolowerstr(name) == "s") makesettingsTL();//1
 		else if(tolowerstr(name) == "m") moflexMover();//2
 		else if(tolowerstr(name) == "f") finalize();
-		else if(tolowerstr(name) == "x") return;
+		else if(tolowerstr(name) == "x") {
+			cls
+			name = "";
+			while(name == "") {
+				std::cout << "Exit now? You will lose progress. [Y/N]\n";
+				std::getline(std::cin, name);
+				if(tolowerstr(name) == "y") return;
+				else if(tolowerstr(name) == "n") break;
+				else name = "";
+				cls
+			}
+		}
 	}
 }
 
