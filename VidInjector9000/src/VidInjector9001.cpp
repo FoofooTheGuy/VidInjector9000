@@ -286,6 +286,11 @@ std::string system_g(std::string input) {//system_g()! It's system() but good!
 	return input;
 }
 
+/*void betterPause() {//maybe one day...
+	puts("Press Enter to continue . . .");
+	std::cin.ignore();
+}*/
+
 bool Generate_Code(bool Multi) {
 	std::string path = "exefs/code.bin";
 	puts("Generating code.bin...");
@@ -457,7 +462,7 @@ void makesettingsTL() {
 							"# TW:\x0D\x0A"
 							"none\x0D\x0A"
 							"\x0D\x0A"
-							"# アプリ名（ロングネーム）\x0D\x0A"
+							"# アプリ名（ロングネーム）\x0D\x0A"//long name
 							"# JP:\x0D\x0A"
 							+ name + "\x0D\x0A"
 							"\x0D\x0A"
@@ -495,7 +500,7 @@ void makesettingsTL() {
 							+ name + "\x0D\x0A"
 							"\x0D\x0A"
 							"# 拡張セーブデータのID（16進数）\x0D\x0A"
-							"12345\x0D\x0A"//idk if any other game uses 12345 as its save data ID, nor do i understand if it matters, so sorry if this breaks everything
+							"12345\x0D\x0A"//idk if any other game uses 0x12345 as its save data ID, nor do i understand if it matters, so sorry if this breaks everything
 							"\x0D\x0A"
 							"# NADLタスクのID\x0D\x0A"
 							"none\x0D\x0A"
@@ -523,10 +528,10 @@ void makesettingsTL() {
 			if(publisher == "") cls
 		}
 		settingsTL << UTF8toUTF16("\x0D\x0A"
-								"# 動画の数\x0D\x0A"
+								"# 動画の数\x0D\x0A"//amount of videos
 								+ std::to_string(amount) + "\x0D\x0A"
 								"\x0D\x0A"
-								"# 動画パブリッシャー名\x0D\x0A"
+								"# 動画パブリッシャー名\x0D\x0A"//publisher name
 								"# JP:\x0D\x0A"
 								+ publisher + "\x0D\x0A"
 								"\x0D\x0A"
@@ -563,7 +568,7 @@ void makesettingsTL() {
 								"# TW:\x0D\x0A"
 								+ publisher + "\x0D\x0A"
 								"\x0D\x0A"
-								"# WEBブラウザ用のURL\x0D\x0A"
+								"# WEBブラウザ用のURL\x0D\x0A"//web browser URL (?)
 								"# JP:\x0D\x0A"
 								"\x0D\x0A"
 								"\x0D\x0A"
@@ -918,13 +923,18 @@ void customBanner() {
 }
 
 void makeCIA() {
-	unsigned long min = 0xC0000;
-	unsigned long max = 0xF0000;
 	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
 	system_g("title [" + type + "] Generate CIA");
 	cls
-	srand(currentTime());
+	
+	unsigned long min = 0xC0000;
+	unsigned long max = 0xF0000;
+	unsigned long long romfsize = 0;
+	unsigned long long exefsize = 0;
+	unsigned long long exheadersize = std::filesystem::file_size("exheader.bin");
 	unsigned long TID = max;
+	srand(currentTime());
+
 	if(MultiVid) {
 		for (unsigned int i = 0; i < sizeof(completed)-1; i++)
 			if(completed[i] == ' ') {
@@ -943,9 +953,6 @@ void makeCIA() {
 				return;
 			}
 	}
-	unsigned long long romfsize = 0;
-	unsigned long long exefsize = 0;
-	unsigned long long exheadersize = std::filesystem::file_size("exheader.bin");
 	GetDirSize("romfs", romfsize);
 	GetDirSize("exefs", exefsize);
 	if(romfsize + exefsize + exheadersize >= 4294967295) {//the fat32 file size limit (the output cia will be a little bit lower than this estimate but idc so cry about it)
@@ -1023,12 +1030,12 @@ void Settings() {
 		printf("Type a letter:\n\n"
 		" __________________________________________\n"
 		"|                                          |\n"
-		"| Software Version: 2.2.2                  |\n"
+		"| Software Version: 2.5.2                  |\n"
 		"|                                          |\n"
 		"| D: Toggle Debug Information       [");
 							if(Debug) printf("ON]   |\n");
 							else      printf("OFF]  |\n");
-		printf("|                                          |\n"
+ printf("|                                          |\n"
 		"| X: Go to the main menu                   |\n"
 		"|__________________________________________|\n\n");
 		std::getline(std::cin, name);
@@ -1087,6 +1094,7 @@ void MultiVideo() {
 	cls
 	MultiVid = true;
 	amount = 0;
+	std::string amountstr;
 	if(!Generate_Code(true)) {
 		puts("Failed to generate files.");
 		pause
@@ -1095,12 +1103,15 @@ void MultiVideo() {
 	copyfile("Vidinjector9000Resources/files/templates/MultiVideo/romfs", "romfs");
 	copyfile("Vidinjector9000Resources/files/templates/MultiVideo/exheader.bin", "exheader.bin");
 	while(1) {
+		if (amount == 0)	amountstr = "                  [ ";
+		else if(amount <= 9)amountstr = "                  [" + std::to_string(amount);//this will make sense in the end trust me
+		else				amountstr = "                 [" + std::to_string(amount);//see? no?
 		system("title MultiVidInjector5000 by Foofoo_the_guy");
 		cls
 		printf("Type a letter:\n\n"
 		" __________________________________________\n"
 		"|                                          |\n"
-		"| A: Set the amount of videos you have [%c] |\n"
+		"| A: Set video amount%s] |\n"//just look
 		"| T: movie_title.csv generator         [%c] |\n"
 		"| S: settingsTL.csv generator          [%c] |\n"
 		"| C: Copyright options                 [%c] |\n"
@@ -1109,9 +1120,9 @@ void MultiVideo() {
 		"|                                          |\n"
 		"| F: Finalize/build the CIA                |\n"
 		"| X: Go to the main menu                   |\n"
-		"|__________________________________________|\n\n", completed[0], completed[1], completed[2], completed[3], completed[4], completed[5]);
+		"|__________________________________________|\n\n", amountstr.c_str(), completed[1], completed[2], completed[3], completed[4], completed[5]);
 		std::getline(std::cin, name);
-		if(tolowerstr(name) == "a") setAmount();//0
+		if(tolowerstr(name) == "a" && amount == 0) setAmount();//0
 		else if(tolowerstr(name) == "t") Movie_title();//1
 		else if(tolowerstr(name) == "s") makesettingsTL();//2
 		else if(tolowerstr(name) == "c") copyright();//3
