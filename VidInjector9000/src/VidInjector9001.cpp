@@ -10,7 +10,7 @@ std::string type;
 std::string longname;//you need this global because i said so also because make cia needs it too
 static bool MultiVid;//false if single video, true if multi video
 static bool Debug;//false if off true if on
-char completed[9] { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', };
+char completed[8] { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', };
 char scompleted[6] { ' ', ' ', ' ', ' ', ' ', ' ', };
 
 //small functions
@@ -338,7 +338,6 @@ void setAmount() {
 		pause
 		return;
 	}
-	completed[0] = 'X';
 }
 
 void Movie_title() {
@@ -372,7 +371,7 @@ void Movie_title() {
 		pause
 		return;
 	}
-	if(MultiVid) completed[1] = 'X';
+	if(MultiVid) completed[0] = 'X';
 	else scompleted[0] = 'X';
 	pause
 }
@@ -603,7 +602,7 @@ void makesettingsTL() {
 								"\x0D\x0A"
 								"\x0D\x0A"
 								"# TW:");
-		if(pathExists("romfs/settings/settingsTL.csv")) completed[2] = 'X';
+		if(pathExists("romfs/settings/settingsTL.csv")) completed[1] = 'X';
 		else std::cout << "ERROR: Failed to generate romfs/settings/settingsTL.csv\n";
 	}
 	else {
@@ -631,7 +630,7 @@ void copyright() {
 		else {
 			information_buttons << "\xFF\xFE";
 			information_buttons.close();
-			completed[3] = 'X';
+			completed[2] = 'X';
 			return;
 		}
 	}
@@ -650,7 +649,7 @@ void copyright() {
 		pause
 		return;
 	}
-	completed[3] = 'X';
+	completed[2] = 'X';
 	pause
 }
 
@@ -704,7 +703,7 @@ void tobimg() {
 		}
 		std::cout << std::endl;
 	}
-	completed[4] = 'X';
+	completed[3] = 'X';
 	pause
 }
 
@@ -758,7 +757,7 @@ void moflexMover() {
 		}
 		pass = false;
 	}
-	if(MultiVid) completed[5] = 'X';
+	if(MultiVid) completed[4] = 'X';
 	else scompleted[2] = 'X';
 	pause
 }
@@ -815,8 +814,8 @@ void makebanner() {
 		pause
 		return;
 	}
-	completed[6] = 'X';
-	completed[8] = ' ';
+	completed[5] = 'X';
+	completed[7] = ' ';
 	scompleted[3] = 'X';//i realized this has to be like this for the checks
 	scompleted[4] = ' ';
 	pause
@@ -880,7 +879,7 @@ void makeIcon() {
 		pause
 		return;
 	}
-	completed[7] = 'X';
+	completed[6] = 'X';
 	scompleted[4] = 'X';
 	pause
 }
@@ -915,8 +914,8 @@ void customBanner() {
 		pause
 		return;
 	}
-	completed[6] = '-';
-	completed[8] = 'X';
+	completed[5] = '-';
+	completed[7] = 'X';
 	scompleted[3] = '-';
 	scompleted[5] = 'X';
 	pause
@@ -1079,11 +1078,11 @@ void finalize() {
 		"|                                          |\n"
 		"| C: Generate CIA                          |\n"
 		"| X: Go to the %s\n"
-		"|__________________________________________|\n\n", completed[6], completed[7], completed[8], type.c_str());
+		"|__________________________________________|\n\n", completed[5], completed[6], completed[7], type.c_str());
 		std::getline(std::cin, name);
-		if(tolowerstr(name) == "b") makebanner();//6
-		else if(tolowerstr(name) == "i") makeIcon();//7
-		else if(tolowerstr(name) == "u") customBanner();//8
+		if(tolowerstr(name) == "b") makebanner();//5
+		else if(tolowerstr(name) == "i") makeIcon();//6
+		else if(tolowerstr(name) == "u") customBanner();//7
 		else if(tolowerstr(name) == "c") makeCIA();
 		else if(tolowerstr(name) == "x") return;
 	}
@@ -1120,14 +1119,14 @@ void MultiVideo() {
 		"|                                          |\n"
 		"| F: Finalize/build the CIA                |\n"
 		"| X: Go to the main menu                   |\n"
-		"|__________________________________________|\n\n", amountstr.c_str(), completed[1], completed[2], completed[3], completed[4], completed[5]);
+		"|__________________________________________|\n\n", amountstr.c_str(), completed[0], completed[1], completed[2], completed[3], completed[4]);
 		std::getline(std::cin, name);
-		if(tolowerstr(name) == "a" && amount == 0) setAmount();//0
-		else if(tolowerstr(name) == "t") Movie_title();//1
-		else if(tolowerstr(name) == "s") makesettingsTL();//2
-		else if(tolowerstr(name) == "c") copyright();//3
-		else if(tolowerstr(name) == "b") tobimg();//4
-		else if(tolowerstr(name) == "m") moflexMover();//5
+		if(tolowerstr(name) == "a" && amount == 0) setAmount();
+		else if(tolowerstr(name) == "t") Movie_title();//0
+		else if(tolowerstr(name) == "s") makesettingsTL();//1
+		else if(tolowerstr(name) == "c") copyright();//2
+		else if(tolowerstr(name) == "b") tobimg();//3
+		else if(tolowerstr(name) == "m") moflexMover();//4
 		else if(tolowerstr(name) == "f") finalize();
 		else if(tolowerstr(name) == "x") {
 			cls
