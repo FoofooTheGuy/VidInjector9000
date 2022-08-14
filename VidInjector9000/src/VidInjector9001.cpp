@@ -68,26 +68,6 @@ bool stoul_s(unsigned long &output, std::string input, bool isHex = false) {
     return true;
 }
 
-unsigned long currentTime() {//originally from https://stackoverflow.com/a/30898778
-	time_t now = time(0);
-	struct tm tstruct;
-	char stime[80];
-	tstruct = *localtime(&now);
-	time_t t = time(0);   // get time now
-	struct tm * nowtime = localtime(&t);
-	char date[7];
-
-	sprintf(date, "%i%i%i", nowtime->tm_mon + 1, nowtime->tm_mday + 1, nowtime->tm_year + 1900);
-	strftime(stime, sizeof(stime), "%H%M%S", &tstruct);
-
-	unsigned long dOut = 0;
-	unsigned long sOut = 0;
-	if(!stoul_s(dOut, std::string(date))) return 0;
-	if(!stoul_s(sOut, std::string(stime))) return 0;
-
-	return dOut + sOut;
-}
-
 //this UTF stuff is from libctru lol
 #ifdef SIZE_MAX
 #define SSIZE_MAX ((SIZE_MAX) >> 1)
@@ -932,7 +912,7 @@ void makeCIA() {
 	unsigned long long exefsize = 0;
 	unsigned long long exheadersize = std::filesystem::file_size("exheader.bin");
 	unsigned long TID = max;
-	srand(currentTime());
+	static std::mt19937 rng;
 
 	if(MultiVid) {
 		for (unsigned int i = 0; i < sizeof(completed)-1; i++)
@@ -971,7 +951,9 @@ void makeCIA() {
 			TID = max;
 		}
 		if (TID == 0) {
-			TID = rand() % (max - min) + min;//0xC0000 is minimum, 0xEFFFF is maximum, 0xF0000 makes it include 0xEFFFF in it)
+			rng.seed(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+			std::uniform_int_distribution<unsigned long> uniform(min, max);
+			TID = uniform(rng);
 		}
 		switch(TID)
 		{
