@@ -657,9 +657,9 @@ void tobimg() {
 		}
 		
 		//cmd code stuff heh
-		std::string cmd = system_g("Vidinjector9000Resources\\tools\\imagemagick\\magick.exe \"" + name + "\" -resize 200x120! -background black -compose Copy -gravity northwest -extent 256x128 -flip \"romfs\\movie\\COMMON0.png\"");
+		std::string cmd = system_g("Vidinjector9000Resources\\\\tools\\\\imagemagick\\\\magick.exe \"" + name + "\" -resize 200x120! -background black -compose Copy -gravity northwest -extent 256x128 -flip \"romfs/movie/COMMON0.png\"");
 		if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
-		cmd = system_g("Vidinjector9000Resources\\tools\\3dstex-win-x86.exe -ro rgb565 \"romfs\\movie\\COMMON0.png\" \"romfs\\movie\\movie_" + std::to_string(i) + ".bimg.part2\"");
+		cmd = system_g("Vidinjector9000Resources\\\\tools\\\\3dstex-win-x86.exe -ro rgb565 \"romfs/movie/COMMON0.png\" \"romfs/movie/movie_" + std::to_string(i) + ".bimg.part2\"");
 		if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
 		remove("romfs/movie/COMMON0.png");
 		
@@ -760,17 +760,17 @@ void makebanner() {
 		}
 	}
 	
-	std::string cmd = system_g("Vidinjector9000Resources\\tools\\imagemagick\\magick.exe \"" + name + "\" -resize 200x120! -background black -compose Copy -gravity northwest -extent 256x128 -flip \"exefs\\COMMON0.png\"");
+	std::string cmd = system_g("Vidinjector9000Resources\\\\tools\\\\imagemagick\\\\magick.exe \"" + name + "\" -resize 200x120! -background black -compose Copy -gravity northwest -extent 256x128 -flip \"exefs/COMMON0.png\"");
 	if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
-	cmd = system_g("Vidinjector9000Resources\\tools\\3dstex-win-x86.exe -ro rgb565 \"exefs\\COMMON0.png\" \"exefs\\banner.bimg.part\"");
+	cmd = system_g("Vidinjector9000Resources\\\\tools\\\\3dstex-win-x86.exe -ro rgb565 \"exefs/COMMON0.png\" \"exefs/banner.bimg.part\"");
 	if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
 	remove("exefs/COMMON0.png");
 	std::cout << std::endl;//haha pwetty cmd
 	
-	std::ifstream bimgfile ("exefs\\banner.bimg.part", std::ios::binary);
+	std::ifstream bimgfile ("exefs/banner.bimg.part", std::ios::binary);
 	std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(bimgfile), {});//https://stackoverflow.com/a/5420568
 	//create bcmdl
-	std::ofstream bannerbcmdl("exefs\\banner0.bcmdl", std::ios_base::out | std::ios_base::binary);
+	std::ofstream bannerbcmdl("exefs/banner0.bcmdl", std::ios_base::out | std::ios_base::binary);
 	for (const auto& i : bannerheader)
 		bannerbcmdl << i;
 	for (const auto& i : buffer)
@@ -783,7 +783,7 @@ void makebanner() {
 	//build banner
 	copyfile("Vidinjector9000Resources/files/banner.bcwav", "exefs/banner.bcwav");
 	copyfile("Vidinjector9000Resources/files/banner.cbmd", "exefs/banner.cbmd");
-	system("Vidinjector9000Resources\\tools\\3dstool.exe -cvtf banner \"exefs\\banner.bin\" --banner-dir \"exefs\"");
+	system("Vidinjector9000Resources\\\\tools\\\\3dstool.exe -cvtf banner \"exefs/banner.bin\" --banner-dir \"exefs\"");
 	//clean up time
 	remove("exefs/banner.bcwav");
 	remove("exefs/banner0.bcmdl");
@@ -840,9 +840,9 @@ void makeIcon() {
 		if(publisher == "") cls
 	}
 	
-	std::string cmd = system_g("Vidinjector9000Resources\\tools\\imagemagick\\magick.exe convert \"" + name + "\" -resize 48x48! -background black -flatten \"exefs\\Icon.png\"");
+	std::string cmd = system_g("Vidinjector9000Resources\\\\tools\\\\imagemagick\\\\magick.exe convert \"" + name + "\" -resize 48x48! -background black -flatten \"exefs/Icon.png\"");
 	if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
-	cmd = system_g("Vidinjector9000Resources\\tools\\bannertool.exe makesmdh -i \"exefs\\Icon.png\" -s \"" + shortname + "\" -l \"" + longname + "\" -p \"" + publisher + "\" -f visible,nosavebackups -o \"exefs/icon.bin");
+	cmd = system_g("Vidinjector9000Resources\\\\tools\\\\bannertool.exe makesmdh -i \"exefs/Icon.png\" -s \"" + shortname + "\" -l \"" + longname + "\" -p \"" + publisher + "\" -f visible,nosavebackups -o \"exefs/icon.bin");
 	if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
 	remove("exefs/Icon.png");
 
@@ -990,7 +990,7 @@ void makeCIA() {
 	std::filesystem::create_directory("output");
 	char buffer[6];
 	sprintf(buffer, "%05lX", TID);
-	std::string cmd = system_g("Vidinjector9000Resources\\tools\\makerom.exe -f cia -o \"output\\" + longname + " [000400000" + std::string(buffer) + "00].cia\" -banner \"exefs\\banner.bin\" -icon \"exefs\\icon.bin\" -code \"exefs\\code.bin\" -exheader \"exheader.bin\" -rsf \"Vidinjector9000Resources\\files\\template.rsf\" -DAPP_UNIQUE_ID=" + std::to_string(TID));
+	std::string cmd = system_g("Vidinjector9000Resources\\\\tools\\\\makerom.exe -f cia -o \"output/" + longname + " [000400000" + std::string(buffer) + "00].cia\" -banner \"exefs/banner.bin\" -icon \"exefs/icon.bin\" -code \"exefs/code.bin\" -exheader \"exheader.bin\" -rsf \"Vidinjector9000Resources/files/template.rsf\" -DAPP_UNIQUE_ID=" + std::to_string(TID));
 	if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
 	if(!pathExists("output/" + longname + " [000400000" + std::string(buffer) + "00].cia")) {
 		std::cout << "ERROR: Failed to build: \"output\\" + longname + " [000400000" + std::string(buffer) + "00].cia\"\n";
@@ -1011,7 +1011,7 @@ void Settings() {
 		printf("Type a letter:\n\n"
 		" __________________________________________\n"
 		"|                                          |\n"
-		"| Software Version: 2.5.2                  |\n"
+		"| Software Version: 2.5.4                  |\n"
 		"|                                          |\n"
 		"| D: Toggle Debug Information       [");
 							if(Debug) printf("ON]   |\n");
