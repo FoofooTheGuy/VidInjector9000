@@ -272,13 +272,21 @@ std::string system_g(std::string input) {//system_g()! It's system(), but good!
 }*/
 
 bool Generate_Code(bool Multi) {
+    std::string path = "exefs/code.bin";
     puts("Generating code.bin...");
     std::filesystem::create_directory("exefs");
-    FILE *file = fopen("exefs/code.bin", "w");
-    if(!file) return false;
-    int is_success = fwrite(Multi ? Multivid : Singlevid, Multi ? sizeof(Multivid) : sizeof(Singlevid), 1, file);
-    fclose(file);
-    return is_success;
+    if(Multi) {
+        std::ofstream codebin(path, std::ios_base::out | std::ios_base::binary);
+        for (const auto &i : Multivid)
+            codebin << i;
+    }
+    else {
+        std::ofstream codebin(path, std::ios_base::out | std::ios_base::binary);
+        for (const auto &i : Singlevid)
+            codebin << i;
+    }
+    if(pathExists(path)) return true;
+    return false;
 }
 
 //big functions
