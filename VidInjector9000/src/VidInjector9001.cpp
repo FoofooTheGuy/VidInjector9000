@@ -1,7 +1,7 @@
 #include "VidInjector9001.h"
 
 //globals
-#define pause system("pause");
+#define pause system("pause"); //betterPause();
 #define cls system("cls");
 
 unsigned long amount = 0;
@@ -261,7 +261,7 @@ void removeInvalids(std::string &str) {//remove more invalid characters
 	str = out;
 }
 
-std::string system_g(std::string input) {//system_g()! It's system() but good!
+std::string system_g(std::string input) {//system_g()! It's system(), but good!
 	system(input.c_str());
 	return input;
 }
@@ -272,21 +272,13 @@ std::string system_g(std::string input) {//system_g()! It's system() but good!
 }*/
 
 bool Generate_Code(bool Multi) {
-	std::string path = "exefs/code.bin";
-	puts("Generating code.bin...");
-	std::filesystem::create_directory("exefs");
-	if(Multi) {
-		std::ofstream codebin(path, std::ios_base::out | std::ios_base::binary);
-		for (const auto &i : Multivid)
-			codebin << i;
-	}
-	else {
-		std::ofstream codebin(path, std::ios_base::out | std::ios_base::binary);
-		for (const auto &i : Singlevid)
-			codebin << i;
-	}
-	if(pathExists(path)) return true;
-	return false;
+    puts("Generating code.bin...");
+    std::filesystem::create_directory("exefs");
+    FILE *file = fopen("exefs/code.bin", "w");
+    if(!file) return false;
+    int is_success = fwrite(Multi ? Multivid : Singlevid, Multi ? sizeof(Multivid) : sizeof(Singlevid), 1, file);
+    fclose(file);
+    return is_success;
 }
 
 //big functions
@@ -299,10 +291,10 @@ void setAmount() {
 	std::ofstream movie_bnrname("romfs/settings/movie_bnrname.csv", std::ios_base::out | std::ios_base::binary);
 	while(!good) {
 		cls
-		std::cout << "Enter the amount of videos you have:\n";
+		puts("Enter the amount of videos you have:");
 		std::getline(std::cin, name);
 		if(name.size() > 2 || !stoul_s(amount, name) || amount > 27) {
-			std::cout << "Invalid input/The amount cannot be greater than 27. Try again\n";
+			puts("Invalid input/The amount cannot be greater than 27. Try again");
 			pause
 		} else {
 			movie_bnrname << "\xFF\xFE" + UTF8toUTF16(std::to_string(amount) + "\x0D\x0A");
@@ -314,7 +306,7 @@ void setAmount() {
 		}
 	}
 	if(!pathExists("romfs/settings/movie_bnrname.csv")) {
-		std::cout << "ERROR: Failed to generate romfs/settings/movie_bnrname.csv\n";
+		puts("ERROR: Failed to generate romfs/settings/movie_bnrname.csv");
 		pause
 		return;
 	}
@@ -325,7 +317,7 @@ void Movie_title() {
 	system_g("title [" + type + "] Generate movie_title.csv");
 	cls
 	if (amount == 0) {
-		std::cout << "Set video amount first!\n";
+		puts("Set video amount first!");
 		pause
 		return;
 	}
@@ -335,8 +327,8 @@ void Movie_title() {
 	for (unsigned long i = 0; i < amount; i++) {
 		name = "";
 		while(name == "") {
-			if(MultiVid) std::cout << "Enter the title of video #" << i+1 << std::endl;
-			else std::cout << "Enter the title of the video\n";
+			if(MultiVid) printf("Enter the title of video #%li\n", i+1);
+			else puts("Enter the title of the video");
 			std::getline(std::cin, name);
 			if(name == "") cls
 		}
@@ -347,7 +339,7 @@ void Movie_title() {
 	}
 	movie_title.close();
 	if(!pathExists("romfs/movie/movie_title.csv")) {
-		std::cout << "ERROR: Failed to generate romfs/movie/movie_title.csv\n";
+		puts("ERROR: Failed to generate romfs/movie/movie_title.csv");
 		pause
 		return;
 	}
@@ -362,7 +354,7 @@ void makesettingsTL() {
 	cls
 
 	if (amount == 0) {
-		std::cout << "Set video amount first!\n";
+		puts("Set video amount first!");
 		pause
 		return;
 	}
@@ -373,28 +365,28 @@ void makesettingsTL() {
 	
 	name = "";
 	while(name == "") {
-		if(MultiVid) std::cout << "Enter the name of the series\n";
-		else std::cout << "Enter the name of the video\n";
+		if(MultiVid) puts("Enter the name of the series");
+		else puts("Enter the name of the video");
 		std::getline(std::cin, name);
 		cls
 	}
 
 	buttons = "";
 	while(buttons == "") {
-		std::cout << "Do you want fast forward and rewind buttons? [Y/N]\n";
+		puts("Do you want fast forward and rewind buttons? [Y/N]");
 		std::getline(std::cin, buttons);
-		if(tolowerstr(buttons) == "y") buttons = "true";
-		else if(tolowerstr(buttons) == "n") buttons = "false";
+		if(tolowerstr(buttons)[0] == 'y') buttons = "true";
+		else if(tolowerstr(buttons)[0] == 'n') buttons = "false";
 		else buttons = "";
 		cls
 	}
 
 	gentleness = "";
 	while(gentleness == "") {
-		std::cout << "Do you want the bottom screen to fade after a while? [Y/N]\n";
+		puts("Do you want the bottom screen to fade after a while? [Y/N]");
 		std::getline(std::cin, gentleness);
-		if(tolowerstr(gentleness) == "y") gentleness = "true";
-		else if(tolowerstr(gentleness) == "n") gentleness = "false";
+		if(tolowerstr(gentleness)[0] == 'y') gentleness = "true";
+		else if(tolowerstr(gentleness)[0] == 'n') gentleness = "false";
 		else {
 			gentleness = "";
 			cls
@@ -502,7 +494,7 @@ void makesettingsTL() {
 		cls
 		publisher = "";
 		while(publisher == "") {
-			std::cout << "Enter the Publisher of the video\n";
+			puts("Enter the Publisher of the video");
 			std::getline(std::cin, publisher);
 			if(publisher == "") cls
 		}
@@ -583,11 +575,11 @@ void makesettingsTL() {
 								"\x0D\x0A"
 								"# TW:");
 		if(pathExists("romfs/settings/settingsTL.csv")) completed[1] = 'X';
-		else std::cout << "ERROR: Failed to generate romfs/settings/settingsTL.csv\n";
+		else puts("ERROR: Failed to generate romfs/settings/settingsTL.csv");
 	}
 	else {
 		if(pathExists("romfs/settings/settingsTL.csv")) scompleted[1] = 'X';
-		else std::cout << "ERROR: Failed to generate romfs/settings/settingsTL.csv\n";
+		else puts("ERROR: Failed to generate romfs/settings/settingsTL.csv");
 	}
 	settingsTL.close();
 	pause
@@ -600,10 +592,10 @@ void copyright() {
 	std::filesystem::create_directories("romfs/settings");
 	while(name == "") {
 		std::ofstream information_buttons("romfs/settings/information_buttons.csv", std::ios_base::out | std::ios_base::binary);
-		std::cout << "Do you want the menu to have the Copyright button? [Y/N]\n";
+		puts("Do you want the menu to have the Copyright button? [Y/N]");
 		std::getline(std::cin, name);
 		if(name == "") cls
-		else if(tolowerstr(name) == "y") {
+		else if(tolowerstr(name)[0] == 'y') {
 			information_buttons << "\xFF\xFE" << UTF8toUTF16("Copyright");
 			information_buttons.close();
 		}
@@ -617,7 +609,7 @@ void copyright() {
 	cls
 	name = "";
 	while(name == "") {
-		std::cout << "Enter the text for the copyright menu:\n";
+		puts("Enter the text for the copyright menu:");
 		std::getline(std::cin, name);
 		if(name == "") cls
 	}
@@ -625,7 +617,7 @@ void copyright() {
 	copyrighttxt << "\xFF\xFE" << UTF8toUTF16(name);
 	copyrighttxt.close();
 	if(!pathExists("romfs/settings/copyright.txt")) {//how tho like what, your hard drive is 100% full???
-		std::cout << "ERROR: Failed to generate romfs/settings/copyright.txt\n";
+		puts("ERROR: Failed to generate romfs/settings/copyright.txt");
 		pause
 		return;
 	}
@@ -637,7 +629,7 @@ void tobimg() {
 	system("title [MultiVidInjector5000] Image to .bimg");
 	cls
 	if (amount == 0) {
-		std::cout << "Set video amount first!\n";
+		puts("Set video amount first!");
 		pause
 		return;
 	}
@@ -646,11 +638,11 @@ void tobimg() {
 		name = "";
 		while(name == "") {
 			cls
-			std::cout << "Enter/drag and drop image for video #" << i+1 << "\n(The image should be 200x120 for best results)\n";
+			printf("Enter/drag and drop image for video #%li\n(The image should be 200x120 for best results)\n", i+1);
 			std::getline(std::cin, name);
 			removeQuotes(name);
 			if(!pathExists(name)) {
-				std::cout << "Error with the file (" + name + ") Try again.\n";
+				printf("Error with the file (%s) Try again.\n", name.c_str());
 				name = "";
 				pause
 			}
@@ -678,10 +670,10 @@ void tobimg() {
 		buffer.clear();
 		std::filesystem::remove("romfs/movie/movie_" + std::to_string(i) + ".bimg.part2");//instead of fixing this so that remove() works im gonna use std::filesystem HEHEHEHEHHEH
 		if(!pathExists("romfs/movie/movie_" + std::to_string(i) + ".bimg")) {
-			std::cout << "ERROR: Failed to generate romfs/movie/movie_" + std::to_string(i) + ".bimg\n";
+			printf("ERROR: Failed to generate romfs/movie/movie_%li.bimg\n", i);
 			pause
 		}
-		std::cout << std::endl;
+		puts("");//hah
 	}
 	completed[3] = 'X';
 	pause
@@ -694,7 +686,7 @@ void moflexMover() {
 	static bool pass = false;
 	unsigned char Checker[4];
 	if (amount == 0) {
-		std::cout << "Set video amount first!\n";
+		puts("Set video amount first!");
 		pause
 		return;
 	}
@@ -703,8 +695,8 @@ void moflexMover() {
 		while(!pass) {
 			cls
 
-			if(MultiVid) std::cout << "Enter/drag and drop moflex file #" << i+1 << std::endl;
-			else std::cout << "Enter/drag and drop the moflex file\n";
+			if(MultiVid) printf("Enter/drag and drop moflex file #%li\n", i+1);
+			else puts("Enter/drag and drop the moflex file");
 			std::getline(std::cin, name);
 			removeQuotes(name);
 			
@@ -714,7 +706,7 @@ void moflexMover() {
 			for (int i = 0; i < 4; i++) {
 				inmoflex >> Checker[i];//https://stackoverflow.com/a/2974735
 				if(extension != ".moflex" || Checker[i] != moflexMagic[i]) {
-					std::cout << "The input file (" << name << ") is broken or not in moflex format. Try again.\n";
+					printf("The input file (%s) is broken or not in moflex format. Try again.\n", name.c_str());
 					name == "";
 					pause
 					break;
@@ -724,14 +716,14 @@ void moflexMover() {
 		if(MultiVid) {
 			copyfile(name, "romfs/movie/movie_" + std::to_string(i) + ".moflex");
 			if(!pathExists("romfs/movie/movie_" + std::to_string(i) + ".moflex")) {//this probably only happens if there's no disk space
-				std::cout << "ERROR: Failed to copy \"" + name + "\" to romfs/movie/movie_" + std::to_string(i) + ".moflex\n";
+				printf("ERROR: Failed to copy \"%s\" to romfs/movie/movie_%li.moflex\n", name.c_str(), i);
 				pause
 			}
 		}
 		else {
 			copyfile(name, "romfs/movie/movie.moflex");
 			if(!pathExists("romfs/movie/movie.moflex")) {//this probably only happens if there's no disk space
-				std::cout << "ERROR: Failed to copy \"" + name + "\" to romfs/movie/movie.moflex\n";
+				printf("ERROR: Failed to copy \"%s\" to romfs/movie/movie.moflex\n", name.c_str());
 				pause
 			}
 		}
@@ -750,11 +742,11 @@ void makebanner() {
 	name = "";
 	while(name == "") {
 		cls
-		std::cout << "Enter/drag and drop your home screen banner image:\n(The image should be 200x120 for best results)\n";
+		puts("Enter/drag and drop your home screen banner image:\n(The image should be 200x120 for best results)");
 		std::getline(std::cin, name);
 		removeQuotes(name);
 		if(!pathExists(name)) {
-			std::cout << "Error with the file (" + name + ") Try again.\n";
+			printf("Error with the file (%s) Try again.\n", name.c_str());
 			name = "";
 			pause
 		}
@@ -765,7 +757,7 @@ void makebanner() {
 	cmd = system_g("Vidinjector9000Resources\\\\tools\\\\3dstex-win-x86.exe -ro rgb565 \"exefs/COMMON0.png\" \"exefs/banner.bimg.part\"");
 	if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
 	remove("exefs/COMMON0.png");
-	std::cout << std::endl;//haha pwetty cmd
+	puts("");//haha pwetty cmd
 	
 	std::ifstream bimgfile ("exefs/banner.bimg.part", std::ios::binary);
 	std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(bimgfile), {});//https://stackoverflow.com/a/5420568
@@ -790,7 +782,7 @@ void makebanner() {
 	remove("exefs/banner.cbmd");
 
 	if(!pathExists("exefs/banner.bin")) {
-		std::cout << "ERROR: Failed to generate exefs/banner.bin\n";
+		puts("ERROR: Failed to generate exefs/banner.bin");
 		pause
 		return;
 	}
@@ -811,11 +803,11 @@ void makeIcon() {
 	name = "";
 	while (name == "") {
 		cls
-		std::cout << "Enter/drag and drop your icon image:\n(The image should be 48x48 for best results)\n";
+		puts("Enter/drag and drop your icon image:\n(The image should be 48x48 for best results)");
 		std::getline(std::cin, name);
 		removeQuotes(name);
 		if(!pathExists(name)) {
-			std::cout << "Error with the file (" + name + ") Try again.\n";
+			printf("Error with the file (%s) Try again.\n", name.c_str());
 			name = "";
 			pause
 		}
@@ -823,19 +815,19 @@ void makeIcon() {
 	cls
 	shortname = "";
 	while (shortname == "") {//stupid-proofing
-		std::cout << "Enter the short name:\n";
+		puts("Enter the short name:");
 		std::getline(std::cin, shortname);
 		if(shortname == "") cls
 	}
 	longname = "";
 	while (longname == "") {
-		std::cout << "Enter the long name:\n";
+		puts("Enter the long name:");
 		std::getline(std::cin, longname);
 		if(longname == "") cls
 	}
 	publisher = "";
 	while (publisher == "") {
-		std::cout << "Enter the publisher:\n";
+		puts("Enter the publisher:");
 		std::getline(std::cin, publisher);
 		if(publisher == "") cls
 	}
@@ -849,13 +841,13 @@ void makeIcon() {
 	if(MultiVid) {
 		copyfile("exefs/icon.bin", "romfs/icon.icn");
 		if(!pathExists("romfs/icon.icn")) {
-			std::cout << "ERROR: Failed to copy exefs/icon.bin to romfs/icon.icn\n";
+			puts("ERROR: Failed to copy exefs/icon.bin to romfs/icon.icn");
 			pause
 			return;
 		}
 	}
 	if(!pathExists("exefs/icon.bin")) {//more stupid-proofing
-		std::cout << "ERROR: Failed to generate exefs/icon.bin\n";
+		puts("ERROR: Failed to generate exefs/icon.bin");
 		pause
 		return;
 	}
@@ -874,14 +866,14 @@ void customBanner() {
 	while(!pass) {
 		cls
 
-		std::cout << "Enter/drag and drop your banner:\n(pre-built file)\n";
+		puts("Enter/drag and drop your banner:\n(pre-built file)");
 		std::getline(std::cin, name);
 		removeQuotes(name);
 		std::ifstream inbanner (name, std::ios::binary);
 		for (int i = 0; i < 4; i++) {
 			inbanner >> Checker[i];//https://stackoverflow.com/a/2974735
 			if(Checker[i] != bannerMagic[i]) {
-				std::cout << "The input file (" << name << ") is not a valid banner. Try again.\n";
+				printf("The input file (%s) is not a valid banner. Try again.\n", name.c_str());
 				name == "";
 				pause
 				break;
@@ -890,7 +882,7 @@ void customBanner() {
 	}
 	copyfile(name, "exefs/banner.bin");
 	if(!pathExists("exefs/banner.bin")) {
-		std::cout << "ERROR: Failed to copy \"" + name + "\" to exefs/banner.bin.\n";
+		printf("ERROR: Failed to copy \"%s\" to exefs/banner.bin.\n", name.c_str());
 		pause
 		return;
 	}
@@ -919,7 +911,7 @@ void makeCIA() {
 			if(completed[i] == ' ') {
 				printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
 				std::getline(std::cin, name);
-				if(tolowerstr(name) == "y") break;
+				if(tolowerstr(name)[0] == 'y') break;
 				return;
 			}
 	}
@@ -928,25 +920,25 @@ void makeCIA() {
 			if(scompleted[i] == ' ') {
 				printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
 				std::getline(std::cin, name);
-				if(tolowerstr(name) == "y") break;
+				if(tolowerstr(name)[0] == 'y') break;
 				return;
 			}
 	}
 	GetDirSize("romfs", romfsize);
 	GetDirSize("exefs", exefsize);
 	if(romfsize + exefsize + exheadersize >= 4294967295) {//the fat32 file size limit (the output cia will be a little bit lower than this estimate but idc so cry about it)
-		std::cout << "ERROR: The estimated file size (" << (romfsize + exefsize) << ") of the cia file is too big and will\nnot install to a 3ds nor work in the emulator.\n";
+		printf("ERROR: The estimated file size (%lli) of the cia file is too big and will\nnot install to a 3ds nor work in the emulator.\n", (romfsize + exefsize));
 		pause
 		return;
 	}
 	
 	while(TID == max) {
 		cls
-		std::cout << "Enter 5 hex integers for the ID of your cia (C0000 - EFFFF) or\njust type \"0\" for a random title ID.\n(TID is in format 000400000XXXXX00 (that's hex), the rest will auto fill)\n";
+		puts("Enter 5 hex integers for the ID of your cia (C0000 - EFFFF) or\njust type \"0\" for a random title ID.\n(TID is in format 000400000XXXXX00 (that's hex), the rest will auto fill)");
 		std::getline(std::cin, name);
 		if(name.size() > 5) name = "F0000";//more stupid-proofing
 		if(!stoul_s(TID, name, true)) {
-			std::cout << "Invalid input, try again\n";
+			puts("Invalid input, try again");
 			pause
 			TID = max;
 		}
@@ -984,7 +976,7 @@ void makeCIA() {
 				}
 		}
 	}
-	std::cout << "Generating CIA...\n";
+	puts("Generating CIA...");
 	removeQuotes(longname);
 	removeInvalids(longname);
 	std::filesystem::create_directory("output");
@@ -993,13 +985,13 @@ void makeCIA() {
 	std::string cmd = system_g("Vidinjector9000Resources\\\\tools\\\\makerom.exe -f cia -o \"output/" + longname + " [000400000" + std::string(buffer) + "00].cia\" -banner \"exefs/banner.bin\" -icon \"exefs/icon.bin\" -code \"exefs/code.bin\" -exheader \"exheader.bin\" -rsf \"Vidinjector9000Resources/files/template.rsf\" -DAPP_UNIQUE_ID=" + std::to_string(TID));
 	if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
 	if(!pathExists("output/" + longname + " [000400000" + std::string(buffer) + "00].cia")) {
-		std::cout << "ERROR: Failed to build: \"output\\" + longname + " [000400000" + std::string(buffer) + "00].cia\"\n";
+		printf("ERROR: Failed to build: \"output\\%s [000400000%s00].cia\"\n", longname.c_str(), std::string(buffer).c_str());
 	}
 	pause
 	cls
-	std::cout << "Do you want this to delete the following folders/files? [Y/N]\n- exefs\n- romfs\n- exheader.bin\n";
+	puts("Do you want this to delete the following folders/files? [Y/N]\n- exefs\n- romfs\n- exheader.bin");
 	std::getline(std::cin, name);
-	if(tolowerstr(name) == "y") {
+	if(tolowerstr(name)[0] == 'y') {
 		main();
 	}
 	pause
@@ -1020,8 +1012,8 @@ void Settings() {
 		"| X: Go to the main menu                   |\n"
 		"|__________________________________________|\n\n");
 		std::getline(std::cin, name);
-		if(tolowerstr(name) == "d") Debug = Debug ? false : true;//if true, make it false and if false, make it true
-		else if(tolowerstr(name) == "x") return;
+		if(tolowerstr(name)[0] == 'd') Debug = Debug ? false : true;//if true, make it false and if false, make it true
+		else if(tolowerstr(name)[0] == 'x') return;
 	}
 }
 
@@ -1035,7 +1027,7 @@ void finalize() {
 			if(completed[i] == ' ') {
 				printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
 				std::getline(std::cin, name);
-				if(tolowerstr(name) == "y") break;
+				if(tolowerstr(name)[0] == 'y') break;
 				return;
 			}
 	}
@@ -1044,7 +1036,7 @@ void finalize() {
 			if(scompleted[i] == ' ') {
 				printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
 				std::getline(std::cin, name);
-				if(tolowerstr(name) == "y") break;
+				if(tolowerstr(name)[0] == 'y') break;
 				return;
 			}
 	}
@@ -1062,11 +1054,11 @@ void finalize() {
 		"| X: Go to the %s\n"
 		"|__________________________________________|\n\n", completed[5], completed[6], completed[7], type.c_str());
 		std::getline(std::cin, name);
-		if(tolowerstr(name) == "b") makebanner();//5
-		else if(tolowerstr(name) == "i") makeIcon();//6
-		else if(tolowerstr(name) == "u") customBanner();//7
-		else if(tolowerstr(name) == "c") makeCIA();
-		else if(tolowerstr(name) == "x") return;
+		if(tolowerstr(name)[0] == 'b') makebanner();//5
+		else if(tolowerstr(name)[0] == 'i') makeIcon();//6
+		else if(tolowerstr(name)[0] == 'u') customBanner();//7
+		else if(tolowerstr(name)[0] == 'c') makeCIA();
+		else if(tolowerstr(name)[0] == 'x') return;
 	}
 }
 
@@ -1103,21 +1095,21 @@ void MultiVideo() {
 		"| X: Go to the main menu                   |\n"
 		"|__________________________________________|\n\n", amountstr.c_str(), completed[0], completed[1], completed[2], completed[3], completed[4]);
 		std::getline(std::cin, name);
-		if(tolowerstr(name) == "a" && amount == 0) setAmount();
-		else if(tolowerstr(name) == "t") Movie_title();//0
-		else if(tolowerstr(name) == "s") makesettingsTL();//1
-		else if(tolowerstr(name) == "c") copyright();//2
-		else if(tolowerstr(name) == "b") tobimg();//3
-		else if(tolowerstr(name) == "m") moflexMover();//4
-		else if(tolowerstr(name) == "f") finalize();
-		else if(tolowerstr(name) == "x") {
+		if(tolowerstr(name)[0] == 'a' && amount == 0) setAmount();
+		else if(tolowerstr(name)[0] == 't') Movie_title();//0
+		else if(tolowerstr(name)[0] == 's') makesettingsTL();//1
+		else if(tolowerstr(name)[0] == 'c') copyright();//2
+		else if(tolowerstr(name)[0] == 'b') tobimg();//3
+		else if(tolowerstr(name)[0] == 'm') moflexMover();//4
+		else if(tolowerstr(name)[0] == 'f') finalize();
+		else if(tolowerstr(name)[0] == 'x') {
 			cls
 			name = "";
 			while(name == "") {
-				std::cout << "Exit now? You will lose progress. [Y/N]\n";
+				puts("Exit now? You will lose progress. [Y/N]");
 				std::getline(std::cin, name);
-				if(tolowerstr(name) == "y") return;
-				else if(tolowerstr(name) == "n") break;
+				if(tolowerstr(name)[0] == 'y') return;
+				else if(tolowerstr(name)[0] == 'n') break;
 				else name = "";
 				cls
 			}
@@ -1151,18 +1143,18 @@ void SingleVideo() {
 		"| X: Go to the main menu                   |\n"
 		"|__________________________________________|\n\n", scompleted[0], scompleted[1], scompleted[2]);
 		std::getline(std::cin, name);
-		if(tolowerstr(name) == "t") Movie_title();//0
-		else if(tolowerstr(name) == "s") makesettingsTL();//1
-		else if(tolowerstr(name) == "m") moflexMover();//2
-		else if(tolowerstr(name) == "f") finalize();
-		else if(tolowerstr(name) == "x") {
+		if(tolowerstr(name)[0] == 't') Movie_title();//0
+		else if(tolowerstr(name)[0] == 's') makesettingsTL();//1
+		else if(tolowerstr(name)[0] == 'm') moflexMover();//2
+		else if(tolowerstr(name)[0] == 'f') finalize();
+		else if(tolowerstr(name)[0] == 'x') {
 			cls
 			name = "";
 			while(name == "") {
-				std::cout << "Exit now? You will lose progress. [Y/N]\n";
+				puts("Exit now? You will lose progress. [Y/N]");
 				std::getline(std::cin, name);
-				if(tolowerstr(name) == "y") return;
-				else if(tolowerstr(name) == "n") break;
+				if(tolowerstr(name)[0] == 'y') return;//massive brain solution: type anything as long as it starts with y
+				else if(tolowerstr(name)[0] == 'n') break;
 				else name = "";
 				cls
 			}
@@ -1193,9 +1185,9 @@ int main() {
 		"| P: Program Settings                      |\n"
 		"|__________________________________________|\n\n");
 		std::getline(std::cin, name);
-		if(tolowerstr(name) == "s") SingleVideo();//0
-		else if(tolowerstr(name) == "m") MultiVideo();//1
-		else if(tolowerstr(name) == "p") Settings();//2
+		if(tolowerstr(name)[0] == 's') SingleVideo();//0
+		else if(tolowerstr(name)[0] == 'm') MultiVideo();//1
+		else if(tolowerstr(name)[0] == 'p') Settings();//2
 	}
 	return 0;
 }
