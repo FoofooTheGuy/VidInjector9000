@@ -277,11 +277,7 @@ bool Generate_Code(bool Multi) {
     std::filesystem::create_directory("exefs");
 	std::ofstream codebin(path, std::ios_base::out | std::ios_base::binary);
 	if(pathExists(path)) {
-		size_t size = Multi ? sizeof(Multivid) : sizeof(Singlevid);
-		char* buf = new char[size];
-		memcpy(buf, Multi ? Multivid : Singlevid, Multi ? sizeof(Multivid) : sizeof(Singlevid));
-		codebin.write(buf, Multi ? sizeof(Multivid) : sizeof(Singlevid));
-		delete[] buf;
+		codebin.write(reinterpret_cast<const char*>(Multi ? Multivid : Singlevid), Multi ? sizeof(Multivid) : sizeof(Singlevid));
 		return true;
 	}
     return false;
