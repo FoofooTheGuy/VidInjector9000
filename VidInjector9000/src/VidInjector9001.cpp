@@ -233,7 +233,7 @@ utf8_to_utf16(uint16_t      *out,
 std::string UTF8toUTF16(std::string input) {//not to be confused with utf8_to_utf16
 	std::string output = "";
 	uint8_t *utf8 = new uint8_t[input.size()];
-	uint16_t *utf16 = new uint16_t[input.size() * 2];
+	uint16_t *utf16 = new uint16_t[strlen(input) * 2];
 	memcpy(utf8, input.c_str(), input.size());
 	utf8_to_utf16(utf16, utf8, input.size());
 	char utf16str[strlen(input) * 2];
