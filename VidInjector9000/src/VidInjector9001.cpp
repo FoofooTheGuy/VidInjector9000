@@ -908,24 +908,13 @@ void makeCIA() {
 	unsigned long TID = max;
 	static std::mt19937 rng;
 
-	if(MultiVid) {
-		for (unsigned int i = 0; i < sizeof(completed)-1; i++)
-			if(completed[i] == ' ') {
-				printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
-				std::getline(std::cin, name);
-				if(tolowerstr(name)[0] == 'y') break;
-				return;
-			}
-	}
-	else {
-		for (unsigned int i = 0; i < sizeof(scompleted)-1; i++)
-			if(scompleted[i] == ' ') {
-				printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
-				std::getline(std::cin, name);
-				if(tolowerstr(name)[0] == 'y') break;
-				return;
-			}
-	}
+	for (unsigned int i = 0; i < (Multivid ? sizeof(completed)-3 : sizeof(scompleted)-3); i++)
+		if((Multivid ? completed[i] : scompleted[i]) == ' ') {
+			printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
+			std::getline(std::cin, name);
+			if(tolowerstr(name)[0] == 'y') break;
+			return;
+		}
 	GetDirSize("romfs", romfsize);
 	GetDirSize("exefs", exefsize);
 	if(romfsize + exefsize + exheadersize >= 4294967295) {//the fat32 file size limit (the output cia will be a little bit lower than this estimate but idc so cry about it)
@@ -1024,24 +1013,13 @@ void finalize() {
 	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
 	system_g("title [" + type + "] Finalizing");
 	cls
-	if(MultiVid) {
-		for (unsigned int i = 0; i < sizeof(completed)-3; i++)
-			if(completed[i] == ' ') {
-				printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
-				std::getline(std::cin, name);
-				if(tolowerstr(name)[0] == 'y') break;
-				return;
-			}
-	}
-	else {
-		for (unsigned int i = 0; i < sizeof(scompleted)-3; i++)
-			if(scompleted[i] == ' ') {
-				printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
-				std::getline(std::cin, name);
-				if(tolowerstr(name)[0] == 'y') break;
-				return;
-			}
-	}
+	for (unsigned int i = 0; i < (Multivid ? sizeof(completed)-3 : sizeof(scompleted)-3); i++)
+		if((Multivid ? completed[i] : scompleted[i]) == ' ') {
+			printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
+			std::getline(std::cin, name);
+			if(tolowerstr(name)[0] == 'y') break;
+			return;
+		}
 	while(1) {
 		cls
 		type = MultiVid ? "multi video menu            |" : "single video menu           |";
