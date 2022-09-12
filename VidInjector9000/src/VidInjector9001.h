@@ -8,6 +8,13 @@
 #include <string.h>
 #include "code.h"
 
+#define _toolsPath std::string("Vidinjector9000Resources\\\\tools\\\\")
+#define _magickPath std::string("imagemagick\\\\magick.exe")
+#define _3dstexPath std::string("3dstex-win-x86.exe")
+#define _3dstoolPath std::string("3dstool.exe")
+#define _bannertoolPath std::string("bannertool.exe")
+#define _makeromPath std::string("makerom.exe")
+
 //put headers in here
 const unsigned char bimgheader[32] {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00,
