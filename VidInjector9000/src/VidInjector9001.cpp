@@ -1013,7 +1013,7 @@ void finalize() {
 	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
 	system_g("title [" + type + "] Finalizing");
 	cls
-	for (unsigned int i = 0; i < sizeof(MultiVid ? completed : scompleted)-3; i++)
+	for (unsigned int i = 0; i < (MultiVid ? sizeof(completed)-3 : sizeof(scompleted)-3); i++)
 		if((MultiVid ? completed : scompleted)[i] == ' ') {
 			printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
 			std::getline(std::cin, name);
