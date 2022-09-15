@@ -1,7 +1,7 @@
 #include "VidInjector9001.h"
 
 //globals
-#define pause system("pause"); //betterPause();
+#define pause betterPause();
 #define cls system("cls");
 
 unsigned long amount = 0;
@@ -266,10 +266,10 @@ std::string system_g(std::string input) {//system_g()! It's system(), but good!
 	return input;
 }
 
-/*void betterPause() {//maybe one day...
+void betterPause() {
 	puts("Press Enter to continue . . .");
 	std::cin.ignore();
-}*/
+}
 
 bool Generate_Code(bool Multi) {
     std::string path = "exefs/code.bin";
