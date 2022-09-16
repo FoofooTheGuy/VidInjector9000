@@ -2,7 +2,7 @@
 
 //globals
 #define pause betterPause();
-#define cls system("cls");
+#define cls Clear();
 
 unsigned long amount = 0;
 std::string name = "";
@@ -269,6 +269,14 @@ std::string system_g(std::string input) {//system_g()! It's system(), but good!
 void betterPause() {
 	puts("Press Enter to continue . . .");
 	std::cin.ignore();
+}
+
+void Clear() {//https://stackoverflow.com/a/52895729
+#if defined _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
 }
 
 bool Generate_Code(bool Multi) {
