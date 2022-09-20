@@ -247,6 +247,148 @@ std::string UTF8toUTF16(std::string input) {//not to be confused with utf8_to_ut
 	return output;
 }
 
+//based on https://raw.githubusercontent.com/nothings/stb/master/tests/resample_test.cpp
+class stbir_context {
+public:
+	stbir_context()
+	{
+		size = 1000000;
+		memory = malloc(size);
+	}
+
+	~stbir_context()
+	{
+		free(memory);
+	}
+
+	size_t size;
+	void* memory;
+} g_context;
+
+void* stbir_malloc(size_t size, void* context)
+{
+	if (!context)
+		return malloc(size);
+
+	stbir_context* real_context = (stbir_context*)context;
+	if (size > real_context->size)
+		return 0;
+
+	return real_context->memory;
+}
+
+void stbir_free(void* memory, void* context)
+{
+	if (!context)
+		free(memory);
+}
+
+bool convertToBanner(std::string input, std::string outputpath)
+{
+	unsigned char* input_pixels;
+	unsigned char* output_pixels;
+	unsigned char* output_3c;
+	unsigned char* output_fin;
+	int w, h, ch, comp;
+	const int new_w = 256;
+	const int new_h = 128;
+	const int out_w = 200;
+	const int out_h = 120;
+	const uint8_t FF = 0xFF;
+	if(!stbi_info(input.c_str(), &w, &h, &comp)) {
+		puts("ERROR: Failed to get image info.");
+		return false;
+	}
+	input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
+	output_pixels = (unsigned char*) malloc(out_w*out_h*ch);
+	stbir_resize_uint8(input_pixels, w, h, 0, output_pixels, out_w, out_h, 0, ch);
+
+	if(ch == 4) {//if png?
+		output_3c = (unsigned char*) malloc(out_w*out_h*3);
+		for (int i = 3; i < out_w*out_h*ch; i+=4) {//make background all white
+			//https://stackoverflow.com/a/64655571
+			uint8_t alpha_out = output_pixels[i] + (FF * (FF - output_pixels[i]) / FF);
+			output_pixels[i-1] = (output_pixels[i-1] * output_pixels[i] + FF * FF * (FF - output_pixels[i]) / FF)/alpha_out;
+			output_pixels[i-2] = (output_pixels[i-2] * output_pixels[i] + FF * FF * (FF - output_pixels[i]) / FF)/alpha_out;
+			output_pixels[i-3] = (output_pixels[i-3] * output_pixels[i] + FF * FF * (FF - output_pixels[i]) / FF)/alpha_out;
+			output_pixels[i] = alpha_out;
+		}
+		int newi = 3;
+		for(int i = 3; i < out_w*out_h*4; i+=4) {
+			output_3c[newi-3] = output_pixels[i-3];
+			output_3c[newi-2] = output_pixels[i-2];
+			output_3c[newi-1] = output_pixels[i-1];
+			newi+=3;
+		}
+		//stbi_write_png(outputpath.c_str(), out_w, out_h, 3, output_3c, 0);
+		free(output_pixels);
+	}
+	if(ch == 3) {
+		output_3c = (unsigned char*) malloc(out_w*out_h*3);
+		for(int i = 0; i < out_w*out_h*3; i++) output_3c[i] = output_pixels[i];
+		free(output_pixels);
+	}
+	
+	//layer 200x120 image on a 256x128 image
+	output_fin = (unsigned char*) malloc(new_w*new_h*3);
+	for (int y = 0; y < out_h; y++)
+		for (int x = 0; x < out_w; x++) {
+			output_fin[(y*(new_w)+x)*3] = output_3c[(y*(out_w)+x)*3];
+			output_fin[(y*(new_w)+x)*3+1] = output_3c[(y*(out_w)+x)*3+1];
+			output_fin[(y*(new_w)+x)*3+2] = output_3c[(y*(out_w)+x)*3+2];
+		}
+	stbi__vertical_flip(output_fin, new_w, new_h, 3);//because 3dstex is broken
+	stbi_write_png(outputpath.c_str(), new_w, new_h, 3, output_fin, 0);
+	free(output_3c);
+	return true;
+}
+
+bool convertToIcon(std::string input, std::string output) {
+	unsigned char* input_pixels;
+	unsigned char* output_pixels;
+	unsigned char* output_3c;
+	int w, h, ch, comp;
+	const int out_w = 48;
+	const int out_h = 48;
+	const uint8_t FF = 0xFF;
+	if(!stbi_info(input.c_str(), &w, &h, &comp)) {
+		puts("ERROR: Failed to get image info.");
+		return false;
+	}
+	input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
+	output_pixels = (unsigned char*) malloc(out_w*out_h*ch);
+	stbir_resize_uint8(input_pixels, w, h, 0, output_pixels, out_w, out_h, 0, ch);
+
+	if(ch == 4) {//if png?
+		output_3c = (unsigned char*) malloc(out_w*out_h*3);
+		for (int i = 3; i < out_w*out_h*ch; i+=4) {//make background all white
+			//https://stackoverflow.com/a/64655571
+			uint8_t alpha_out = output_pixels[i] + (FF * (FF - output_pixels[i]) / FF);
+			output_pixels[i-1] = (output_pixels[i-1] * output_pixels[i] + FF * FF * (FF - output_pixels[i]) / FF)/alpha_out;
+			output_pixels[i-2] = (output_pixels[i-2] * output_pixels[i] + FF * FF * (FF - output_pixels[i]) / FF)/alpha_out;
+			output_pixels[i-3] = (output_pixels[i-3] * output_pixels[i] + FF * FF * (FF - output_pixels[i]) / FF)/alpha_out;
+			output_pixels[i] = alpha_out;
+		}
+		int newi = 3;
+		for(int i = 3; i < out_w*out_h*4; i+=4) {
+			output_3c[newi-3] = output_pixels[i-3];
+			output_3c[newi-2] = output_pixels[i-2];
+			output_3c[newi-1] = output_pixels[i-1];
+			newi+=3;
+		}
+		//stbi_write_png(output.c_str(), out_w, out_h, 3, output_3c, 0);
+		free(output_pixels);
+	}
+	if(ch == 3) {
+		output_3c = (unsigned char*) malloc(out_w*out_h*3);
+		for(int i = 0; i < out_w*out_h*3; i++) output_3c[i] = output_pixels[i];
+		free(output_pixels);
+	}
+	stbi_write_png(output.c_str(), out_w, out_w, 3, output_3c, 0);
+	free(output_3c);
+	return true;
+}
+
 void removeQuotes(std::string &str) {
 	std::string out;
 	for (const auto &c : str)
@@ -659,9 +801,10 @@ void tobimg() {
 		}
 		
 		//cmd code stuff heh
-		std::string cmd = system_g(_toolsPath + _magickPath + " \"" + name + "\" -resize 200x120! -background black -compose Copy -gravity northwest -extent 256x128 -flip \"romfs/movie/COMMON0.png\"");
-		if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
-		cmd = system_g(_toolsPath + _3dstexPath + " -ro rgb565 \"romfs/movie/COMMON0.png\" \"romfs/movie/movie_" + std::to_string(i) + ".bimg.part2\"");
+		copyfile(name, "romfs/movie/temp.png");
+		convertToBanner("romfs/movie/temp.png", "romfs/movie/COMMON0.png");
+		remove("romfs/movie/temp.png");
+		std::string cmd = system_g(_toolsPath + _3dstexPath + " -ro rgb565 \"romfs/movie/COMMON0.png\" \"romfs/movie/movie_" + std::to_string(i) + ".bimg.part2\"");
 		if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
 		remove("romfs/movie/COMMON0.png");
 		
@@ -762,9 +905,10 @@ void makebanner() {
 		}
 	}
 	
-	std::string cmd = system_g(_toolsPath + _magickPath + " \"" + name + "\" -resize 200x120! -background black -compose Copy -gravity northwest -extent 256x128 -flip \"exefs/COMMON0.png\"");
-	if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
-	cmd = system_g(_toolsPath + _3dstexPath + " -ro rgb565 \"exefs/COMMON0.png\" \"exefs/banner.bimg.part\"");
+	copyfile(name, "exefs/temp.png");
+	convertToBanner("exefs/temp.png", "exefs/COMMON0.png");
+	remove("exefs/temp.png");
+	std::string cmd = system_g(_toolsPath + _3dstexPath + " -ro rgb565 \"exefs/COMMON0.png\" \"exefs/banner.bimg.part\"");
 	if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
 	remove("exefs/COMMON0.png");
 	puts("");//haha pwetty cmd
@@ -841,10 +985,11 @@ void makeIcon() {
 		std::getline(std::cin, publisher);
 		if(publisher == "") cls
 	}
-	
-	std::string cmd = system_g(_toolsPath + _magickPath + " convert \"" + name + "\" -resize 48x48! -background black -flatten \"exefs/Icon.png\"");
-	if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
-	cmd = system_g(_toolsPath + _bannertoolPath + " makesmdh -i \"exefs/Icon.png\" -s \"" + shortname + "\" -l \"" + longname + "\" -p \"" + publisher + "\" -f visible,nosavebackups -o \"exefs/icon.bin");
+
+	copyfile(name, "exefs/temp.png");
+	convertToIcon("exefs/temp.png", "exefs/Icon.png");
+	remove("exefs/temp.png");
+	std::string cmd = system_g(_toolsPath + _bannertoolPath + " makesmdh -i \"exefs/Icon.png\" -s \"" + shortname + "\" -l \"" + longname + "\" -p \"" + publisher + "\" -f visible,nosavebackups -o \"exefs/icon.bin");
 	if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
 	remove("exefs/Icon.png");
 

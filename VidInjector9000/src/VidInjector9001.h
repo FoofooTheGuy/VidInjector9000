@@ -8,8 +8,35 @@
 #include <string.h>
 #include "code.h"
 
+//stb image stuff
+#ifdef __clang__
+#define STBIRDEF static inline
+#endif
+
+#define STB_IMAGE_RESIZE_IMPLEMENTATION
+#define STB_IMAGE_RESIZE_STATIC
+#include "stb_image_resize.h"
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
+#if defined(_WIN32) && _MSC_VER > 1200
+#define STBIR_ASSERT(x) \
+	if (!(x)) {         \
+		__debugbreak();  \
+	} else
+#else
+#include <assert.h>
+#define STBIR_ASSERT(x) assert(x)
+#endif
+
+#define STBIR_MALLOC stbir_malloc
+#define STBIR_FREE stbir_free
+
 #define _toolsPath std::string("Vidinjector9000Resources\\\\tools\\\\")
-#define _magickPath std::string("imagemagick\\\\magick.exe")
 #define _3dstexPath std::string("3dstex-win-x86.exe")
 #define _3dstoolPath std::string("3dstool.exe")
 #define _bannertoolPath std::string("bannertool.exe")
