@@ -1181,7 +1181,7 @@ void finalize() {
 		"|                                          |\n"
 		"| B: Generate banner                   [%c] |\n"
 		"| I: Generate icon                     [%c] |\n"
-		"| U: Use a custom banner file          [%c] |\n"//do U because i cant do C or B or idk it just means "use"
+		"| U: Use a custom banner file (CBMD)   [%c] |\n"//do U because i cant do C or B or idk it just means "use"
 		"|                                          |\n"
 		"| C: Generate CIA                          |\n"
 		"| X: Go to the %s\n"
