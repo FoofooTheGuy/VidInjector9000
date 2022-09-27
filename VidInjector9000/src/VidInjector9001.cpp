@@ -949,6 +949,11 @@ void makebanner() {
 	std::string cmd = system_g(_toolsPath + _3dstexPath + " -ro rgb565 \"exefs/COMMON0.png\" \"exefs/banner.bimg.part\"");
 	if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
 	remove("exefs/COMMON0.png");
+	if(!pathExists("exefs/banner.bimg.part")) {
+		puts("ERROR: Failed to convert image.");
+		pause
+		return;
+	}
 	puts("");//haha pwetty cmd
 	
 	std::ifstream bimgfile ("exefs/banner.bimg.part", std::ios::binary);
