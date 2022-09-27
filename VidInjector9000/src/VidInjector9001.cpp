@@ -37,7 +37,7 @@ void copyfile(std::string inpath, std::string outpath) {//also works with direct
 		std::filesystem::copy(inpath, outpath, std::filesystem::copy_options::recursive); 
 }
 
-void GetDirSize(std::filesystem::path dir, unsigned long long &size) {
+void GetDirSize(std::filesystem::path dir, size_t &size) {
 	for (const auto &entry : std::filesystem::directory_iterator(dir)) {
 		//std::cout << entry.path() << std::endl;
 		std::filesystem::path p = entry;
@@ -48,6 +48,10 @@ void GetDirSize(std::filesystem::path dir, unsigned long long &size) {
 			GetDirSize(entry.path(), size);
 		}
 	}
+}
+
+void GetFileSize(std::filesystem::path path, size_t &size) {
+	size = std::filesystem::file_size(path);
 }
 
 std::string tolowerstr(std::string str) {
@@ -413,6 +417,13 @@ void betterPause() {
 	std::cin.ignore();
 }
 
+bool goorQuit() {//false for quit, true for go
+	std::string opt = "";
+	puts("Press Enter to continue or Q+Enter to quit job . . .");
+	std::getline(std::cin, opt);
+	return tolower(opt[0])-0x71;
+}
+
 void Clear() {//https://stackoverflow.com/a/52895729
 #if defined _WIN32
     system("cls");
@@ -527,8 +538,8 @@ void makesettingsTL() {
 	while(buttons == "") {
 		puts("Do you want fast forward and rewind buttons? [Y/N]");
 		std::getline(std::cin, buttons);
-		if(tolowerstr(buttons)[0] == 'y') buttons = "true";
-		else if(tolowerstr(buttons)[0] == 'n') buttons = "false";
+		if(tolower(buttons[0]) == 'y') buttons = "true";
+		else if(tolower(buttons[0]) == 'n') buttons = "false";
 		else buttons = "";
 		cls
 	}
@@ -537,8 +548,8 @@ void makesettingsTL() {
 	while(gentleness == "") {
 		puts("Do you want the bottom screen to fade after a while? [Y/N]");
 		std::getline(std::cin, gentleness);
-		if(tolowerstr(gentleness)[0] == 'y') gentleness = "true";
-		else if(tolowerstr(gentleness)[0] == 'n') gentleness = "false";
+		if(tolower(gentleness[0]) == 'y') gentleness = "true";
+		else if(tolower(gentleness[0]) == 'n') gentleness = "false";
 		else {
 			gentleness = "";
 			cls
@@ -747,7 +758,7 @@ void copyright() {
 		puts("Do you want the menu to have the Copyright button? [Y/N]");
 		std::getline(std::cin, name);
 		if(name == "") cls
-		else if(tolowerstr(name)[0] == 'y') {
+		else if(tolower(name[0]) == 'y') {
 			information_buttons << "\xFF\xFE" << UTF8toUTF16("Copyright");
 			information_buttons.close();
 		}
@@ -786,6 +797,7 @@ void tobimg() {
 		return;
 	}
 	std::filesystem::create_directories("romfs/movie");
+	size_t size = 0;
 	for (unsigned long i = 0; i < amount; i++) {
 		name = "";
 		while(name == "") {
@@ -796,7 +808,10 @@ void tobimg() {
 			if(!pathExists(name)) {
 				printf("Error with the file (%s) Try again.\n", name.c_str());
 				name = "";
-				pause
+				switch(goorQuit()) {
+					case 0:
+						return;
+				}
 			}
 		}
 		
@@ -822,13 +837,22 @@ void tobimg() {
 		finalbimgfile.close();
 		buffer.clear();
 		std::filesystem::remove("romfs/movie/movie_" + std::to_string(i) + ".bimg.part2");//instead of fixing this so that remove() works im gonna use std::filesystem HEHEHEHEHHEH
-		if(!pathExists("romfs/movie/movie_" + std::to_string(i) + ".bimg")) {
-			printf("ERROR: Failed to generate romfs/movie/movie_%li.bimg\n", i);
-			pause
+		GetFileSize("romfs/movie/movie_" + std::to_string(i) + ".bimg", size);
+		if(size < 0x10020) {
+			printf("ERROR: Failed to generate romfs/movie/movie_%li.bimg, try again.\n", i);
+			i--;
+			switch(goorQuit()) {
+				case 0:
+					return;
+			}
 		}
 		puts("");//hah
 	}
 	completed[3] = 'X';
+	for (unsigned long i = 0; i < amount; i++) {
+		GetFileSize("romfs/movie/movie_" + std::to_string(i) + ".bimg", size);
+		if(size < 0x10020) completed[3] = ' ';
+	}
 	pause
 }
 
@@ -860,8 +884,11 @@ void moflexMover() {
 				inmoflex >> Checker[i];//https://stackoverflow.com/a/2974735
 				if(extension != ".moflex" || Checker[i] != moflexMagic[i]) {
 					printf("The input file (%s) is broken or not in moflex format. Try again.\n", name.c_str());
-					name == "";
-					pause
+					name = "";
+					switch(goorQuit()) {
+						case 0:
+							return;
+					}
 					break;
 				} else pass = true;
 			}
@@ -870,14 +897,22 @@ void moflexMover() {
 			copyfile(name, "romfs/movie/movie_" + std::to_string(i) + ".moflex");
 			if(!pathExists("romfs/movie/movie_" + std::to_string(i) + ".moflex")) {//this probably only happens if there's no disk space
 				printf("ERROR: Failed to copy \"%s\" to romfs/movie/movie_%li.moflex\n", name.c_str(), i);
-				pause
+				name = "";
+				switch(goorQuit()) {
+					case 0:
+						return;
+				}
 			}
 		}
 		else {
 			copyfile(name, "romfs/movie/movie.moflex");
 			if(!pathExists("romfs/movie/movie.moflex")) {//this probably only happens if there's no disk space
 				printf("ERROR: Failed to copy \"%s\" to romfs/movie/movie.moflex\n", name.c_str());
-				pause
+				name = "";
+				switch(goorQuit()) {
+					case 0:
+						return;
+				}
 			}
 		}
 		pass = false;
@@ -901,7 +936,10 @@ void makebanner() {
 		if(!pathExists(name)) {
 			printf("Error with the file (%s) Try again.\n", name.c_str());
 			name = "";
-			pause
+			switch(goorQuit()) {
+				case 0:
+					return;
+			}
 		}
 	}
 	
@@ -963,7 +1001,10 @@ void makeIcon() {
 		if(!pathExists(name)) {
 			printf("Error with the file (%s) Try again.\n", name.c_str());
 			name = "";
-			pause
+			switch(goorQuit()) {
+				case 0:
+					return;
+			}
 		}
 	}
 	cls
@@ -1030,7 +1071,10 @@ void customBanner() {
 			if(Checker[i] != bannerMagic[i]) {
 				printf("The input file (%s) is not a valid banner. Try again.\n", name.c_str());
 				name == "";
-				pause
+				switch(goorQuit()) {
+					case 0:
+						return;
+				}
 				break;
 			} else pass = true;
 		}
@@ -1065,7 +1109,7 @@ void makeCIA() {
 		if((MultiVid ? completed : scompleted)[i] == ' ') {
 			printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
 			std::getline(std::cin, name);
-			if(tolowerstr(name)[0] == 'y') break;
+			if(tolower(name[0]) == 'y') break;
 			return;
 		}
 	GetDirSize("romfs", romfsize);
@@ -1083,7 +1127,10 @@ void makeCIA() {
 		if(name.size() > 5) name = "F0000";//more stupid-proofing
 		if(!stoul_s(TID, name, true)) {
 			puts("Invalid input, try again");
-			pause
+			switch(goorQuit()) {
+				case 0:
+					return;
+			}
 			TID = max;
 		}
 		if (TID == 0) {
@@ -1107,16 +1154,22 @@ void makeCIA() {
 			case 0:
 			{
 				printf("Oops, you ran into a blacklisted ID! (%05lX) Try again.\n", TID);
-				pause
 				TID = max;
+				switch(goorQuit()) {
+					case 0:
+						return;
+				}
 			}
 			break;
 			default:
 				if(TID < max && TID > min+1) printf("%05lX Passed all checks!\n", TID);
 				else {
 					printf("Oops, you ran into a blacklisted ID! (%05lX) Try again.\n", TID);
-					pause
 					TID = max;
+					switch(goorQuit()) {
+						case 0:
+							return;
+					}
 				}
 		}
 	}
@@ -1135,7 +1188,7 @@ void makeCIA() {
 	cls
 	puts("Do you want this to delete the following folders/files? [Y/N]\n- exefs\n- romfs\n- exheader.bin");
 	std::getline(std::cin, name);
-	if(tolowerstr(name)[0] == 'y') {
+	if(tolower(name[0]) == 'y') {
 		main();
 	}
 	pause
@@ -1156,8 +1209,8 @@ void Settings() {
 		"| X: Go to the main menu                   |\n"
 		"|__________________________________________|\n\n");
 		std::getline(std::cin, name);
-		if(tolowerstr(name)[0] == 'd') Debug = Debug ? false : true;//if true, make it false and if false, make it true
-		else if(tolowerstr(name)[0] == 'x') return;
+		if(tolower(name[0]) == 'd') Debug = Debug ? false : true;//if true, make it false and if false, make it true
+		else if(tolower(name[0]) == 'x') return;
 	}
 }
 
@@ -1170,7 +1223,7 @@ void finalize() {
 		if((MultiVid ? completed : scompleted)[i] == ' ') {
 			printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
 			std::getline(std::cin, name);
-			if(tolowerstr(name)[0] == 'y') break;
+			if(tolower(name[0]) == 'y') break;
 			return;
 		}
 	while(1) {
@@ -1187,11 +1240,11 @@ void finalize() {
 		"| X: Go to the %s\n"
 		"|__________________________________________|\n\n", completed[5], completed[6], completed[7], type.c_str());
 		std::getline(std::cin, name);
-		if(tolowerstr(name)[0] == 'b') makebanner();//5
-		else if(tolowerstr(name)[0] == 'i') makeIcon();//6
-		else if(tolowerstr(name)[0] == 'u') customBanner();//7
-		else if(tolowerstr(name)[0] == 'c') makeCIA();
-		else if(tolowerstr(name)[0] == 'x') return;
+		if(tolower(name[0]) == 'b') makebanner();//5
+		else if(tolower(name[0]) == 'i') makeIcon();//6
+		else if(tolower(name[0]) == 'u') customBanner();//7
+		else if(tolower(name[0]) == 'c') makeCIA();
+		else if(tolower(name[0]) == 'x') return;
 	}
 }
 
@@ -1228,21 +1281,21 @@ void MultiVideo() {
 		"| X: Go to the main menu                   |\n"
 		"|__________________________________________|\n\n", amountstr.c_str(), completed[0], completed[1], completed[2], completed[3], completed[4]);
 		std::getline(std::cin, name);
-		if(tolowerstr(name)[0] == 'a' && amount == 0) setAmount();
-		else if(tolowerstr(name)[0] == 't') Movie_title();//0
-		else if(tolowerstr(name)[0] == 's') makesettingsTL();//1
-		else if(tolowerstr(name)[0] == 'c') copyright();//2
-		else if(tolowerstr(name)[0] == 'b') tobimg();//3
-		else if(tolowerstr(name)[0] == 'm') moflexMover();//4
-		else if(tolowerstr(name)[0] == 'f') finalize();
-		else if(tolowerstr(name)[0] == 'x') {
+		if(tolower(name[0]) == 'a' && amount == 0) setAmount();
+		else if(tolower(name[0]) == 't') Movie_title();//0
+		else if(tolower(name[0]) == 's') makesettingsTL();//1
+		else if(tolower(name[0]) == 'c') copyright();//2
+		else if(tolower(name[0]) == 'b') tobimg();//3
+		else if(tolower(name[0]) == 'm') moflexMover();//4
+		else if(tolower(name[0]) == 'f') finalize();
+		else if(tolower(name[0]) == 'x') {
 			cls
 			name = "";
 			while(name == "") {
 				puts("Exit now? You will lose progress. [Y/N]");
 				std::getline(std::cin, name);
-				if(tolowerstr(name)[0] == 'y') return;
-				else if(tolowerstr(name)[0] == 'n') break;
+				if(tolower(name[0]) == 'y') return;
+				else if(tolower(name[0]) == 'n') break;
 				else name = "";
 				cls
 			}
@@ -1276,18 +1329,18 @@ void SingleVideo() {
 		"| X: Go to the main menu                   |\n"
 		"|__________________________________________|\n\n", scompleted[0], scompleted[1], scompleted[2]);
 		std::getline(std::cin, name);
-		if(tolowerstr(name)[0] == 't') Movie_title();//0
-		else if(tolowerstr(name)[0] == 's') makesettingsTL();//1
-		else if(tolowerstr(name)[0] == 'm') moflexMover();//2
-		else if(tolowerstr(name)[0] == 'f') finalize();
-		else if(tolowerstr(name)[0] == 'x') {
+		if(tolower(name[0]) == 't') Movie_title();//0
+		else if(tolower(name[0]) == 's') makesettingsTL();//1
+		else if(tolower(name[0]) == 'm') moflexMover();//2
+		else if(tolower(name[0]) == 'f') finalize();
+		else if(tolower(name[0]) == 'x') {
 			cls
 			name = "";
 			while(name == "") {
 				puts("Exit now? You will lose progress. [Y/N]");
 				std::getline(std::cin, name);
-				if(tolowerstr(name)[0] == 'y') return;//massive brain solution: type anything as long as it starts with y
-				else if(tolowerstr(name)[0] == 'n') break;
+				if(tolower(name[0]) == 'y') return;//massive brain solution: type anything as long as it starts with y
+				else if(tolower(name[0]) == 'n') break;
 				else name = "";
 				cls
 			}
@@ -1318,9 +1371,9 @@ int main() {
 		"| P: Program Settings                      |\n"
 		"|__________________________________________|\n\n");
 		std::getline(std::cin, name);
-		if(tolowerstr(name)[0] == 's') SingleVideo();//0
-		else if(tolowerstr(name)[0] == 'm') MultiVideo();//1
-		else if(tolowerstr(name)[0] == 'p') Settings();//2
+		if(tolower(name[0]) == 's') SingleVideo();//0
+		else if(tolower(name[0]) == 'm') MultiVideo();//1
+		else if(tolower(name[0]) == 'p') Settings();//2
 	}
 	return 0;
 }
