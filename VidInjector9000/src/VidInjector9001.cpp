@@ -427,7 +427,7 @@ bool goorQuit() {//false for quit, true for go
 }
 
 void Clear() {//https://stackoverflow.com/a/52895729
-#if defined _WIN32
+#if defined(_WIN32)
     system("cls");
 #else
     system("clear");
@@ -448,7 +448,7 @@ bool Generate_Code(bool Multi) {
 
 //big functions
 void setAmount() {
-	#if defined _WIN32
+	#if defined(_WIN32)
 		system("title [MultiVidInjector5000] Set video amount");
 	#endif
 	static bool good = false;
@@ -480,7 +480,7 @@ void setAmount() {
 }
 
 void Movie_title() {
-	#if defined _WIN32
+	#if defined(_WIN32)
 		type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
 		system_g("title [" + type + "] Generate movie_title.csv");
 	#endif
@@ -518,7 +518,7 @@ void Movie_title() {
 }
 
 void makesettingsTL() {
-	#if defined _WIN32
+	#if defined(_WIN32)
 	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
 	system_g("title [" + type + "] Generate settingsTL.csv");
 	#endif
@@ -757,7 +757,7 @@ void makesettingsTL() {
 }
 
 void copyright() {
-	#if defined _WIN32
+	#if defined(_WIN32)
 	system("title [MultiVidInjector5000] Copyright options");
 	#endif
 	cls
@@ -799,7 +799,7 @@ void copyright() {
 }
 
 void tobimg() {
-	#if defined _WIN32
+	#if defined(_WIN32)
 	system("title [MultiVidInjector5000] Image to .bimg");
 	#endif
 	cls
@@ -869,7 +869,7 @@ void tobimg() {
 }
 
 void moflexMover() {
-	#if defined _WIN32
+	#if defined(_WIN32)
 	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
 	system_g("title [" + type + "] Injecting .moflex");
 	#endif
@@ -937,7 +937,7 @@ void moflexMover() {
 }
 
 void makebanner() {
-	#if defined _WIN32
+	#if defined(_WIN32)
 	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
 	system_g("title [" + type + "] Generate banner");
 	#endif
@@ -1007,7 +1007,7 @@ void makebanner() {
 }
 
 void makeIcon() {
-	#if defined _WIN32
+	#if defined(_WIN32)
 	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
 	system_g("title [" + type + "] Generate icon");
 	#endif
@@ -1076,7 +1076,7 @@ void makeIcon() {
 }
 
 void customBanner() {
-	#if defined _WIN32
+	#if defined(_WIN32)
 	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
 	system_g("title [" + type + "] Generate banner");
 	#endif
@@ -1118,7 +1118,7 @@ void customBanner() {
 }
 
 void makeCIA() {
-	#if defined _WIN32
+	#if defined(_WIN32)
 	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
 	system_g("title [" + type + "] Generate CIA");
 	#endif
@@ -1243,7 +1243,7 @@ void Settings() {
 
 //2nd menu
 void finalize() {
-	#if defined _WIN32
+	#if defined(_WIN32)
 	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
 	system_g("title [" + type + "] Finalizing");
 	#endif
@@ -1294,7 +1294,7 @@ void MultiVideo() {
 		if (amount == 0)	amountstr = "                  [ ";
 		else if(amount <= 9)amountstr = "                  [" + std::to_string(amount);//this will make sense in the end trust me
 		else				amountstr = "                 [" + std::to_string(amount);//see? no?
-		#if defined _WIN32
+		#if defined(_WIN32)
 		system("title MultiVidInjector5000 by Foofoo_the_guy");
 		#endif
 		cls
@@ -1347,7 +1347,7 @@ void SingleVideo() {
 	copyfile("Vidinjector9000Resources/files/templates/SingleVideo/romfs", "romfs");
 	copyfile("Vidinjector9000Resources/files/templates/SingleVideo/exheader.bin", "exheader.bin");
 	while(1) {
-		#if defined _WIN32
+		#if defined(_WIN32)
 		system("title VidInjector9001 by Foofoo_the_guy");
 		#endif
 		cls
