@@ -840,7 +840,7 @@ void tobimg() {
 		bimgfile.close();
 		finalbimgfile.close();
 		buffer.clear();
-		//std::filesystem::remove("romfs/movie/movie_" + std::to_string(i) + ".bimg.part2");//instead of fixing this so that remove() works im gonna use std::filesystem HEHEHEHEHHEH
+		std::filesystem::remove("romfs/movie/movie_" + std::to_string(i) + ".bimg.part2");//instead of fixing this so that remove() works im gonna use std::filesystem HEHEHEHEHHEH
 		size = std::filesystem::file_size("romfs/movie/movie_" + std::to_string(i) + ".bimg");
 		if(size < 0x10020) {
 			printf("ERROR: Failed to generate romfs/movie/movie_%li.bimg, try again.\n", i);
