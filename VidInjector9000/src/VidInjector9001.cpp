@@ -50,10 +50,6 @@ void GetDirSize(std::filesystem::path dir, size_t &size) {
 	}
 }
 
-void GetFileSize(std::filesystem::path path, size_t &size) {
-	size = std::filesystem::file_size(path);
-}
-
 std::string tolowerstr(std::string str) {
 	for (char &i : str)
 		i = tolower(i);
@@ -306,6 +302,7 @@ bool convertToBanner(std::string input, std::string outputpath)
 	input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
 	output_pixels = (unsigned char*) malloc(out_w*out_h*ch);
 	stbir_resize_uint8(input_pixels, w, h, 0, output_pixels, out_w, out_h, 0, ch);
+	stbi_image_free(input_pixels);
 
 	if(ch == 4) {//if png?
 		output_3c = (unsigned char*) malloc(out_w*out_h*3);
@@ -324,17 +321,17 @@ bool convertToBanner(std::string input, std::string outputpath)
 			output_3c[newi-1] = output_pixels[i-1];
 			newi+=3;
 		}
-		//stbi_write_png(outputpath.c_str(), out_w, out_h, 3, output_3c, 0);
 		free(output_pixels);
 	}
 	if(ch == 3) {
 		output_3c = (unsigned char*) malloc(out_w*out_h*3);
-		for(int i = 0; i < out_w*out_h*3; i++) output_3c[i] = output_pixels[i];
+		memcpy(output_3c, output_pixels, out_w*out_h*3);
 		free(output_pixels);
 	}
 	
 	//layer 200x120 image on a 256x128 image
 	output_fin = (unsigned char*) malloc(new_w*new_h*3);
+	memset(output_fin, 0, new_w*new_h*3);
 	for (int y = 0; y < out_h; y++)
 		for (int x = 0; x < out_w; x++) {
 			output_fin[(y*(new_w)+x)*3] = output_3c[(y*(out_w)+x)*3];
@@ -343,7 +340,7 @@ bool convertToBanner(std::string input, std::string outputpath)
 		}
 	stbi__vertical_flip(output_fin, new_w, new_h, 3);//because 3dstex is broken
 	stbi_write_png(outputpath.c_str(), new_w, new_h, 3, output_fin, 0);
-	stbi_image_free(input_pixels);
+	//stbi_write_png("imag.png", new_w, new_h, 3, output_fin, 0);
 	free(output_3c);
 	return true;
 }
@@ -381,7 +378,6 @@ bool convertToIcon(std::string input, std::string output) {
 			output_3c[newi-1] = output_pixels[i-1];
 			newi+=3;
 		}
-		//stbi_write_png(output.c_str(), out_w, out_h, 3, output_3c, 0);
 		free(output_pixels);
 	}
 	if(ch == 3) {
@@ -410,8 +406,7 @@ void removeInvalids(std::string &str) {//remove more invalid characters
 }
 
 std::string system_g(std::string input) {//system_g()! It's system(), but good!
-	system(input.c_str());
-	return input;
+	return system(input.c_str()), input;
 }
 
 void betterPause() {
@@ -820,10 +815,7 @@ void tobimg() {
 			if(!pathExists(name)) {
 				printf("Error with the file (%s) Try again.\n", name.c_str());
 				name = "";
-				switch(goorQuit()) {
-					case 0:
-						return;
-				}
+				if(!goorQuit()) return;
 			}
 		}
 		
@@ -848,21 +840,18 @@ void tobimg() {
 		bimgfile.close();
 		finalbimgfile.close();
 		buffer.clear();
-		std::filesystem::remove("romfs/movie/movie_" + std::to_string(i) + ".bimg.part2");//instead of fixing this so that remove() works im gonna use std::filesystem HEHEHEHEHHEH
-		GetFileSize("romfs/movie/movie_" + std::to_string(i) + ".bimg", size);
+		//std::filesystem::remove("romfs/movie/movie_" + std::to_string(i) + ".bimg.part2");//instead of fixing this so that remove() works im gonna use std::filesystem HEHEHEHEHHEH
+		size = std::filesystem::file_size("romfs/movie/movie_" + std::to_string(i) + ".bimg");
 		if(size < 0x10020) {
 			printf("ERROR: Failed to generate romfs/movie/movie_%li.bimg, try again.\n", i);
 			i--;
-			switch(goorQuit()) {
-				case 0:
-					return;
-			}
+			if(!goorQuit()) return;
 		}
 		puts("");//hah
 	}
 	completed[3] = 'X';
 	for (unsigned long i = 0; i < amount; i++) {
-		GetFileSize("romfs/movie/movie_" + std::to_string(i) + ".bimg", size);
+		size = std::filesystem::file_size("romfs/movie/movie_" + std::to_string(i) + ".bimg");
 		if(size < 0x10020) completed[3] = ' ';
 	}
 	pause
@@ -899,10 +888,7 @@ void moflexMover() {
 				if(extension != ".moflex" || Checker[i] != moflexMagic[i]) {
 					printf("The input file (%s) is broken or not in moflex format. Try again.\n", name.c_str());
 					name = "";
-					switch(goorQuit()) {
-						case 0:
-							return;
-					}
+					if(!goorQuit()) return;
 					break;
 				} else pass = true;
 			}
@@ -912,10 +898,7 @@ void moflexMover() {
 			if(!pathExists("romfs/movie/movie_" + std::to_string(i) + ".moflex")) {//this probably only happens if there's no disk space
 				printf("ERROR: Failed to copy \"%s\" to romfs/movie/movie_%li.moflex\n", name.c_str(), i);
 				name = "";
-				switch(goorQuit()) {
-					case 0:
-						return;
-				}
+				if(!goorQuit()) return;
 			}
 		}
 		else {
@@ -923,10 +906,7 @@ void moflexMover() {
 			if(!pathExists("romfs/movie/movie.moflex")) {//this probably only happens if there's no disk space
 				printf("ERROR: Failed to copy \"%s\" to romfs/movie/movie.moflex\n", name.c_str());
 				name = "";
-				switch(goorQuit()) {
-					case 0:
-						return;
-				}
+				if(!goorQuit()) return;
 			}
 		}
 		pass = false;
@@ -952,10 +932,7 @@ void makebanner() {
 		if(!pathExists(name)) {
 			printf("Error with the file (%s) Try again.\n", name.c_str());
 			name = "";
-			switch(goorQuit()) {
-				case 0:
-					return;
-			}
+			if(!goorQuit()) return;
 		}
 	}
 	
@@ -1024,10 +1001,7 @@ void makeIcon() {
 		if(!pathExists(name)) {
 			printf("Error with the file (%s) Try again.\n", name.c_str());
 			name = "";
-			switch(goorQuit()) {
-				case 0:
-					return;
-			}
+			if(!goorQuit()) return;
 		}
 	}
 	cls
@@ -1096,10 +1070,7 @@ void customBanner() {
 			if(Checker[i] != bannerMagic[i]) {
 				printf("The input file (%s) is not a valid banner. Try again.\n", name.c_str());
 				name == "";
-				switch(goorQuit()) {
-					case 0:
-						return;
-				}
+				if(!goorQuit()) return;
 				break;
 			} else pass = true;
 		}
@@ -1126,9 +1097,6 @@ void makeCIA() {
 	
 	unsigned long min = 0xC0000;
 	unsigned long max = 0xF0000;
-	unsigned long long romfsize = 0;
-	unsigned long long exefsize = 0;
-	unsigned long long exheadersize = std::filesystem::file_size("exheader.bin");
 	unsigned long TID = max;
 	static std::mt19937 rng;
 
@@ -1139,13 +1107,11 @@ void makeCIA() {
 			if(tolower(name[0]) == 'y') break;
 			return;
 		}
-	GetDirSize("romfs", romfsize);
-	GetDirSize("exefs", exefsize);
-	if(romfsize + exefsize + exheadersize >= 4294967295) {//the fat32 file size limit (the output cia will be a little bit lower than this estimate but idc so cry about it)
+	/*if(romfsize + exefsize + exheadersize >= 4294967295) {//the fat32 file size limit (the output cia will be a little bit lower than this estimate but idc so cry about it)
 		printf("ERROR: The estimated file size (%lli) of the cia file is too big and will\nnot install to a 3ds nor work in the emulator.\n", (romfsize + exefsize));
 		pause
 		return;
-	}
+	}*/
 	
 	while(TID == max) {
 		cls
@@ -1154,10 +1120,7 @@ void makeCIA() {
 		if(name.size() > 5) name = "F0000";//more stupid-proofing
 		if(!stoul_s(TID, name, true)) {
 			puts("Invalid input, try again");
-			switch(goorQuit()) {
-				case 0:
-					return;
-			}
+			if(!goorQuit()) return;
 			TID = max;
 		}
 		if (TID == 0) {
@@ -1182,10 +1145,7 @@ void makeCIA() {
 			{
 				printf("Oops, you ran into a blacklisted ID! (%05lX) Try again.\n", TID);
 				TID = max;
-				switch(goorQuit()) {
-					case 0:
-						return;
-				}
+				if(!goorQuit()) return;
 			}
 			break;
 			default:
@@ -1193,10 +1153,7 @@ void makeCIA() {
 				else {
 					printf("Oops, you ran into a blacklisted ID! (%05lX) Try again.\n", TID);
 					TID = max;
-					switch(goorQuit()) {
-						case 0:
-							return;
-					}
+					if(!goorQuit()) return;
 				}
 		}
 	}
@@ -1210,6 +1167,10 @@ void makeCIA() {
 	if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
 	if(!pathExists("output/" + longname + " [000400000" + std::string(buffer) + "00].cia")) {
 		printf("ERROR: Failed to build: \"output\\%s [000400000%s00].cia\"\n", longname.c_str(), std::string(buffer).c_str());
+	}
+	size_t cia_size(std::filesystem::file_size("output/" + longname + " [000400000" + std::string(buffer) + "00].cia"));
+	if(cia_size > 4294967296) {
+		printf("WARNING: The file size (%lli) of the cia file is too big and will\nnot install to a 3ds nor work in the emulator.\n", cia_size);
 	}
 	pause
 	cls
