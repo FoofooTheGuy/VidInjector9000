@@ -37,10 +37,17 @@
 #define STBIR_FREE stbir_free
 
 #define _toolsPath std::string("Vidinjector9000Resources\\\\tools\\\\")
-#define _3dstexPath std::string("3dstex-win-x86.exe")
-#define _3dstoolPath std::string("3dstool.exe")
-#define _bannertoolPath std::string("bannertool.exe")
-#define _makeromPath std::string("makerom.exe")
+#if defined(_WIN32)
+	#define _3dstexPath std::string("3dstex-win-x86.exe")
+	#define _3dstoolPath std::string("3dstool.exe")
+	#define _bannertoolPath std::string("bannertool.exe")
+	#define _makeromPath std::string("makerom.exe")
+#elif defined(unix) || defined(__unix__) || defined(__unix)
+	#define _3dstexPath std::string("3dstex-linux-x64")
+	#define _3dstoolPath std::string("3dstool")
+	#define _bannertoolPath std::string("bannertool")
+	#define _makeromPath std::string("makerom")
+#endif
 
 //put headers in here
 const unsigned char bimgheader[32] {
