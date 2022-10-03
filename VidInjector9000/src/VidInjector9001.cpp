@@ -1384,7 +1384,7 @@ void SingleVideo() {
 //main menu
 int main() {
 	while(1) {
-		#if defined _WIN32
+		#if defined(_WIN32)
 		system("title VidInjector9001 by Foofoo_the_guy");
 		#endif
 		cls
