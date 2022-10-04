@@ -24,16 +24,10 @@ std::size_t strlen(const std::string& str) {//http://www.cplusplus.com/forum/beg
 	return length;
 }
 
-bool pathExists(const std::filesystem::path& p)//https://en.cppreference.com/w/cpp/filesystem/exists
-{
-	if(std::filesystem::exists(p)) return true;
-    return false;
-}
-
 void copyfile(std::string inpath, std::string outpath) {//also works with directories
-	if(pathExists(outpath))
+	if(std::filesystem::exists(outpath))
 		std::filesystem::remove_all(outpath);
-	if(pathExists(inpath))
+	if(std::filesystem::exists(inpath))
 		std::filesystem::copy(inpath, outpath, std::filesystem::copy_options::recursive); 
 }
 
@@ -414,7 +408,7 @@ void betterPause() {
 	std::cin.ignore();
 }
 
-bool goorQuit() {//false for quit, true for go
+bool goorQuit() {//true for go, false for quit
 	std::string opt = "";
 	puts("Press Enter to continue or Q+Enter to quit job . . .");
 	std::getline(std::cin, opt);
@@ -434,7 +428,7 @@ bool Generate_Code(bool Multi) {
     puts("Generating code.bin...");
     std::filesystem::create_directory("exefs");
 	std::ofstream codebin(path, std::ios_base::out | std::ios_base::binary);
-	if(pathExists(path)) {
+	if(std::filesystem::exists(path)) {
 		codebin.write(reinterpret_cast<const char*>(Multi ? Multivid : Singlevid), Multi ? sizeof(Multivid) : sizeof(Singlevid));
 		return true;
 	}
@@ -467,7 +461,7 @@ void setAmount() {
 			good = true;
 		}
 	}
-	if(!pathExists("romfs/settings/movie_bnrname.csv")) {
+	if(!std::filesystem::exists("romfs/settings/movie_bnrname.csv")) {
 		puts("ERROR: Failed to generate romfs/settings/movie_bnrname.csv");
 		pause
 		return;
@@ -502,7 +496,7 @@ void Movie_title() {
 		movie_title << UTF8toUTF16(name + "\x0D\x0A");//put the last stuff
 	}
 	movie_title.close();
-	if(!pathExists("romfs/movie/movie_title.csv")) {
+	if(!std::filesystem::exists("romfs/movie/movie_title.csv")) {
 		puts("ERROR: Failed to generate romfs/movie/movie_title.csv");
 		pause
 		return;
@@ -740,11 +734,11 @@ void makesettingsTL() {
 								"\x0D\x0A"
 								"\x0D\x0A"
 								"# TW:");
-		if(pathExists("romfs/settings/settingsTL.csv")) completed[1] = 'X';
+		if(std::filesystem::exists("romfs/settings/settingsTL.csv")) completed[1] = 'X';
 		else puts("ERROR: Failed to generate romfs/settings/settingsTL.csv");
 	}
 	else {
-		if(pathExists("romfs/settings/settingsTL.csv")) scompleted[1] = 'X';
+		if(std::filesystem::exists("romfs/settings/settingsTL.csv")) scompleted[1] = 'X';
 		else puts("ERROR: Failed to generate romfs/settings/settingsTL.csv");
 	}
 	settingsTL.close();
@@ -784,7 +778,7 @@ void copyright() {
 	std::ofstream copyrighttxt("romfs/settings/copyright.txt", std::ios_base::out | std::ios_base::binary);
 	copyrighttxt << "\xFF\xFE" << UTF8toUTF16(name);
 	copyrighttxt.close();
-	if(!pathExists("romfs/settings/copyright.txt")) {//how tho like what, your hard drive is 100% full???
+	if(!std::filesystem::exists("romfs/settings/copyright.txt")) {//how tho like what, your hard drive is 100% full???
 		puts("ERROR: Failed to generate romfs/settings/copyright.txt");
 		pause
 		return;
@@ -812,7 +806,7 @@ void tobimg() {
 			printf("Enter/drag and drop image for video #%li\n(The image should be 200x120 for best results)\n", i+1);
 			std::getline(std::cin, name);
 			removeQuotes(name);
-			if(!pathExists(name)) {
+			if(!std::filesystem::exists(name)) {
 				printf("Error with the file (%s) Try again.\n", name.c_str());
 				name = "";
 				if(!goorQuit()) return;
@@ -895,7 +889,7 @@ void moflexMover() {
 		}
 		if(MultiVid) {
 			copyfile(name, "romfs/movie/movie_" + std::to_string(i) + ".moflex");
-			if(!pathExists("romfs/movie/movie_" + std::to_string(i) + ".moflex")) {//this probably only happens if there's no disk space
+			if(!std::filesystem::exists("romfs/movie/movie_" + std::to_string(i) + ".moflex")) {//this probably only happens if there's no disk space
 				printf("ERROR: Failed to copy \"%s\" to romfs/movie/movie_%li.moflex\n", name.c_str(), i);
 				name = "";
 				if(!goorQuit()) return;
@@ -903,7 +897,7 @@ void moflexMover() {
 		}
 		else {
 			copyfile(name, "romfs/movie/movie.moflex");
-			if(!pathExists("romfs/movie/movie.moflex")) {//this probably only happens if there's no disk space
+			if(!std::filesystem::exists("romfs/movie/movie.moflex")) {//this probably only happens if there's no disk space
 				printf("ERROR: Failed to copy \"%s\" to romfs/movie/movie.moflex\n", name.c_str());
 				name = "";
 				if(!goorQuit()) return;
@@ -929,7 +923,7 @@ void makebanner() {
 		puts("Enter/drag and drop your home screen banner image:\n(The image should be 200x120 for best results)");
 		std::getline(std::cin, name);
 		removeQuotes(name);
-		if(!pathExists(name)) {
+		if(!std::filesystem::exists(name)) {
 			printf("Error with the file (%s) Try again.\n", name.c_str());
 			name = "";
 			if(!goorQuit()) return;
@@ -942,7 +936,7 @@ void makebanner() {
 	std::string cmd = system_g(_toolsPath + _3dstexPath + " -ro rgb565 \"exefs/COMMON0.png\" \"exefs/banner.bimg.part\"");
 	if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
 	remove("exefs/COMMON0.png");
-	if(!pathExists("exefs/banner.bimg.part")) {
+	if(!std::filesystem::exists("exefs/banner.bimg.part")) {
 		puts("ERROR: Failed to convert image.");
 		pause
 		return;
@@ -971,7 +965,7 @@ void makebanner() {
 	remove("exefs/banner0.bcmdl");
 	remove("exefs/banner.cbmd");
 
-	if(!pathExists("exefs/banner.bin")) {
+	if(!std::filesystem::exists("exefs/banner.bin")) {
 		puts("ERROR: Failed to generate exefs/banner.bin");
 		pause
 		return;
@@ -998,7 +992,7 @@ void makeIcon() {
 		puts("Enter/drag and drop your icon image:\n(The image should be 48x48 for best results)");
 		std::getline(std::cin, name);
 		removeQuotes(name);
-		if(!pathExists(name)) {
+		if(!std::filesystem::exists(name)) {
 			printf("Error with the file (%s) Try again.\n", name.c_str());
 			name = "";
 			if(!goorQuit()) return;
@@ -1033,13 +1027,13 @@ void makeIcon() {
 
 	if(MultiVid) {
 		copyfile("exefs/icon.bin", "romfs/icon.icn");
-		if(!pathExists("romfs/icon.icn")) {
+		if(!std::filesystem::exists("romfs/icon.icn")) {
 			puts("ERROR: Failed to copy exefs/icon.bin to romfs/icon.icn");
 			pause
 			return;
 		}
 	}
-	if(!pathExists("exefs/icon.bin")) {//more stupid-proofing
+	if(!std::filesystem::exists("exefs/icon.bin")) {//more stupid-proofing
 		puts("ERROR: Failed to generate exefs/icon.bin");
 		pause
 		return;
@@ -1076,7 +1070,7 @@ void customBanner() {
 		}
 	}
 	copyfile(name, "exefs/banner.bin");
-	if(!pathExists("exefs/banner.bin")) {
+	if(!std::filesystem::exists("exefs/banner.bin")) {
 		printf("ERROR: Failed to copy \"%s\" to exefs/banner.bin.\n", name.c_str());
 		pause
 		return;
@@ -1165,7 +1159,7 @@ void makeCIA() {
 	sprintf(buffer, "%05lX", TID);
 	std::string cmd = system_g(_toolsPath + _makeromPath + " -f cia -o \"output/" + longname + " [000400000" + std::string(buffer) + "00].cia\" -banner \"exefs/banner.bin\" -icon \"exefs/icon.bin\" -code \"exefs/code.bin\" -exheader \"exheader.bin\" -rsf \"Vidinjector9000Resources/files/template.rsf\" -DAPP_UNIQUE_ID=" + std::to_string(TID));
 	if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
-	if(!pathExists("output/" + longname + " [000400000" + std::string(buffer) + "00].cia")) {
+	if(!std::filesystem::exists("output/" + longname + " [000400000" + std::string(buffer) + "00].cia")) {
 		printf("ERROR: Failed to build: \"output\\%s [000400000%s00].cia\"\n", longname.c_str(), std::string(buffer).c_str());
 	}
 	size_t cia_size(std::filesystem::file_size("output/" + longname + " [000400000" + std::string(buffer) + "00].cia"));
