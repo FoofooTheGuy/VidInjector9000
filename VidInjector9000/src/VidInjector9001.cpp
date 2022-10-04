@@ -418,7 +418,7 @@ bool goorQuit() {//false for quit, true for go
 	std::string opt = "";
 	puts("Press Enter to continue or Q+Enter to quit job . . .");
 	std::getline(std::cin, opt);
-	return tolower(opt[0])-0x71;
+	return tolower(opt[0]) != 'q';
 }
 
 void Clear() {//https://stackoverflow.com/a/52895729
