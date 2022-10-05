@@ -416,11 +416,19 @@ bool goorQuit() {//true for go, false for quit
 }
 
 void Clear() {//https://stackoverflow.com/a/52895729
-#if defined(_WIN32)
-    system("cls");
-#else
-    system("clear");
-#endif
+	#if defined(_WIN32)
+		system("cls");
+	#else
+		system("clear");
+	#endif
+}
+
+void windowTitle(std::string title) {
+	#if defined(_WIN32)
+		system_g("title " + title);
+	#else
+		printf("%c]0;%s%c", '\033', title.c_str(), '\007');//https://stackoverflow.com/questions/2218159
+	#endif
 }
 
 bool Generate_Code(bool Multi) {
@@ -437,9 +445,7 @@ bool Generate_Code(bool Multi) {
 
 //big functions
 void setAmount() {
-	#if defined(_WIN32)
-		system("title [MultiVidInjector5000] Set video amount");
-	#endif
+	windowTitle("[MultiVidInjector5000] Set video amount");
 	static bool good = false;
 	good = false;//in case you do it again, idk why the line above this isnt enough also why should anyone be able to do it again? bruhh
 	if (amount) amount = 0;
@@ -469,10 +475,8 @@ void setAmount() {
 }
 
 void Movie_title() {
-	#if defined(_WIN32)
-		type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
-		system_g("title [" + type + "] Generate movie_title.csv");
-	#endif
+	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
+	windowTitle("[" + type + "] Generate movie_title.csv");
 	cls
 	if (amount == 0) {
 		puts("Set video amount first!");
@@ -507,10 +511,8 @@ void Movie_title() {
 }
 
 void makesettingsTL() {
-	#if defined(_WIN32)
 	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
-	system_g("title [" + type + "] Generate settingsTL.csv");
-	#endif
+	windowTitle("[" + type + "] Generate settingsTL.csv");
 	cls
 
 	if (amount == 0) {
@@ -746,9 +748,7 @@ void makesettingsTL() {
 }
 
 void copyright() {
-	#if defined(_WIN32)
-	system("title [MultiVidInjector5000] Copyright options");
-	#endif
+	windowTitle("[MultiVidInjector5000] Copyright options");
 	cls
 	name = "";
 	std::filesystem::create_directories("romfs/settings");
@@ -788,9 +788,7 @@ void copyright() {
 }
 
 void tobimg() {
-	#if defined(_WIN32)
-	system("title [MultiVidInjector5000] Image to .bimg");
-	#endif
+	windowTitle("[MultiVidInjector5000] Image to .bimg");
 	cls
 	if (amount == 0) {
 		puts("Set video amount first!");
@@ -852,10 +850,8 @@ void tobimg() {
 }
 
 void moflexMover() {
-	#if defined(_WIN32)
 	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
-	system_g("title [" + type + "] Injecting .moflex");
-	#endif
+	windowTitle("[" + type + "] Injecting .moflex");
 	cls
 	static bool pass = false;
 	unsigned char Checker[4];
@@ -911,10 +907,8 @@ void moflexMover() {
 }
 
 void makebanner() {
-	#if defined(_WIN32)
 	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
-	system_g("title [" + type + "] Generate banner");
-	#endif
+	windowTitle("[" + type + "] Generate banner");
 	cls
 	std::filesystem::create_directory("exefs");
 	name = "";
@@ -978,10 +972,8 @@ void makebanner() {
 }
 
 void makeIcon() {
-	#if defined(_WIN32)
 	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
-	system_g("title [" + type + "] Generate icon");
-	#endif
+	windowTitle("[" + type + "] Generate icon");
 	cls
 	std::string shortname;
 	std::string publisher;
@@ -1044,10 +1036,8 @@ void makeIcon() {
 }
 
 void customBanner() {
-	#if defined(_WIN32)
 	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
-	system_g("title [" + type + "] Generate banner");
-	#endif
+	windowTitle("[" + type + "] Generate banner");
 
 	static bool pass = false;
 	unsigned char Checker[4];
@@ -1083,10 +1073,8 @@ void customBanner() {
 }
 
 void makeCIA() {
-	#if defined(_WIN32)
 	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
-	system_g("title [" + type + "] Generate CIA");
-	#endif
+	windowTitle("[" + type + "] Generate CIA");
 	cls
 	
 	unsigned long min = 0xC0000;
@@ -1198,10 +1186,8 @@ void Settings() {
 
 //2nd menu
 void finalize() {
-	#if defined(_WIN32)
 	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
-	system_g("title [" + type + "] Finalizing");
-	#endif
+	windowTitle("[" + type + "] Finalizing");
 	cls
 	for (unsigned int i = 0; i < (MultiVid ? sizeof(completed)-3 : sizeof(scompleted)-3); i++)
 		if((MultiVid ? completed : scompleted)[i] == ' ') {
@@ -1249,9 +1235,7 @@ void MultiVideo() {
 		if (amount == 0)	amountstr = "                  [ ";
 		else if(amount <= 9)amountstr = "                  [" + std::to_string(amount);//this will make sense in the end trust me
 		else				amountstr = "                 [" + std::to_string(amount);//see? no?
-		#if defined(_WIN32)
-		system("title MultiVidInjector5000 by Foofoo_the_guy");
-		#endif
+		windowTitle("MultiVidInjector5000 by Foofoo_the_guy");
 		cls
 		printf("Type a letter:\n\n"
 		" __________________________________________\n"
@@ -1302,9 +1286,7 @@ void SingleVideo() {
 	copyfile("Vidinjector9000Resources/files/templates/SingleVideo/romfs", "romfs");
 	copyfile("Vidinjector9000Resources/files/templates/SingleVideo/exheader.bin", "exheader.bin");
 	while(1) {
-		#if defined(_WIN32)
-		system("title VidInjector9001 by Foofoo_the_guy");
-		#endif
+		windowTitle("VidInjector9001 by Foofoo_the_guy");
 		cls
 		printf("Type a letter:\n\n"
 		" __________________________________________\n"
@@ -1339,9 +1321,7 @@ void SingleVideo() {
 //main menu
 int main() {
 	while(1) {
-		#if defined(_WIN32)
-		system("title VidInjector9001 by Foofoo_the_guy");
-		#endif
+		windowTitle("VidInjector9001 by Foofoo_the_guy");
 		cls
 		//wipe the stuff
 		for (auto& c : completed)
