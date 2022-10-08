@@ -443,6 +443,48 @@ bool Generate_Code(bool Multi) {
     return false;
 }
 
+bool readTxt(std::string file, std::string &output) {//return true if it's unicode or else fale, who knows what that could be though
+	std::string realoutput = "";
+	while(1) {
+		puts("Use the contents of this .txt file for the input? (Y/N)");
+		std::getline(std::cin, name);
+		if(tolower(name[0]) == 'y') {
+			removeQuotes(file);
+			if(std::filesystem::exists(file)) {
+				name = "";
+				output = "";
+				std::ifstream input(file, std::ios_base::in | std::ios_base::binary);//input file
+				
+				char* Byte = new char;
+				input.read(Byte, 1);//grab first byte of file
+				while (input) {//continue until input stream fails
+					output += *Byte;//append byte to string
+					//printf("%1X\n", *Byte);
+					input.read(Byte, 1);//grab next byte of file
+				}
+				delete[] Byte;
+				input.close();
+				if((output[0] & 0xFF) == 0xFF && (output[1] & 0xFF) == 0xFE) {//if it's a unicode file
+					realoutput = (std::string)&output[2];
+					output = realoutput;
+					return true;
+				}
+				return false;
+			}
+			else {
+				puts("ERROR: file does not exist\nReturning input as output...");
+				return false; 
+			}
+		}
+		else if(tolower(name[0]) == 'n') {
+			puts("Returning input as output...");
+			output = file;
+			return false;
+		}
+		cls
+	}
+}
+
 //big functions
 void setAmount() {
 	windowTitle("[MultiVidInjector5000] Set video amount");
@@ -485,6 +527,7 @@ void Movie_title() {
 	}
 	std::filesystem::create_directories("romfs/movie");
 	std::ofstream movie_title("romfs/movie/movie_title.csv", std::ios_base::out | std::ios_base::binary);
+	bool utf16;
 	movie_title << "\xFF\xFE" + UTF8toUTF16("#JP,#EN,#FR,#GE,#IT,#SP,#CH,#KO,#DU,#PO,#RU,#TW\x0D\x0A");
 	for (unsigned long i = 0; i < amount; i++) {
 		name = "";
@@ -494,10 +537,16 @@ void Movie_title() {
 			std::getline(std::cin, name);
 			if(name == "") cls
 		}
-		for (int j = 0; j < 11; j++) {//do it 11 times because it needs to
-			movie_title << UTF8toUTF16(name + ",");
+		if(tolowerstr((std::string)&name[name.size()-4]) == ".txt" || tolowerstr((std::string)&name[name.size()-5]) == ".txt\"") {
+			if(readTxt(name, name)) utf16 = true;
+			else utf16 = false;
 		}
-		movie_title << UTF8toUTF16(name + "\x0D\x0A");//put the last stuff
+		for (int j = 0; j < 11; j++) {//do it 11 times because it needs to
+			if(utf16) movie_title << name + UTF8toUTF16(",");
+			else movie_title << UTF8toUTF16(name + ",");
+		}
+		if(utf16) movie_title << name + UTF8toUTF16("\x0D\x0A");//put the last stuff
+		else movie_title << UTF8toUTF16(name + "\x0D\x0A");//put the last stuff
 	}
 	movie_title.close();
 	if(!std::filesystem::exists("romfs/movie/movie_title.csv")) {
@@ -524,14 +573,19 @@ void makesettingsTL() {
 	std::string publisher = "";
 	std::string buttons = "";
 	std::string gentleness = "";
+	bool utf16;
 	
 	name = "";
 	while(name == "") {
 		if(MultiVid) puts("Enter the name of the series");
 		else puts("Enter the name of the video");
 		std::getline(std::cin, name);
-		cls
 	}
+	if(tolowerstr((std::string)&name[name.size()-4]) == ".txt" || tolowerstr((std::string)&name[name.size()-5]) == ".txt\"") {
+		if(readTxt(name, name)) utf16 = true;
+		else utf16 = false;
+	}
+	cls
 
 	buttons = "";
 	while(buttons == "") {
@@ -596,42 +650,54 @@ void makesettingsTL() {
 							"none\x0D\x0A"
 							"\x0D\x0A"
 							"# アプリ名（ロングネーム）\x0D\x0A"//long name
-							"# JP:\x0D\x0A"
-							+ name + "\x0D\x0A"
-							"\x0D\x0A"
-							"# EN:\x0D\x0A"
-							+ name + "\x0D\x0A"
-							"\x0D\x0A"
-							"# FR:\x0D\x0A"
-							+ name + "\x0D\x0A"
-							"\x0D\x0A"
-							"# GE:\x0D\x0A"
-							+ name + "\x0D\x0A"
-							"\x0D\x0A"
-							"# IT:\x0D\x0A"
-							+ name + "\x0D\x0A"
-							"\x0D\x0A"
-							"# SP:\x0D\x0A"
-							+ name + "\x0D\x0A"
-							"\x0D\x0A"
-							"# CN:\x0D\x0A"
-							+ name + "\x0D\x0A"
-							"\x0D\x0A"
-							"# KO:\x0D\x0A"
-							+ name + "\x0D\x0A"
-							"\x0D\x0A"
-							"# DU:\x0D\x0A"
-							+ name + "\x0D\x0A"
-							"\x0D\x0A"
-							"# PO:\x0D\x0A"
-							+ name + "\x0D\x0A"
-							"\x0D\x0A"
-							"# RU:\x0D\x0A"
-							+ name + "\x0D\x0A"
-							"\x0D\x0A"
-							"# TW:\x0D\x0A"
-							+ name + "\x0D\x0A"
-							"\x0D\x0A"
+							"# JP:\x0D\x0A");
+	if(utf16) settingsTL << name + UTF8toUTF16("\x0D\x0A");//euh
+	else settingsTL << UTF8toUTF16(name + "\x0D\x0A");
+  settingsTL << UTF8toUTF16("\x0D\x0A"
+							"# EN:\x0D\x0A");
+	if(utf16) settingsTL << name + UTF8toUTF16("\x0D\x0A");
+	else settingsTL << UTF8toUTF16(name + "\x0D\x0A");
+  settingsTL << UTF8toUTF16("\x0D\x0A"
+							"# FR:\x0D\x0A");
+	if(utf16) settingsTL << name + UTF8toUTF16("\x0D\x0A");
+	else settingsTL << UTF8toUTF16(name + "\x0D\x0A");
+  settingsTL << UTF8toUTF16("\x0D\x0A"
+							"# GE:\x0D\x0A");
+	if(utf16) settingsTL << name + UTF8toUTF16("\x0D\x0A");
+	else settingsTL << UTF8toUTF16(name + "\x0D\x0A");
+  settingsTL << UTF8toUTF16("\x0D\x0A"
+							"# IT:\x0D\x0A");
+	if(utf16) settingsTL << name + UTF8toUTF16("\x0D\x0A");
+	else settingsTL << UTF8toUTF16(name + "\x0D\x0A");
+  settingsTL << UTF8toUTF16("\x0D\x0A"
+							"# SP:\x0D\x0A");
+	if(utf16) settingsTL << name + UTF8toUTF16("\x0D\x0A");
+	else settingsTL << UTF8toUTF16(name + "\x0D\x0A");
+  settingsTL << UTF8toUTF16("\x0D\x0A"
+							"# CN:\x0D\x0A");
+	if(utf16) settingsTL << name + UTF8toUTF16("\x0D\x0A");
+	else settingsTL << UTF8toUTF16(name + "\x0D\x0A");
+  settingsTL << UTF8toUTF16("\x0D\x0A"
+							"# KO:\x0D\x0A");
+	if(utf16) settingsTL << name + UTF8toUTF16("\x0D\x0A");
+	else settingsTL << UTF8toUTF16(name + "\x0D\x0A");
+  settingsTL << UTF8toUTF16("\x0D\x0A"
+							"# DU:\x0D\x0A");
+	if(utf16) settingsTL << name + UTF8toUTF16("\x0D\x0A");
+	else settingsTL << UTF8toUTF16(name + "\x0D\x0A");
+  settingsTL << UTF8toUTF16("\x0D\x0A"
+							"# PO:\x0D\x0A");
+	if(utf16) settingsTL << name + UTF8toUTF16("\x0D\x0A");
+	else settingsTL << UTF8toUTF16(name + "\x0D\x0A");
+  settingsTL << UTF8toUTF16("\x0D\x0A"
+							"# RU:\x0D\x0A");
+	if(utf16) settingsTL << name + UTF8toUTF16("\x0D\x0A");
+	else settingsTL << UTF8toUTF16(name + "\x0D\x0A");
+  settingsTL << UTF8toUTF16("\x0D\x0A"
+							"# TW:\x0D\x0A");
+	if(utf16) settingsTL << name + UTF8toUTF16("\x0D\x0A");
+	else settingsTL << UTF8toUTF16(name + "\x0D\x0A");
+  settingsTL << UTF8toUTF16("\x0D\x0A"
 							"# 拡張セーブデータのID（16進数）\x0D\x0A"
 							"12345\x0D\x0A"//idk if any other game uses 0x12345 as its save data ID, nor do i understand if it matters, so sorry if this breaks everything
 							"\x0D\x0A"
@@ -660,82 +726,98 @@ void makesettingsTL() {
 			std::getline(std::cin, publisher);
 			if(publisher == "") cls
 		}
-		settingsTL << UTF8toUTF16("\x0D\x0A"
-								"# 動画の数\x0D\x0A"//amount of videos
-								+ std::to_string(amount) + "\x0D\x0A"
-								"\x0D\x0A"
-								"# 動画パブリッシャー名\x0D\x0A"//publisher name
-								"# JP:\x0D\x0A"
-								+ publisher + "\x0D\x0A"
-								"\x0D\x0A"
-								"# EN:\x0D\x0A"
-								+ publisher + "\x0D\x0A"
-								"\x0D\x0A"
-								"# FR:\x0D\x0A"
-								+ publisher + "\x0D\x0A"
-								"\x0D\x0A"
-								"# GE:\x0D\x0A"
-								+ publisher + "\x0D\x0A"
-								"\x0D\x0A"
-								"# IT:\x0D\x0A"
-								+ publisher + "\x0D\x0A"
-								"\x0D\x0A"
-								"# SP:\x0D\x0A"
-								+ publisher + "\x0D\x0A"
-								"\x0D\x0A"
-								"# CN:\x0D\x0A"
-								+ publisher + "\x0D\x0A"
-								"\x0D\x0A"
-								"# KO:\x0D\x0A"
-								+ publisher + "\x0D\x0A"
-								"\x0D\x0A"
-								"# DU:\x0D\x0A"
-								+ publisher + "\x0D\x0A"
-								"\x0D\x0A"
-								"# PO:\x0D\x0A"
-								+ publisher + "\x0D\x0A"
-								"\x0D\x0A"
-								"# RU:\x0D\x0A"
-								+ publisher + "\x0D\x0A"
-								"\x0D\x0A"
-								"# TW:\x0D\x0A"
-								+ publisher + "\x0D\x0A"
-								"\x0D\x0A"
-								"# WEBブラウザ用のURL\x0D\x0A"//web browser URL (?)
-								"# JP:\x0D\x0A"
-								"\x0D\x0A"
-								"\x0D\x0A"
-								"# EN:\x0D\x0A"
-								"\x0D\x0A"
-								"\x0D\x0A"
-								"# FR:\x0D\x0A"
-								"\x0D\x0A"
-								"\x0D\x0A"
-								"# GE:\x0D\x0A"
-								"\x0D\x0A"
-								"\x0D\x0A"
-								"# IT:\x0D\x0A"
-								"\x0D\x0A"
-								"\x0D\x0A"
-								"# SP:\x0D\x0A"
-								"\x0D\x0A"
-								"\x0D\x0A"
-								"# CN:\x0D\x0A"
-								"\x0D\x0A"
-								"\x0D\x0A"
-								"# KO:\x0D\x0A"
-								"\x0D\x0A"
-								"\x0D\x0A"
-								"# DU:\x0D\x0A"
-								"\x0D\x0A"
-								"\x0D\x0A"
-								"# PO:\x0D\x0A"
-								"\x0D\x0A"
-								"\x0D\x0A"
-								"# RU:\x0D\x0A"
-								"\x0D\x0A"
-								"\x0D\x0A"
-								"# TW:");
+		if(tolowerstr((std::string)&publisher[publisher.size()-4]) == ".txt" || tolowerstr((std::string)&publisher[publisher.size()-5]) == ".txt\"") {
+			if(readTxt(publisher, publisher)) utf16 = true;
+			else utf16 = false;
+		}
+	settingsTL << UTF8toUTF16("\x0D\x0A"
+							"# 動画の数\x0D\x0A"//amount of videos
+							+ std::to_string(amount) + "\x0D\x0A"
+							"\x0D\x0A"
+							"# 動画パブリッシャー名\x0D\x0A"//publisher name
+							"# JP:\x0D\x0A");
+	if(utf16) settingsTL << publisher + UTF8toUTF16("\x0D\x0A");//euh part II
+	else settingsTL << UTF8toUTF16(publisher + "\x0D\x0A");
+  settingsTL << UTF8toUTF16("\x0D\x0A"
+							"# EN:\x0D\x0A");
+	if(utf16) settingsTL << publisher + UTF8toUTF16("\x0D\x0A");
+	else settingsTL << UTF8toUTF16(publisher + "\x0D\x0A");
+  settingsTL << UTF8toUTF16("\x0D\x0A"
+							"# FR:\x0D\x0A");
+	if(utf16) settingsTL << publisher + UTF8toUTF16("\x0D\x0A");
+	else settingsTL << UTF8toUTF16(publisher + "\x0D\x0A");
+  settingsTL << UTF8toUTF16("\x0D\x0A"
+							"# GE:\x0D\x0A");
+	if(utf16) settingsTL << publisher + UTF8toUTF16("\x0D\x0A");
+	else settingsTL << UTF8toUTF16(publisher + "\x0D\x0A");
+  settingsTL << UTF8toUTF16("\x0D\x0A"
+							"# IT:\x0D\x0A");
+	if(utf16) settingsTL << publisher + UTF8toUTF16("\x0D\x0A");
+	else settingsTL << UTF8toUTF16(publisher + "\x0D\x0A");
+  settingsTL << UTF8toUTF16("\x0D\x0A"
+							"# SP:\x0D\x0A");
+	if(utf16) settingsTL << publisher + UTF8toUTF16("\x0D\x0A");
+	else settingsTL << UTF8toUTF16(publisher + "\x0D\x0A");
+  settingsTL << UTF8toUTF16("\x0D\x0A"
+							"# CN:\x0D\x0A");
+	if(utf16) settingsTL << publisher + UTF8toUTF16("\x0D\x0A");
+	else settingsTL << UTF8toUTF16(publisher + "\x0D\x0A");
+  settingsTL << UTF8toUTF16("\x0D\x0A"
+							"# KO:\x0D\x0A");
+	if(utf16) settingsTL << publisher + UTF8toUTF16("\x0D\x0A");
+	else settingsTL << UTF8toUTF16(publisher + "\x0D\x0A");
+  settingsTL << UTF8toUTF16("\x0D\x0A"
+							"# DU:\x0D\x0A");
+	if(utf16) settingsTL << publisher + UTF8toUTF16("\x0D\x0A");
+	else settingsTL << UTF8toUTF16(publisher + "\x0D\x0A");
+  settingsTL << UTF8toUTF16("\x0D\x0A"
+							"# PO:\x0D\x0A");
+	if(utf16) settingsTL << publisher + UTF8toUTF16("\x0D\x0A");
+	else settingsTL << UTF8toUTF16(publisher + "\x0D\x0A");
+  settingsTL << UTF8toUTF16("\x0D\x0A"
+							"# RU:\x0D\x0A");
+	if(utf16) settingsTL << publisher + UTF8toUTF16("\x0D\x0A");
+	else settingsTL << UTF8toUTF16(publisher + "\x0D\x0A");
+  settingsTL << UTF8toUTF16("\x0D\x0A"
+							"# TW:\x0D\x0A");
+	if(utf16) settingsTL << publisher + UTF8toUTF16("\x0D\x0A");
+	else settingsTL << UTF8toUTF16(publisher + "\x0D\x0A");
+  settingsTL << UTF8toUTF16("\x0D\x0A"
+							"# WEBブラウザ用のURL\x0D\x0A"//web browser URL (?)
+							"# JP:\x0D\x0A"
+							"\x0D\x0A"
+							"\x0D\x0A"
+							"# EN:\x0D\x0A"
+							"\x0D\x0A"
+							"\x0D\x0A"
+							"# FR:\x0D\x0A"
+							"\x0D\x0A"
+							"\x0D\x0A"
+							"# GE:\x0D\x0A"
+							"\x0D\x0A"
+							"\x0D\x0A"
+							"# IT:\x0D\x0A"
+							"\x0D\x0A"
+							"\x0D\x0A"
+							"# SP:\x0D\x0A"
+							"\x0D\x0A"
+							"\x0D\x0A"
+							"# CN:\x0D\x0A"
+							"\x0D\x0A"
+							"\x0D\x0A"
+							"# KO:\x0D\x0A"
+							"\x0D\x0A"
+							"\x0D\x0A"
+							"# DU:\x0D\x0A"
+							"\x0D\x0A"
+							"\x0D\x0A"
+							"# PO:\x0D\x0A"
+							"\x0D\x0A"
+							"\x0D\x0A"
+							"# RU:\x0D\x0A"
+							"\x0D\x0A"
+							"\x0D\x0A"
+							"# TW:");
 		if(std::filesystem::exists("romfs/settings/settingsTL.csv")) completed[1] = 'X';
 		else puts("ERROR: Failed to generate romfs/settings/settingsTL.csv");
 	}
@@ -751,6 +833,7 @@ void copyright() {
 	windowTitle("[MultiVidInjector5000] Copyright options");
 	cls
 	name = "";
+	bool utf16;
 	std::filesystem::create_directories("romfs/settings");
 	while(name == "") {
 		std::ofstream information_buttons("romfs/settings/information_buttons.csv", std::ios_base::out | std::ios_base::binary);
@@ -775,8 +858,14 @@ void copyright() {
 		std::getline(std::cin, name);
 		if(name == "") cls
 	}
+	if(tolowerstr((std::string)&name[name.size()-4]) == ".txt" || tolowerstr((std::string)&name[name.size()-5]) == ".txt\"") {
+		if(readTxt(name, name)) utf16 = true;
+		else utf16 = false;
+	}
 	std::ofstream copyrighttxt("romfs/settings/copyright.txt", std::ios_base::out | std::ios_base::binary);
-	copyrighttxt << "\xFF\xFE" << UTF8toUTF16(name);
+	copyrighttxt << "\xFF\xFE";
+	if(utf16) copyrighttxt << name;
+	else copyrighttxt << UTF8toUTF16(name);
 	copyrighttxt.close();
 	if(!std::filesystem::exists("romfs/settings/copyright.txt")) {//how tho like what, your hard drive is 100% full???
 		puts("ERROR: Failed to generate romfs/settings/copyright.txt");
@@ -971,7 +1060,7 @@ void makebanner() {
 	pause
 }
 
-void makeIcon() {
+void makeIcon() {//doesnt support utf-16 name
 	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
 	windowTitle("[" + type + "] Generate icon");
 	cls
@@ -1089,15 +1178,10 @@ void makeCIA() {
 			if(tolower(name[0]) == 'y') break;
 			return;
 		}
-	/*if(romfsize + exefsize + exheadersize >= 4294967295) {//the fat32 file size limit (the output cia will be a little bit lower than this estimate but idc so cry about it)
-		printf("ERROR: The estimated file size (%lli) of the cia file is too big and will\nnot install to a 3ds nor work in the emulator.\n", (romfsize + exefsize));
-		pause
-		return;
-	}*/
 	
 	while(TID == max) {
 		cls
-		puts("Enter 5 hex integers for the ID of your cia (C0000 - EFFFF) or\njust type \"0\" for a random title ID.\n(TID is in format 000400000XXXXX00 (that's hex), the rest will auto fill)");
+		puts("Enter 5 hex integers for the ID of your cia (C0000 - EFFFF) or\njust type \"0\" for a random unique ID.\n(TID is in format 000400000XXXXX00 (that's hex), the rest will auto fill)");
 		std::getline(std::cin, name);
 		if(name.size() > 5) name = "F0000";//more stupid-proofing
 		if(!stoul_s(TID, name, true)) {
@@ -1170,7 +1254,7 @@ void Settings() {
 		printf("Type a letter:\n\n"
 		" __________________________________________\n"
 		"|                                          |\n"
-		"| Software Version: 2.5.8                  |\n"
+		"| Software Version: 2.5.9                  |\n"
 		"|                                          |\n"
 		"| D: Toggle Debug Information       [");
 							if(Debug) printf("ON]   |\n");
