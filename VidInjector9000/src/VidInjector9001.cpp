@@ -527,7 +527,7 @@ void Movie_title() {
 	}
 	std::filesystem::create_directories("romfs/movie");
 	std::ofstream movie_title("romfs/movie/movie_title.csv", std::ios_base::out | std::ios_base::binary);
-	bool utf16;
+	bool utf16 = false;
 	movie_title << "\xFF\xFE" + UTF8toUTF16("#JP,#EN,#FR,#GE,#IT,#SP,#CH,#KO,#DU,#PO,#RU,#TW\x0D\x0A");
 	for (unsigned long i = 0; i < amount; i++) {
 		name = "";
@@ -539,7 +539,6 @@ void Movie_title() {
 		}
 		if(tolowerstr((std::string)&name[name.size()-4]) == ".txt" || tolowerstr((std::string)&name[name.size()-5]) == ".txt\"") {
 			if(readTxt(name, name)) utf16 = true;
-			else utf16 = false;
 		}
 		for (int j = 0; j < 11; j++) {//do it 11 times because it needs to
 			if(utf16) movie_title << name + UTF8toUTF16(",");
@@ -574,7 +573,7 @@ void makesettingsTL() {
 	std::string publisher = "";
 	std::string buttons = "";
 	std::string gentleness = "";
-	bool utf16;
+	bool utf16 = false;
 	
 	name = "";
 	while(name == "") {
@@ -584,7 +583,6 @@ void makesettingsTL() {
 	}
 	if(tolowerstr((std::string)&name[name.size()-4]) == ".txt" || tolowerstr((std::string)&name[name.size()-5]) == ".txt\"") {
 		if(readTxt(name, name)) utf16 = true;
-		else utf16 = false;
 	}
 	cls
 
@@ -722,6 +720,7 @@ void makesettingsTL() {
 	if(MultiVid) {
 		cls
 		publisher = "";
+		utf16 = false;
 		while(publisher == "") {
 			puts("Enter the Publisher of the video");
 			std::getline(std::cin, publisher);
@@ -729,7 +728,6 @@ void makesettingsTL() {
 		}
 		if(tolowerstr((std::string)&publisher[publisher.size()-4]) == ".txt" || tolowerstr((std::string)&publisher[publisher.size()-5]) == ".txt\"") {
 			if(readTxt(publisher, publisher)) utf16 = true;
-			else utf16 = false;
 		}
 	settingsTL << UTF8toUTF16("\x0D\x0A"
 							"# 動画の数\x0D\x0A"//amount of videos
@@ -834,7 +832,7 @@ void copyright() {
 	windowTitle("[MultiVidInjector5000] Copyright options");
 	cls
 	name = "";
-	bool utf16;
+	bool utf16 = false;
 	std::filesystem::create_directories("romfs/settings");
 	while(name == "") {
 		std::ofstream information_buttons("romfs/settings/information_buttons.csv", std::ios_base::out | std::ios_base::binary);
@@ -861,7 +859,6 @@ void copyright() {
 	}
 	if(tolowerstr((std::string)&name[name.size()-4]) == ".txt" || tolowerstr((std::string)&name[name.size()-5]) == ".txt\"") {
 		if(readTxt(name, name)) utf16 = true;
-		else utf16 = false;
 	}
 	std::ofstream copyrighttxt("romfs/settings/copyright.txt", std::ios_base::out | std::ios_base::binary);
 	copyrighttxt << "\xFF\xFE";
