@@ -545,8 +545,9 @@ void Movie_title() {
 			if(utf16) movie_title << name + UTF8toUTF16(",");
 			else movie_title << UTF8toUTF16(name + ",");
 		}
-		if(utf16) movie_title << name + UTF8toUTF16("\x0D\x0A");//put the last stuff
-		else movie_title << UTF8toUTF16(name + "\x0D\x0A");//put the last stuff
+		//put the last stuff
+		if(utf16) movie_title << name + UTF8toUTF16("\x0D\x0A");
+		else movie_title << UTF8toUTF16(name + "\x0D\x0A");
 	}
 	movie_title.close();
 	if(!std::filesystem::exists("romfs/movie/movie_title.csv")) {
