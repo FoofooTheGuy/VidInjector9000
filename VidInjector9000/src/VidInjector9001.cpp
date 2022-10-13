@@ -447,8 +447,8 @@ bool readTxt(std::string file, std::string &output) {//return true if it's unico
 	std::string realoutput = "";
 	while(1) {
 		puts("Use the contents of this .txt file for the input? (Y/N)");
-		name = tolower(getc(stdin));
-		if(name[0] == 'y') {
+		std::getline(std::cin, name);
+		if(tolower(name[0]) == 'y') {
 			removeQuotes(file);
 			if(std::filesystem::exists(file)) {
 				name = "";
@@ -476,7 +476,7 @@ bool readTxt(std::string file, std::string &output) {//return true if it's unico
 				return false; 
 			}
 		}
-		else if(name[0] == 'n') {
+		else if(tolower(name[0]) == 'n') {
 			puts("Returning input as output...");
 			output = file;
 			return false;
@@ -589,9 +589,9 @@ void makesettingsTL() {
 	buttons = "";
 	while(buttons == "") {
 		puts("Do you want fast forward and rewind buttons? [Y/N]");
-		buttons = tolower(getc(stdin));
-		if(buttons[0] == 'y') buttons = "true";
-		else if(buttons[0] == 'n') buttons = "false";
+		std::getline(std::cin, buttons);
+		if(tolower(buttons[0]) == 'y') buttons = "true";
+		else if(tolower(buttons[0]) == 'n') buttons = "false";
 		else buttons = "";
 		cls
 	}
@@ -599,9 +599,9 @@ void makesettingsTL() {
 	gentleness = "";
 	while(gentleness == "") {
 		puts("Do you want the bottom screen to fade after a while? [Y/N]");
-		gentleness = tolower(getc(stdin));
-		if(gentleness[0] == 'y') gentleness = "true";
-		else if(gentleness[0] == 'n') gentleness = "false";
+		std::getline(std::cin, gentleness);
+		if(tolower(gentleness[0]) == 'y') gentleness = "true";
+		else if(tolower(gentleness[0]) == 'n') gentleness = "false";
 		else {
 			gentleness = "";
 			cls
@@ -837,9 +837,9 @@ void copyright() {
 	while(name == "") {
 		std::ofstream information_buttons("romfs/settings/information_buttons.csv", std::ios_base::out | std::ios_base::binary);
 		puts("Do you want the menu to have the Copyright button? [Y/N]");
-		name = tolower(getc(stdin));
+		std::getline(std::cin, name);
 		if(name == "") cls
-		else if(name[0] == 'y') {
+		else if(tolower(name[0]) == 'y') {
 			information_buttons << "\xFF\xFE" << UTF8toUTF16("Copyright");
 			information_buttons.close();
 		}
@@ -1172,8 +1172,8 @@ void makeCIA() {
 	for (unsigned int i = 0; i < sizeof(MultiVid ? completed : scompleted)-3; i++)
 		if((MultiVid ? completed : scompleted)[i] == ' ') {
 			printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
-			name = tolower(getc(stdin));
-			if(name[0] == 'y') break;
+			std::getline(std::cin, name);
+			if(tolower(name[0]) == 'y') break;
 			return;
 		}
 	
@@ -1239,8 +1239,8 @@ void makeCIA() {
 	pause
 	cls
 	puts("Do you want this to delete the following folders/files? [Y/N]\n- exefs\n- romfs\n- exheader.bin");
-	name = tolower(getc(stdin));
-	if(name[0] == 'y') {
+	std::getline(std::cin, name);
+	if(tolower(name[0]) == 'y') {
 		main();
 	}
 	pause
@@ -1260,9 +1260,9 @@ void Settings() {
  printf("|                                          |\n"
 		"| X: Go to the main menu                   |\n"
 		"|__________________________________________|\n\n");
-		name = tolower(getc(stdin));
-		if(name[0] == 'd') Debug = Debug ? false : true;//if true, make it false and if false, make it true
-		else if(name[0] == 'x') return;
+		std::getline(std::cin, name);
+		if(tolower(name[0]) == 'd') Debug = Debug ? false : true;//if true, make it false and if false, make it true
+		else if(tolower(name[0]) == 'x') return;
 	}
 }
 
@@ -1291,12 +1291,12 @@ void finalize() {
 		"| C: Generate CIA                          |\n"
 		"| X: Go to the %s\n"
 		"|__________________________________________|\n\n", completed[5], completed[6], completed[7], type.c_str());
-		name = tolower(getc(stdin));
-		if(name[0] == 'b') makebanner();//5
-		else if(name[0] == 'i') makeIcon();//6
-		else if(name[0] == 'u') customBanner();//7
-		else if(name[0] == 'c') makeCIA();
-		else if(name[0] == 'x') return;
+		std::getline(std::cin, name);
+		if(tolower(name[0]) == 'b') makebanner();//5
+		else if(tolower(name[0]) == 'i') makeIcon();//6
+		else if(tolower(name[0]) == 'u') customBanner();//7
+		else if(tolower(name[0]) == 'c') makeCIA();
+		else if(tolower(name[0]) == 'x') return;
 	}
 }
 
@@ -1332,22 +1332,22 @@ void MultiVideo() {
 		"| F: Finalize/build the CIA                |\n"
 		"| X: Go to the main menu                   |\n"
 		"|__________________________________________|\n\n", amountstr.c_str(), completed[0], completed[1], completed[2], completed[3], completed[4]);
-		name = tolower(getc(stdin));
-		if(name[0] == 'a' && amount == 0) setAmount();
-		else if(name[0] == 't') Movie_title();//0
-		else if(name[0] == 's') makesettingsTL();//1
-		else if(name[0] == 'c') copyright();//2
-		else if(name[0] == 'b') tobimg();//3
-		else if(name[0] == 'm') moflexMover();//4
-		else if(name[0] == 'f') finalize();
-		else if(name[0] == 'x') {
+		std::getline(std::cin, name);
+		if(tolower(name[0]) == 'a' && amount == 0) setAmount();
+		else if(tolower(name[0]) == 't') Movie_title();//0
+		else if(tolower(name[0]) == 's') makesettingsTL();//1
+		else if(tolower(name[0]) == 'c') copyright();//2
+		else if(tolower(name[0]) == 'b') tobimg();//3
+		else if(tolower(name[0]) == 'm') moflexMover();//4
+		else if(tolower(name[0]) == 'f') finalize();
+		else if(tolower(name[0]) == 'x') {
 			cls
 			name = "";
 			while(name == "") {
 				puts("Exit now? You will lose progress. [Y/N]");
-				name = tolower(getc(stdin));
-				if(name[0] == 'y') return;
-				else if(name[0] == 'n') break;
+				std::getline(std::cin, name);
+				if(tolower(name[0]) == 'y') return;
+				else if(tolower(name[0]) == 'n') break;
 				else name = "";
 				cls
 			}
@@ -1380,19 +1380,19 @@ void SingleVideo() {
 		"| F: Finalize/build the CIA                |\n"
 		"| X: Go to the main menu                   |\n"
 		"|__________________________________________|\n\n", scompleted[0], scompleted[1], scompleted[2]);
-		name = tolower(getc(stdin));
-		if(name[0] == 't') Movie_title();//0
-		else if(name[0] == 's') makesettingsTL();//1
-		else if(name[0] == 'm') moflexMover();//2
-		else if(name[0] == 'f') finalize();
-		else if(name[0] == 'x') {
+		std::getline(std::cin, name);
+		if(tolower(name[0]) == 't') Movie_title();//0
+		else if(tolower(name[0]) == 's') makesettingsTL();//1
+		else if(tolower(name[0]) == 'm') moflexMover();//2
+		else if(tolower(name[0]) == 'f') finalize();
+		else if(tolower(name[0]) == 'x') {
 			cls
 			name = "";
 			while(name == "") {
 				puts("Exit now? You will lose progress. [Y/N]");
-				name = tolower(getc(stdin));
-				if(name[0] == 'y') return;//mm yes
-				else if(name[0] == 'n') break;
+				std::getline(std::cin, name);
+				if(tolower(name[0]) == 'y') return;//massive brain solution: type anything as long as it starts with y
+				else if(tolower(name[0]) == 'n') break;
 				else name = "";
 				cls
 			}
@@ -1422,10 +1422,10 @@ int main() {
 		"| M: Multiple Video Injector               |\n"
 		"| P: Program Settings                      |\n"
 		"|__________________________________________|\n\n");
-		name = tolower(getc(stdin));
-		if(name[0] == 's') SingleVideo();//0
-		else if(name[0] == 'm') MultiVideo();//1
-		else if(name[0] == 'p') Settings();//2
+		std::getline(std::cin, name);
+		if(tolower(name[0]) == 's') SingleVideo();//0
+		else if(tolower(name[0]) == 'm') MultiVideo();//1
+		else if(tolower(name[0]) == 'p') Settings();//2
 	}
 	return 0;
 }
