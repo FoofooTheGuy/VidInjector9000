@@ -455,14 +455,13 @@ bool readTxt(std::string file, std::string &output) {//return true if it's unico
 				output = "";
 				std::ifstream input(file, std::ios_base::in | std::ios_base::binary);//input file
 				
-				char* Byte = new char;
-				input.read(Byte, 1);//grab first byte of file
+				char Byte;
+				input.read(&Byte, 1);//grab first byte of file
 				while (input) {//continue until input stream fails
-					output += *Byte;//append byte to string
-					//printf("%1X\n", *Byte);
-					input.read(Byte, 1);//grab next byte of file
+					output += Byte;//append byte to string
+					//printf("%1X\n", Byte);
+					input.read(&Byte, 1);//grab next byte of file
 				}
-				delete[] Byte;
 				input.close();
 				if((output[0] & 0xFF) == 0xFF && (output[1] & 0xFF) == 0xFE) {//if it's a unicode file
 					realoutput = (std::string)&output[2];
