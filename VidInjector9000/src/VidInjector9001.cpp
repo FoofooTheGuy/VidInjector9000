@@ -406,7 +406,7 @@ std::string system_g(std::string input) {//system_g()! It's system(), but good!
 void betterPause() {
 	puts("Press Enter to continue . . .");
 	std::cin.ignore();
-	std::cin.sync();
+	std::cin.sync();//clears it if you typed any characters
 }
 
 bool goorQuit() {//true for go, false for quit
@@ -1039,8 +1039,7 @@ void makebanner() {
 	remove("exefs/banner.bimg.part");
 	//build banner
 	copyfile("Vidinjector9000Resources/files/banner.bcwav", "exefs/banner.bcwav");
-	copyfile("Vidinjector9000Resources/files/banner.cbmd", "exefs/banner.cbmd");
-	system_g(_toolsPath + _3dstoolPath + " -cvtf banner \"exefs/banner.bin\" --banner-dir \"exefs\"");
+	system_g(_toolsPath + _bannertoolPath + " makebanner -ci exefs/banner0.bcmdl -ca exefs/banner.bcwav -o exefs/banner.bin");
 	//clean up time
 	remove("exefs/banner.bcwav");
 	remove("exefs/banner0.bcmdl");
