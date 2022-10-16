@@ -61,9 +61,7 @@ Credits and Stuff
 --
 [videoinject](https://github.com/ihaveamac/videoinject): Example functions and inspiration
 
-[3dstool](https://github.com/dnasdw/3dstool): Banner extraction
-
-[bannertool](https://github.com/Steveice10/bannertool): Compiling icon.bin
+[bannertool](https://github.com/Steveice10/bannertool): Compiling icon.bin and banner.bin
 
 [makerom](https://github.com/3DSGuy/Project_CTR): building CIA
 
