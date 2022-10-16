@@ -406,6 +406,7 @@ std::string system_g(std::string input) {//system_g()! It's system(), but good!
 void betterPause() {
 	puts("Press Enter to continue . . .");
 	std::cin.ignore();
+	std::cin.sync();
 }
 
 bool goorQuit() {//true for go, false for quit
