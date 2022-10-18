@@ -540,6 +540,23 @@ void Movie_title() {
 		if(tolowerstr((std::string)&name[name.size()-4]) == ".txt" || tolowerstr((std::string)&name[name.size()-5]) == ".txt\"") {
 			if(readTxt(name, name)) utf16 = true;
 		}
+		for(int i = 0; i < name.size(); i++) {
+			if(name[i] == ',') {
+				std::string choiche = "";
+				while(choiche == "") {
+					printf("WARNING: Character #%d (',') in the title will be a problem.\nReplace it with \"\\x2C\" to have a comma in the title? [Y/N]\n", i+1);
+					std::getline(std::cin, choiche);
+					if(tolower(choiche[0]) == 'y') {
+						name[i] = '\\';
+						name.insert(i+1, "x2C");
+					}
+					else if(tolower(choiche[0]) != 'n') {
+						choiche = "";
+						cls
+					}
+				}
+			}
+		}
 		for (int j = 0; j < 11; j++) {//do it 11 times because it needs to
 			if(utf16) movie_title << name + UTF8toUTF16(",");
 			else movie_title << UTF8toUTF16(name + ",");
@@ -583,6 +600,23 @@ void makesettingsTL() {
 	}
 	if(tolowerstr((std::string)&name[name.size()-4]) == ".txt" || tolowerstr((std::string)&name[name.size()-5]) == ".txt\"") {
 		if(readTxt(name, name)) utf16 = true;
+	}
+	for(int i = 0; i < name.size(); i++) {
+		if(name[i] == ',') {
+			std::string choiche = "";
+			while(choiche == "") {
+				printf("WARNING: Character #%d (',') in the name will be a problem.\nReplace it with \"\\x2C\" to have a comma in the name? [Y/N]\n", i+1);
+				std::getline(std::cin, choiche);
+				if(tolower(choiche[0]) == 'y') {
+					name[i] = '\\';
+					name.insert(i+1, "x2C");
+				}
+				else if(tolower(choiche[0]) != 'n') {
+					choiche = "";
+					cls
+				}
+			}
+		}
 	}
 	cls
 
@@ -728,6 +762,23 @@ void makesettingsTL() {
 		}
 		if(tolowerstr((std::string)&publisher[publisher.size()-4]) == ".txt" || tolowerstr((std::string)&publisher[publisher.size()-5]) == ".txt\"") {
 			if(readTxt(publisher, publisher)) utf16 = true;
+		}
+		for(int i = 0; i < publisher.size(); i++) {
+			if(publisher[i] == ',') {
+				std::string choiche = "";
+				while(choiche == "") {
+					printf("WARNING: Character #%d (',') in the name will be a problem.\nReplace it with \"\\x2C\" to have a comma in the name? [Y/N]\n", i+1);
+					std::getline(std::cin, choiche);
+					if(tolower(choiche[0]) == 'y') {
+						publisher[i] = '\\';
+						publisher.insert(i+1, "x2C");
+					}
+					else if(tolower(choiche[0]) != 'n') {
+						choiche = "";
+						cls
+					}
+				}
+			}
 		}
 	settingsTL << UTF8toUTF16("\x0D\x0A"
 							"# 動画の数\x0D\x0A"//amount of videos
@@ -1251,7 +1302,7 @@ void Settings() {
 		printf("Type a letter:\n\n"
 		" __________________________________________\n"
 		"|                                          |\n"
-		"| Software Version: 2.5.9                  |\n"
+		"| Software Version: 2.6.0                  |\n"
 		"|                                          |\n"
 		"| D: Toggle Debug Information       [");
 							if(Debug) printf("ON]   |\n");
@@ -1270,13 +1321,13 @@ void finalize() {
 	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
 	windowTitle("[" + type + "] Finalizing");
 	cls
-	for (unsigned int i = 0; i < (MultiVid ? sizeof(completed)-3 : sizeof(scompleted)-3); i++)
+	/*for (unsigned int i = 0; i < (MultiVid ? sizeof(completed)-3 : sizeof(scompleted)-3); i++)
 		if((MultiVid ? completed : scompleted)[i] == ' ') {
 			printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
 			std::getline(std::cin, name);
 			if(tolower(name[0]) == 'y') break;
 			return;
-		}
+		}*/
 	while(1) {
 		cls
 		type = MultiVid ? "multi video menu            |" : "single video menu           |";
