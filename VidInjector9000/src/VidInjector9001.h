@@ -4001,5 +4001,4 @@ void makeCIA();
 void finalize();
 void MultiVideo();
 void SingleVideo();
-bool Generate_Code(bool Multi);
 int main();
