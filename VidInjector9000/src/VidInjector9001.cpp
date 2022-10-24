@@ -1282,9 +1282,11 @@ void makeCIA() {
 	if(!std::filesystem::exists("output/" + longname + " [000400000" + std::string(buffer) + "00].cia")) {
 		printf("ERROR: Failed to build: \"output\\%s [000400000%s00].cia\"\n", longname.c_str(), std::string(buffer).c_str());
 	}
-	size_t cia_size(std::filesystem::file_size("output/" + longname + " [000400000" + std::string(buffer) + "00].cia"));
+	size_t cia_size = 0;
+	if(std::filesystem::exists("output/" + longname + " [000400000" + std::string(buffer) + "00].cia"))
+		cia_size = std::filesystem::file_size("output/" + longname + " [000400000" + std::string(buffer) + "00].cia");
 	if(cia_size > 4294967296) {
-		printf("WARNING: The file size (%lli) of the cia file is too big and will\nnot install to a 3ds nor work in the emulator.\n", cia_size);
+		printf("WARNING: The file size (%llu) of the cia file is too big and will\nnot install to a 3ds nor work in the emulator.\n", cia_size);
 	}
 	pause
 	cls
