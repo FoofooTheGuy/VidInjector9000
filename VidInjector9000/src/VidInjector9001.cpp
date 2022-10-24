@@ -1089,12 +1089,9 @@ void makebanner() {
 	bannerbcmdl.close();
 	remove("exefs/banner.bimg.part");
 	//build banner
-	copyfile("Vidinjector9000Resources/files/banner.bcwav", "exefs/banner.bcwav");
-	system_g(_toolsPath + _bannertoolPath + " makebanner -ci exefs/banner0.bcmdl -ca exefs/banner.bcwav -o exefs/banner.bin");
+	system_g(_toolsPath + _bannertoolPath + " makebanner -ci exefs/banner0.bcmdl -ca Vidinjector9000Resources/files/banner.bcwav -o exefs/banner.bin");
 	//clean up time
-	remove("exefs/banner.bcwav");
 	remove("exefs/banner0.bcmdl");
-	remove("exefs/banner.cbmd");
 
 	if(!std::filesystem::exists("exefs/banner.bin")) {
 		puts("ERROR: Failed to generate exefs/banner.bin");
