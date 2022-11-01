@@ -38,11 +38,9 @@
 
 #define _toolsPath std::string("Vidinjector9000Resources\\\\tools\\\\")
 #if defined(_WIN32)
-	#define _3dstexPath std::string("3dstex-win-x86.exe")
 	#define _bannertoolPath std::string("bannertool.exe")
 	#define _makeromPath std::string("makerom.exe")
 #elif defined(unix) || defined(__unix__) || defined(__unix)
-	#define _3dstexPath std::string("3dstex-linux-x64")
 	#define _bannertoolPath std::string("bannertool")
 	#define _makeromPath std::string("makerom")
 #endif

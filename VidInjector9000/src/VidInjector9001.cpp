@@ -277,7 +277,21 @@ void stbir_free(void* memory, void* context)
 		free(memory);
 }
 
-bool convertToBanner(std::string input, std::string outputpath)
+static void image_data_to_tiles(void* out, void* img, uint32_t width, uint32_t height) {//from bannertool, edited for rgb565 only
+    for(uint32_t y = 0; y < height; y++) {
+        for(uint32_t x = 0; x < width; x++) {
+            uint32_t index = (((y >> 3) * (width >> 3) + (x >> 3)) << 6) + ((x & 1) | ((y & 1) << 1) | ((x & 2) << 1) | ((y & 2) << 2) | ((x & 4) << 2) | ((y & 4) << 3));
+
+            uint8_t* pixel = &((uint8_t*) img)[(y * width + x) * 3];
+            uint16_t color = 0;
+            color = (uint16_t) ((((uint8_t) (pixel[0] * 0xFF) & ~0x7) << 8) | (((uint8_t) (pixel[1] * 0xFF) & ~0x3) << 3) | ((uint8_t) (pixel[2] * 0xFF) >> 3));
+
+            ((uint16_t*) out)[index] = color;
+        }
+    }
+}
+
+bool convertToBimg(std::string input, std::string outputpath, bool writeHeader)// true for write header, false for dont write header
 {
 	unsigned char* input_pixels;
 	unsigned char* output_pixels;
@@ -322,6 +336,8 @@ bool convertToBanner(std::string input, std::string outputpath)
 		memcpy(output_3c, output_pixels, out_w*out_h*3);
 		free(output_pixels);
 	}
+	for(int i = 0; i < out_w*out_h*3; i++)
+		output_3c[i] = 255 - output_3c[i];//invert every pixel because image_data_to_tiles inverts it and i dont know how to fix that
 	
 	//layer 200x120 image on a 256x128 image
 	output_fin = (unsigned char*) malloc(new_w*new_h*3);
@@ -332,8 +348,16 @@ bool convertToBanner(std::string input, std::string outputpath)
 			output_fin[(y*(new_w)+x)*3+1] = output_3c[(y*(out_w)+x)*3+1];
 			output_fin[(y*(new_w)+x)*3+2] = output_3c[(y*(out_w)+x)*3+2];
 		}
-	stbi__vertical_flip(output_fin, new_w, new_h, 3);//because 3dstex is broken
-	stbi_write_png(outputpath.c_str(), new_w, new_h, 3, output_fin, 0);
+
+	unsigned char tiledbanner[65536];
+	image_data_to_tiles(tiledbanner, output_fin, 256, 128);
+	remove(outputpath.c_str());
+	std::ofstream bimg(outputpath.c_str(), std::ios_base::app | std::ios_base::binary);
+	if(writeHeader) bimg.write(reinterpret_cast<const char*>(bimgheader), sizeof(bimgheader));
+	bimg.write(reinterpret_cast<const char*>(tiledbanner), sizeof(tiledbanner));
+	bimg.close();
+
+	//stbi_write_png(outputpath.c_str(), new_w, new_h, 3, output_fin, 0);
 	//stbi_write_png("imag.png", new_w, new_h, 3, output_fin, 0);
 	free(output_3c);
 	return true;
@@ -951,26 +975,8 @@ void tobimg() {
 		
 		//cmd code stuff heh
 		copyfile(name, "romfs/movie/temp.png");
-		convertToBanner("romfs/movie/temp.png", "romfs/movie/COMMON0.png");
+		convertToBimg("romfs/movie/temp.png", "romfs/movie/movie_" + std::to_string(i) + ".bimg", true);
 		remove("romfs/movie/temp.png");
-		std::string cmd = system_g(_toolsPath + _3dstexPath + " -ro rgb565 \"romfs/movie/COMMON0.png\" \"romfs/movie/movie_" + std::to_string(i) + ".bimg.part2\"");
-		if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
-		remove("romfs/movie/COMMON0.png");
-		
-		std::ifstream bimgfile ("romfs/movie/movie_" + std::to_string(i) + ".bimg.part2", std::ios::binary);
-		std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(bimgfile), {});//https://stackoverflow.com/a/5420568
-		
-		std::ofstream finalbimgfile("romfs/movie/movie_" + std::to_string(i) + ".bimg", std::ios_base::out | std::ios_base::binary);
-		//write data to the file one byte at a time because for some dang reason vector::data(); was being annoying with it WHYHWYHWHYWHYWHY
-		for (const auto &i : bimgheader)
-			finalbimgfile << i;
-		for (const auto &c : buffer)
-			finalbimgfile << c;
-		//sweep everything away (do i need to?)
-		bimgfile.close();
-		finalbimgfile.close();
-		buffer.clear();
-		std::filesystem::remove("romfs/movie/movie_" + std::to_string(i) + ".bimg.part2");//instead of fixing this so that remove() works im gonna use std::filesystem HEHEHEHEHHEH
 		size = std::filesystem::file_size("romfs/movie/movie_" + std::to_string(i) + ".bimg");
 		if(size < 0x10020) {
 			printf("ERROR: Failed to generate romfs/movie/movie_%li.bimg, try again.\n", i);
@@ -1063,11 +1069,8 @@ void makebanner() {
 	}
 	
 	copyfile(name, "exefs/temp.png");
-	convertToBanner("exefs/temp.png", "exefs/COMMON0.png");
+	convertToBimg("exefs/temp.png", "exefs/banner.bimg.part", false);
 	remove("exefs/temp.png");
-	std::string cmd = system_g(_toolsPath + _3dstexPath + " -ro rgb565 \"exefs/COMMON0.png\" \"exefs/banner.bimg.part\"");
-	if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
-	remove("exefs/COMMON0.png");
 	if(!std::filesystem::exists("exefs/banner.bimg.part")) {
 		puts("ERROR: Failed to convert image.");
 		pause
@@ -1075,16 +1078,26 @@ void makebanner() {
 	}
 	puts("");//haha pwetty cmd
 	
-	std::ifstream bimgfile ("exefs/banner.bimg.part", std::ios::binary);
-	std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(bimgfile), {});//https://stackoverflow.com/a/5420568
+	std::ifstream bimgfile("exefs/banner.bimg.part", std::ios::binary);
+	char buffer[65536];
+	char Byte;
+	int it = 0;
+	bimgfile.read(&Byte, 1);
+	while(bimgfile) {
+		buffer[it] = Byte;
+		bimgfile.read(&Byte, 1);
+		it++;
+	}
+	bimgfile.close();
+	bimgfile.read(buffer, sizeof(buffer));
+	bimgfile.close();
+	
 	//create bcmdl
-	std::ofstream bannerbcmdl("exefs/banner0.bcmdl", std::ios_base::out | std::ios_base::binary);
-	for (const auto& i : bannerheader)
-		bannerbcmdl << i;
-	for (const auto& i : buffer)
-		bannerbcmdl << i;
-	for (const auto& i : bannerfooter)
-		bannerbcmdl << i;
+	remove("exefs/banner0.bcmdl");
+	std::ofstream bannerbcmdl("exefs/banner0.bcmdl", std::ios_base::app | std::ios_base::binary);
+	bannerbcmdl.write(reinterpret_cast<const char*>(bannerheader), sizeof(bannerheader));
+	bannerbcmdl.write(reinterpret_cast<const char*>(buffer), sizeof(buffer));
+	bannerbcmdl.write(reinterpret_cast<const char*>(bannerfooter), sizeof(bannerfooter));
 	bimgfile.close();
 	bannerbcmdl.close();
 	remove("exefs/banner.bimg.part");
