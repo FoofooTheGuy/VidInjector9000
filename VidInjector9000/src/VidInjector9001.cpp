@@ -975,15 +975,12 @@ void tobimg() {
 		
 		//cmd code stuff heh
 		copyfile(name, "romfs/movie/temp.png");
-		convertToBimg("romfs/movie/temp.png", "romfs/movie/movie_" + std::to_string(i) + ".bimg", true);
-		remove("romfs/movie/temp.png");
-		size = std::filesystem::file_size("romfs/movie/movie_" + std::to_string(i) + ".bimg");
-		if(size < 0x10020) {
+		if(!convertToBimg("romfs/movie/temp.png", "romfs/movie/movie_" + std::to_string(i) + ".bimg", true)) {
 			printf("ERROR: Failed to generate romfs/movie/movie_%li.bimg, try again.\n", i);
 			i--;
 			if(!goorQuit()) return;
 		}
-		puts("");//hah
+		remove("romfs/movie/temp.png");
 	}
 	completed[3] = 'X';
 	for (unsigned long i = 0; i < amount; i++) {
@@ -1076,7 +1073,6 @@ void makebanner() {
 		pause
 		return;
 	}
-	puts("");//haha pwetty cmd
 	
 	std::ifstream bimgfile("exefs/banner.bimg.part", std::ios::binary);
 	char buffer[65536];
