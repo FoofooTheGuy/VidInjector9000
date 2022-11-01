@@ -65,6 +65,4 @@ Credits and Stuff
 
 [makerom](https://github.com/3DSGuy/Project_CTR): building CIA
 
-[3dstex](https://github.com/Cruel/3dstex): creating banner image
-
 [stb image](https://github.com/nothings/stb): Manipulating images
