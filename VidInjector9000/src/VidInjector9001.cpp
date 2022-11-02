@@ -284,7 +284,7 @@ static void image_data_to_tiles(void* out, void* img, uint32_t width, uint32_t h
 
             uint8_t* pixel = &((uint8_t*) img)[(y * width + x) * 3];
             uint16_t color = 0;
-            color = (uint16_t) ((((uint8_t) (pixel[0] * 0xFF) & ~0x7) << 8) | (((uint8_t) (pixel[1] * 0xFF) & ~0x3) << 3) | ((uint8_t) (pixel[2] * 0xFF) >> 3));
+            color = (uint16_t) ((((uint8_t) (pixel[0]) & ~0x7) << 8) | (((uint8_t) (pixel[1]) & ~0x3) << 3) | ((uint8_t) (pixel[2]) >> 3));
 
             ((uint16_t*) out)[index] = color;
         }
@@ -309,7 +309,7 @@ bool convertToBimg(std::string input, std::string outputpath, bool writeHeader)/
 	}
 	input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
 	output_pixels = (unsigned char*) malloc(out_w*out_h*ch);
-	stbir_resize_uint8(input_pixels, w, h, 0, output_pixels, out_w, out_h, 0, ch);
+	stbir_resize_uint8(input_pixels, w, h, 0, output_pixels, out_w, out_h, 0, ch);//scale to 200x120
 	stbi_image_free(input_pixels);
 
 	if(ch == 4) {//if png?
@@ -336,8 +336,6 @@ bool convertToBimg(std::string input, std::string outputpath, bool writeHeader)/
 		memcpy(output_3c, output_pixels, out_w*out_h*3);
 		free(output_pixels);
 	}
-	for(int i = 0; i < out_w*out_h*3; i++)
-		output_3c[i] = 255 - output_3c[i];//invert every pixel because image_data_to_tiles inverts it and i dont know how to fix that
 	
 	//layer 200x120 image on a 256x128 image
 	output_fin = (unsigned char*) malloc(new_w*new_h*3);
@@ -564,11 +562,11 @@ void Movie_title() {
 		if(tolowerstr((std::string)&name[name.size()-4]) == ".txt" || tolowerstr((std::string)&name[name.size()-5]) == ".txt\"") {
 			if(readTxt(name, name)) utf16 = true;
 		}
-		for(int i = 0; i < name.size(); i++) {
+		for(unsigned long long i = 0; i < name.size(); i++) {
 			if(name[i] == ',') {
 				std::string choiche = "";
 				while(choiche == "") {
-					printf("WARNING: Character #%d (',') in the title will be a problem.\nReplace it with \"\\x2C\" to have a comma in the title? [Y/N]\n", i+1);
+					printf("WARNING: Character #%lld (',') in the title will be a problem.\nReplace it with \"\\x2C\" to have a comma in the title? [Y/N]\n", i+1);
 					std::getline(std::cin, choiche);
 					if(tolower(choiche[0]) == 'y') {
 						name[i] = '\\';
@@ -625,11 +623,11 @@ void makesettingsTL() {
 	if(tolowerstr((std::string)&name[name.size()-4]) == ".txt" || tolowerstr((std::string)&name[name.size()-5]) == ".txt\"") {
 		if(readTxt(name, name)) utf16 = true;
 	}
-	for(int i = 0; i < name.size(); i++) {
+	for(unsigned long long i = 0; i < name.size(); i++) {
 		if(name[i] == ',') {
 			std::string choiche = "";
 			while(choiche == "") {
-				printf("WARNING: Character #%d (',') in the name will be a problem.\nReplace it with \"\\x2C\" to have a comma in the name? [Y/N]\n", i+1);
+				printf("WARNING: Character #%lld (',') in the name will be a problem.\nReplace it with \"\\x2C\" to have a comma in the name? [Y/N]\n", i+1);
 				std::getline(std::cin, choiche);
 				if(tolower(choiche[0]) == 'y') {
 					name[i] = '\\';
@@ -787,11 +785,11 @@ void makesettingsTL() {
 		if(tolowerstr((std::string)&publisher[publisher.size()-4]) == ".txt" || tolowerstr((std::string)&publisher[publisher.size()-5]) == ".txt\"") {
 			if(readTxt(publisher, publisher)) utf16 = true;
 		}
-		for(int i = 0; i < publisher.size(); i++) {
+		for(unsigned long long i = 0; i < publisher.size(); i++) {
 			if(publisher[i] == ',') {
 				std::string choiche = "";
 				while(choiche == "") {
-					printf("WARNING: Character #%d (',') in the name will be a problem.\nReplace it with \"\\x2C\" to have a comma in the name? [Y/N]\n", i+1);
+					printf("WARNING: Character #%lld (',') in the name will be a problem.\nReplace it with \"\\x2C\" to have a comma in the name? [Y/N]\n", i+1);
 					std::getline(std::cin, choiche);
 					if(tolower(choiche[0]) == 'y') {
 						publisher[i] = '\\';
@@ -958,7 +956,6 @@ void tobimg() {
 		return;
 	}
 	std::filesystem::create_directories("romfs/movie");
-	size_t size = 0;
 	for (unsigned long i = 0; i < amount; i++) {
 		name = "";
 		while(name == "") {
@@ -972,21 +969,14 @@ void tobimg() {
 				if(!goorQuit()) return;
 			}
 		}
-		
-		//cmd code stuff heh
-		copyfile(name, "romfs/movie/temp.png");
-		if(!convertToBimg("romfs/movie/temp.png", "romfs/movie/movie_" + std::to_string(i) + ".bimg", true)) {
+
+		if(!convertToBimg(name, "romfs/movie/movie_" + std::to_string(i) + ".bimg", true)) {
 			printf("ERROR: Failed to generate romfs/movie/movie_%li.bimg, try again.\n", i);
 			i--;
 			if(!goorQuit()) return;
 		}
-		remove("romfs/movie/temp.png");
 	}
 	completed[3] = 'X';
-	for (unsigned long i = 0; i < amount; i++) {
-		size = std::filesystem::file_size("romfs/movie/movie_" + std::to_string(i) + ".bimg");
-		if(size < 0x10020) completed[3] = ' ';
-	}
 	pause
 }
 
@@ -1064,11 +1054,8 @@ void makebanner() {
 			if(!goorQuit()) return;
 		}
 	}
-	
-	copyfile(name, "exefs/temp.png");
-	convertToBimg("exefs/temp.png", "exefs/banner.bimg.part", false);
-	remove("exefs/temp.png");
-	if(!std::filesystem::exists("exefs/banner.bimg.part")) {
+
+	if(!convertToBimg(name, "exefs/banner.bimg.part", false) || !std::filesystem::exists("exefs/banner.bimg.part")) {
 		puts("ERROR: Failed to convert image.");
 		pause
 		return;
