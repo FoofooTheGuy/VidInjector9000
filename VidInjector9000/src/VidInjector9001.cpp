@@ -309,7 +309,9 @@ bool convertToBimg(std::string input, std::string outputpath, bool writeHeader)/
 	}
 	input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
 	output_pixels = (unsigned char*) malloc(out_w*out_h*ch);
-	stbir_resize_uint8(input_pixels, w, h, 0, output_pixels, out_w, out_h, 0, ch);//scale to 200x120
+	printf("w %d, h %d, out_w %d, out_h %d\n", w, h, out_w, out_h);
+	if(w == out_w && h == out_h) memcpy(output_pixels, input_pixels, w*h*ch);
+	else stbir_resize_uint8(input_pixels, w, h, 0, output_pixels, out_w, out_h, 0, ch);//scale to 200x120 if needed
 	stbi_image_free(input_pixels);
 
 	if(ch == 4) {//if png?
@@ -355,8 +357,7 @@ bool convertToBimg(std::string input, std::string outputpath, bool writeHeader)/
 	bimg.write(reinterpret_cast<const char*>(tiledbanner), sizeof(tiledbanner));
 	bimg.close();
 
-	//stbi_write_png(outputpath.c_str(), new_w, new_h, 3, output_fin, 0);
-	//stbi_write_png("imag.png", new_w, new_h, 3, output_fin, 0);
+	stbi_write_png("imag.png", new_w, new_h, 3, output_fin, 0);
 	free(output_3c);
 	return true;
 }
@@ -367,7 +368,7 @@ bool convertToIcon(std::string input, std::string output) {
 	unsigned char* output_3c;
 	int w, h, ch, comp;
 	const int out_w = 48;
-	const int out_h = 48;
+	const int out_h = 48;//lol these are the same
 	const uint8_t FF = 0xFF;
 	if(!stbi_info(input.c_str(), &w, &h, &comp)) {
 		puts("ERROR: Failed to get image info.");
@@ -375,7 +376,8 @@ bool convertToIcon(std::string input, std::string output) {
 	}
 	input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
 	output_pixels = (unsigned char*) malloc(out_w*out_h*ch);
-	stbir_resize_uint8(input_pixels, w, h, 0, output_pixels, out_w, out_h, 0, ch);
+	if(w == out_w && h == out_h) memcpy(output_pixels, input_pixels, w*h*ch);
+	else stbir_resize_uint8(input_pixels, w, h, 0, output_pixels, out_w, out_h, 0, ch);//scale to 48x48 if needed
 
 	if(ch == 4) {//if png?
 		output_3c = (unsigned char*) malloc(out_w*out_h*3);
