@@ -309,7 +309,6 @@ bool convertToBimg(std::string input, std::string outputpath, bool writeHeader)/
 	}
 	input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
 	output_pixels = (unsigned char*) malloc(out_w*out_h*ch);
-	printf("w %d, h %d, out_w %d, out_h %d\n", w, h, out_w, out_h);
 	if(w == out_w && h == out_h) memcpy(output_pixels, input_pixels, w*h*ch);
 	else stbir_resize_uint8(input_pixels, w, h, 0, output_pixels, out_w, out_h, 0, ch);//scale to 200x120 if needed
 	stbi_image_free(input_pixels);
