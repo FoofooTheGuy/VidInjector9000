@@ -356,7 +356,7 @@ bool convertToBimg(std::string input, std::string outputpath, bool writeHeader)/
 	bimg.write(reinterpret_cast<const char*>(tiledbanner), sizeof(tiledbanner));
 	bimg.close();
 
-	stbi_write_png("imag.png", new_w, new_h, 3, output_fin, 0);
+	//stbi_write_png("imag.png", new_w, new_h, 3, output_fin, 0);
 	free(output_3c);
 	return true;
 }
