@@ -31,7 +31,7 @@ void copyfile(std::string inpath, std::string outpath) {//also works with direct
 		std::filesystem::copy(inpath, outpath, std::filesystem::copy_options::recursive); 
 }
 
-void GetDirSize(std::filesystem::path dir, size_t &size) {
+/*void GetDirSize(std::filesystem::path dir, size_t &size) {
 	for (const auto &entry : std::filesystem::directory_iterator(dir)) {
 		//std::cout << entry.path() << std::endl;
 		std::filesystem::path p = entry;
@@ -42,7 +42,7 @@ void GetDirSize(std::filesystem::path dir, size_t &size) {
 			GetDirSize(entry.path(), size);
 		}
 	}
-}
+}*/
 
 std::string tolowerstr(std::string str) {
 	for (char &i : str)
@@ -242,40 +242,6 @@ std::string UTF8toUTF16(std::string input) {//not to be confused with utf8_to_ut
 }
 
 //based on https://raw.githubusercontent.com/nothings/stb/master/tests/resample_test.cpp
-class stbir_context {
-public:
-	stbir_context()
-	{
-		size = 1000000;
-		memory = malloc(size);
-	}
-
-	~stbir_context()
-	{
-		free(memory);
-	}
-
-	size_t size;
-	void* memory;
-} g_context;
-
-void* stbir_malloc(size_t size, void* context)
-{
-	if (!context)
-		return malloc(size);
-
-	stbir_context* real_context = (stbir_context*)context;
-	if (size > real_context->size)
-		return 0;
-
-	return real_context->memory;
-}
-
-void stbir_free(void* memory, void* context)
-{
-	if (!context)
-		free(memory);
-}
 
 static void image_data_to_tiles(void* out, void* img, uint32_t width, uint32_t height) {//from bannertool, edited for rgb565 only
     for(uint32_t y = 0; y < height; y++) {
@@ -291,7 +257,7 @@ static void image_data_to_tiles(void* out, void* img, uint32_t width, uint32_t h
     }
 }
 
-bool convertToBimg(std::string input, std::string outputpath, bool writeHeader)// true for write header, false for dont write header
+bool convertToBimg(std::string input, void* outBuffer, bool writeHeader)// true for write header, false for dont write header
 {
 	unsigned char* input_pixels;
 	unsigned char* output_pixels;
@@ -349,38 +315,42 @@ bool convertToBimg(std::string input, std::string outputpath, bool writeHeader)/
 		}
 
 	unsigned char tiledbanner[65536];
-	image_data_to_tiles(tiledbanner, output_fin, 256, 128);
-	remove(outputpath.c_str());
-	std::ofstream bimg(outputpath.c_str(), std::ios_base::app | std::ios_base::binary);
-	if(writeHeader) bimg.write(reinterpret_cast<const char*>(bimgheader), sizeof(bimgheader));
-	bimg.write(reinterpret_cast<const char*>(tiledbanner), sizeof(tiledbanner));
-	bimg.close();
+	image_data_to_tiles(tiledbanner, output_fin, new_w, new_h);
+	if(writeHeader) {
+		memcpy(outBuffer, bimgheader, sizeof(bimgheader));
+		memcpy(outBuffer + sizeof(bimgheader), tiledbanner, sizeof(tiledbanner));
+	}
+	else {
+		memcpy(outBuffer, tiledbanner, sizeof(tiledbanner));
+	}
 
 	//stbi_write_png("imag.png", new_w, new_h, 3, output_fin, 0);
 	free(output_3c);
 	return true;
 }
 
-bool convertToIcon(std::string input, std::string output) {
+//note: text has to be utf16
+bool convertToIcon(std::string input, std::string output, std::string shortname, std::string longname, std::string publisher) {//bare bones SMDH creation. thanks 3dbrew
 	unsigned char* input_pixels;
 	unsigned char* output_pixels;
-	unsigned char* output_3c;
+	unsigned char* large_3c;
+	unsigned char* small_3c;
 	int w, h, ch, comp;
-	const int out_w = 48;
-	const int out_h = 48;//lol these are the same
+	const int largeLW = 48;
+	const int smallLW = 24;
 	const uint8_t FF = 0xFF;
 	if(!stbi_info(input.c_str(), &w, &h, &comp)) {
 		puts("ERROR: Failed to get image info.");
 		return false;
 	}
 	input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
-	output_pixels = (unsigned char*) malloc(out_w*out_h*ch);
-	if(w == out_w && h == out_h) memcpy(output_pixels, input_pixels, w*h*ch);
-	else stbir_resize_uint8(input_pixels, w, h, 0, output_pixels, out_w, out_h, 0, ch);//scale to 48x48 if needed
+	output_pixels = (unsigned char*) malloc(largeLW*largeLW*ch);
+	if(w == largeLW && h == largeLW) memcpy(output_pixels, input_pixels, w*h*ch);
+	else stbir_resize_uint8(input_pixels, w, h, 0, output_pixels, largeLW, largeLW, 0, ch);//scale to 48x48 if needed
 
 	if(ch == 4) {//if png?
-		output_3c = (unsigned char*) malloc(out_w*out_h*3);
-		for (int i = 3; i < out_w*out_h*ch; i+=4) {//make background all white
+		large_3c = (unsigned char*) malloc(largeLW*largeLW*3);
+		for (int i = 3; i < largeLW*largeLW*ch; i+=4) {//make background all white
 			//https://stackoverflow.com/a/64655571
 			uint8_t alpha_out = output_pixels[i] + (FF * (FF - output_pixels[i]) / FF);
 			output_pixels[i-1] = (output_pixels[i-1] * output_pixels[i] + FF * FF * (FF - output_pixels[i]) / FF)/alpha_out;
@@ -389,23 +359,260 @@ bool convertToIcon(std::string input, std::string output) {
 			output_pixels[i] = alpha_out;
 		}
 		int newi = 3;
-		for(int i = 3; i < out_w*out_h*4; i+=4) {
-			output_3c[newi-3] = output_pixels[i-3];
-			output_3c[newi-2] = output_pixels[i-2];
-			output_3c[newi-1] = output_pixels[i-1];
+		for(int i = 3; i < largeLW*largeLW*4; i+=4) {
+			large_3c[newi-3] = output_pixels[i-3];
+			large_3c[newi-2] = output_pixels[i-2];
+			large_3c[newi-1] = output_pixels[i-1];
 			newi+=3;
 		}
 		free(output_pixels);
 	}
 	if(ch == 3) {
-		output_3c = (unsigned char*) malloc(out_w*out_h*3);
-		for(int i = 0; i < out_w*out_h*3; i++) output_3c[i] = output_pixels[i];
+		large_3c = (unsigned char*) malloc(largeLW*largeLW*3);
+		for(int i = 0; i < largeLW*largeLW*3; i++) large_3c[i] = output_pixels[i];
 		free(output_pixels);
 	}
-	stbi_write_png(output.c_str(), out_w, out_w, 3, output_3c, 0);
+
+	small_3c = (unsigned char*) malloc(smallLW*smallLW*3);
+	stbir_resize_uint8(large_3c, largeLW, largeLW, 0, small_3c, smallLW, smallLW, 0, 3);//make the small icon
+	unsigned char tiledsmall[0x480];
+	unsigned char tiledlarge[0x1200];
+	image_data_to_tiles(tiledsmall, small_3c, smallLW, smallLW);
+	image_data_to_tiles(tiledlarge, large_3c, largeLW, largeLW);
+	std::ofstream smdh(output, std::ios_base::out | std::ios_base::binary);
+	smdh << "SMDH";//make smdh!
+	for(int i = 0; i < 4; i++)
+		smdh << '\0';
+	for(int i = 0; i < 16; i++) {
+		smdh << shortname;
+		for(size_t i = 0; i < 0x80 - shortname.size(); i++)
+			smdh << '\0';
+		smdh << longname;
+		for(size_t i = 0; i < 0x100 - longname.size(); i++)
+			smdh << '\0';
+		smdh << publisher;
+		for(size_t i = 0; i < 0x80 - publisher.size(); i++)
+			smdh << '\0';
+	}
+	for(int i = 0; i < 0x10; i++)
+		smdh << '\0';
+	smdh << "\xFF\xFF\xFF\x7F";//region free
+	for(int i = 0; i < 0xC; i++)
+		smdh << '\0';
+	smdh << "\x01\x04";//visible, no save backups
+	for(int i = 0; i < 0x16; i++)
+		smdh << '\0';
+	smdh.write(reinterpret_cast<const char*>(tiledsmall), sizeof(tiledsmall));
+	smdh.write(reinterpret_cast<const char*>(tiledlarge), sizeof(tiledlarge));
+	
+
+	//stbi_write_png(output.c_str(), largeLW, largeLW, 3, large_3c, 0);
 	stbi_image_free(input_pixels);
-	free(output_3c);
+	free(small_3c);
+	free(large_3c);
 	return true;
+}
+
+//these are from bannertool with slight edits
+#define CBMD_NUM_CGFXS 14
+
+typedef struct {
+	char magic[4];
+	uint32_t zero;
+	uint32_t cgfxOffsets[CBMD_NUM_CGFXS];
+	uint8_t padding[0x44];
+	uint32_t cwavOffset;
+} CBMDHeader;
+
+typedef struct {
+    void* cgfxs[CBMD_NUM_CGFXS];
+    uint32_t cgfxSizes[CBMD_NUM_CGFXS];
+    void* cwav;
+    uint32_t cwavSize;
+} CBMD;
+
+#define MIN(a,b) (((a)<(b))?(a):(b))
+
+// Ported from: https://github.com/svn2github/3DS-Explorer/blob/master/3DSExplorer/DSDecmp/Formats/Nitro/LZ11.cs
+
+uint32_t lz11_get_occurence_length(uint8_t* newPtr, uint32_t newLength, uint8_t* oldPtr, uint32_t oldLength, uint32_t* disp) {
+    if(disp != NULL) {
+        *disp = 0;
+    }
+
+    if(newLength == 0) {
+        return 0;
+    }
+
+    uint32_t maxLength = 0;
+    if(oldLength > 0) {
+        for(uint32_t i = 0; i < oldLength - 1; i++) {
+            uint8_t* currentOldStart = oldPtr + i;
+            uint32_t currentLength = 0;
+            for(uint32_t j = 0; j < newLength; j++) {
+                if(*(currentOldStart + j) != *(newPtr + j)) {
+                    break;
+                }
+
+                currentLength++;
+            }
+
+            if(currentLength > maxLength) {
+                maxLength = currentLength;
+                if(disp != NULL) {
+                    *disp = oldLength - i;
+                }
+
+                if(maxLength == newLength) {
+                    break;
+                }
+            }
+        }
+    }
+
+    return maxLength;
+}
+
+void* lz11_compress(uint32_t* size, void* input, uint32_t inputSize) {
+    if(inputSize > 0xFFFFFF) {
+        printf("ERROR: LZ11 input is too large.\n");
+        return NULL;
+    }
+
+    std::stringstream ss;
+
+    uint8_t header[4] = { 0x11, (uint8_t) (inputSize & 0xFF), (uint8_t) ((inputSize >> 8) & 0xFF), (uint8_t) ((inputSize >> 16) & 0xFF) };
+    ss.write((char*) header, 4);
+
+    uint32_t compressedLength = 4;
+    uint8_t outbuffer[8 * 4 + 1];
+    outbuffer[0] = 0;
+    uint32_t bufferlength = 1;
+    uint32_t bufferedBlocks = 0;
+    uint32_t readBytes = 0;
+    while(readBytes < inputSize) {
+        if(bufferedBlocks == 8) {
+            ss.write((char*) outbuffer, bufferlength);
+            compressedLength += bufferlength;
+            outbuffer[0] = 0;
+            bufferlength = 1;
+            bufferedBlocks = 0;
+        }
+
+        uint32_t disp = 0;
+        uint32_t oldLength = MIN(readBytes, 0x1000);
+        uint32_t length = lz11_get_occurence_length((uint8_t*) input + readBytes, MIN(inputSize - readBytes, 0x10110), (uint8_t*) input + readBytes - oldLength, oldLength, &disp);
+        if(length < 3) {
+            outbuffer[bufferlength++] = *((uint8_t*) input + (readBytes++));
+        } else {
+            readBytes += length;
+            outbuffer[0] |= (uint8_t)(1 << (7 - bufferedBlocks));
+            if(length > 0x110) {
+                outbuffer[bufferlength] = 0x10;
+                outbuffer[bufferlength] |= (uint8_t)(((length - 0x111) >> 12) & 0x0F);
+                bufferlength++;
+                outbuffer[bufferlength] = (uint8_t)(((length - 0x111) >> 4) & 0xFF);
+                bufferlength++;
+                outbuffer[bufferlength] = (uint8_t)(((length - 0x111) << 4) & 0xF0);
+            } else if(length > 0x10) {
+                outbuffer[bufferlength] = 0x00;
+                outbuffer[bufferlength] |= (uint8_t)(((length - 0x111) >> 4) & 0x0F);
+                bufferlength++;
+                outbuffer[bufferlength] = (uint8_t)(((length - 0x111) << 4) & 0xF0);
+            } else {
+                outbuffer[bufferlength] = (uint8_t)(((length - 1) << 4) & 0xF0);
+            }
+
+            outbuffer[bufferlength] |= (uint8_t)(((disp - 1) >> 8) & 0x0F);
+            bufferlength++;
+            outbuffer[bufferlength] = (uint8_t)((disp - 1) & 0xFF);
+            bufferlength++;
+        }
+
+        bufferedBlocks++;
+    }
+
+    if(bufferedBlocks > 0) {
+        ss.write((char*) outbuffer, bufferlength);
+        compressedLength += bufferlength;
+    }
+
+    if(compressedLength % 4 != 0) {
+        uint32_t padLength = 4 - (compressedLength % 4);
+        uint8_t pad[padLength];
+        memset(pad, 0, (size_t) padLength);
+
+        ss.write((char*) pad, padLength);
+        compressedLength += padLength;
+    }
+
+    void* buf = malloc((size_t) compressedLength);
+    ss.read((char*) buf, compressedLength);
+
+    if(size != NULL) {
+        *size = (uint32_t) compressedLength;
+    }
+
+    return buf;
+}
+
+static void* cbmd_build_data(uint32_t* size, CBMD cbmd) {
+	CBMDHeader header;
+	memset(&header, 0, sizeof(header));
+
+	memcpy(header.magic, "CBMD", sizeof(header.magic));
+
+	uint32_t outputSize = sizeof(CBMDHeader);
+
+	void* compressedCGFXs[14] = {NULL};
+	uint32_t compressedCGFXSizes[14] = {0};
+	for(uint32_t i = 0; i < CBMD_NUM_CGFXS; i++) {
+		if(cbmd.cgfxs[i] != NULL) {
+			header.cgfxOffsets[i] = outputSize;
+
+			compressedCGFXs[i] = lz11_compress(&compressedCGFXSizes[i], cbmd.cgfxs[i], cbmd.cgfxSizes[i]);
+			outputSize += compressedCGFXSizes[i];
+		}
+	}
+
+	outputSize = (outputSize + 0xF) & ~0xF;
+
+	if(cbmd.cwav != NULL) {
+		header.cwavOffset = outputSize;
+
+		outputSize += cbmd.cwavSize;
+	}
+
+	void* output = calloc(outputSize, sizeof(uint8_t));
+	if(output == NULL) {
+		for(uint32_t i = 0; i < CBMD_NUM_CGFXS; i++) {
+			if(cbmd.cgfxs[i] != NULL) {
+				free(compressedCGFXs[i]);
+			}
+		}
+
+		puts("ERROR: Could not allocate memory for CBMD data.");
+		return NULL;
+	}
+
+	memcpy(output, &header, sizeof(header));
+
+	for(uint32_t i = 0; i < CBMD_NUM_CGFXS; i++) {
+		if(compressedCGFXs[i] != NULL) {
+			memcpy(&((uint8_t*) output)[header.cgfxOffsets[i]], compressedCGFXs[i], compressedCGFXSizes[i]);
+			free(compressedCGFXs[i]);
+		}
+	}
+
+	if(cbmd.cwav != NULL) {
+		memcpy(&((uint8_t*) output)[header.cwavOffset], cbmd.cwav, cbmd.cwavSize);
+	}
+
+	if(size != NULL) {
+		*size = outputSize;
+	}
+
+	return output;
 }
 
 void removeQuotes(std::string &str) {
@@ -469,13 +676,14 @@ bool Generate_Code(bool Multi) {
 
 bool readTxt(std::string file, std::string &output) {//return true if it's unicode or else fale, who knows what that could be though
 	std::string realoutput = "";
+	std::string choiche = "";
 	while(1) {
 		puts("Use the contents of this .txt file for the input? (Y/N)");
-		std::getline(std::cin, name);
-		if(tolower(name[0]) == 'y') {
+		std::getline(std::cin, choiche);
+		if(tolower(choiche[0]) == 'y') {
 			removeQuotes(file);
 			if(std::filesystem::exists(file)) {
-				name = "";
+				choiche = "";
 				output = "";
 				std::ifstream input(file, std::ios_base::in | std::ios_base::binary);//input file
 				
@@ -499,7 +707,7 @@ bool readTxt(std::string file, std::string &output) {//return true if it's unico
 				return false; 
 			}
 		}
-		else if(tolower(name[0]) == 'n') {
+		else if(tolower(choiche[0]) == 'n') {
 			puts("Returning input as output...");
 			output = file;
 			return false;
@@ -543,6 +751,8 @@ void Movie_title() {
 	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
 	windowTitle("[" + type + "] Generate movie_title.csv");
 	cls
+	completed[0] = ' ';
+	scompleted[0] = ' ';
 	if (amount == 0) {
 		puts("Set video amount first!");
 		pause
@@ -594,8 +804,8 @@ void Movie_title() {
 		pause
 		return;
 	}
-	if(MultiVid) completed[0] = 'X';
-	else scompleted[0] = 'X';
+	completed[0] = 'X';
+	scompleted[0] = 'X';
 	pause
 }
 
@@ -603,7 +813,8 @@ void makesettingsTL() {
 	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
 	windowTitle("[" + type + "] Generate settingsTL.csv");
 	cls
-
+	completed[1] = ' ';
+	scompleted[1] = ' ';
 	if (amount == 0) {
 		puts("Set video amount first!");
 		pause
@@ -907,6 +1118,7 @@ void copyright() {
 	cls
 	name = "";
 	bool utf16 = false;
+	completed[2] = ' ';
 	std::filesystem::create_directories("romfs/settings");
 	while(name == "") {
 		std::ofstream information_buttons("romfs/settings/information_buttons.csv", std::ios_base::out | std::ios_base::binary);
@@ -951,6 +1163,7 @@ void copyright() {
 void tobimg() {
 	windowTitle("[MultiVidInjector5000] Image to .bimg");
 	cls
+	completed[3] = ' ';
 	if (amount == 0) {
 		puts("Set video amount first!");
 		pause
@@ -970,12 +1183,16 @@ void tobimg() {
 				if(!goorQuit()) return;
 			}
 		}
-
-		if(!convertToBimg(name, "romfs/movie/movie_" + std::to_string(i) + ".bimg", true)) {
+		
+		unsigned char bimg[65568];
+		if(!convertToBimg(name, bimg, true)) {
 			printf("ERROR: Failed to generate romfs/movie/movie_%li.bimg, try again.\n", i);
 			i--;
 			if(!goorQuit()) return;
 		}
+		std::ofstream bimgfile("romfs/movie/movie_" + std::to_string(i) + ".bimg", std::ios_base::out | std::ios_base::binary);
+		bimgfile.write(reinterpret_cast<const char*>(bimg), sizeof(bimg));
+		bimgfile.close();
 	}
 	completed[3] = 'X';
 	pause
@@ -986,6 +1203,8 @@ void moflexMover() {
 	windowTitle("[" + type + "] Injecting .moflex");
 	cls
 	static bool pass = false;
+	completed[4] = ' ';
+	scompleted[2] = ' ';
 	unsigned char Checker[4];
 	if (amount == 0) {
 		puts("Set video amount first!");
@@ -1033,8 +1252,8 @@ void moflexMover() {
 		}
 		pass = false;
 	}
-	if(MultiVid) completed[4] = 'X';
-	else scompleted[2] = 'X';
+	completed[4] = 'X';
+	scompleted[2] = 'X';
 	pause
 }
 
@@ -1044,6 +1263,8 @@ void makebanner() {
 	cls
 	std::filesystem::create_directory("exefs");
 	name = "";
+	completed[5] = ' ';
+	scompleted[3] = ' ';
 	while(name == "") {
 		cls
 		puts("Enter/drag and drop your home screen banner image:\n(The image should be 200x120 for best results)");
@@ -1056,40 +1277,43 @@ void makebanner() {
 		}
 	}
 
-	if(!convertToBimg(name, "exefs/banner.bimg.part", false) || !std::filesystem::exists("exefs/banner.bimg.part")) {
+	unsigned char buffer[65536];
+	if(!convertToBimg(name, buffer, false)) {
 		puts("ERROR: Failed to convert image.");
 		pause
 		return;
 	}
 	
-	std::ifstream bimgfile("exefs/banner.bimg.part", std::ios::binary);
-	char buffer[65536];
-	char Byte;
-	int it = 0;
-	bimgfile.read(&Byte, 1);
-	while(bimgfile) {
-		buffer[it] = Byte;
-		bimgfile.read(&Byte, 1);
-		it++;
-	}
-	bimgfile.close();
-	bimgfile.read(buffer, sizeof(buffer));
-	bimgfile.close();
-	
 	//create bcmdl
-	remove("exefs/banner0.bcmdl");
-	std::ofstream bannerbcmdl("exefs/banner0.bcmdl", std::ios_base::app | std::ios_base::binary);
-	bannerbcmdl.write(reinterpret_cast<const char*>(bannerheader), sizeof(bannerheader));
-	bannerbcmdl.write(reinterpret_cast<const char*>(buffer), sizeof(buffer));
-	bannerbcmdl.write(reinterpret_cast<const char*>(bannerfooter), sizeof(bannerfooter));
-	bimgfile.close();
-	bannerbcmdl.close();
-	remove("exefs/banner.bimg.part");
-	//build banner
-	system_g(_toolsPath + _bannertoolPath + " makebanner -ci exefs/banner0.bcmdl -ca Vidinjector9000Resources/files/banner.bcwav -o exefs/banner.bin");
+	unsigned char* bcmdl;
+	bcmdl = (unsigned char*) malloc(sizeof(bannerheader) + sizeof(buffer) + sizeof(bannerfooter));
+	memcpy(bcmdl, bannerheader, sizeof(bannerheader));
+	memcpy(bcmdl + sizeof(bannerheader), buffer, sizeof(buffer));
+	memcpy(bcmdl + sizeof(bannerheader) + sizeof(buffer), bannerfooter, sizeof(bannerfooter));
+	
+	//build banner (stolen from bannertool)
+    CBMD cbmd;
+    memset(&cbmd, 0, sizeof(cbmd));
+	
+	cbmd.cgfxSizes[0] = sizeof(bannerheader) + sizeof(buffer) + sizeof(bannerfooter);
+	cbmd.cgfxs[0] = bcmdl;
+	
+	cbmd.cwavSize = sizeof(BCWAV_array);
+	cbmd.cwav = (void*)BCWAV_array;
+
+	uint32_t bnrSize = 0;
+	void* bnr = cbmd_build_data(&bnrSize, cbmd);
+
+	std::ofstream bnrfile("exefs/banner.bin", std::ios_base::out | std::ios_base::binary);
+	bnrfile.write(reinterpret_cast<const char*>(bnr), bnrSize);
+	bnrfile.close();
+
+	puts("Created banner \"exefs/banner.bin\".");
+
+	//system_g(_toolsPath + _bannertoolPath + " makebanner -ci exefs/banner0.bcmdl -ca Vidinjector9000Resources/files/banner.bcwav -o exefs/banner.bin");
 	//clean up time
 	remove("exefs/banner0.bcmdl");
-
+	free(bcmdl);
 	if(!std::filesystem::exists("exefs/banner.bin")) {
 		puts("ERROR: Failed to generate exefs/banner.bin");
 		pause
@@ -1102,14 +1326,17 @@ void makebanner() {
 	pause
 }
 
-void makeIcon() {//doesnt support utf-16 name
+void makeIcon() {
 	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
 	windowTitle("[" + type + "] Generate icon");
 	cls
 	std::string shortname;
 	std::string publisher;
+	bool utf16[3] = { false, false, false };//shortname, longname, publisher
 	remove("exefs/Icon.bin");
 	name = "";
+	completed[6] = ' ';
+	scompleted[4] = ' ';
 	while (name == "") {
 		cls
 		puts("Enter/drag and drop your icon image:\n(The image should be 48x48 for best results)");
@@ -1128,11 +1355,17 @@ void makeIcon() {//doesnt support utf-16 name
 		std::getline(std::cin, shortname);
 		if(shortname == "") cls
 	}
+	if(tolowerstr((std::string)&shortname[shortname.size()-4]) == ".txt" || tolowerstr((std::string)&shortname[shortname.size()-5]) == ".txt\"") {
+		if(readTxt(shortname, shortname)) utf16[0] = true;
+	}
 	longname = "";
 	while (longname == "") {
 		puts("Enter the long name:");
 		std::getline(std::cin, longname);
 		if(longname == "") cls
+	}
+	if(tolowerstr((std::string)&longname[longname.size()-4]) == ".txt" || tolowerstr((std::string)&longname[longname.size()-5]) == ".txt\"") {
+		if(readTxt(longname, longname)) utf16[1] = true;
 	}
 	publisher = "";
 	while (publisher == "") {
@@ -1140,13 +1373,14 @@ void makeIcon() {//doesnt support utf-16 name
 		std::getline(std::cin, publisher);
 		if(publisher == "") cls
 	}
+	if(tolowerstr((std::string)&publisher[publisher.size()-4]) == ".txt" || tolowerstr((std::string)&publisher[publisher.size()-5]) == ".txt\"") {
+		if(readTxt(publisher, publisher)) utf16[1] = true;
+	}
 
-	copyfile(name, "exefs/temp.png");
-	convertToIcon("exefs/temp.png", "exefs/Icon.png");
-	remove("exefs/temp.png");
-	std::string cmd = system_g(_toolsPath + _bannertoolPath + " makesmdh -i \"exefs/Icon.png\" -s \"" + shortname + "\" -l \"" + longname + "\" -p \"" + publisher + "\" -f visible,nosavebackups -o \"exefs/icon.bin\"");
+	convertToIcon(name, "exefs/icon.bin", utf16[0] ? shortname : UTF8toUTF16(shortname), utf16[1] ? longname : UTF8toUTF16(longname), utf16[2] ? publisher : UTF8toUTF16(publisher));
+	/*std::string cmd = system_g(_toolsPath + _bannertoolPath + " makesmdh -i \"exefs/Icon.png\" -s \"" + shortname + "\" -l \"" + longname + "\" -p \"" + publisher + "\" -f visible,nosavebackups -o \"exefs/icon.bin\"");
 	if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
-	remove("exefs/Icon.png");
+	remove("exefs/Icon.png");*/
 
 	if(MultiVid) {
 		copyfile("exefs/icon.bin", "romfs/icon.icn");

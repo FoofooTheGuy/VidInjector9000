@@ -5,42 +5,22 @@
 #include <random>
 #include <time.h>
 #include <string.h>
-#include "code.h"
+#include "files.h"
 
 //stb image stuff
-#ifdef __clang__
-#define STBIRDEF static inline
-#endif
 
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #define STB_IMAGE_RESIZE_STATIC
 #include "stb_image_resize.h"
 
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
-
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-#if defined(_WIN32) && _MSC_VER > 1200
-#define STBIR_ASSERT(x) \
-	if (!(x)) {         \
-		__debugbreak();  \
-	} else
-#else
-#include <assert.h>
-#define STBIR_ASSERT(x) assert(x)
-#endif
-
-#define STBIR_MALLOC stbir_malloc
-#define STBIR_FREE stbir_free
 
 #define _toolsPath std::string("Vidinjector9000Resources\\\\tools\\\\")
 #if defined(_WIN32)
-	#define _bannertoolPath std::string("bannertool.exe")
 	#define _makeromPath std::string("makerom.exe")
 #elif defined(unix) || defined(__unix__) || defined(__unix)
-	#define _bannertoolPath std::string("bannertool")
 	#define _makeromPath std::string("makerom")
 #endif
 
