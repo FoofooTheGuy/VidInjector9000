@@ -65,6 +65,6 @@ Credits and Stuff
 
 [makerom](https://github.com/3DSGuy/Project_CTR): building CIA
 
-[3dbrew](https://www.3dbrew.org/) Awesome research on 3DS file formats
+[3dbrew:](https://www.3dbrew.org/) Awesome research on 3DS file formats
 
 [stb image](https://github.com/nothings/stb): Manipulating images
