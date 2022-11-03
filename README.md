@@ -61,8 +61,10 @@ Credits and Stuff
 --
 [videoinject](https://github.com/ihaveamac/videoinject): Example functions and inspiration
 
-[bannertool](https://github.com/Steveice10/bannertool): Compiling icon.bin and banner.bin
+[bannertool](https://github.com/Steveice10/bannertool): code for bannering
 
 [makerom](https://github.com/3DSGuy/Project_CTR): building CIA
+
+[3dbrew](https://www.3dbrew.org/) Awesome research on 3DS file formats
 
 [stb image](https://github.com/nothings/stb): Manipulating images
