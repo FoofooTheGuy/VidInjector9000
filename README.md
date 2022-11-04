@@ -11,9 +11,6 @@ Outdated Walk Through
         <a href="https://www.youtube.com/watch?v=JSvrmVNuGLA">
             <img width="1012" src="https://i.ytimg.com/vi/JSvrmVNuGLA/maxresdefault.jpg">
             How to Create Nintendo 3DS Video Injections with VidInjector9001
-            <h1 class="first-txt">
-                GeeksforGeeks
-           </h1>
         </a>
     </p>
 </body>
