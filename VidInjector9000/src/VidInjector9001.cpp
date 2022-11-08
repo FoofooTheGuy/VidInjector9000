@@ -695,10 +695,22 @@ bool readTxt(std::string file, std::string &output) {//return true if it's unico
 					input.read(&Byte, 1);//grab next byte of file
 				}
 				input.close();
-				if((output[0] & 0xFF) == 0xFF && (output[1] & 0xFF) == 0xFE) {//if it's a unicode file
+				if((output[0] & 0xFF) == 0xFF && (output[1] & 0xFF) == 0xFE) {//if utf16
 					realoutput = (std::string)&output[2];
+					output = realoutput;//remove bom
+					return true;
+				}
+				else if((output[0] & 0xFF) == 0xFE && (output[1] & 0xFF) == 0xFF) {//if utf16 big endian
+					for (size_t i = 2; i < output.size(); i+=2) {//swap every other byte
+						realoutput += output[i+1];
+						realoutput += output[i];
+					}
 					output = realoutput;
 					return true;
+				}
+				else if((UTF8toUTF16(output)[0] & 0xFF) == 0xFF && (UTF8toUTF16(output)[1] & 0xFF) == 0xFE) {//if utf8
+					realoutput = (std::string)&output[3];
+					output = realoutput;//remove bom (it is 3 bytes in utf8)
 				}
 				return false;
 			}
@@ -1353,6 +1365,10 @@ void makeIcon() {
 	while (shortname == "") {//stupid-proofing
 		puts("Enter the short name:");
 		std::getline(std::cin, shortname);
+		if(shortname.size() > 0x80) {
+			puts("ERROR: The short name must be no longer than 128 characters. Try again.");
+			shortname = "";
+		}
 		if(shortname == "") cls
 	}
 	if(tolowerstr((std::string)&shortname[shortname.size()-4]) == ".txt" || tolowerstr((std::string)&shortname[shortname.size()-5]) == ".txt\"") {
@@ -1362,6 +1378,10 @@ void makeIcon() {
 	while (longname == "") {
 		puts("Enter the long name:");
 		std::getline(std::cin, longname);
+		if(longname.size() > 0x80) {
+			puts("ERROR: The long name must be no longer than 256 characters. Try again.");
+			longname = "";
+		}
 		if(longname == "") cls
 	}
 	if(tolowerstr((std::string)&longname[longname.size()-4]) == ".txt" || tolowerstr((std::string)&longname[longname.size()-5]) == ".txt\"") {
@@ -1371,7 +1391,12 @@ void makeIcon() {
 	while (publisher == "") {
 		puts("Enter the publisher:");
 		std::getline(std::cin, publisher);
+		if(publisher.size() > 0x80) {
+			puts("ERROR: The publisher name must be no longer than 128 characters. Try again.");
+			publisher = "";
+		}
 		if(publisher == "") cls
+
 	}
 	if(tolowerstr((std::string)&publisher[publisher.size()-4]) == ".txt" || tolowerstr((std::string)&publisher[publisher.size()-5]) == ".txt\"") {
 		if(readTxt(publisher, publisher)) utf16[1] = true;
