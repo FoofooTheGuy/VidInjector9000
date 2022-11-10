@@ -302,7 +302,7 @@ std::string UTF8toUTF16(std::string input) {//not to be confused with utf8_to_ut
 	uint8_t *utf8 = new uint8_t[input.size()];
 	uint16_t *utf16 = new uint16_t[strlen(input) * 2];
 	memcpy(utf8, input.c_str(), input.size());
-	if(utf8_to_utf16(utf16, utf8, input.size()) == -1) {//it failed, go max mode
+	if(utf8_to_utf16(utf16, utf8, input.size()) == -1) {//it failed. go max mode
 		std::string something = UTF8toUTF16(CP437toUTF8(input));//i cant wait for this to cause more problems than it solves
 		delete[] utf8;
 		delete[] utf16;
@@ -949,8 +949,10 @@ void makesettingsTL() {
 		std::getline(std::cin, buttons);
 		if(tolower(buttons[0]) == 'y') buttons = "true";
 		else if(tolower(buttons[0]) == 'n') buttons = "false";
-		else buttons = "";
-		cls
+		else {
+			buttons = "";
+			cls
+		}
 	}
 
 	gentleness = "";
@@ -1442,9 +1444,11 @@ void makeIcon() {
 	while (shortname == "") {//stupid-proofing
 		puts("Enter the short name:");
 		std::getline(std::cin, shortname);
-		if(shortname.size() > 0x80) {
+		std::string temptxt = UTF8toUTF16(shortname);
+		if(temptxt.size() > 0x80) {
 			puts("ERROR: The short name must be no longer than 128 characters. Try again.");
 			shortname = "";
+			pause
 		}
 		if(shortname == "") cls
 	}
@@ -1455,9 +1459,11 @@ void makeIcon() {
 	while (longname == "") {
 		puts("Enter the long name:");
 		std::getline(std::cin, longname);
-		if(longname.size() > 0x80) {
+		std::string temptxt = UTF8toUTF16(longname);
+		if(temptxt.size() > 0x100) {
 			puts("ERROR: The long name must be no longer than 256 characters. Try again.");
 			longname = "";
+			pause
 		}
 		if(longname == "") cls
 	}
@@ -1468,9 +1474,11 @@ void makeIcon() {
 	while (publisher == "") {
 		puts("Enter the publisher:");
 		std::getline(std::cin, publisher);
-		if(publisher.size() > 0x80) {
+		std::string temptxt = UTF8toUTF16(publisher);
+		if(temptxt.size() > 0x80) {
 			puts("ERROR: The publisher name must be no longer than 128 characters. Try again.");
 			publisher = "";
+			pause
 		}
 		if(publisher == "") cls
 
