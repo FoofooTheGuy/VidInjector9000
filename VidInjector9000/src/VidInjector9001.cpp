@@ -705,7 +705,7 @@ bool readTxt(std::string file, std::string &output) {//return true if it's untf1
 				}
 				input.close();
 				if((output[0] & 0xFF) == 0xFF && (output[1] & 0xFF) == 0xFE) {//if utf16 little endian
-					output = output.substr(2);
+					output = output.substr(2);//remove bom
 					return true;
 				}
 				else if((output[0] & 0xFF) == 0xFE && (output[1] & 0xFF) == 0xFF) {//if utf16 big endian
@@ -713,12 +713,11 @@ bool readTxt(std::string file, std::string &output) {//return true if it's untf1
 						realoutput += output[i+1];
 						realoutput += output[i];
 					}
-					output = realoutput;
+					output = realoutput;//why doesnt this one die if it sees a null byte?
 					return true;
 				}
 				else if((UTF8toUTF16(output)[0] & 0xFF) == 0xFF && (UTF8toUTF16(output)[1] & 0xFF) == 0xFE) {//if utf8
-					realoutput = (std::string)&output[3];
-					output = realoutput;//remove bom (it is 3 bytes in utf8)
+					output = output.substr(3);//remove bom (it is 3 bytes in utf8)
 				}
 				return false;
 			}
