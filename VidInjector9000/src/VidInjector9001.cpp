@@ -62,6 +62,12 @@ bool stoul_s(unsigned long &output, std::string input, bool isHex = false) {
     return true;
 }
 
+std::string CP437toUTF8(std::string input) {
+	for(auto &c : input)
+		
+	return input;
+}
+
 //this UTF stuff is from libctru lol
 #ifdef SIZE_MAX
 #define SSIZE_MAX ((SIZE_MAX) >> 1)
@@ -229,7 +235,10 @@ std::string UTF8toUTF16(std::string input) {//not to be confused with utf8_to_ut
 	uint8_t *utf8 = new uint8_t[input.size()];
 	uint16_t *utf16 = new uint16_t[strlen(input) * 2];
 	memcpy(utf8, input.c_str(), input.size());
-	utf8_to_utf16(utf16, utf8, input.size());
+	if(utf8_to_utf16(utf16, utf8, input.size()) == -1) {//it failed, go max mode
+		
+	}
+	//printf("result: %i\n", res);
 	char utf16str[strlen(input) * 2];
 	memcpy(utf16str, utf16, strlen(input) * 2);
 
@@ -674,7 +683,7 @@ bool Generate_Code(bool Multi) {
     return false;
 }
 
-bool readTxt(std::string file, std::string &output) {//return true if it's unicode or else fale, who knows what that could be though
+bool readTxt(std::string file, std::string &output) {//return true if it's untf16 or else false, who knows what that could be though
 	std::string realoutput = "";
 	std::string choiche = "";
 	while(1) {
@@ -695,9 +704,8 @@ bool readTxt(std::string file, std::string &output) {//return true if it's unico
 					input.read(&Byte, 1);//grab next byte of file
 				}
 				input.close();
-				if((output[0] & 0xFF) == 0xFF && (output[1] & 0xFF) == 0xFE) {//if utf16
-					realoutput = (std::string)&output[2];
-					output = realoutput;//remove bom
+				if((output[0] & 0xFF) == 0xFF && (output[1] & 0xFF) == 0xFE) {//if utf16 little endian
+					output = output.substr(2);
 					return true;
 				}
 				else if((output[0] & 0xFF) == 0xFE && (output[1] & 0xFF) == 0xFF) {//if utf16 big endian
