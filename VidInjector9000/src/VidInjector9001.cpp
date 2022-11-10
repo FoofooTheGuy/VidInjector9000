@@ -62,10 +62,77 @@ bool stoul_s(unsigned long &output, std::string input, bool isHex = false) {
     return true;
 }
 
-std::string CP437toUTF8(std::string input) {
-	for(auto &c : input)
-		
-	return input;
+//this cp437 to utf8 stff (shamelessly) stolen from https://github.com/justinasci/CP437TOUTF8/blob/master/437toUtf8.cpp
+std::string int2utf8 (int cp)
+{
+	if(cp == 0) return " ";
+
+	if(cp <= 0x7F && cp > 0x00) // 1 byte
+	{
+		std::string out ("_");
+		out[0] = (char) cp;
+		return out;
+	}
+		else if((cp >= 0x80) && (cp <= 0x07FF)) // 2 bytes
+	{
+		std::string out ("__");
+		char a = (cp & 0x003F) + 0x80;
+		char b = ((cp &0x07C0) >> 6) + 0xC0 ;
+		out[0] = b;
+		out[1] = a;
+		return out;
+	}
+
+	else if( (cp >= 0x0800) && (cp<= 0xFFFF) ) // 3 bytes
+	{
+		std::string out("___");
+		char a = ((cp & 0xF000) >> 12) + 0x00E0;
+		char b = ((cp & 0xFC0) >> 6) + 0x80;
+		char c = ( cp & 0x003F) + 0x80;
+
+		out[0] = a;
+		out[1] = b;
+		out[2] = c;
+		return out;
+	}else  if ( cp >= 0x10000 && cp <= 0x10FFFF) // 4 bytes
+	{
+		std::string out("____");
+
+		char a = ((cp & 0x3F000) >>  18) + 0xF0;
+		char b = ((cp & 0x3F000) >>  12) + 0x80;
+		char c = ((cp & 0xFC0) >> 6) + 0x80;
+		char d = ( cp & 0x003F) + 0x80;
+
+		out[0] = a;
+		out[1] = b;
+		out[2] = c;
+		out[3] = d;
+
+		return out;
+	}
+
+	return "~";
+}
+
+std::string CP437toUTF8(std::string source)
+{
+	int table[128] = {
+		0xC7, 0xFC, 0xE9, 0xE2, 0xE4, 0xE0, 0xE5, 0xE7, 0xEA, 0xEB, 0xE8, 0xEF, 0xEE, 0xEC, 0xC4, 0xC5, 0xC9, 0xE6, 0xC6, 0xF4, 0xF6, 0xF2, 0xFB, 0xF9, 0xFF, 0xD6, 0xDC, 0xA2, 0xA3, 0xA5, 0x20A7, 0x192, 0xE1, 0xED, 0xF3, 0xFA, 0xF1, 0xD1, 0xAA, 0xBA, 0xBF, 0x2310, 0xAC, 0xBD, 0xBC, 0xA1, 0xAB, 0xBB, 0x2591, 0x2592, 0x2593, 0x2502, 0x2524, 0x2561, 0x2562, 0x2556, 0x2555, 0x2563, 0x2551, 0x2557, 0x255D, 0x255C, 0x255B, 0x2510, 0x2514, 0x2534, 0x252C, 0x251C, 0x2500, 0x253C, 0x255E, 0x255F, 0x255A, 0x2554, 0x2569, 0x2566, 0x2560, 0x2550, 0x256C, 0x2567, 0x2568, 0x2564, 0x2565, 0x2559, 0x2558, 0x2552, 0x2553, 0x256B, 0x256A, 0x2518, 0x250C, 0x2588, 0x2584, 0x258C, 0x2590, 0x2580, 0x3B1, 0xDF, 0x393, 0x3C0, 0x3A3, 0x3C3, 0xB5, 0x3C4, 0x3A6, 0x398, 0x3A9, 0x3B4, 0x221E, 0x3C6, 0x3B5, 0x2229, 0x2261, 0xB1, 0x2265, 0x2264, 0x2320, 0x2321, 0xF7, 0x2248, 0xB0, 0x2219, 0xB7, 0x221A, 0x207F, 0xB2, 0x25A0, 0xA0
+	};
+	std::string dest = "";
+	for(auto &c : source)
+	{
+		unsigned char o = c;
+		int t = (int)o;
+
+		if(t < 127)
+			dest += c;
+		else
+		{
+			dest += int2utf8(table[t-128]);
+		}
+	}
+	return dest;
 }
 
 //this UTF stuff is from libctru lol
@@ -236,7 +303,10 @@ std::string UTF8toUTF16(std::string input) {//not to be confused with utf8_to_ut
 	uint16_t *utf16 = new uint16_t[strlen(input) * 2];
 	memcpy(utf8, input.c_str(), input.size());
 	if(utf8_to_utf16(utf16, utf8, input.size()) == -1) {//it failed, go max mode
-		
+		std::string something = UTF8toUTF16(CP437toUTF8(input));//i cant wait for this to cause more problems than it solves
+		delete[] utf8;
+		delete[] utf16;
+		return something;
 	}
 	//printf("result: %i\n", res);
 	char utf16str[strlen(input) * 2];
