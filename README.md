@@ -24,7 +24,7 @@ Usage
 
 **Tips:**
 
-- Drag and drop a .txt file when inputting text for jobs and you will be able to use the contents of the file as input
+- Drag and drop a .txt file when inputting text for jobs and you will be able to use the contents of the file as input (UTF-8/16 files work best)
 - When typing the letter for which job you want or when it prompts for Y/N, it is not case sensitive!
 - It also only checks for the first letter, so you can actually type something like "yes" and it will still work!
 
