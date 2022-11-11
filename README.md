@@ -53,6 +53,9 @@ I am unable to add them myself because I don't know those languages so I would a
 - KR_Hangeul/message.msbt
 - TW_Trad_Chinese/message.msbt
 
+#### ASCII encoded text containing extended characters gets turned into CP437 characters
+I have no idea how to fix this so just use UTF8/16 or CP437 encoded text files.
+
 Building
 --
 **Windows (MinGW)**
