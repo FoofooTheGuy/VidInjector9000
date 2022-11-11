@@ -127,11 +127,11 @@ inline std::string CP437toUTF8(std::string source) {
 
 //this UTF stuff is from libctru lol
 #ifdef SIZE_MAX
-#define SSIZE_MAX ((SIZE_MAX) >> 1)
+#define _SIZE_MAX ((SIZE_MAX) >> 1)
 #endif
 
 //https://github.com/devkitPro/libctru/raw/4e25fb1d6c2ea124a9011c4b65f76f2968a9fb97/libctru/source/util/utf/encode_utf16.c
-ssize_t
+inline ssize_t
 encode_utf16(uint16_t *out,
              uint32_t in)
 {
@@ -155,7 +155,7 @@ encode_utf16(uint16_t *out,
 }
 
 //https://github.com/devkitPro/libctru/raw/4e25fb1d6c2ea124a9011c4b65f76f2968a9fb97/libctru/source/util/utf/decode_utf8.c
-ssize_t
+inline ssize_t
 decode_utf8(uint32_t      *out,
             const uint8_t *in)
 {
@@ -243,7 +243,7 @@ decode_utf8(uint32_t      *out,
 }
 
 //https://github.com/devkitPro/libctru/raw/4e25fb1d6c2ea124a9011c4b65f76f2968a9fb97/libctru/source/util/utf/utf8_to_utf16.c
-ssize_t
+inline ssize_t
 utf8_to_utf16(uint16_t      *out,
               const uint8_t *in,
               size_t        len)
@@ -277,7 +277,7 @@ utf8_to_utf16(uint16_t      *out,
         }
       }
 
-      if(SSIZE_MAX - units >= rc)
+      if(_SIZE_MAX - units >= rc)
         rc += units;
       else
         return -1;
@@ -312,9 +312,7 @@ std::string UTF8toUTF16(std::string input) {//not to be confused with utf8_to_ut
 	return output;
 }
 
-//based on https://raw.githubusercontent.com/nothings/stb/master/tests/resample_test.cpp
-
-static void image_data_to_tiles(void* out, void* img, uint32_t width, uint32_t height) {//from bannertool, edited for rgb565 only
+void image_data_to_tiles(void* out, void* img, uint32_t width, uint32_t height) {//from bannertool, edited for rgb565 only
     for(uint32_t y = 0; y < height; y++) {
         for(uint32_t x = 0; x < width; x++) {
             uint32_t index = (((y >> 3) * (width >> 3) + (x >> 3)) << 6) + ((x & 1) | ((y & 1) << 1) | ((x & 2) << 1) | ((y & 2) << 2) | ((x & 4) << 2) | ((y & 4) << 3));
@@ -328,7 +326,8 @@ static void image_data_to_tiles(void* out, void* img, uint32_t width, uint32_t h
     }
 }
 
-bool convertToBimg(std::string input, void* outBuffer, bool writeHeader)// true for write header, false for dont write header
+//based on https://raw.githubusercontent.com/nothings/stb/master/tests/resample_test.cpp
+bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader)// true for write header, false for dont write header
 {
 	unsigned char* input_pixels;
 	unsigned char* output_pixels;
@@ -361,7 +360,7 @@ bool convertToBimg(std::string input, void* outBuffer, bool writeHeader)// true 
 			output_pixels[i] = alpha_out;
 		}
 		int newi = 3;
-		for(int i = 3; i < out_w*out_h*4; i+=4) {
+		for(int i = 3; i < out_w*out_h*4; i+=4) {//remove alpha channel
 			output_3c[newi-3] = output_pixels[i-3];
 			output_3c[newi-2] = output_pixels[i-2];
 			output_3c[newi-1] = output_pixels[i-1];
@@ -692,6 +691,7 @@ void removeQuotes(std::string &str) {
 		if(c != '\"') out += c;//pass through without the " if it has it there
 	str = out;
 }
+
 void removeInvalids(std::string &str) {//remove more invalid characters
 	std::string out;
 	for (const auto &c : str) {
@@ -1648,13 +1648,6 @@ void finalize() {
 	type = MultiVid ? "MultiVidInjector5000" : "VidInjector9001";
 	windowTitle("[" + type + "] Finalizing");
 	cls
-	/*for (unsigned int i = 0; i < (MultiVid ? sizeof(completed)-3 : sizeof(scompleted)-3); i++)
-		if((MultiVid ? completed : scompleted)[i] == ' ') {
-			printf("Job #%i has not been done. Do you really want to continue? [Y/N]\n", i+1);
-			std::getline(std::cin, name);
-			if(tolower(name[0]) == 'y') break;
-			return;
-		}*/
 	while(1) {
 		cls
 		type = MultiVid ? "multi video menu            |" : "single video menu           |";
