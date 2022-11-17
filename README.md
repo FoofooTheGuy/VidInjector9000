@@ -67,7 +67,9 @@ Building
 
 **\*nix and whatnot**
 
-The program should be compatible with these operating systems, but exact instructions are questionable.
+This command will probably work:
+
+`g++ -o VidInjector9001 VidInjector9001.cpp`
 
 
 Credits and Stuff
