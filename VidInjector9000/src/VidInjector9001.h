@@ -20,7 +20,7 @@
 #define _toolsPath std::string("Vidinjector9000Resources\\\\tools\\\\")
 #if defined(_WIN32)
 	#define _makeromPath std::string("makerom.exe")
-#elif defined(unix) || defined(__unix__) || defined(__unix)
+#elif defined(unix) || defined(__unix__) || defined(__unix) || defined(__APPLE__)
 	#define _makeromPath std::string("makerom")
 #endif
 
