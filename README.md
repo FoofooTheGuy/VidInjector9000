@@ -1,7 +1,7 @@
 # VidInjector9000
 A cross platform,* step-by-step injector for 3DS video CIAs focused on presentation
 
-<sup>*You will have to compile it yourself if builds for your operating system are not provided
+<sup><sup>*You will have to compile it yourself if builds for your operating system are not provided
 
 Outdated Walk Through
 ---
