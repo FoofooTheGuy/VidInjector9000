@@ -71,6 +71,8 @@ This command will probably work:
 
 `g++ -o VidInjector9001 VidInjector9001.cpp`
 
+Replace [Vidinjector9000Resources/tools/makerom.exe](https://github.com/FoofooTheGuy/VidInjector9000/blob/main/VidInjector9000/Vidinjector9000Resources/tools/makerom.exe) with a build corresponding to your machine.
+
 
 Credits and Stuff
 --
