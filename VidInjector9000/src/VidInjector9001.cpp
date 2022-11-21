@@ -727,16 +727,16 @@ void windowTitle(std::string title) {
 	#endif
 }
 
-bool Generate_Code(bool Multi) {
-    std::string path = "exefs/code.bin";
-    puts("Generating code.bin...");
-    std::filesystem::create_directory("exefs");
-	std::ofstream codebin(path, std::ios_base::out | std::ios_base::binary);
-	if(std::filesystem::exists(path)) {
-		codebin.write(reinterpret_cast<const char*>(Multi ? Multivid : Singlevid), Multi ? sizeof(Multivid) : sizeof(Singlevid));
-		return true;
+void Generate_Files(bool Multi) {
+    puts("Generating files");
+	miniz_cpp::zip_file file;
+	file.load(Multi ? Multivid : Singlevid);
+	std::vector<std::string> list = file.namelist();
+	for(auto &member : list) {//plant seeds
+		if(member.find_last_of("/") == member.size()-1)
+			std::filesystem::create_directory(member);
 	}
-    return false;
+	file.extractall(".", list);//grow fruit
 }
 
 bool readTxt(std::string file, std::string &output) {//return true if it's untf16 or else false, who knows what that could be though
@@ -751,7 +751,7 @@ bool readTxt(std::string file, std::string &output) {//return true if it's untf1
 				choiche = "";
 				output = "";
 				std::ifstream input(file, std::ios_base::in | std::ios_base::binary);//input file
-				
+
 				char Byte;
 				input.read(&Byte, 1);//grab first byte of file
 				while (input) {//continue until input stream fails
@@ -1475,9 +1475,6 @@ void makeIcon() {
 	}
 
 	convertToIcon(name, "exefs/icon.bin", utf16[0] ? shortname : UTF8toUTF16(shortname), utf16[1] ? longname : UTF8toUTF16(longname), utf16[2] ? publisher : UTF8toUTF16(publisher));
-	/*std::string cmd = system_g(_toolsPath + _bannertoolPath + " makesmdh -i \"exefs/Icon.png\" -s \"" + shortname + "\" -l \"" + longname + "\" -p \"" + publisher + "\" -f visible,nosavebackups -o \"exefs/icon.bin\"");
-	if(Debug) {printf("[cmd] %s\n", cmd.c_str()); pause}
-	remove("exefs/Icon.png");*/
 
 	if(MultiVid) {
 		copyfile("exefs/icon.bin", "romfs/icon.icn");
@@ -1676,13 +1673,7 @@ void MultiVideo() {
 	MultiVid = true;
 	amount = 0;
 	std::string amountstr;
-	if(!Generate_Code(true)) {
-		puts("Failed to generate files.");
-		pause
-		return;
-	}
-	copyfile("Vidinjector9000Resources/files/templates/MultiVideo/romfs", "romfs");
-	copyfile("Vidinjector9000Resources/files/templates/MultiVideo/exheader.bin", "exheader.bin");
+	Generate_Files(true);
 	while(1) {
 		if (amount == 0)	amountstr = "                  [ ";
 		else if(amount <= 9)amountstr = "                  [" + std::to_string(amount);//this will make sense in the end trust me
@@ -1730,13 +1721,7 @@ void SingleVideo() {
 	cls
 	MultiVid = false;
 	amount = 1;//huhuhu ez way to reuse the functions (i made multi video first)
-	if(!Generate_Code(false)) {
-		puts("Failed to generate files.");
-		pause
-		return;
-	}
-	copyfile("Vidinjector9000Resources/files/templates/SingleVideo/romfs", "romfs");
-	copyfile("Vidinjector9000Resources/files/templates/SingleVideo/exheader.bin", "exheader.bin");
+	Generate_Files(false);
 	while(1) {
 		windowTitle("VidInjector9001 by Foofoo_the_guy");
 		cls

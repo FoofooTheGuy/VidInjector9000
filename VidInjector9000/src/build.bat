@@ -1,18 +1,17 @@
 @echo off
-set "input=%1"
-set "output=%~n1"
-echo compiling "%output%.exe"
+setlocal ENABLEDELAYEDEXPANSION
+set "bin=VidInjector9001.exe"
+set "cpp=c++17"
 rmdir obj\Debug\ /s /q
-del "%output%.exe"
-::del "%output%x86.exe"
+del !bin!
 mkdir obj\Debug
-g++ -Wall -c -g %input% -std=c++17 -o obj\Debug\%output%.o
-g++ -static -static-libgcc -static-libstdc++ -o "%output%.exe" obj\Debug\%output%.o
 
-::echo Press any key to build x86. . .
-::pause>NUL
-::g++ -Wall -c -g %input% -std=c++17 -ansi -m32 -o obj\Debug\%output%x86.o
-::g++ -static -static-libgcc -static-libstdc++ -o "%output%x86.exe" obj\Debug\%output%x86.o
-
-::g++ -g %input% -o "%output%.exe"
+set files=
+set files2=
+for %%i in (*.c*) do (
+	set "files=!files! obj\Debug\%%~ni.o"
+	echo %%i
+	g++ -Wall -c -g %%i -std=!cpp! -o obj\Debug\%%~ni.o
+)
+g++ -static -static-libgcc -static-libstdc++ -o "!bin!"%files%
 pause

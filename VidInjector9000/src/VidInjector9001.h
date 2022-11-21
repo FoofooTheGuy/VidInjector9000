@@ -5,7 +5,8 @@
 #include <random>
 #include <time.h>
 #include <string.h>
-#include "files.h"
+#include "files.hpp"
+#include "zip_file.hpp"
 
 //stb image stuff
 
