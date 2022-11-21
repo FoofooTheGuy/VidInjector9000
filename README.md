@@ -88,5 +88,4 @@ Credits and Stuff
 
 [stb image](https://github.com/nothings/stb): Manipulating images
 
-[minis cpp](https://github.com/tfussell/miniz-cpp): Zip extracion
-
+[miniz cpp](https://github.com/tfussell/miniz-cpp): Zip extracion
