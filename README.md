@@ -87,3 +87,6 @@ Credits and Stuff
 [3DBrew:](https://www.3dbrew.org/) Emotional support
 
 [stb image](https://github.com/nothings/stb): Manipulating images
+
+[minis cpp](https://github.com/tfussell/miniz-cpp): Zip extracion
+
