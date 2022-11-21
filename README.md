@@ -65,7 +65,7 @@ Building
 0. A better guide can be found [here](https://www.geeksforgeeks.org/complete-guide-to-install-c17-in-windows/)
 1. Download the latest [MinGW](https://nuwen.net/mingw.html) and put the contents on your computer.
 2. Add the bin folder to PATH
-3. drag [VidInjector9001.cpp](https://github.com/FoofooTheGuy/VidInjector9000/raw/main/VidInjector9000/src/VidInjector9001.cpp) onto [build.bat](https://github.com/FoofooTheGuy/VidInjector9000/raw/main/VidInjector9000/src/build.bat) so that it builds it (or run build.bat with VidInjector9001.cpp as the argument)
+3. run [build.bat](https://github.com/FoofooTheGuy/VidInjector9000/raw/main/VidInjector9000/src/build.bat)
 
 **\*nix and whatnot**
 
