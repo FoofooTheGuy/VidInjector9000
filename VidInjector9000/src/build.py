@@ -3,7 +3,10 @@ import sys
 import shutil
 import subprocess
 
-bin = "VidInjector9001.exe"
+if sys.platform == "win32" or sys.platform == "cygwin":
+    bin = "VidInjector9001.exe"
+else:
+    bin = "VidInjector9001"
 cpp = "c++17"
 
 try:
