@@ -7,7 +7,6 @@ del !bin!
 mkdir obj\Debug
 
 set files=
-set files2=
 for %%i in (*.c*) do (
 	set "files=!files! obj\Debug\%%~ni.o"
 	echo %%i
