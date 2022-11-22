@@ -65,13 +65,11 @@ Building
 0. A better guide can be found [here](https://www.geeksforgeeks.org/complete-guide-to-install-c17-in-windows/)
 1. Download the latest [MinGW](https://nuwen.net/mingw.html) and put the contents on your computer.
 2. Add the bin folder to PATH
-3. run [build.bat](https://github.com/FoofooTheGuy/VidInjector9000/raw/main/VidInjector9000/src/build.bat)
+3. run [build.bat](https://github.com/FoofooTheGuy/VidInjector9000/raw/main/VidInjector9000/src/build.bat) or [build.py](https://github.com/FoofooTheGuy/VidInjector9000/raw/main/VidInjector9000/src/build.py)
 
 **\*nix and whatnot**
 
-This command will probably work:
-
-`g++ -std=c++17 VidInjector9001.cpp -o VidInjector9001`
+run [build.py](https://github.com/FoofooTheGuy/VidInjector9000/raw/main/VidInjector9000/src/build.py)
 
 Replace [Vidinjector9000Resources/tools/makerom.exe](https://github.com/FoofooTheGuy/VidInjector9000/blob/main/VidInjector9000/Vidinjector9000Resources/tools/makerom.exe) with a build corresponding to your machine.
 
