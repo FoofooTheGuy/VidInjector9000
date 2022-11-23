@@ -9,26 +9,32 @@ else:
     bin = "VidInjector9001"
 cpp = "c++17"
 
-try:
-    shutil.rmtree("obj")
-except:
-    print("tree not found")
-
-try:
+if os.path.exists(bin):
     os.remove(bin)
-except:
-    print("failed to delete " + bin)
 
-try:
+if not os.path.exists("obj/Debug"):
     os.makedirs("obj/Debug")
-except:
-    print("failed to create dir")
 
 files = ""
 for s in os.listdir("."):
     if s.find(".c") != -1:
         print(s)
-        subprocess.call("g++ -Wall -c -g " + s + " -std=" + cpp + " -o obj/Debug/" + s.rsplit('.', 1)[0] + ".o")
+        if os.path.exists("obj/Debug/" + s.rsplit('.', 1)[0] + ".o"):
+            ofile = os.path.getmtime("obj/Debug/" + s.rsplit('.', 1)[0] + ".o")
+        else:
+            ofile = 0.0
+        if os.path.exists(s):
+            cfile = os.path.getmtime(s)
+        else:
+            cfile = 1.0
+        if(cfile >= ofile):
+            if os.path.exists("obj/Debug/" + s.rsplit('.', 1)[0] + ".o"):
+                os.remove("obj/Debug/" + s.rsplit('.', 1)[0] + ".o")
+            subprocess.call("g++ -Wall -c -g " + s + " -std=" + cpp + " -o obj/Debug/" + s.rsplit('.', 1)[0] + ".o")
         files += "obj/Debug/" + s.rsplit('.', 1)[0] + ".o"
 
 subprocess.call("g++ -static -static-libgcc -static-libstdc++ -o \"" + bin + "\" " + files)
+try:
+    raw_input("Press Enter to continue...")
+except:
+    input("Press Enter to continue...")
