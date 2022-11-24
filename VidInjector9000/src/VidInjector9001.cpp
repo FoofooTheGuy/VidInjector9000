@@ -1,4 +1,4 @@
-#include "VidInjector9001.h"
+#include "VidInjector9001.hpp"
 
 //globals
 #define pause betterPause();
