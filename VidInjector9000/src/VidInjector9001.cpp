@@ -8,10 +8,10 @@ unsigned long amount = 0;
 std::string name = "";
 std::string type;
 std::string longname;//you need this global because i said so also because make cia needs it too
-static bool MultiVid;//false if single video, true if multi video
-static bool Debug;//false if off true if on
-char completed[8] { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', };
-char scompleted[6] { ' ', ' ', ' ', ' ', ' ', ' ', };
+bool MultiVid;//false if single video, true if multi video
+bool Debug;//false if off true if on
+char completed[8] { ' ' };
+char scompleted[6] { ' ' };
 
 //small functions
 std::size_t strlen(const std::string& str) {//http://www.cplusplus.com/forum/beginner/192031/#msg925794
