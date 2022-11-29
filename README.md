@@ -47,10 +47,10 @@ A: This is simple and gives you much control over your injections.
 
 Known Issues
 --
-#### Multi Video injects do not work on the regions China, Taiwan and Korea because there are no [language files](https://github.com/FoofooTheGuy/VidInjector9000/tree/main/VidInjector9000/Vidinjector9000Resources/files/templates/MultiVideo/romfs/lang) for those.
+#### Multi Video injects do not work on the regions China, Taiwan and Korea because there are no [language files](https://github.com/FoofooTheGuy/VidInjector9000/tree/main/VidInjector9001/Vidinjector9000Resources/files/templates/MultiVideo/romfs/lang) for those.
 I am unable to add them myself because I don't know those languages so I would appreciate it if someone would translate the files and contribute the following:
 
-[(VidInjector9000/VidInjector9000/Vidinjector9000Resources/files/templates/MultiVideo/romfs/lang/)](https://github.com/FoofooTheGuy/VidInjector9000/tree/main/VidInjector9000/Vidinjector9000Resources/files/templates/MultiVideo/romfs/lang)
+[(VidInjector9000/VidInjector9000/Vidinjector9000Resources/files/templates/MultiVideo/romfs/lang/)](https://github.com/FoofooTheGuy/VidInjector9000/tree/main/VidInjector9001/Vidinjector9000Resources/files/templates/MultiVideo/romfs/lang)
 - CN_Simp_Chinese/message.msbt
 - KR_Hangeul/message.msbt
 - TW_Trad_Chinese/message.msbt
@@ -67,13 +67,13 @@ Building
 0. A better guide can be found [here](https://www.geeksforgeeks.org/complete-guide-to-install-c17-in-windows/)
 1. Download the latest [MinGW](https://nuwen.net/mingw.html) and put the contents on your computer.
 2. Add the bin folder to PATH
-3. run [build.bat](https://github.com/FoofooTheGuy/VidInjector9000/raw/main/VidInjector9000/src/build.bat) or [build.py](https://github.com/FoofooTheGuy/VidInjector9000/raw/main/VidInjector9000/src/build.py)
+3. run [build.bat](https://github.com/FoofooTheGuy/VidInjector9000/raw/main/VidInjector9001/src/build.bat) or [build.py](https://github.com/FoofooTheGuy/VidInjector9000/raw/main/VidInjector9001/src/build.py)
 
 **\*nix and whatnot**
 
 run [build.py](https://github.com/FoofooTheGuy/VidInjector9000/raw/main/VidInjector9000/src/build.py)
 
-Replace [Vidinjector9000Resources/tools/makerom.exe](https://github.com/FoofooTheGuy/VidInjector9000/blob/main/VidInjector9000/Vidinjector9000Resources/tools/makerom.exe) with a build corresponding to your machine.
+Replace [Vidinjector9000Resources/tools/makerom.exe](https://github.com/FoofooTheGuy/VidInjector9000/blob/main/VidInjector9001/Vidinjector9000Resources/tools/makerom.exe) with a build corresponding to your machine.
 
 
 Credits and Stuff
