@@ -34,7 +34,7 @@ void copyfile(std::string inpath, std::string outpath) {//also works with direct
 void betterPause() {
 	puts("Press Enter to continue . . .");
 	std::cin.ignore();
-	std::cin.sync();//clears it if you typed any characters
+	std::cin.sync();//clears it for if you typed any characters
 }
 
 std::string tolowerstr(std::string str) {
@@ -1626,7 +1626,7 @@ void Settings() {
 		printf("Type a letter:\n\n"
 		" __________________________________________\n"
 		"|                                          |\n"
-		"| Software Version: 2.6.6                  |\n"
+		"| Software Version: 2.6.9                  |\n"
 		"|                                          |\n"
 		"| D: Toggle Debug Information       [");
 							if(Debug) printf("ON]   |\n");
