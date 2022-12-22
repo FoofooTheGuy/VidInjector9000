@@ -30,10 +30,10 @@ for s in os.listdir("."):
         if(cfile >= ofile):
             if os.path.exists("obj/Debug/" + s.rsplit('.', 1)[0] + ".o"):
                 os.remove("obj/Debug/" + s.rsplit('.', 1)[0] + ".o")
-            subprocess.call("g++ -Wall -c -g " + s + " -std=" + cpp + " -o obj/Debug/" + s.rsplit('.', 1)[0] + ".o")
+            subprocess.call(["g++", "-Wall", "-c", "-g", s, "-std=" + cpp, "-o", "obj/Debug/" + s.rsplit('.', 1)[0] + ".o"])
         files += "obj/Debug/" + s.rsplit('.', 1)[0] + ".o"
 
-subprocess.call("g++ -static -static-libgcc -static-libstdc++ -o \"" + bin + "\" " + files)
+subprocess.call(["g++", "-static", "-static-libgcc", "-static-libstdc++", "-o", "\"" + bin + "\"", files])
 try:
     raw_input("Press Enter to continue...")
 except:
