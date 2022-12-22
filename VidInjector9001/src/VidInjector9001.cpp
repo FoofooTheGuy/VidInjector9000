@@ -292,6 +292,7 @@ std::string UTF8toUTF16(std::string input) {//not to be confused with utf8_to_ut
 	uint8_t *utf8 = new uint8_t[input.size() + 1];
 	uint16_t *utf16 = new uint16_t[strlen(input) * 2 + 1];
 	memcpy(utf8, input.c_str(), input.size());
+	utf8[input.size()] = '\0';
 	if(utf8_to_utf16(utf16, utf8, input.size()) == -1) {//it failed. go max mode
 		std::string something = UTF8toUTF16(CP437toUTF8(input));//i cant wait for this to cause more problems than it solves
 		delete[] utf8;
