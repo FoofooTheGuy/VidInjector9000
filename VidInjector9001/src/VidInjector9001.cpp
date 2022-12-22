@@ -289,8 +289,8 @@ utf8_to_utf16(uint16_t      *out,
 
 std::string UTF8toUTF16(std::string input) {//not to be confused with utf8_to_utf16
 	std::string output = "";
-	uint8_t *utf8 = new uint8_t[input.size()];
-	uint16_t *utf16 = new uint16_t[strlen(input) * 2];
+	uint8_t *utf8 = new uint8_t[input.size() + 1];
+	uint16_t *utf16 = new uint16_t[strlen(input) * 2 + 1];
 	memcpy(utf8, input.c_str(), input.size());
 	if(utf8_to_utf16(utf16, utf8, input.size()) == -1) {//it failed. go max mode
 		std::string something = UTF8toUTF16(CP437toUTF8(input));//i cant wait for this to cause more problems than it solves
@@ -395,6 +395,7 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 	}
 
 	//stbi_write_png("imag.png", new_w, new_h, 3, output_fin, 0);
+	free(output_fin);
 	free(output_3c);
 	return true;
 }
