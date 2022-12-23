@@ -867,6 +867,21 @@ void Movie_title() {
 					}
 				}
 			}
+			else if(name[i] == '#') {
+				std::string choiche = "";
+				while(choiche == "") {
+					printf("WARNING: Character #%lld ('#') in the title will be a problem.\nReplace it with \"\\x23\" to have a number sign in the title? [Y/N]\n", i+1);
+					std::getline(std::cin, choiche);
+					if(tolower(choiche[0]) == 'y') {
+						name[i] = '\\';
+						name.insert(i+1, "x23");
+					}
+					else if(tolower(choiche[0]) != 'n') {
+						choiche = "";
+						cls
+					}
+				}
+			}
 		}
 		for (int j = 0; j < 11; j++) {//do it 11 times because it needs to
 			if(utf16) movie_title << name + UTF8toUTF16(",");
@@ -922,6 +937,21 @@ void makesettingsTL() {
 				if(tolower(choiche[0]) == 'y') {
 					name[i] = '\\';
 					name.insert(i+1, "x2C");
+				}
+				else if(tolower(choiche[0]) != 'n') {
+					choiche = "";
+					cls
+				}
+			}
+		}
+		else if(name[i] == '#') {
+			std::string choiche = "";
+			while(choiche == "") {
+				printf("WARNING: Character #%lld ('#') in the name will be a problem.\nReplace it with \"\\x23\" to have a number sign in the title? [Y/N]\n", i+1);
+				std::getline(std::cin, choiche);
+				if(tolower(choiche[0]) == 'y') {
+					name[i] = '\\';
+					name.insert(i+1, "x23");
 				}
 				else if(tolower(choiche[0]) != 'n') {
 					choiche = "";
@@ -1086,6 +1116,21 @@ void makesettingsTL() {
 					if(tolower(choiche[0]) == 'y') {
 						publisher[i] = '\\';
 						publisher.insert(i+1, "x2C");
+					}
+					else if(tolower(choiche[0]) != 'n') {
+						choiche = "";
+						cls
+					}
+				}
+			}
+			else if(publisher[i] == '#') {
+				std::string choiche = "";
+				while(choiche == "") {
+					printf("WARNING: Character #%lld ('#') in the name will be a problem.\nReplace it with \"\\x23\" to have a number sign in the title? [Y/N]\n", i+1);
+					std::getline(std::cin, choiche);
+					if(tolower(choiche[0]) == 'y') {
+						publisher[i] = '\\';
+						publisher.insert(i+1, "x23");
 					}
 					else if(tolower(choiche[0]) != 'n') {
 						choiche = "";
