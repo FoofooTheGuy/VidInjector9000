@@ -851,6 +851,21 @@ void Movie_title() {
 		if(tolowerstr((std::string)&name[name.size()-4]) == ".txt" || tolowerstr((std::string)&name[name.size()-5]) == ".txt\"") {
 			if(readTxt(name, name)) utf16 = true;
 		}
+		if(name[0] == '#') {
+			std::string choiche = "";
+			while(choiche == "") {
+				puts("WARNING: Character #%1 ('#') in the title will be a problem.\nReplace it with \"\\x23\" to have a number sign in the title? [Y/N]");
+				std::getline(std::cin, choiche);
+				if(tolower(choiche[0]) == 'y') {
+					name[0] = '\\';
+					name.insert(1, "x23");
+				}
+			else if(tolower(choiche[0]) != 'n') {
+					choiche = "";
+					cls
+				}
+			}
+		}
 		for(unsigned long long i = 0; i < name.size(); i++) {
 			if(name[i] == ',') {
 				std::string choiche = "";
@@ -860,21 +875,6 @@ void Movie_title() {
 					if(tolower(choiche[0]) == 'y') {
 						name[i] = '\\';
 						name.insert(i+1, "x2C");
-					}
-					else if(tolower(choiche[0]) != 'n') {
-						choiche = "";
-						cls
-					}
-				}
-			}
-			else if(name[i] == '#') {
-				std::string choiche = "";
-				while(choiche == "") {
-					printf("WARNING: Character #%lld ('#') in the title will be a problem.\nReplace it with \"\\x23\" to have a number sign in the title? [Y/N]\n", i+1);
-					std::getline(std::cin, choiche);
-					if(tolower(choiche[0]) == 'y') {
-						name[i] = '\\';
-						name.insert(i+1, "x23");
 					}
 					else if(tolower(choiche[0]) != 'n') {
 						choiche = "";
@@ -928,6 +928,21 @@ void makesettingsTL() {
 	if(tolowerstr((std::string)&name[name.size()-4]) == ".txt" || tolowerstr((std::string)&name[name.size()-5]) == ".txt\"") {
 		if(readTxt(name, name)) utf16 = true;
 	}
+	if(name[0] == '#') {
+		std::string choiche = "";
+		while(choiche == "") {
+			puts("WARNING: Character #%1 ('#') in the name will be a problem.\nReplace it with \"\\x23\" to have a number sign in the title? [Y/N]");
+			std::getline(std::cin, choiche);
+			if(tolower(choiche[0]) == 'y') {
+				name[0] = '\\';
+				name.insert(1, "x23");
+			}
+		else if(tolower(choiche[0]) != 'n') {
+				choiche = "";
+				cls
+			}
+		}
+	}
 	for(unsigned long long i = 0; i < name.size(); i++) {
 		if(name[i] == ',') {
 			std::string choiche = "";
@@ -937,21 +952,6 @@ void makesettingsTL() {
 				if(tolower(choiche[0]) == 'y') {
 					name[i] = '\\';
 					name.insert(i+1, "x2C");
-				}
-				else if(tolower(choiche[0]) != 'n') {
-					choiche = "";
-					cls
-				}
-			}
-		}
-		else if(name[i] == '#') {
-			std::string choiche = "";
-			while(choiche == "") {
-				printf("WARNING: Character #%lld ('#') in the name will be a problem.\nReplace it with \"\\x23\" to have a number sign in the title? [Y/N]\n", i+1);
-				std::getline(std::cin, choiche);
-				if(tolower(choiche[0]) == 'y') {
-					name[i] = '\\';
-					name.insert(i+1, "x23");
 				}
 				else if(tolower(choiche[0]) != 'n') {
 					choiche = "";
@@ -1107,6 +1107,21 @@ void makesettingsTL() {
 		if(tolowerstr((std::string)&publisher[publisher.size()-4]) == ".txt" || tolowerstr((std::string)&publisher[publisher.size()-5]) == ".txt\"") {
 			if(readTxt(publisher, publisher)) utf16 = true;
 		}
+		if(publisher[0] == '#') {
+			std::string choiche = "";
+			while(choiche == "") {
+				puts("WARNING: Character #1 ('#') in the name will be a problem.\nReplace it with \"\\x23\" to have a number sign in the title? [Y/N]");
+				std::getline(std::cin, choiche);
+				if(tolower(choiche[0]) == 'y') {
+					publisher[0] = '\\';
+					publisher.insert(1, "x23");
+				}
+			else if(tolower(choiche[0]) != 'n') {
+					choiche = "";
+					cls
+				}
+			}
+		}
 		for(unsigned long long i = 0; i < publisher.size(); i++) {
 			if(publisher[i] == ',') {
 				std::string choiche = "";
@@ -1116,21 +1131,6 @@ void makesettingsTL() {
 					if(tolower(choiche[0]) == 'y') {
 						publisher[i] = '\\';
 						publisher.insert(i+1, "x2C");
-					}
-					else if(tolower(choiche[0]) != 'n') {
-						choiche = "";
-						cls
-					}
-				}
-			}
-			else if(publisher[i] == '#') {
-				std::string choiche = "";
-				while(choiche == "") {
-					printf("WARNING: Character #%lld ('#') in the name will be a problem.\nReplace it with \"\\x23\" to have a number sign in the title? [Y/N]\n", i+1);
-					std::getline(std::cin, choiche);
-					if(tolower(choiche[0]) == 'y') {
-						publisher[i] = '\\';
-						publisher.insert(i+1, "x23");
 					}
 					else if(tolower(choiche[0]) != 'n') {
 						choiche = "";
