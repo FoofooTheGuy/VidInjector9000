@@ -602,7 +602,6 @@ form1::form1() {
     appendmedia.parent(mediabox);
     appendmedia.auto_size(true);
     appendmedia.font({ this->font(), 20 });
-    //appendmedia.location({ ((text_box_array.at(0)->width() * 4) - (appendmedia.width() + removemedia.width() + 2)) / 2, text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
     appendmedia.text("+");
     appendmedia.click += [&] {
         doAppendMedia();
@@ -618,7 +617,6 @@ form1::form1() {
     removemedia.parent(mediabox);
     removemedia.auto_size(true);
     removemedia.font({ this->font(), 20 });
-    //removemedia.location({ appendmedia.width().location() + appendmedia.width(), appendmedia.location().y() });
     removemedia.text("-");
     removemedia.click += [&] {
         doRemoveMedia();
@@ -819,39 +817,41 @@ form1::form1() {
         std::filesystem::remove_all(xtd::ustring::format("{}/{}/temp", ProgramDir, resourcesPath).c_str());
         Generate_Files(xtd::ustring::format("{}/{}/temp", ProgramDir, resourcesPath).c_str(), mode.selected_index());
         //make movie_title.csv (player title)
-        std::filesystem::create_directories(xtd::ustring::format("{}/{}/temp/romfs/movie", ProgramDir, resourcesPath).c_str());
-        std::ofstream movie_title(xtd::ustring::format("{}/{}/temp/romfs/movie/movie_title.csv", ProgramDir, resourcesPath).c_str(), std::ios_base::out | std::ios_base::binary);
+        {
+            std::filesystem::create_directories(xtd::ustring::format("{}/{}/temp/romfs/movie", ProgramDir, resourcesPath).c_str());
+            std::ofstream movie_title(xtd::ustring::format("{}/{}/temp/romfs/movie/movie_title.csv", ProgramDir, resourcesPath).c_str(), std::ios_base::out | std::ios_base::binary);
 
-        movie_title << "\xFF\xFE" + UTF8toUTF16("#JP,#EN,#FR,#GE,#IT,#SP,#CH,#KO,#DU,#PO,#RU,#TW\x0D\x0A");
-        for (int i = 0; i < (mode.selected_index() ? rows : 1); i++) {
-            std::string outstr = text_box_array.at(i * columns)->text();
+            movie_title << "\xFF\xFE" + UTF8toUTF16("#JP,#EN,#FR,#GE,#IT,#SP,#CH,#KO,#DU,#PO,#RU,#TW\x0D\x0A");
+            for (int i = 0; i < (mode.selected_index() ? rows : 1); i++) {
+                std::string outstr = text_box_array.at(i * columns)->text();
 
-            if (outstr[0] == '#') {//sneakily fix the string huhuhu
-                outstr[0] = '\\';
-                outstr.insert(1, "x23");
-            }
-            for (unsigned long long j = 0; j < outstr.size(); j++) {
-                if (outstr[j] == ',') {
-                    outstr[j] = '\\';
-                    outstr.insert(j + 1, "x2C");
+                if (outstr[0] == '#') {//sneakily fix the string huhuhu
+                    outstr[0] = '\\';
+                    outstr.insert(1, "x23");
                 }
+                for (unsigned long long j = 0; j < outstr.size(); j++) {
+                    if (outstr[j] == ',') {
+                        outstr[j] = '\\';
+                        outstr.insert(j + 1, "x2C");
+                    }
+                }
+                for (int j = 0; j < 11; j++) {//do it 11 times because it needs to
+                    movie_title << UTF8toUTF16(outstr + ",");
+                }
+                movie_title << UTF8toUTF16(outstr + "\x0D\x0A");//put the last stuff
             }
-            for (int j = 0; j < 11; j++) {//do it 11 times because it needs to
-                movie_title << UTF8toUTF16(outstr + ",");
+            movie_title.close();
+            if (!std::filesystem::exists(xtd::ustring::format("{}/{}/temp/romfs/movie/movie_title.csv", ProgramDir, resourcesPath).c_str())) {
+                xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/{}/temp/romfs/movie/movie_title.csv", FailedToCreateFile, ProgramDir, resourcesPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                builder.cancel_async();
+                return;
             }
-            movie_title << UTF8toUTF16(outstr + "\x0D\x0A");//put the last stuff
-        }
-        movie_title.close();
-        if (!std::filesystem::exists(xtd::ustring::format("{}/{}/temp/romfs/movie/movie_title.csv", ProgramDir, resourcesPath).c_str())) {
-            xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/{}/temp/romfs/movie/movie_title.csv", FailedToCreateFile, ProgramDir, resourcesPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-            builder.cancel_async();
-            return;
         }
         //make settingsTL.csv (menu title and stuff)
-        std::filesystem::create_directories(xtd::ustring::format("{}/{}/temp/romfs/settings", ProgramDir, resourcesPath).c_str());
-        std::ofstream settingsTL(xtd::ustring::format("{}/{}/temp/romfs/settings/settingsTL.csv", ProgramDir, resourcesPath).c_str(), std::ios_base::out | std::ios_base::binary);
-        //nested so i can minimize it in the editor :>
         {
+            std::filesystem::create_directories(xtd::ustring::format("{}/{}/temp/romfs/settings", ProgramDir, resourcesPath).c_str());
+            std::ofstream settingsTL(xtd::ustring::format("{}/{}/temp/romfs/settings/settingsTL.csv", ProgramDir, resourcesPath).c_str(), std::ios_base::out | std::ios_base::binary);
+
             settingsTL << "\xFF\xFE" +
                 UTF8toUTF16("# おしらせURL\x0D\x0A"//hard to read because of line breaks but hey better than hex
                     "# JP:\x0D\x0A"
@@ -1026,12 +1026,12 @@ form1::form1() {
                     "\x0D\x0A"
                     "# TW:");
             }
-        }
-        settingsTL.close();
-        if (!std::filesystem::exists(xtd::ustring::format("{}/{}/temp/romfs/settings/settingsTL.csv", ProgramDir, resourcesPath).c_str())) {
-            xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/{}/temp/romfs/settings/settingsTL.csv", FailedToCreateFile, ProgramDir, resourcesPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-            builder.cancel_async();
-            return;
+            settingsTL.close();
+            if (!std::filesystem::exists(xtd::ustring::format("{}/{}/temp/romfs/settings/settingsTL.csv", ProgramDir, resourcesPath).c_str())) {
+                xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/{}/temp/romfs/settings/settingsTL.csv", FailedToCreateFile, ProgramDir, resourcesPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                builder.cancel_async();
+                return;
+            }
         }
         //make copyright stuff (multi vid only)
         if (mode.selected_index()) {
@@ -1145,7 +1145,6 @@ form1::form1() {
                         CGFX = true;
                     }
                     else {
-                        bannerpreview.image(pixels_to_image(film_overlay, 264, 154, 4));
                         customnotif.hide();
                         CGFX = false;
                         break;
@@ -1194,6 +1193,8 @@ form1::form1() {
                 return;
             }
         }
+        //build CIA
+
     };
 
     builder.progress_changed += [&](object& sender, const xtd::forms::progress_changed_event_args& e) {
@@ -1469,34 +1470,75 @@ form1::form1() {
         bannerpreviewleft.location({ menubannerpreview.location().x(), menubannerpreview.location().y() + menubannerpreview.height() });
         bannerpreviewright.location({ menubannerpreview.location().x() + menubannerpreview.width() - bannerpreviewright.width(), bannerpreviewleft.location().y() });
         indextxt.location({ menubannerpreview.location().x() + ((menubannerpreview.width()) - indextxt.width()) / 2, menubannerpreview.location().y() + menubannerpreview.height() });
-        appendmedia.location({ ((text_box_array.at(0)->width() * 4) - (appendmedia.width() + removemedia.width() + 2)) / 2, text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
-        removemedia.location({ appendmedia.location().x() + appendmedia.width() + 2, appendmedia.location().y() });
-        rowtxt.location({ appendmedia.location().x() + ((appendmedia.width() + removemedia.width() + 2) - rowtxt.width()) / 2, appendmedia.location().y() + appendmedia.height() });
-
-        titleIDtxt.location({ (finalize.width() - (titleIDtxt.width() + titleIDbox.width() + ZeroZero.width() + randomizeTitleID.width())) / 2, ((finalize.height() / 2) - (randomizeTitleID.height() + TitleIDError.height() + Applicationtxt.height() + ApplicationError.height() + ProductCodetxt.height())) / 2 });
-        titleIDbox.location({ titleIDtxt.location().x() + titleIDtxt.width(), titleIDtxt.location().y() + (titleIDtxt.height() - titleIDbox.height()) / 2 });
-        ZeroZero.location({ titleIDbox.location().x() + titleIDbox.width(), titleIDtxt.location().y() });
-        randomizeTitleID.location({ ZeroZero.location().x() + ZeroZero.width(), ZeroZero.location().y() + (ZeroZero.height() - randomizeTitleID.height()) / 2 });
-        TitleIDError.location({ titleIDtxt.location().x() + ((titleIDtxt.width() + titleIDbox.width() + ZeroZero.width() + randomizeTitleID.width()) - TitleIDError.width()) / 2, randomizeTitleID.location().y() + randomizeTitleID.height() });
-
-        Applicationtxt.location({ (finalize.width() - (Applicationtxt.width() + ApplicationName.width() + 4)) / 2, TitleIDError.location().y() + TitleIDError.height() });
-        ApplicationName.location({ Applicationtxt.location().x() + Applicationtxt.width() + 4, Applicationtxt.location().y() + (Applicationtxt.height() - ApplicationName.height()) / 2 });
-        ApplicationError.location({ Applicationtxt.location().x() + ((Applicationtxt.width() + ApplicationName.width()) - ApplicationError.width()) / 2, Applicationtxt.location().y() + Applicationtxt.height() });
-
-        ProductCodetxt.location({ (finalize.width() - (ProductCodetxt.width() + ProductCode.width() + randomizeProductCode.width())) / 2, ApplicationError.location().y() + ApplicationError.height() });
-        ProductCode.location({ ProductCodetxt.location().x() + ProductCodetxt.width(), ProductCodetxt.location().y() + (ProductCodetxt.height() - ProductCode.height()) / 2 });
-        randomizeProductCode.location({ ProductCode.location().x() + ProductCode.width(), ProductCodetxt.location().y() + (ProductCodetxt.height() - randomizeProductCode.height()) / 2 });
+        removemedia.location({ ((text_box_array.at(0)->width() * 4) - (removemedia.width() + appendmedia.width() + 2)) / 2, text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
+        appendmedia.location({ removemedia.location().x() + removemedia.width() + 2, removemedia.location().y() });
+        rowtxt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - rowtxt.width()) / 2, removemedia.location().y() + removemedia.height() });
 
         minorBar.width(finalize.width() - 23);
-        minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, (finalize.height() / 2) + ((finalize.height() / 2) - (minorBarTxt.height() + minorBar.height() + 5 + majorBarTxt.height() + majorBar.height() + 10 + buildButt.height() + cancelBuildButt.height())) / 2 });
-        minorBar.location({ (finalize.width() - minorBar.width()) / 2, minorBarTxt.location().y() + minorBarTxt.height() });
-
         majorBar.width(finalize.width() - 23);
-        majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, minorBar.location().y() + minorBar.height() + 5 });
-        majorBar.location({ (finalize.width() - majorBar.width()) / 2, majorBarTxt.location().y() + majorBarTxt.height() });
 
-        buildButt.location({ (finalize.width() - buildButt.width()) / 2, majorBar.location().y() + majorBar.height() + 10 });
-        cancelBuildButt.location({ (finalize.width() - cancelBuildButt.width()) / 2, buildButt.location().y() + buildButt.height() });
+        //jank incoming
+        if (finalize.height() < minorBarTxt.height() + minorBar.height() + 5 + majorBarTxt.height() + majorBar.height() + 10 + buildButt.height() + cancelBuildButt.height() + randomizeTitleID.height() + TitleIDError.height() + Applicationtxt.height() + ApplicationError.height() + ProductCodetxt.height() + 4) {
+            minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, randomizeTitleID.height() + TitleIDError.height() + Applicationtxt.height() + ApplicationError.height() + ProductCodetxt.height() + 4 });
+            minorBar.location({ (finalize.width() - minorBar.width()) / 2, minorBarTxt.location().y() + minorBarTxt.height() });
+
+            majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, minorBar.location().y() + minorBar.height() + 5 });
+            majorBar.location({ (finalize.width() - majorBar.width()) / 2, majorBarTxt.location().y() + majorBarTxt.height() });
+
+            buildButt.location({ (finalize.width() - buildButt.width()) / 2, majorBar.location().y() + majorBar.height() + 10 });
+            cancelBuildButt.location({ (finalize.width() - cancelBuildButt.width()) / 2, buildButt.location().y() + buildButt.height() });
+        }
+        else if (finalize.height() / 2 > minorBarTxt.height() + minorBar.height() + 5 + majorBarTxt.height() + majorBar.height() + 10 + buildButt.height() + cancelBuildButt.height()) {
+            minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, (finalize.height() / 2) + ((finalize.height() / 2) - (minorBarTxt.height() + minorBar.height() + 5 + majorBarTxt.height() + majorBar.height() + 10 + buildButt.height() + cancelBuildButt.height())) / 2 });
+            minorBar.location({ (finalize.width() - minorBar.width()) / 2, minorBarTxt.location().y() + minorBarTxt.height() });
+
+            majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, minorBar.location().y() + minorBar.height() + 5 });
+            majorBar.location({ (finalize.width() - majorBar.width()) / 2, majorBarTxt.location().y() + majorBarTxt.height() });
+
+            buildButt.location({ (finalize.width() - buildButt.width()) / 2, majorBar.location().y() + majorBar.height() + 10 });
+            cancelBuildButt.location({ (finalize.width() - cancelBuildButt.width()) / 2, buildButt.location().y() + buildButt.height() });
+        }
+        else {
+            minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, finalize.height() - (minorBarTxt.height() + minorBar.height() + 5 + majorBarTxt.height() + majorBar.height() + 10 + buildButt.height() + cancelBuildButt.height()) });
+            minorBar.location({ (finalize.width() - minorBar.width()) / 2, minorBarTxt.location().y() + minorBarTxt.height() });
+
+            majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, minorBar.location().y() + minorBar.height() + 5 });
+            majorBar.location({ (finalize.width() - majorBar.width()) / 2, majorBarTxt.location().y() + majorBarTxt.height() });
+
+            buildButt.location({ (finalize.width() - buildButt.width()) / 2, majorBar.location().y() + majorBar.height() + 10 });
+            cancelBuildButt.location({ (finalize.width() - cancelBuildButt.width()) / 2, buildButt.location().y() + buildButt.height() });
+        }
+
+        if (minorBarTxt.location().y() > randomizeProductCode.location().y() + randomizeProductCode.height()) {
+            titleIDtxt.location({ (finalize.width() - (titleIDtxt.width() + titleIDbox.width() + ZeroZero.width() + randomizeTitleID.width())) / 2, ((finalize.height() / 2) - (randomizeTitleID.height() + TitleIDError.height() + Applicationtxt.height() + ApplicationError.height() + ProductCodetxt.height())) / 2 });
+            titleIDbox.location({ titleIDtxt.location().x() + titleIDtxt.width(), titleIDtxt.location().y() + (titleIDtxt.height() - titleIDbox.height()) / 2 });
+            ZeroZero.location({ titleIDbox.location().x() + titleIDbox.width(), titleIDtxt.location().y() });
+            randomizeTitleID.location({ ZeroZero.location().x() + ZeroZero.width(), ZeroZero.location().y() + (ZeroZero.height() - randomizeTitleID.height()) / 2 });
+            TitleIDError.location({ titleIDtxt.location().x() + ((titleIDtxt.width() + titleIDbox.width() + ZeroZero.width() + randomizeTitleID.width()) - TitleIDError.width()) / 2, randomizeTitleID.location().y() + randomizeTitleID.height() });
+
+            Applicationtxt.location({ (finalize.width() - (Applicationtxt.width() + ApplicationName.width() + 4)) / 2, TitleIDError.location().y() + TitleIDError.height() });
+            ApplicationName.location({ Applicationtxt.location().x() + Applicationtxt.width() + 4, Applicationtxt.location().y() + (Applicationtxt.height() - ApplicationName.height()) / 2 });
+            ApplicationError.location({ Applicationtxt.location().x() + ((Applicationtxt.width() + ApplicationName.width()) - ApplicationError.width()) / 2, Applicationtxt.location().y() + Applicationtxt.height() });
+
+            ProductCodetxt.location({ (finalize.width() - (ProductCodetxt.width() + ProductCode.width() + randomizeProductCode.width())) / 2, ApplicationError.location().y() + ApplicationError.height() });
+            ProductCode.location({ ProductCodetxt.location().x() + ProductCodetxt.width(), ProductCodetxt.location().y() + (ProductCodetxt.height() - ProductCode.height()) / 2 });
+            randomizeProductCode.location({ ProductCode.location().x() + ProductCode.width(), ProductCodetxt.location().y() + (ProductCodetxt.height() - randomizeProductCode.height()) / 2 });
+        }
+        else {
+            titleIDtxt.location({ (finalize.width() - (titleIDtxt.width() + titleIDbox.width() + ZeroZero.width() + randomizeTitleID.width())) / 2, minorBarTxt.location().y() - (randomizeTitleID.height() + TitleIDError.height() + Applicationtxt.height() + ApplicationError.height() + ProductCodetxt.height()) });
+            titleIDbox.location({ titleIDtxt.location().x() + titleIDtxt.width(), titleIDtxt.location().y() + (titleIDtxt.height() - titleIDbox.height()) / 2 });
+            ZeroZero.location({ titleIDbox.location().x() + titleIDbox.width(), titleIDtxt.location().y() });
+            randomizeTitleID.location({ ZeroZero.location().x() + ZeroZero.width(), ZeroZero.location().y() + (ZeroZero.height() - randomizeTitleID.height()) / 2 });
+            TitleIDError.location({ titleIDtxt.location().x() + ((titleIDtxt.width() + titleIDbox.width() + ZeroZero.width() + randomizeTitleID.width()) - TitleIDError.width()) / 2, randomizeTitleID.location().y() + randomizeTitleID.height() });
+
+            Applicationtxt.location({ (finalize.width() - (Applicationtxt.width() + ApplicationName.width() + 4)) / 2, TitleIDError.location().y() + TitleIDError.height() });
+            ApplicationName.location({ Applicationtxt.location().x() + Applicationtxt.width() + 4, Applicationtxt.location().y() + (Applicationtxt.height() - ApplicationName.height()) / 2 });
+            ApplicationError.location({ Applicationtxt.location().x() + ((Applicationtxt.width() + ApplicationName.width()) - ApplicationError.width()) / 2, Applicationtxt.location().y() + Applicationtxt.height() });
+
+            ProductCodetxt.location({ (finalize.width() - (ProductCodetxt.width() + ProductCode.width() + randomizeProductCode.width())) / 2, ApplicationError.location().y() + ApplicationError.height() });
+            ProductCode.location({ ProductCodetxt.location().x() + ProductCodetxt.width(), ProductCodetxt.location().y() + (ProductCodetxt.height() - ProductCode.height()) / 2 });
+            randomizeProductCode.location({ ProductCode.location().x() + ProductCode.width(), ProductCodetxt.location().y() + (ProductCodetxt.height() - randomizeProductCode.height()) / 2 });
+        }
 
         maintitle.location({ (settings.width() - maintitle.width()) / 2, 3 });
         subtitle.location({ (settings.width() - subtitle.width()) / 2, maintitle.height() + maintitle.location().y() });

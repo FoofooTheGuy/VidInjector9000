@@ -165,13 +165,13 @@ namespace VidInjector9002 {
                 rows++;
                 multibannerbrowse.location({ text_box_array.at((rows - 1) * columns + 3)->location().x() + (text_box_array.at((rows - 1) * columns + 3)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 3)->location().y() + text_box_array.at((rows - 1) * columns + 3)->height() });
                 moflexbrowse.location({ text_box_array.at((rows - 1) * columns + 1)->location().x() + (text_box_array.at((rows - 1) * columns + 1)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 1)->location().y() + text_box_array.at((rows - 1) * columns + 1)->height() });
-                appendmedia.location({ ((text_box_array.at(0)->width() * 4) - (appendmedia.width() + removemedia.width() + 2)) / 2, text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
-                removemedia.location({ appendmedia.location().x() + appendmedia.width() + 2, appendmedia.location().y() });
+                removemedia.location({ ((text_box_array.at(0)->width() * 4) - (removemedia.width() + appendmedia.width() + 2)) / 2, text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
+                appendmedia.location({ removemedia.location().x() + removemedia.width() + 2, removemedia.location().y() });
             }
             if (rows == 27) appendmedia.enabled(false);
             for (int i = columns; i <= rows * columns - 1; i++)
                 text_box_array.at(i)->enabled(mode.selected_index());
-            rowtxt.location({ appendmedia.location().x() + ((appendmedia.width() + removemedia.width() + 2) - rowtxt.width()) / 2, appendmedia.location().y() + appendmedia.height() });
+            rowtxt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - rowtxt.width()) / 2, removemedia.location().y() + removemedia.height() });
             rowtxt.text(xtd::ustring::format("{}/27", rows));
             removemedia.enabled(mode.selected_index());
             bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
@@ -188,13 +188,13 @@ namespace VidInjector9002 {
                 rows--;
                 multibannerbrowse.location({ text_box_array.at((rows - 1) * columns + 3)->location().x() + (text_box_array.at((rows - 1) * columns + 3)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 3)->location().y() + text_box_array.at((rows - 1) * columns + 3)->height() });
                 moflexbrowse.location({ text_box_array.at((rows - 1) * columns + 1)->location().x() + (text_box_array.at((rows - 1) * columns + 1)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 1)->location().y() + text_box_array.at((rows - 1) * columns + 1)->height() });
-                appendmedia.location({ ((text_box_array.at(0)->width() * 4) - (appendmedia.width() + removemedia.width() + 2)) / 2, text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
-                removemedia.location({ appendmedia.location().x() + appendmedia.width() + 2, appendmedia.location().y() });
+                removemedia.location({ ((text_box_array.at(0)->width() * 4) - (removemedia.width() + appendmedia.width() + 2)) / 2, text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
+                appendmedia.location({ removemedia.location().x() + removemedia.width() + 2, removemedia.location().y() });
             }
             if (rows == 1) removemedia.enabled(false);
             for (int i = columns; i <= rows * columns - 1; i++)
                 text_box_array.at(i)->enabled(mode.selected_index());
-            rowtxt.location({ appendmedia.location().x() + ((appendmedia.width() + removemedia.width() + 2) - rowtxt.width()) / 2, appendmedia.location().y() + appendmedia.height() });
+            rowtxt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - rowtxt.width()) / 2, removemedia.location().y() + removemedia.height() });
             rowtxt.text(xtd::ustring::format("{}/27", rows));
             appendmedia.enabled(mode.selected_index());
             if (bannerpreviewindex == rows)//if you were previewing the removed one, change the selected index
