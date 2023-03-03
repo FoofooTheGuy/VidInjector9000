@@ -74,6 +74,8 @@ xtd::ustring ProductCodetext = "Product Code:";
 xtd::ustring BuildCIAText = "Build CIA";
 xtd::ustring Cancel = "Cancel";
 xtd::ustring MoflexError = "is not in MoFlex format";
+xtd::ustring row = "row";
+xtd::ustring column = "column";
 
 xtd::ustring Languagedir = "English";
 
@@ -180,3 +182,5 @@ xtd::ustring inLangProductCodetext = "ProductCodetext";
 xtd::ustring inLangBuildCIAText = "BuildCIAText";
 xtd::ustring inLangCancel = "Cancel";
 xtd::ustring inLangMoflexError = "MoflexError";
+xtd::ustring inLangrow = "row";
+xtd::ustring inLangcolumn = "column";

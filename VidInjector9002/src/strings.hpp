@@ -75,6 +75,8 @@ extern xtd::ustring AppNameText;
 extern xtd::ustring BuildCIAText;
 extern xtd::ustring Cancel;
 extern xtd::ustring MoflexError;
+extern xtd::ustring row;
+extern xtd::ustring column;
 
 extern xtd::ustring Languagedir;//this changes by itself so don't translate it
 
@@ -184,3 +186,5 @@ extern xtd::ustring inLangProductCodetext;
 extern xtd::ustring inLangBuildCIAText;
 extern xtd::ustring inLangCancel;
 extern xtd::ustring inLangMoflexError;
+extern xtd::ustring inLangrow;
+extern xtd::ustring inLangcolumn;

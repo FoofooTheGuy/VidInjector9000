@@ -1062,7 +1062,7 @@ form1::form1() {
             unsigned char Checker[4];
             for (int i = 0; i < (mode.selected_index() ? rows : 1); i++) {
                 if (!std::filesystem::exists(text_box_array.at(i * columns + 1)->text().c_str())) {
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToFindPath, text_box_array.at(i * columns + 1)->text()), xtd::ustring::format("{} {} (1, {})", ErrorText, FailedToFindPath, i), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}, {} 2\n{} \"{}\"", row, i + 1, column, FailedToFindPath, text_box_array.at(i * columns + 1)->text()), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     builder.cancel_async();
                     return;
                 }
@@ -1072,7 +1072,7 @@ form1::form1() {
                 for (int j = 0; j < 4; j++) {
                     inmoflex >> Checker[j];//https://stackoverflow.com/a/2974735
                     if (extension != ".moflex" || Checker[j] != moflexMagic[j]) {
-                        xtd::forms::message_box::show(*this, xtd::ustring::format("\"{}\" {}", text_box_array.at(i * columns + 1)->text(), MoflexError), xtd::ustring::format("{} {} (1, {})", ErrorText, BadValue, i), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}, {} 2\n\"{}\" {}", row, i + 1, column, text_box_array.at(i * columns + 1)->text(), MoflexError), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                         builder.cancel_async();
                         return;
                     }
@@ -1102,7 +1102,7 @@ form1::form1() {
             for (int i = 0; i < rows; i++) {
                 unsigned char bimg[65568];
                 if (!std::filesystem::exists(text_box_array.at(i * columns + 3)->text().c_str())) {
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToFindPath, text_box_array.at(i * columns + 3)->text()), xtd::ustring::format("{} {} (3, {})", ErrorText, FailedToFindPath, i + 1), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}, {} 4\n{} \"{}\"", row, i + 1, column, FailedToFindPath, text_box_array.at(i * columns + 3)->text()), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     builder.cancel_async();
                     return;
                 }
@@ -1129,10 +1129,9 @@ form1::form1() {
                 builder.cancel_async();
                 return;
             }
-        }
-        builder.report_progress(60);
-        //make banner
-        {
+            builder.report_progress(60);
+
+            //make banner
             unsigned char Checker[4];
             bool CGFX = false;
             std::ifstream inbanner(bannerbox.text(), std::ios::binary);
@@ -1202,6 +1201,7 @@ form1::form1() {
     };
 
     builder.run_worker_completed += [&] {
+        majorBar.value(0);
         minorBar.maximum(0);
         minorBar.minimum(0);
         cancelBuildButt.enabled(false);
