@@ -96,14 +96,14 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 	else stbir_resize_uint8(input_pixels, w, h, 0, output_pixels, out_w, out_h, 0, ch);//scale to 200x120 if needed
 	stbi_image_free(input_pixels);
 
-	output_3c = (unsigned char*)malloc(out_w * out_h * 3);
 	if (ch == 4) {//if png?
+		output_3c = (unsigned char*)malloc(out_w * out_h * 3);
 		for (int i = 3; i < out_w * out_h * ch; i += 4) {//make background all white
 			//https://stackoverflow.com/a/64655571
 			uint8_t alpha_out = output_pixels[i] + (FF * (FF - output_pixels[i]) / FF);
-			output_pixels[i - 1] = ((output_pixels[i - 1] * output_pixels[i] + FF * FF * (FF - output_pixels[i]) / FF) / alpha_out) & FF;
-			output_pixels[i - 2] = ((output_pixels[i - 2] * output_pixels[i] + FF * FF * (FF - output_pixels[i]) / FF) / alpha_out) & FF;
-			output_pixels[i - 3] = ((output_pixels[i - 3] * output_pixels[i] + FF * FF * (FF - output_pixels[i]) / FF) / alpha_out) & FF;
+			output_pixels[i - 1] = (output_pixels[i - 1] * output_pixels[i] + FF * FF * (FF - output_pixels[i]) / FF) / alpha_out;
+			output_pixels[i - 2] = (output_pixels[i - 2] * output_pixels[i] + FF * FF * (FF - output_pixels[i]) / FF) / alpha_out;
+			output_pixels[i - 3] = (output_pixels[i - 3] * output_pixels[i] + FF * FF * (FF - output_pixels[i]) / FF) / alpha_out;
 			output_pixels[i] = alpha_out;
 		}
 		int newi = 3;
@@ -116,6 +116,7 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 		free(output_pixels);
 	}
 	if (ch == 3) {
+		output_3c = (unsigned char*)malloc(out_w * out_h * 3);
 		memcpy(output_3c, output_pixels, out_w * out_h * 3);
 		free(output_pixels);
 	}
@@ -129,9 +130,8 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 			output_fin[(y * (new_w)+x) * 3 + 1] = output_3c[(y * (out_w)+x) * 3 + 1];
 			output_fin[(y * (new_w)+x) * 3 + 2] = output_3c[(y * (out_w)+x) * 3 + 2];
 		}
-	free(output_3c);
 
-	unsigned char* tiledbanner = new unsigned char[65536];
+	unsigned char tiledbanner[65536];
 	image_data_to_tiles(tiledbanner, output_fin, new_w, new_h);
 	if (writeHeader) {
 		memcpy(outBuffer, bimgheader, sizeof(bimgheader));
@@ -142,8 +142,8 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 	}
 
 	//stbi_write_png("imag.png", new_w, new_h, 3, output_fin, 0);
-	delete[] tiledbanner;
 	free(output_fin);
+	free(output_3c);
 	return true;
 }
 

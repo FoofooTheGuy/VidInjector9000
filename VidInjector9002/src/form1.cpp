@@ -1129,6 +1129,14 @@ form1::form1() {
                 builder.cancel_async();
                 return;
             }
+            if (mode.selected_index()) {//multi vid needs an icon here so that it can make ext data or something (the game crashes if it isnt here)
+                copyfile(xtd::ustring::format("{}/{}/temp/exefs/icon.bin", ProgramDir, resourcesPath).c_str(), xtd::ustring::format("{}/{}/temp/romfs/icon.icn", ProgramDir, resourcesPath).c_str());
+                if (!std::filesystem::exists(xtd::ustring::format("{}/{}/temp/romfs/icon.icn", ProgramDir, resourcesPath).c_str())) {
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/{}/temp/romfs/icon.icn", FailedToCreateFile, ProgramDir, resourcesPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    builder.cancel_async();
+                    return;
+                }
+            }
             builder.report_progress(60);
 
             //make banner
