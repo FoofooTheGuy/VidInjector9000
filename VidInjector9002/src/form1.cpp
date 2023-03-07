@@ -1120,6 +1120,19 @@ form1::form1() {
                     }
                 }
             }
+            //make movie_bnrname.csv
+            std::filesystem::create_directories("romfs/settings");
+            std::ofstream movie_bnrname(xtd::ustring::format("{}/{}/temp/romfs/settings/movie_bnrname.csv", ProgramDir, resourcesPath).c_str(), std::ios_base::out | std::ios_base::binary);
+            movie_bnrname << "\xFF\xFE" + UTF8toUTF16(std::to_string(rows) + "\x0D\x0A");
+            for (unsigned long i = 0; i < rows; i++) {
+                movie_bnrname << UTF8toUTF16("movie_" + std::to_string(i) + ".bimg\x0D\x0A");
+            }
+            movie_bnrname.close();
+            if (!std::filesystem::exists(xtd::ustring::format("{}/{}/temp/romfs/settings/movie_bnrname.csv", ProgramDir, resourcesPath).c_str())) {
+                xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/{}/temp/romfs/settings/movie_bnrname.csv", FailedToCreateFile, ProgramDir, resourcesPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                builder.cancel_async();
+                return;
+            }
         }
         builder.report_progress(50);
         //do exefs (icon and banner)
