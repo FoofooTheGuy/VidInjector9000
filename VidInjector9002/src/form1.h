@@ -99,8 +99,8 @@ namespace VidInjector9002 {
             int out_h = 120;
             int film_w = 264;
             int film_h = 154;
-            if (std::filesystem::exists(text_box_array.at(y * columns + 3)->text().c_str()) && stbi_info(text_box_array.at(y * columns + 3)->text().c_str(), &w, &h, &ch)) {
-                unsigned char* input_pixels = stbi_load(text_box_array.at(y * columns + 3)->text().c_str(), &w, &h, &ch, 0);
+            if (std::filesystem::exists(text_box_array.at(y * columns + 2)->text().c_str()) && stbi_info(text_box_array.at(y * columns + 2)->text().c_str(), &w, &h, &ch)) {
+                unsigned char* input_pixels = stbi_load(text_box_array.at(y * columns + 2)->text().c_str(), &w, &h, &ch, 0);
                 unsigned char* output_pixels = (unsigned char*)malloc(out_w * out_h * ch);
                 unsigned char* output_3c = (unsigned char*)malloc(out_w * out_h * 3);
                 const uint8_t FF = 0xFF;
@@ -163,9 +163,9 @@ namespace VidInjector9002 {
                         text_box_array.at(y * columns + x)->location({ text_box_array.at(0)->location().x() + (x * text_box_array.at(y * columns + x)->width()), text_box_array.at(0)->location().y() + (y * text_box_array.at(y * columns + x)->height()) });
                     }
                 rows++;
-                multibannerbrowse.location({ text_box_array.at((rows - 1) * columns + 3)->location().x() + (text_box_array.at((rows - 1) * columns + 3)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 3)->location().y() + text_box_array.at((rows - 1) * columns + 3)->height() });
+                multibannerbrowse.location({ text_box_array.at((rows - 1) * columns + 2)->location().x() + (text_box_array.at((rows - 1) * columns + 2)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 2)->location().y() + text_box_array.at((rows - 1) * columns + 2)->height() });
                 moflexbrowse.location({ text_box_array.at((rows - 1) * columns + 1)->location().x() + (text_box_array.at((rows - 1) * columns + 1)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 1)->location().y() + text_box_array.at((rows - 1) * columns + 1)->height() });
-                removemedia.location({ ((text_box_array.at(0)->width() * 4) - (removemedia.width() + appendmedia.width() + 2)) / 2, text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
+                removemedia.location({ ((text_box_array.at(0)->width() * columns) - (removemedia.width() + appendmedia.width() + 2)) / 2, text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
                 appendmedia.location({ removemedia.location().x() + removemedia.width() + 2, removemedia.location().y() });
             }
             if (rows == 27) appendmedia.enabled(false);
@@ -186,9 +186,9 @@ namespace VidInjector9002 {
                     text_box_array.pop_back();
                 }
                 rows--;
-                multibannerbrowse.location({ text_box_array.at((rows - 1) * columns + 3)->location().x() + (text_box_array.at((rows - 1) * columns + 3)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 3)->location().y() + text_box_array.at((rows - 1) * columns + 3)->height() });
+                multibannerbrowse.location({ text_box_array.at((rows - 1) * columns + 2)->location().x() + (text_box_array.at((rows - 1) * columns + 2)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 2)->location().y() + text_box_array.at((rows - 1) * columns + 2)->height() });
                 moflexbrowse.location({ text_box_array.at((rows - 1) * columns + 1)->location().x() + (text_box_array.at((rows - 1) * columns + 1)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 1)->location().y() + text_box_array.at((rows - 1) * columns + 1)->height() });
-                removemedia.location({ ((text_box_array.at(0)->width() * 4) - (removemedia.width() + appendmedia.width() + 2)) / 2, text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
+                removemedia.location({ ((text_box_array.at(0)->width() * columns) - (removemedia.width() + appendmedia.width() + 2)) / 2, text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
                 appendmedia.location({ removemedia.location().x() + removemedia.width() + 2, removemedia.location().y() });
             }
             if (rows == 1) removemedia.enabled(false);
@@ -248,7 +248,7 @@ namespace VidInjector9002 {
         void saveParameters() {
             std::ofstream outparams(parampath, std::ios_base::out | std::ios_base::binary);
             outparams <<
-                StrVerParam << "=\"" << VI9P300 << "\"\n" <<
+                StrVerParam << "=\"" << VI9PVER << "\"\n" <<
                 IntMultiParam << "=\"" << std::to_string(mode.selected_index()) << "\"\n" <<
                 StrBannerParam << "=\"" << bannerbox.text() << "\"\n" <<
                 StrIconParam << "=\"" << iconbox.text() << "\"\n" <<
@@ -264,8 +264,8 @@ namespace VidInjector9002 {
                 outparams <<
                     StrPTitleParam << "(" << std::to_string(y) << ")=\"" << text_box_array.at(y * columns + 0)->text() << "\"\n" <<
                     StrMoflexParam << "(" << std::to_string(y) << ")=\"" << text_box_array.at(y * columns + 1)->text() << "\"\n" <<
-                    StrMTitleParam << "(" << std::to_string(y) << ")=\"" << text_box_array.at(y * columns + 2)->text() << "\"\n" <<
-                    StrMBannerParam << "(" << std::to_string(y) << ")=\"" << text_box_array.at(y * columns + 3)->text() << "\"\n";
+                    //StrMTitleParam << "(" << std::to_string(y) << ")=\"" << text_box_array.at(y * columns + 2)->text() << "\"\n" <<
+                    StrMBannerParam << "(" << std::to_string(y) << ")=\"" << text_box_array.at(y * columns + 2)->text() << "\"\n";
             }
             outparams <<
                 IntPreIndexParam << "=\"" << std::to_string(bannerpreviewindex) << "\"\n";
@@ -282,8 +282,8 @@ namespace VidInjector9002 {
                 return false;
             }
             if (fileParse(outstr, parampath, StrVerParam)) {
-                if (outstr != VI9P300) {
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({})\n{} {}", BadVersion, outstr, SupportedVersion, VI9P300), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                if (outstr != VI9PVER) {
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({})\n{} {}", BadVersion, outstr, SupportedVersion, VI9PVER), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     return false;
                 }
             }
@@ -426,15 +426,15 @@ namespace VidInjector9002 {
                     good = false;
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}({})\n{}.", FailedToFindVar, StrMoflexParam, y, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 }
-                if (fileParse(outstr, parampath, xtd::ustring::format("{}({})", StrMTitleParam, y))) {
+                /*if (fileParse(outstr, parampath, xtd::ustring::format("{}({})", StrMTitleParam, y))) {
                     text_box_array.at(y * columns + 2)->text(outstr);
                 }
                 else {
                     good = false;
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}({})\n{}.", FailedToFindVar, StrMTitleParam, y, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                }
+                }*/
                 if (fileParse(outstr, parampath, xtd::ustring::format("{}({})", StrMBannerParam, y))) {
-                    text_box_array.at(y * columns + 3)->text(outstr);
+                    text_box_array.at(y * columns + 2)->text(outstr);
                 }
                 else {
                     good = false;
@@ -470,8 +470,8 @@ namespace VidInjector9002 {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToFindPath, xtd::ustring::format("{}/{}/language/{}/Language.txt", ProgramDir, resourcesPath, Lang)), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 return false;
             }
-            std::vector<xtd::ustring*> inLangVec = { &inLangrow, &inLangcolumn, };
-            std::vector<xtd::ustring*> LangVec = { &row, &column, };
+            std::vector<xtd::ustring*> inLangVec = { &inLangLanguage, &inLangFormText, &inLangByMeText, &inLangParametersText, &inLangFinalizeText, &inLangOptionsText, &inLangModeText, &inLangSingleVideo, &inLangMultiVideo, &inLangBannerText, &inLangBrowse, &inLangSupportedImage48x48, &inLangSupportedImage200x120, &inLangSupportedImageList, &inLangCGFXList, &inLangAllFilesList, &inLangMoflexFilesList, &inLangParamFilesList, &inLangErrorText, &inLangImageInfoError, &inLangBannerPreviewText, &inLangCustomNotifText, &inLangIconText, &inLangShortNameText, &inLangLongNameText, &inLangPublisherText, &inLangTextTooLongError, &inLangMultiOnlyText, &inLangCopyrightCheckText, &inLangFFrewindText, &inLangFadeOptText, &inLangPlayerTitleText, &inLangMoflexFileText, &inLangMenuBannerText, &inLangSaveButtText, &inLangLoadButtText, &inLangAutoSaveText, &inLangAutoLoadText, &inLangLightModeText, &inLangDarkModeText, &inLangLanguageText, &inLangRestartText, &inLangConfirmClose, &inLangLosedata, &inLangConfirmSave, &inLangAlreadyExists, &inLangReplaceIt, &inLangBadValue, &inLangBadVersion, &inLangSupportedVersion, &inLangBeANumber, &inLangMissingVariableError, &inLangFailedToFindVar, &inLangFailedToFindPath, &inLangFailedToCreateFile, &inLangFailedToConvertImage, &inLangValueNoChange, &inLangnoMoreThan27, &inLangParametersLoaded, &inLangSuccessfullyLoaded, &inLangFailedToLoad, &inLangValidStillLoaded, &inLangTheFile, &inLangDoesntExist, &inLangLanguageChanged, &inLangRestartProgram, &inLangWasEnabled, &inLangTitleIDText, &inLangAppNameText, &inLangProductCodetext, &inLangBuildCIAText, &inLangCancel, &inLangMoflexError, &inLangrow, &inLangcolumn, };
+            std::vector<xtd::ustring*> LangVec = { &Language, &FormText, &ByMeText, &ParametersText, &FinalizeText, &OptionsText, &ModeText, &SingleVideo, &MultiVideo, &BannerText, &Browse, &SupportedImage48x48, &SupportedImage200x120, &SupportedImageList, &CGFXList, &AllFilesList, &MoflexFilesList, &ParamFilesList, &ErrorText, &ImageInfoError, &BannerPreviewText, &CustomNotifText, &IconText, &ShortNameText, &LongNameText, &PublisherText, &TextTooLongError, &MultiOnlyText, &CopyrightCheckText, &FFrewindText, &FadeOptText, &PlayerTitleText, &MoflexFileText, &MenuBannerText, &SaveButtText, &LoadButtText, &AutoSaveText, &AutoLoadText, &LightModeText, &DarkModeText, &LanguageText, &RestartText, &ConfirmClose, &Losedata, &ConfirmSave, &AlreadyExists, &ReplaceIt, &BadValue, &BadVersion, &SupportedVersion, &BeANumber, &MissingVariableError, &FailedToFindVar, &FailedToFindPath, &FailedToCreateFile, &FailedToConvertImage, &ValueNoChange, &noMoreThan27, &ParametersLoaded, &SuccessfullyLoaded, &FailedToLoad, &ValidStillLoaded, &TheFile, &DoesntExist, &LanguageChanged, &RestartProgram, &WasEnabled, &TitleIDText, &AppNameText, &ProductCodetext, &BuildCIAText, &Cancel, &MoflexError, &row, &column, };
             for (size_t i = 0; i < inLangVec.size(); i++) {
                 if (fileParse(outstr, xtd::ustring::format("{}/{}/language/{}/Language.txt", ProgramDir, resourcesPath, Lang), *inLangVec[i])) {
                     *LangVec[i] = outstr;
@@ -645,11 +645,11 @@ namespace VidInjector9002 {
 		xtd::forms::check_box FadeOpt;
 
         xtd::forms::panel mediabox;
-        int columns = 4;
+        int columns = 3;
         int rows = 1;
         xtd::forms::label playertitletxt;
-        xtd::forms::label menutitletxt;
-        xtd::forms::picture_box titlemulti;
+        //xtd::forms::label menutitletxt;
+        //xtd::forms::picture_box titlemulti;
         xtd::forms::label moflextxt;
         xtd::forms::label menubannertxt;
         xtd::forms::picture_box bannermulti;
