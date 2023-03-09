@@ -1121,7 +1121,7 @@ form1::form1() {
                 }
             }
             //make movie_bnrname.csv
-            std::filesystem::create_directories("romfs/settings");
+            std::filesystem::create_directories(xtd::ustring::format("{}/{}/temp/romfs/settings/movie_bnrname.csv", ProgramDir, resourcesPath).c_str());
             std::ofstream movie_bnrname(xtd::ustring::format("{}/{}/temp/romfs/settings/movie_bnrname.csv", ProgramDir, resourcesPath).c_str(), std::ios_base::out | std::ios_base::binary);
             movie_bnrname << "\xFF\xFE" + UTF8toUTF16(std::to_string(rows) + "\x0D\x0A");
             for (unsigned long i = 0; i < rows; i++) {
