@@ -75,6 +75,8 @@ xtd::ustring Cancel = "Cancel";
 xtd::ustring MoflexError = "is not in MoFlex format";
 xtd::ustring row = "row";
 xtd::ustring column = "column";
+xtd::ustring CreatingFile = "Creating the file:";
+xtd::ustring CopyingMoflex = "Copying MoFlex files...";
 
 xtd::ustring Languagedir = "English";
 
@@ -181,3 +183,5 @@ xtd::ustring inLangCancel = "Cancel";
 xtd::ustring inLangMoflexError = "MoflexError";
 xtd::ustring inLangrow = "row";
 xtd::ustring inLangcolumn = "column";
+xtd::ustring inLangCreatingFile = "CreatingFile";
+xtd::ustring inLangCopyingMoflex = "CopyingMoflex";

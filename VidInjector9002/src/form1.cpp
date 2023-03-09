@@ -771,7 +771,7 @@ form1::form1() {
     minorBarTxt.auto_size(true);
     minorBarTxt.font({ this->font(), 15 });
     minorBarTxt.text(FormText);
-    //minorBarTxt.hide();
+    minorBarTxt.hide();
 
     minorBar.parent(finalize);
     minorBar.height(45);
@@ -784,7 +784,7 @@ form1::form1() {
     majorBarTxt.auto_size(true);
     majorBarTxt.font({ this->font(), 15 });
     majorBarTxt.text(FormText);
-    //majorBarTxt.hide();
+    majorBarTxt.hide();
 
     majorBar.parent(finalize);
     majorBar.size({ finalize.width() - 23, 50 });
@@ -795,6 +795,7 @@ form1::form1() {
     buildButt.text(BuildCIAText);
     buildButt.size({ buildButt.width() * 2, buildButt.height() * 2});
     buildButt.click += [&] {
+        buildButt.enabled(false);
         builder.run_worker_async();
     };
 
@@ -816,8 +817,17 @@ form1::form1() {
         //extract base
         std::filesystem::remove_all(xtd::ustring::format("{}/{}/temp", ProgramDir, resourcesPath).c_str());
         Generate_Files(xtd::ustring::format("{}/{}/temp", ProgramDir, resourcesPath).c_str(), mode.selected_index());
+
+        majorBarTxt.text(xtd::ustring::format("{} romfs", CreatingFile));
+        majorBarTxt.show();
+        majorBarTxt.location().x((finalize.width() - majorBarTxt.width()) / 2);//why no work?
+
         //make movie_title.csv (player title)
         {
+            minorBarTxt.text(xtd::ustring::format("{} romfs/movie_title.csv", CreatingFile));
+            minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
+            minorBarTxt.show();
+
             std::filesystem::create_directories(xtd::ustring::format("{}/{}/temp/romfs/movie", ProgramDir, resourcesPath).c_str());
             std::ofstream movie_title(xtd::ustring::format("{}/{}/temp/romfs/movie/movie_title.csv", ProgramDir, resourcesPath).c_str(), std::ios_base::out | std::ios_base::binary);
 
@@ -849,6 +859,9 @@ form1::form1() {
         }
         //make settingsTL.csv (menu title and stuff)
         {
+            minorBarTxt.text(xtd::ustring::format("{} romfs/settings/settingsTL.csv", CreatingFile));
+            minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
+
             std::filesystem::create_directories(xtd::ustring::format("{}/{}/temp/romfs/settings", ProgramDir, resourcesPath).c_str());
             std::ofstream settingsTL(xtd::ustring::format("{}/{}/temp/romfs/settings/settingsTL.csv", ProgramDir, resourcesPath).c_str(), std::ios_base::out | std::ios_base::binary);
 
@@ -1035,6 +1048,9 @@ form1::form1() {
         }
         //make copyright stuff (multi vid only)
         if (mode.selected_index()) {
+            minorBarTxt.text(xtd::ustring::format("{} romfs/settings/information_buttons.csv", CreatingFile));
+            minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
+
             std::filesystem::create_directories(xtd::ustring::format("{}/{}/temp/romfs/settings", ProgramDir, resourcesPath).c_str());//just in case Hehehhhah
             std::ofstream information_buttons(xtd::ustring::format("{}/{}/temp/romfs/settings/information_buttons.csv", ProgramDir, resourcesPath).c_str(), std::ios_base::out | std::ios_base::binary);
             information_buttons << (copycheck.checked() ? ("\xFF\xFE" + UTF8toUTF16("Copyright")) : "\xFF\xFE");
@@ -1046,6 +1062,9 @@ form1::form1() {
             }
 
             if (copycheck.checked()) {
+                minorBarTxt.text(xtd::ustring::format("{} romfs/settings/copyright.txt", CreatingFile));
+                minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
+
                 std::ofstream copyrighttxt(xtd::ustring::format("{}/{}/temp/romfs/settings/copyright.txt", ProgramDir, resourcesPath).c_str(), std::ios_base::out | std::ios_base::binary);
                 copyrighttxt << "\xFF\xFE" + UTF8toUTF16(copybox.text());
                 copyrighttxt.close();
@@ -1079,6 +1098,10 @@ form1::form1() {
                 }
                 std::filesystem::create_directories(xtd::ustring::format("{}/{}/temp/romfs/movie", ProgramDir, resourcesPath).c_str());
                 if (mode.selected_index()) {
+
+                    minorBarTxt.text(xtd::ustring::format("{} {}/{}", CopyingMoflex, i, rows));
+                    minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
+
                     copyfile(text_box_array.at(i * columns + 1)->text().c_str(), xtd::ustring::format("{}/{}/temp/romfs/movie/movie_{}.moflex", ProgramDir, resourcesPath, i).c_str());
                     if (!std::filesystem::exists(xtd::ustring::format("{}/{}/temp/romfs/movie/movie_{}.moflex", ProgramDir, resourcesPath, i).c_str())) {//this probably only happens if there's no disk space
                         xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/{}/temp/romfs/movie/movie_{}.moflex", FailedToCreateFile, ProgramDir, resourcesPath, i), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
@@ -1087,6 +1110,8 @@ form1::form1() {
                     }
                 }
                 else {
+                    minorBarTxt.text(xtd::ustring::format("{} 1/1", CopyingMoflex));
+                    minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
                     copyfile(text_box_array.at(i * columns + 1)->text().c_str(), xtd::ustring::format("{}/{}/temp/romfs/movie/movie.moflex", ProgramDir, resourcesPath).c_str());
                     if (!std::filesystem::exists(xtd::ustring::format("{}/{}/temp/romfs/movie/movie.moflex", ProgramDir, resourcesPath).c_str())) {//this probably only happens if there's no disk space
                         xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/{}/temp/romfs/movie/movie.moflex", FailedToCreateFile, ProgramDir, resourcesPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
@@ -1096,7 +1121,7 @@ form1::form1() {
                 }
             }
         }
-        builder.report_progress(35);
+        builder.report_progress(75);
         //convert to bimg (multi vid only)
         if (mode.selected_index()) {
             for (int i = 0; i < rows; i++) {
@@ -1106,6 +1131,10 @@ form1::form1() {
                     builder.cancel_async();
                     return;
                 }
+
+                minorBarTxt.text(xtd::ustring::format("{} romfs/movie/movie_{}.bimg", CreatingFile, i));
+                minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
+
                 if (convertToBimg(text_box_array.at(i * columns + 2)->text(), bimg, true)) {
                     std::filesystem::create_directories(xtd::ustring::format("{}/{}/temp/romfs/movie", ProgramDir, resourcesPath).c_str());
                     std::ofstream bimgfile(xtd::ustring::format("{}/{}/temp/romfs/movie/movie_{}.bimg", ProgramDir, resourcesPath, i).c_str(), std::ios_base::out | std::ios_base::binary);
@@ -1134,25 +1163,42 @@ form1::form1() {
                 return;
             }
         }
-        builder.report_progress(50);
+        builder.report_progress(100);
         //do exefs (icon and banner)
         {
+            builder.report_progress(0);
+            majorBarTxt.text(xtd::ustring::format("{} exefs", CreatingFile));
+            majorBarTxt.location().x((finalize.width() - majorBarTxt.width()) / 2);
+
+            minorBarTxt.text(xtd::ustring::format("{} exefs/icon.bin", CreatingFile));
+            minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
+
             if (!convertToIcon(iconbox.text(), xtd::ustring::format("{}/{}/temp/exefs/icon.bin", ProgramDir, resourcesPath).c_str(), UTF8toUTF16(shortname.text()), UTF8toUTF16(longname.text()), UTF8toUTF16(publisher.text()))) {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToConvertImage, iconbox.text()), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 builder.cancel_async();
                 return;
             }
             if (mode.selected_index()) {//multi vid needs an icon here so that it can make ext data or something (the game crashes if it isnt here)
+                majorBarTxt.text(xtd::ustring::format("{} romfs", CreatingFile));
+                majorBarTxt.location().x((finalize.width() - majorBarTxt.width()) / 2);
+
+                minorBarTxt.text(xtd::ustring::format("{} romfs/icon.icn", CreatingFile));
+                minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
+
                 copyfile(xtd::ustring::format("{}/{}/temp/exefs/icon.bin", ProgramDir, resourcesPath).c_str(), xtd::ustring::format("{}/{}/temp/romfs/icon.icn", ProgramDir, resourcesPath).c_str());
                 if (!std::filesystem::exists(xtd::ustring::format("{}/{}/temp/romfs/icon.icn", ProgramDir, resourcesPath).c_str())) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/{}/temp/romfs/icon.icn", FailedToCreateFile, ProgramDir, resourcesPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     builder.cancel_async();
                     return;
                 }
+                majorBarTxt.text(xtd::ustring::format("{} exefs", CreatingFile));
+                majorBarTxt.location().x((finalize.width() - majorBarTxt.width()) / 2);
             }
-            builder.report_progress(60);
-
+            builder.report_progress(50);
             //make banner
+            minorBarTxt.text(xtd::ustring::format("{} exefs/banner.bin", CreatingFile));
+            minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
+
             unsigned char Checker[4];
             bool CGFX = false;
             std::ifstream inbanner(bannerbox.text(), std::ios::binary);
@@ -1213,8 +1259,11 @@ form1::form1() {
                 return;
             }
         }
-        //build CIA
+        builder.report_progress(100);
+        //TODO: build CIA
 
+        minorBarTxt.hide();
+        majorBarTxt.hide();
     };
 
     builder.progress_changed += [&](object& sender, const xtd::forms::progress_changed_event_args& e) {
@@ -1226,6 +1275,7 @@ form1::form1() {
         minorBar.maximum(0);
         minorBar.minimum(0);
         cancelBuildButt.enabled(false);
+        buildButt.enabled(true);
     };
 
     //settings

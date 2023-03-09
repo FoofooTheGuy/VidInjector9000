@@ -77,6 +77,8 @@ extern xtd::ustring Cancel;
 extern xtd::ustring MoflexError;
 extern xtd::ustring row;
 extern xtd::ustring column;
+extern xtd::ustring CreatingFile;
+extern xtd::ustring CopyingMoflex;
 
 extern xtd::ustring Languagedir;//this changes by itself so don't translate it
 
@@ -187,3 +189,5 @@ extern xtd::ustring inLangCancel;
 extern xtd::ustring inLangMoflexError;
 extern xtd::ustring inLangrow;
 extern xtd::ustring inLangcolumn;
+extern xtd::ustring inLangCreatingFile;
+extern xtd::ustring inLangCopyingMoflex;
