@@ -880,6 +880,7 @@ form1::form1() {
                 return;
             }
         }
+        if (builder.cancellation_pending()) return;
         //make settingsTL.csv (menu title and stuff)
         {
             minorBarTxt.text(xtd::ustring::format("{} romfs/settings/settingsTL.csv", CreatingFile));
@@ -1069,6 +1070,7 @@ form1::form1() {
                 return;
             }
         }
+        if (builder.cancellation_pending()) return;
         //make copyright stuff (multi vid only)
         if (mode.selected_index()) {
             minorBarTxt.text(xtd::ustring::format("{} romfs/settings/information_buttons.csv", CreatingFile));
@@ -1098,6 +1100,7 @@ form1::form1() {
                 }
             }
         }
+        if (builder.cancellation_pending()) return;
         builder.report_progress(15);
         //copy moflex
         {
@@ -1122,6 +1125,7 @@ form1::form1() {
                 std::filesystem::create_directories(xtd::ustring::format("{}/{}/temp/romfs/movie", ProgramDir, resourcesPath).c_str());
                 if (mode.selected_index()) {
 
+                    if (builder.cancellation_pending()) return;
                     minorBarTxt.text(xtd::ustring::format("{} {}/{}", CopyingMoflex, i, rows));
                     minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
 
@@ -1133,6 +1137,7 @@ form1::form1() {
                     }
                 }
                 else {
+                    if (builder.cancellation_pending()) return;
                     minorBarTxt.text(xtd::ustring::format("{} 1/1", CopyingMoflex));
                     minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
                     copyfile(text_box_array.at(i * columns + 1)->text().c_str(), xtd::ustring::format("{}/{}/temp/romfs/movie/movie.moflex", ProgramDir, resourcesPath).c_str());
@@ -1145,6 +1150,7 @@ form1::form1() {
             }
         }
         builder.report_progress(75);
+        if (builder.cancellation_pending()) return;
         //convert to bimg (multi vid only)
         if (mode.selected_index()) {
             for (int i = 0; i < rows; i++) {
@@ -1186,6 +1192,7 @@ form1::form1() {
                 return;
             }
         }
+        if (builder.cancellation_pending()) return;
         builder.report_progress(100);
         //do exefs (icon and banner)
         {
@@ -1285,8 +1292,6 @@ form1::form1() {
         builder.report_progress(100);
         //TODO: build CIA
 
-        minorBarTxt.hide();
-        majorBarTxt.hide();
     };
 
     builder.progress_changed += [&](object& sender, const xtd::forms::progress_changed_event_args& e) {
@@ -1294,6 +1299,8 @@ form1::form1() {
     };
 
     builder.run_worker_completed += [&] {
+        minorBarTxt.hide();
+        majorBarTxt.hide();
         majorBar.value(0);
         minorBar.maximum(0);
         minorBar.minimum(0);
