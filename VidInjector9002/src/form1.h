@@ -25,11 +25,11 @@ namespace VidInjector9002 {
         /// @brief The main entry point for the application.
         static void main();
 
-        std::vector<xtd::ustring> load_files(xtd::ustring filter, xtd::ustring old_path) {//filter is like "All Image Files|*.bmp;*.gif;*.jpg;*.jpeg;*.png;*.tif;*.tiff;*.xpm|Bitmap Files|*.bmp|Gif Files|*.gif|Jpeg Files|*.jpg;*.jpeg|Png Files|*.png|Tiff Files|*.tif;*.tiff|xpm Files|*.xpm"
+        std::vector<xtd::ustring> load_files(xtd::ustring filter, xtd::ustring old_path, xtd::ustring start_folder = xtd::environment::get_folder_path(xtd::environment::special_folder::desktop)) {//filter is like "All Image Files|*.bmp;*.gif;*.jpg;*.jpeg;*.png;*.tif;*.tiff;*.xpm|Bitmap Files|*.bmp|Gif Files|*.gif|Jpeg Files|*.jpg;*.jpeg|Png Files|*.png|Tiff Files|*.tif;*.tiff|xpm Files|*.xpm"
             xtd::forms::open_file_dialog dialog;
             std::vector<xtd::ustring> chosen;
             dialog.multiselect(true);
-            dialog.initial_directory(!old_path.empty() ? xtd::io::path::get_directory_name(old_path) : xtd::environment::get_folder_path(xtd::environment::special_folder::desktop));
+            dialog.initial_directory(!old_path.empty() ? xtd::io::path::get_directory_name(old_path) : start_folder);
             dialog.file_name(xtd::io::path::get_file_name(old_path));
             dialog.filter(filter);
             if (dialog.show_dialog() == xtd::forms::dialog_result::ok) {
@@ -41,10 +41,10 @@ namespace VidInjector9002 {
             return chosen;
         }
 
-        xtd::ustring load_file(xtd::ustring filter, xtd::ustring old_path) {//input is like load_files
+        xtd::ustring load_file(xtd::ustring filter, xtd::ustring old_path, xtd::ustring start_folder = xtd::environment::get_folder_path(xtd::environment::special_folder::desktop)) {//input is like load_files
             xtd::forms::open_file_dialog dialog;
             //xtd::ustring file_name;
-            dialog.initial_directory(!old_path.empty() ? xtd::io::path::get_directory_name(old_path) : xtd::environment::get_folder_path(xtd::environment::special_folder::desktop));
+            dialog.initial_directory(!old_path.empty() ? xtd::io::path::get_directory_name(old_path) : start_folder);
             dialog.file_name(xtd::io::path::get_file_name(old_path));
             dialog.filter(filter);
             if (dialog.show_sheet_dialog(*this) == xtd::forms::dialog_result::ok) {
@@ -53,9 +53,9 @@ namespace VidInjector9002 {
             return "";
         }
 
-        xtd::ustring save_file(xtd::ustring filter, xtd::ustring defaultname) {//input is like load_file
+        xtd::ustring save_file(xtd::ustring filter, xtd::ustring defaultname, xtd::ustring start_folder = xtd::environment::get_folder_path(xtd::environment::special_folder::desktop)) {//input is like load_file
             xtd::forms::save_file_dialog dialog;
-            dialog.initial_directory(xtd::environment::get_folder_path(xtd::environment::special_folder::desktop));
+            dialog.initial_directory(start_folder);
             dialog.file_name(defaultname);
             dialog.filter(filter);
             if (dialog.show_sheet_dialog(*this) == xtd::forms::dialog_result::ok) {

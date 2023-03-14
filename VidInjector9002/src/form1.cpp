@@ -82,7 +82,7 @@ form1::form1() {
     bannerbrowse.location({ parameters.width() - 597, bannerbox.location().y() - (bannerbrowse.height() / 2 - bannerbox.height() / 2) });//tether to bannerbox
     bannerbrowse.text(Browse);
     bannerbrowse.click += [&] {
-        bannerbox.text(load_file(xtd::ustring::format("{} {}{}{}", SupportedImage200x120, SupportedImageList, CGFXList, AllFilesList), bannerbox.text()));
+        bannerbox.text(load_file(xtd::ustring::format("{} {}{}{}", SupportedImage200x120, SupportedImageList, CGFXList, AllFilesList), bannerbox.text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures)));
     };
 
     bannererror.parent(parameters);
@@ -226,7 +226,7 @@ form1::form1() {
     iconbrowse.location({ iconbox.location().x() + iconbox.width() + 1, iconbox.location().y() - (iconbrowse.height() / 2 - iconbox.height() / 2) });//tether to iconbox
     iconbrowse.text(Browse);
     iconbrowse.click += [&] {
-        iconbox.text(load_file(xtd::ustring::format("{} {}{}", SupportedImage48x48, SupportedImageList), iconbox.text()));
+        iconbox.text(load_file(xtd::ustring::format("{} {}{}", SupportedImage48x48, SupportedImageList), iconbox.text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures)));
     };
 
     iconpreview.parent(parameters);
@@ -513,7 +513,7 @@ form1::form1() {
     menubannerpreview.click += [&] {
         if (autoSaveParams && loaded) saveSettings();
         if (mode.selected_index()) {
-            xtd::ustring filepath = load_file(xtd::ustring::format("{} {}{}", SupportedImage200x120, SupportedImageList), text_box_array.at(bannerpreviewindex * columns + 2)->text());
+            xtd::ustring filepath = load_file(xtd::ustring::format("{} {}{}", SupportedImage200x120, SupportedImageList), text_box_array.at(bannerpreviewindex * columns + 2)->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
             if (filepath != "") text_box_array.at(bannerpreviewindex * columns + 2)->text(filepath);
             setMultiBannerPreview(bannerpreviewindex);
             //bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
@@ -587,7 +587,7 @@ form1::form1() {
             }
         }
         else {*/
-        xtd::ustring filepath = load_file(MoflexFilesList, text_box_array[(rows - 1) * columns + 1]->text());
+        xtd::ustring filepath = load_file(MoflexFilesList, text_box_array[(rows - 1) * columns + 1]->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_videos));
         if(!filepath.empty()) text_box_array[(rows - 1) * columns + 1]->text(filepath);
         //}//unmark this if you ever find a fix for it lol
     };
@@ -607,7 +607,7 @@ form1::form1() {
                 if (!files.at(i).empty()) text_box_array[i * columns + 2]->text(files.at(i));
             }
         }*/
-        xtd::ustring filepath = load_file(xtd::ustring::format("{} {}{}", SupportedImage200x120, SupportedImageList), text_box_array.at((rows - 1) * columns + 2)->text());
+        xtd::ustring filepath = load_file(xtd::ustring::format("{} {}{}", SupportedImage200x120, SupportedImageList), text_box_array.at((rows - 1) * columns + 2)->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
         if (!filepath.empty()) text_box_array.at((rows - 1) * columns + 2)->text(filepath);
         setMultiBannerPreview(rows - 1);
         bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
