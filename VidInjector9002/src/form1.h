@@ -25,33 +25,30 @@ namespace VidInjector9002 {
         /// @brief The main entry point for the application.
         static void main();
 
-        std::vector<xtd::ustring> load_files(xtd::ustring filter) {//input is like "All Image Files|*.bmp;*.gif;*.jpg;*.jpeg;*.png;*.tif;*.tiff;*.xpm|Bitmap Files|*.bmp|Gif Files|*.gif|Jpeg Files|*.jpg;*.jpeg|Png Files|*.png|Tiff Files|*.tif;*.tiff|xpm Files|*.xpm"
+        std::vector<xtd::ustring> load_files(xtd::ustring filter, xtd::ustring old_path) {//filter is like "All Image Files|*.bmp;*.gif;*.jpg;*.jpeg;*.png;*.tif;*.tiff;*.xpm|Bitmap Files|*.bmp|Gif Files|*.gif|Jpeg Files|*.jpg;*.jpeg|Png Files|*.png|Tiff Files|*.tif;*.tiff|xpm Files|*.xpm"
             xtd::forms::open_file_dialog dialog;
             std::vector<xtd::ustring> chosen;
-            xtd::ustring file_names;
             dialog.multiselect(true);
-            dialog.initial_directory(!file_names.empty() ? xtd::io::path::get_directory_name(file_names) : xtd::environment::get_folder_path(xtd::environment::special_folder::desktop));
-            dialog.file_name(xtd::io::path::get_file_name(file_names));
+            dialog.initial_directory(!old_path.empty() ? xtd::io::path::get_directory_name(old_path) : xtd::environment::get_folder_path(xtd::environment::special_folder::desktop));
+            dialog.file_name(xtd::io::path::get_file_name(old_path));
             dialog.filter(filter);
             if (dialog.show_dialog() == xtd::forms::dialog_result::ok) {
                 for (auto file : dialog.file_names()) {
-                    file_names += "\"" + file + "\" ";
-                    chosen.push_back(xtd::ustring::format(file_names));
+                    chosen.push_back(xtd::ustring::format(file));
                 }
             }
             else chosen.assign(1, "");
             return chosen;
         }
 
-        xtd::ustring load_file(xtd::ustring filter) {//input is like load_file
+        xtd::ustring load_file(xtd::ustring filter, xtd::ustring old_path) {//input is like load_files
             xtd::forms::open_file_dialog dialog;
-            xtd::ustring file_name;
-            dialog.initial_directory(!file_name.empty() ? xtd::io::path::get_directory_name(file_name) : xtd::environment::get_folder_path(xtd::environment::special_folder::desktop));
-            dialog.file_name(xtd::io::path::get_file_name(file_name));
+            //xtd::ustring file_name;
+            dialog.initial_directory(!old_path.empty() ? xtd::io::path::get_directory_name(old_path) : xtd::environment::get_folder_path(xtd::environment::special_folder::desktop));
+            dialog.file_name(xtd::io::path::get_file_name(old_path));
             dialog.filter(filter);
             if (dialog.show_sheet_dialog(*this) == xtd::forms::dialog_result::ok) {
-                file_name = dialog.file_name();
-                return xtd::ustring::format(file_name);
+                return xtd::ustring::format(dialog.file_name());
             }
             return "";
         }
@@ -150,6 +147,8 @@ namespace VidInjector9002 {
         }
 
         void doAppendMedia() {
+            removemedia.enabled(false);
+            appendmedia.enabled(false);
             if (rows < 27) {
                 for (int y = rows; y <= rows; y++)
                     for (int x = 0; x < columns; x++) {
@@ -177,9 +176,13 @@ namespace VidInjector9002 {
             bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
             bannerpreviewright.enabled(mode.selected_index() && bannerpreviewindex != rows - 1);
             indextxt.text(xtd::ustring::format("{}/{}", bannerpreviewindex + 1, rows));
+            removemedia.enabled(true);
+            appendmedia.enabled(true);
         }
 
         void doRemoveMedia() {
+            removemedia.enabled(false);
+            appendmedia.enabled(false);
             if (rows > 1) {
                 for (int x = columns; x > 0; x--) {
                     delete[] text_box_array.at(((rows - 1) * columns + x) - 1);//murder last row
@@ -202,6 +205,8 @@ namespace VidInjector9002 {
             bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
             bannerpreviewright.enabled(mode.selected_index() && bannerpreviewindex != rows - 1);
             indextxt.text(xtd::ustring::format("{}/{}", bannerpreviewindex + 1, rows));
+            removemedia.enabled(true);
+            appendmedia.enabled(true);
         }
 
         /*do this to your file data

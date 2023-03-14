@@ -82,7 +82,7 @@ form1::form1() {
     bannerbrowse.location({ parameters.width() - 597, bannerbox.location().y() - (bannerbrowse.height() / 2 - bannerbox.height() / 2) });//tether to bannerbox
     bannerbrowse.text(Browse);
     bannerbrowse.click += [&] {
-        bannerbox.text(load_file(xtd::ustring::format("{} {}{}{}", SupportedImage200x120, SupportedImageList, CGFXList, AllFilesList)));
+        bannerbox.text(load_file(xtd::ustring::format("{} {}{}{}", SupportedImage200x120, SupportedImageList, CGFXList, AllFilesList), bannerbox.text()));
     };
 
     bannererror.parent(parameters);
@@ -226,7 +226,7 @@ form1::form1() {
     iconbrowse.location({ iconbox.location().x() + iconbox.width() + 1, iconbox.location().y() - (iconbrowse.height() / 2 - iconbox.height() / 2) });//tether to iconbox
     iconbrowse.text(Browse);
     iconbrowse.click += [&] {
-        iconbox.text(load_file(xtd::ustring::format("{} {}{}", SupportedImage48x48, SupportedImageList)));
+        iconbox.text(load_file(xtd::ustring::format("{} {}{}", SupportedImage48x48, SupportedImageList), iconbox.text()));
     };
 
     iconpreview.parent(parameters);
@@ -513,7 +513,7 @@ form1::form1() {
     menubannerpreview.click += [&] {
         if (autoSaveParams && loaded) saveSettings();
         if (mode.selected_index()) {
-            xtd::ustring filepath = load_file(xtd::ustring::format("{} {}{}", SupportedImage200x120, SupportedImageList));
+            xtd::ustring filepath = load_file(xtd::ustring::format("{} {}{}", SupportedImage200x120, SupportedImageList), text_box_array.at(bannerpreviewindex * columns + 2)->text());
             if (filepath != "") text_box_array.at(bannerpreviewindex * columns + 2)->text(filepath);
             setMultiBannerPreview(bannerpreviewindex);
             //bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
@@ -575,7 +575,20 @@ form1::form1() {
     //moflexbrowse.location({ text_box_array.at((rows - 1) * columns + 1)->location().x() + (text_box_array.at((rows - 1) * columns + 1)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 1)->location().y() + text_box_array.at((rows - 1) * columns + 1)->height() });
     moflexbrowse.text(Browse);
     moflexbrowse.click += [&] {
-        text_box_array[(rows - 1) * columns + 1]->text(load_file(MoflexFilesList));
+        /*disabled because it doesnt put the full path for some reason, only file name and idk how to fix, if it's even possible for me to fix it
+        if (mode.selected_index()) {
+            std::vector<xtd::ustring> files = load_files(MoflexFilesList);
+            if (files.size() == 1 && !files.empty()) text_box_array[(rows - 1) * columns + 1]->text(files.at(0));
+            else {
+                for (size_t i = 0; i < files.size(); i++) {
+                    if (i > rows - 1) break;
+                    if (!files.at(i).empty()) text_box_array[i * columns + 1]->text(files.at(i));
+                }
+            }
+        }
+        else {*/
+        text_box_array[(rows - 1) * columns + 1]->text(load_file(MoflexFilesList, text_box_array[(rows - 1) * columns + 1]->text()));
+        //}//unmark this if you ever find a fix for it lol
     };
 
     multibannerbrowse.parent(mediabox);
@@ -584,8 +597,17 @@ form1::form1() {
     //multibannerbrowse.location({ text_box_array.at((rows - 1) * columns + 3)->location().x() + (text_box_array.at((rows - 1) * columns + 3)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 3)->location().y() + text_box_array.at((rows - 1) * columns + 3)->height() });
     multibannerbrowse.text(Browse);
     multibannerbrowse.click += [&] {
-        xtd::ustring filepath = load_file(xtd::ustring::format("{} {}{}", SupportedImage200x120, SupportedImageList));
-        if(filepath != "") text_box_array.at((rows - 1) * columns + 2)->text(filepath);
+        /*
+        std::vector<xtd::ustring> files = load_files(xtd::ustring::format("{} {}{}", SupportedImage200x120, SupportedImageList));
+        if (files.size() == 1 && !files.empty()) text_box_array[(rows - 1) * columns + 2]->text(files.at(0));
+        else {
+            for (size_t i = 0; i < files.size(); i++) {
+                if (i > rows - 1) break;
+                if (!files.at(i).empty()) text_box_array[i * columns + 2]->text(files.at(i));
+            }
+        }*/
+        xtd::ustring filepath = load_file(xtd::ustring::format("{} {}{}", SupportedImage200x120, SupportedImageList), text_box_array.at((rows - 1) * columns + 2)->text());
+        if (filepath != "") text_box_array.at((rows - 1) * columns + 2)->text(filepath);
         setMultiBannerPreview(rows - 1);
         bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
         bannerpreviewright.enabled(mode.selected_index() && bannerpreviewindex != rows - 1);
@@ -1318,7 +1340,7 @@ form1::form1() {
     loadbutt.size({ settings.width() - 10, savebutt.height() });
     loadbutt.location({ (settings.width() - loadbutt.width()) / 2, savebutt.location().y() + savebutt.height()});//tether to save button
     loadbutt.click += [&] {
-        parampath = load_file(ParamFilesList);
+        parampath = load_file(ParamFilesList, parampath);
         loadParameters();
     };
 
