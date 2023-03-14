@@ -587,7 +587,8 @@ form1::form1() {
             }
         }
         else {*/
-        text_box_array[(rows - 1) * columns + 1]->text(load_file(MoflexFilesList, text_box_array[(rows - 1) * columns + 1]->text()));
+        xtd::ustring filepath = load_file(MoflexFilesList, text_box_array[(rows - 1) * columns + 1]->text());
+        if(!filepath.empty()) text_box_array[(rows - 1) * columns + 1]->text(filepath);
         //}//unmark this if you ever find a fix for it lol
     };
 
@@ -607,7 +608,7 @@ form1::form1() {
             }
         }*/
         xtd::ustring filepath = load_file(xtd::ustring::format("{} {}{}", SupportedImage200x120, SupportedImageList), text_box_array.at((rows - 1) * columns + 2)->text());
-        if (filepath != "") text_box_array.at((rows - 1) * columns + 2)->text(filepath);
+        if (!filepath.empty()) text_box_array.at((rows - 1) * columns + 2)->text(filepath);
         setMultiBannerPreview(rows - 1);
         bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
         bannerpreviewright.enabled(mode.selected_index() && bannerpreviewindex != rows - 1);
