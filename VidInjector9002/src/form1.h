@@ -25,7 +25,8 @@ namespace VidInjector9002 {
         /// @brief The main entry point for the application.
         static void main();
 
-        std::vector<xtd::ustring> load_files(xtd::ustring filter, xtd::ustring old_path, xtd::ustring start_folder = xtd::environment::get_folder_path(xtd::environment::special_folder::desktop)) {//filter is like "All Image Files|*.bmp;*.gif;*.jpg;*.jpeg;*.png;*.tif;*.tiff;*.xpm|Bitmap Files|*.bmp|Gif Files|*.gif|Jpeg Files|*.jpg;*.jpeg|Png Files|*.png|Tiff Files|*.tif;*.tiff|xpm Files|*.xpm"
+        //filter is like "All Image Files|*.bmp;*.gif;*.jpg;*.jpeg;*.png;*.tif;*.tiff;*.xpm|Bitmap Files|*.bmp|Gif Files|*.gif|Jpeg Files|*.jpg;*.jpeg|Png Files|*.png|Tiff Files|*.tif;*.tiff|xpm Files|*.xpm"
+        std::vector<xtd::ustring> load_files(xtd::ustring filter, xtd::ustring old_path = "", xtd::ustring start_folder = xtd::environment::get_folder_path(xtd::environment::special_folder::desktop)) {
             xtd::forms::open_file_dialog dialog;
             std::vector<xtd::ustring> chosen;
             dialog.multiselect(true);
@@ -41,7 +42,7 @@ namespace VidInjector9002 {
             return chosen;
         }
 
-        xtd::ustring load_file(xtd::ustring filter, xtd::ustring old_path, xtd::ustring start_folder = xtd::environment::get_folder_path(xtd::environment::special_folder::desktop)) {//input is like load_files
+        xtd::ustring load_file(xtd::ustring filter, xtd::ustring old_path = "", xtd::ustring start_folder = xtd::environment::get_folder_path(xtd::environment::special_folder::desktop)) {//input is like load_files
             xtd::forms::open_file_dialog dialog;
             //xtd::ustring file_name;
             dialog.initial_directory(!old_path.empty() ? xtd::io::path::get_directory_name(old_path) : start_folder);
@@ -91,7 +92,7 @@ namespace VidInjector9002 {
 
         //arg is which row to get the path from
         void setMultiBannerPreview(int y) {
-            int w, h, ch = 0;
+            int w = 0, h = 0, ch = 0;
             int out_w = 200;
             int out_h = 120;
             int film_w = 264;
@@ -103,7 +104,7 @@ namespace VidInjector9002 {
                 const uint8_t FF = 0xFF;
 
                 if (w == out_w && h == out_h) memcpy(output_pixels, input_pixels, w * h * ch);
-                else stbir_resize_uint8(input_pixels, w, h, 0, output_pixels, out_w, out_h, 0, ch);//scale to 200x120 if needed
+                else resize_crop(input_pixels, w, h, output_pixels, out_w, out_h, ch);//scale to 200x120 if needed
                 free(input_pixels);
                 if (ch == 4) {//if png?
                     unsigned char* white_background = (unsigned char*)malloc(out_w * out_h * ch);
@@ -112,9 +113,8 @@ namespace VidInjector9002 {
                     free(white_background);
                     int newi = 3;
                     for (int i = 3; i < out_w * out_h * 4; i += 4) {
-                        output_3c[newi - 3] = output_pixels[i - 3];
-                        output_3c[newi - 2] = output_pixels[i - 2];
-                        output_3c[newi - 1] = output_pixels[i - 1];
+                        for (int ch = 3; ch > 0; ch--)
+                            output_3c[newi - ch] = output_pixels[i - ch];
                         newi += 3;
                     }
                 }
@@ -212,7 +212,7 @@ namespace VidInjector9002 {
         /*do this to your file data
         out: pointer to output data
         inpath: path of parameters file
-        query: variable to take from in e.g. STRING:VER
+        query: variable to take from inpath e.g. STRING:VER
         return: true if it's success, false if it's not found*/
         bool fileParse(xtd::ustring& out, xtd::ustring inpath, std::string query) {
             if (!std::filesystem::exists(inpath.c_str())) return false;
@@ -586,7 +586,7 @@ namespace VidInjector9002 {
             return good;
         }
 
-        void copyfile(std::string inpath, std::string outpath) {//also works with directories
+        void copyfile(std::string inpath, std::string outpath) {//also works with directories why is this here oh well
             if (std::filesystem::exists(outpath))
                 std::filesystem::remove_all(outpath);
             if (std::filesystem::exists(inpath))

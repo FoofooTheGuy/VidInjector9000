@@ -194,9 +194,8 @@ void layer_pixels(unsigned char* out, unsigned char* foreground, unsigned char* 
 	if (forechannels == 3) {//if it's 3 make it 4
 		int j = 0;
 		for (int i = 0; i < forewidth * foreheight * forechannels; i += forechannels) {
-			foreground_4c[j] = foreground[i];
-			foreground_4c[j + 1] = foreground[i + 1];
-			foreground_4c[j + 2] = foreground[i + 2];
+			for (int ch = 0; ch < 3; ch++)
+				foreground_4c[j + ch] = foreground[i + ch];
 			foreground_4c[j + 3] = 0xFF;
 			j += 4;
 		}
@@ -204,12 +203,12 @@ void layer_pixels(unsigned char* out, unsigned char* foreground, unsigned char* 
 	else if (forechannels == 4) {
 		memcpy(foreground_4c, foreground, forewidth * foreheight * forechannels);
 	}
+
 	if (backchannels == 3) {//if it's 3 make it 4
 		int j = 0;
 		for (int i = 0; i < backwidth * backheight * backchannels; i += backchannels) {
-			background_4c[j] = background[i];
-			background_4c[j + 1] = background[i + 1];
-			background_4c[j + 2] = background[i + 2];
+			for (int ch = 0; ch < 3; ch++)
+				background_4c[j + ch] = background[i + ch];
 			background_4c[j + 3] = 0xFF;
 			j += 4;
 		}
@@ -223,16 +222,13 @@ void layer_pixels(unsigned char* out, unsigned char* foreground, unsigned char* 
 			if (x >= x_offset && x < forewidth - x_offset && y >= y_offset && y < backheight + y_offset) {
 				//https://stackoverflow.com/a/64655571
 				uint8_t alpha_out = foreground_4c[(y * foreheight + x) * 4 + 3] + (background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + 3] * (FF - foreground_4c[(y * foreheight + x) * 4 + 3]) / FF);
-				out[(y * forewidth + x) * 4] = (foreground_4c[(y * forewidth + x) * 4] * foreground_4c[(y * forewidth + x) * 4 + 3] + background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4] * FF * (FF - foreground_4c[(y * forewidth + x) * 4 + 3]) / FF) / alpha_out;
-				out[(y * forewidth + x) * 4 + 1] = (foreground_4c[(y * forewidth + x) * 4 + 1] * foreground_4c[((y * forewidth + x) * 4) + 3] + background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + 1] * FF * (FF - foreground_4c[(y * forewidth + x) * 4 + 3]) / FF) / alpha_out;
-				out[(y * forewidth + x) * 4 + 2] = (foreground_4c[(y * forewidth + x) * 4 + 2] * foreground_4c[((y * forewidth + x) * 4) + 3] + background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + 2] * FF * (FF - foreground_4c[(y * forewidth + x) * 4 + 3]) / FF) / alpha_out;
+				for (int ch = 0; ch < 3; ch++)
+					out[(y * forewidth + x) * 4 + ch] = (foreground_4c[(y * forewidth + x) * 4 + ch] * foreground_4c[(y * forewidth + x) * 4 + 3] + background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + ch] * FF * (FF - foreground_4c[(y * forewidth + x) * 4 + 3]) / FF) / alpha_out;
 				out[(y * forewidth + x) * 4 + 3] = alpha_out;
 			}
 			else {
-				out[(y * forewidth + x) * 4] = foreground_4c[(y * forewidth + x) * 4];
-				out[(y * forewidth + x) * 4 + 1] = foreground_4c[(y * forewidth + x) * 4 + 1];
-				out[(y * forewidth + x) * 4 + 2] = foreground_4c[(y * forewidth + x) * 4 + 2];
-				out[(y * forewidth + x) * 4 + 3] = foreground_4c[(y * forewidth + x) * 4 + 3];
+				for (int ch = 0; ch < 4; ch++)
+					out[(y * forewidth + x) * 4 + ch] = foreground_4c[(y * forewidth + x) * 4 + ch];
 			}
 		}
 	free(foreground_4c);
@@ -278,4 +274,14 @@ void removeQuotes(std::string& str) {
 	for (const auto& c : str)
 		if (c != '\"') out += c;//pass through without the " if it has it there
 	str = out;
+}
+
+void crop_pixels(const unsigned char* input, int width, int height, int channels, unsigned char* output, int x_offset, int y_offset, int out_w, int out_h) {
+	for (int y = 0; y < height; y++)
+		for (int x = 0; x < width; x++) {
+			if (x >= x_offset && x < width - x_offset && y >= y_offset && y < height - y_offset) {
+				for (int ch = 0; ch < channels; ch++)
+					output[((y - y_offset) * out_w + (x - x_offset)) * channels + ch] = input[(y * width + x) * channels + ch];
+			}
+		}
 }

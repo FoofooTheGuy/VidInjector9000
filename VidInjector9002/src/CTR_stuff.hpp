@@ -7,6 +7,7 @@
 #include <random>
 
 #include "files.hpp"
+#include "formatting.hpp"
 #include "zip_file.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -21,6 +22,9 @@ void Generate_Files(std::string dir, bool Multi);
 bool TIDisValid(unsigned long TID);
 
 unsigned long RandomTID();
+
+//resize image and maintain aspect ratio and also crop it
+void resize_crop(const unsigned char* input_pixels, int input_w, int input_h, unsigned char* output_pixels, int output_w, int output_h, int num_channels);
 
 bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader);
 //note: text has to be utf16

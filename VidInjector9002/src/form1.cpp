@@ -17,6 +17,7 @@ form1::form1() {
             //xtd::forms::message_box::show(*this, xtd::ustring::format("found\n{}, {}, {}, {}", v, argv.at(0), parampath, find), FormText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::warning);
         }
     }
+    argv.clear();
 
     text(FormText);
     client_size({ 1030, 885 });
@@ -129,7 +130,7 @@ form1::form1() {
 
     bannerbox.text_changed += [&] {
         if (autoSaveParams && loaded) saveSettings();
-        int w, h, ch = 0;
+        int w = 0, h = 0, ch = 0;
         int out_w = 200;
         int out_h = 120;
         int film_w = 264;
@@ -161,7 +162,7 @@ form1::form1() {
                 const uint8_t FF = 0xFF;
 
                 if (w == out_w && h == out_h) memcpy(output_pixels, input_pixels, w * h * ch);
-                else stbir_resize_uint8(input_pixels, w, h, 0, output_pixels, out_w, out_h, 0, ch);//scale to 200x120 if needed
+                else resize_crop(input_pixels, w, h, output_pixels, out_w, out_h, ch);//scale to 200x120 if needed
                 free(input_pixels);
                 if (ch == 4) {//if png?
                     unsigned char* white_background = (unsigned char*)malloc(out_w * out_h * ch);
@@ -170,9 +171,8 @@ form1::form1() {
                     free(white_background);
                     int newi = 3;
                     for (int i = 3; i < out_w * out_h * 4; i += 4) {
-                        output_3c[newi - 3] = output_pixels[i - 3];
-                        output_3c[newi - 2] = output_pixels[i - 2];
-                        output_3c[newi - 1] = output_pixels[i - 1];
+                        for (int ch = 3; ch > 0; ch--)
+                            output_3c[newi - ch] = output_pixels[i - ch];
                         newi += 3;
                     }
                 }
@@ -244,7 +244,7 @@ form1::form1() {
 
     iconbox.text_changed += [&] {
         if (autoSaveParams && loaded) saveSettings();
-        int w, h, ch = 0;
+        int w = 0, h = 0, ch = 0;
         int largeWH = 48;
         if (std::filesystem::exists(iconbox.text().c_str()) && stbi_info(iconbox.text().c_str(), &w, &h, &ch)) {
             unsigned char* input_pixels = stbi_load(iconbox.text().c_str(), &w, &h, &ch, 0);
@@ -254,7 +254,7 @@ form1::form1() {
             const uint8_t FF = 0xFF;
 
             if (w == largeWH && h == largeWH) memcpy(output_pixels, input_pixels, w * h * ch);
-            else stbir_resize_uint8(input_pixels, w, h, 0, output_pixels, largeWH, largeWH, 0, ch);//scale to 200x120 if needed
+            else resize_crop(input_pixels, w, h, output_pixels, largeWH, largeWH, ch);//scale to 48x48 if needed
 
             if (ch == 4) {//if png?
                 unsigned char* white_background = (unsigned char*)malloc(largeWH * largeWH * ch);
@@ -263,9 +263,8 @@ form1::form1() {
                 free(white_background);
                 int newi = 3;
                 for (int i = 3; i < largeWH * largeWH * 4; i += 4) {
-                    large_3c[newi - 3] = output_pixels[i - 3];
-                    large_3c[newi - 2] = output_pixels[i - 2];
-                    large_3c[newi - 1] = output_pixels[i - 1];
+                    for (int ch = 3; ch > 0; ch--)
+                        large_3c[newi - ch] = output_pixels[i - ch];
                     newi += 3;
                 }
             }

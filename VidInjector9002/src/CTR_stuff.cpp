@@ -53,6 +53,38 @@ unsigned long RandomTID() {
     return TID;
 }
 
+void resize_crop(const unsigned char* input_pixels, int input_w, int input_h, unsigned char* output_pixels, int output_w, int output_h, int num_channels) {//this has to be here because of stbir_resize_uint8
+	int width, height;
+	float aspect_ratio = static_cast<float>(input_w) / static_cast<float>(input_h);
+
+	//"inspired" by https://github.com/endlessm/chromium-browser/blob/aa8c819d5ad2fcb3854a688a0401975eca721f43/ui/gfx/favicon_size.cc#L13
+	if (input_w > input_h) {//panoramic
+		height = output_h;
+		width = static_cast<int>(aspect_ratio * height);
+	}
+	else if (input_w < input_h) {//portrait
+		height = static_cast<int>(input_h / (static_cast<float>(input_w) / static_cast<float>(output_w)));
+		width = output_w;
+	}
+	else {//square
+		width = (output_w >= output_h) ? output_w : output_h;
+		height = (output_w >= output_h) ? output_w : output_h;
+	}
+	if (width < output_w) {
+		height = static_cast<int>(input_h / (static_cast<float>(input_w) / static_cast<float>(output_w)));
+		width = output_w;
+	}
+	if (height < output_h) {
+		height = output_h;
+		width = static_cast<int>(aspect_ratio * height);
+	}
+
+	unsigned char* scaled = (unsigned char*)malloc(width * height * num_channels);
+	stbir_resize_uint8(input_pixels, input_w, input_h, 0, scaled, width, height, 0, num_channels);//scale it down
+	crop_pixels(scaled, width, height, num_channels, output_pixels, (width - output_w) / 2, (height - output_h) / 2, output_w, output_h);
+	free(scaled);
+}
+
 void image_data_to_tiles(void* out, void* img, uint32_t width, uint32_t height) {//from bannertool, edited for rgb565 only
 	for (uint32_t y = 0; y < height; y++) {
 		for (uint32_t x = 0; x < width; x++) {
@@ -93,7 +125,7 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 	input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
 	output_pixels = (unsigned char*)malloc(out_w * out_h * ch);
 	if (w == out_w && h == out_h) memcpy(output_pixels, input_pixels, w * h * ch);
-	else stbir_resize_uint8(input_pixels, w, h, 0, output_pixels, out_w, out_h, 0, ch);//scale to 200x120 if needed
+	else resize_crop(input_pixels, w, h, output_pixels, out_w, out_h, ch);//scale to 200x120 if needed
 	stbi_image_free(input_pixels);
 
 	if (ch == 4) {//if png?
@@ -162,7 +194,7 @@ bool convertToIcon(std::string input, std::string output, std::string shortname,
 	input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
 	output_pixels = (unsigned char*)malloc(largeLW * largeLW * ch);
 	if (w == largeLW && h == largeLW) memcpy(output_pixels, input_pixels, w * h * ch);
-	else stbir_resize_uint8(input_pixels, w, h, 0, output_pixels, largeLW, largeLW, 0, ch);//scale to 48x48 if needed
+	else resize_crop(input_pixels, w, h, output_pixels, largeLW, largeLW, ch);//scale to 48x48 if needed
 
 	large_3c = (unsigned char*)malloc(largeLW * largeLW * 3);
 	if (ch == 4) {//if png?
