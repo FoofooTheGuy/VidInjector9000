@@ -279,7 +279,7 @@ void removeQuotes(std::string& str) {
 void crop_pixels(const unsigned char* input, int width, int height, int channels, unsigned char* output, int x_offset, int y_offset, int out_w, int out_h) {
 	for (int y = 0; y < height; y++)
 		for (int x = 0; x < width; x++) {
-			if (x >= x_offset && x < width - x_offset && y >= y_offset && y < height - y_offset) {
+			if (x >= x_offset && x < width - x_offset && y >= y_offset && y < height - y_offset && (x - x_offset) < out_w && (y - y_offset) < out_h) {
 				for (int ch = 0; ch < channels; ch++)
 					output[((y - y_offset) * out_w + (x - x_offset)) * channels + ch] = input[(y * width + x) * channels + ch];
 			}
