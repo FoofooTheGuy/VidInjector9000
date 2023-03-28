@@ -128,29 +128,43 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 	else resize_crop(input_pixels, w, h, output_pixels, out_w, out_h, ch);//scale to 200x120 if needed
 	stbi_image_free(input_pixels);
 
-	if (ch == 4) {//if png?
-		output_3c = (unsigned char*)malloc(out_w * out_h * 3);
-		for (int i = 3; i < out_w * out_h * ch; i += 4) {//make background all white
-			//https://stackoverflow.com/a/64655571
-			uint8_t alpha_out = output_pixels[i] + (FF * (FF - output_pixels[i]) / FF);
-			output_pixels[i - 1] = (output_pixels[i - 1] * output_pixels[i] + FF * FF * (FF - output_pixels[i]) / FF) / alpha_out;
-			output_pixels[i - 2] = (output_pixels[i - 2] * output_pixels[i] + FF * FF * (FF - output_pixels[i]) / FF) / alpha_out;
-			output_pixels[i - 3] = (output_pixels[i - 3] * output_pixels[i] + FF * FF * (FF - output_pixels[i]) / FF) / alpha_out;
-			output_pixels[i] = alpha_out;
-		}
-		int newi = 3;
-		for (int i = 3; i < out_w * out_h * 4; i += 4) {//remove alpha channel
-			output_3c[newi - 3] = output_pixels[i - 3];
-			output_3c[newi - 2] = output_pixels[i - 2];
-			output_3c[newi - 1] = output_pixels[i - 1];
+	output_3c = (unsigned char*)malloc(out_w * out_h * 3);
+	if (ch == 4) {//rgba
+		unsigned char* white_background = (unsigned char*)malloc(out_w * out_h * 4);
+		memset(white_background, FF, out_w * out_h * 4);
+		layer_pixels(output_pixels, output_pixels, white_background, out_w, out_h, ch, out_w, out_h, 4, 0, 0);
+		free(white_background);
+		int newi = 0;
+		for (int i = 0; i < out_w * out_h * ch; i += ch) {
+			for (int ch = 0; ch < 3; ch++)
+				output_3c[newi + ch] = output_pixels[i + ch];
 			newi += 3;
 		}
-		free(output_pixels);
 	}
-	if (ch == 3) {
-		output_3c = (unsigned char*)malloc(out_w * out_h * 3);
-		memcpy(output_3c, output_pixels, out_w * out_h * 3);
-		free(output_pixels);
+	else if (ch == 3) {//rgb
+		memcpy(output_3c, output_pixels, out_w * out_h * ch);
+	}
+	else if (ch == 2) {//grayscale a
+		unsigned char* white_background = (unsigned char*)malloc(out_w * out_h * ch);
+		unsigned char* output_4c = (unsigned char*)malloc(out_w * out_h * 4);
+		memset(white_background, FF, out_w * out_h * ch);
+		layer_pixels(output_4c, output_pixels, white_background, out_w, out_h, ch, out_w, out_h, ch, 0, 0);
+		free(white_background);
+		int newi = 0;
+		for (int i = 0; i < out_w * out_h * 4; i += 4) {
+			for (int ch = 0; ch < 3; ch++)
+				output_3c[newi + ch] = output_4c[i + ch];
+			newi += 3;
+		}
+		free(output_4c);
+	}
+	else if (ch == 1) {//grayscale
+		int ch1 = 0;
+		for (int i = 0; i < out_w * out_h * 3; i += 3) {
+			for (int ch = 0; ch < 3; ch++)
+				output_3c[i + ch] = output_pixels[ch1];
+			ch1++;
+		}
 	}
 
 	//layer 200x120 image on a 256x128 image
@@ -197,27 +211,42 @@ bool convertToIcon(std::string input, std::string output, std::string shortname,
 	else resize_crop(input_pixels, w, h, output_pixels, largeLW, largeLW, ch);//scale to 48x48 if needed
 
 	large_3c = (unsigned char*)malloc(largeLW * largeLW * 3);
-	if (ch == 4) {//if png?
-		for (int i = 3; i < largeLW * largeLW * ch; i += 4) {//make background all white
-			//https://stackoverflow.com/a/64655571
-			uint8_t alpha_out = output_pixels[i] + (FF * (FF - output_pixels[i]) / FF);
-			output_pixels[i - 1] = ((output_pixels[i - 1] * output_pixels[i] + FF * FF * (FF - output_pixels[i]) / FF) / alpha_out) & FF;//do & FF so that the compiler isnt like "uh what if there is a number larger than unsigned char euhh"
-			output_pixels[i - 2] = ((output_pixels[i - 2] * output_pixels[i] + FF * FF * (FF - output_pixels[i]) / FF) / alpha_out) & FF;
-			output_pixels[i - 3] = ((output_pixels[i - 3] * output_pixels[i] + FF * FF * (FF - output_pixels[i]) / FF) / alpha_out) & FF;
-			output_pixels[i] = alpha_out;
-		}
-		int newi = 3;
-		for (int i = 3; i < largeLW * largeLW * 4; i += 4) {
-			large_3c[newi - 3] = output_pixels[i - 3];
-			large_3c[newi - 2] = output_pixels[i - 2];
-			large_3c[newi - 1] = output_pixels[i - 1];
+	if (ch == 4) {//rgba
+		unsigned char* white_background = (unsigned char*)malloc(largeLW * largeLW * 4);
+		memset(white_background, FF, largeLW * largeLW * 4);
+		layer_pixels(output_pixels, output_pixels, white_background, largeLW, largeLW, ch, largeLW, largeLW, 4, 0, 0);
+		free(white_background);
+		int newi = 0;
+		for (int i = 0; i < largeLW * largeLW * ch; i += ch) {
+			for (int ch = 0; ch < 3; ch++)
+				large_3c[newi + ch] = output_pixels[i + ch];
 			newi += 3;
 		}
-		free(output_pixels);
 	}
-	if (ch == 3) {
-		for (int i = 0; i < largeLW * largeLW * 3; i++) large_3c[i] = output_pixels[i];
-		free(output_pixels);
+	else if (ch == 3) {//rgb
+		memcpy(large_3c, output_pixels, largeLW * largeLW * ch);
+	}
+	else if (ch == 2) {//grayscale a
+		unsigned char* white_background = (unsigned char*)malloc(largeLW * largeLW * ch);
+		unsigned char* output_4c = (unsigned char*)malloc(largeLW * largeLW * 4);
+		memset(white_background, FF, largeLW * largeLW * ch);
+		layer_pixels(output_4c, output_pixels, white_background, largeLW, largeLW, ch, largeLW, largeLW, ch, 0, 0);
+		free(white_background);
+		int newi = 0;
+		for (int i = 0; i < largeLW * largeLW * 4; i += 4) {
+			for (int ch = 0; ch < 3; ch++)
+				large_3c[newi + ch] = output_4c[i + ch];
+			newi += 3;
+		}
+		free(output_4c);
+	}
+	else if (ch == 1) {//grayscale
+		int ch1 = 0;
+		for (int i = 0; i < largeLW * largeLW * 3; i += 3) {
+			for (int ch = 0; ch < 3; ch++)
+				large_3c[i + ch] = output_pixels[ch1];
+			ch1++;
+		}
 	}
 
 	small_3c = (unsigned char*)malloc(smallLW * smallLW * 3);

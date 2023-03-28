@@ -164,21 +164,44 @@ form1::form1() {
                 if (w == out_w && h == out_h) memcpy(output_pixels, input_pixels, w * h * ch);
                 else resize_crop(input_pixels, w, h, output_pixels, out_w, out_h, ch);//scale to 200x120 if needed
                 free(input_pixels);
-                if (ch == 4) {//if png?
-                    unsigned char* white_background = (unsigned char*)malloc(out_w * out_h * ch);
-                    memset(white_background, FF, out_w * out_h * ch);
-                    layer_pixels(output_pixels, output_pixels, white_background, out_w, out_h, ch, out_w, out_h, ch, 0, 0);
+                if (ch == 4) {//rgba
+                    unsigned char* white_background = (unsigned char*)malloc(out_w * out_h * 4);
+                    memset(white_background, FF, out_w * out_h * 4);
+                    layer_pixels(output_pixels, output_pixels, white_background, out_w, out_h, ch, out_w, out_h, 4, 0, 0);
                     free(white_background);
-                    int newi = 3;
-                    for (int i = 3; i < out_w * out_h * 4; i += 4) {
-                        for (int ch = 3; ch > 0; ch--)
-                            output_3c[newi - ch] = output_pixels[i - ch];
+                    int newi = 0;
+                    for (int i = 0; i < out_w * out_h * ch; i += ch) {
+                        for (int ch = 0; ch < 3; ch++)
+                            output_3c[newi + ch] = output_pixels[i + ch];
                         newi += 3;
                     }
                 }
-                if (ch == 3) {
+                else if (ch == 3) {//rgb
                     memcpy(output_3c, output_pixels, out_w * out_h * ch);
                 }
+                else if (ch == 2) {//grayscale a
+                    unsigned char* white_background = (unsigned char*)malloc(out_w * out_h * ch);
+                    unsigned char* output_4c = (unsigned char*)malloc(out_w * out_h * 4);
+                    memset(white_background, FF, out_w * out_h * ch);
+                    layer_pixels(output_4c, output_pixels, white_background, out_w, out_h, ch, out_w, out_h, ch, 0, 0);
+                    free(white_background);
+                    int newi = 0;
+                    for (int i = 0; i < out_w * out_h * 4; i += 4) {
+                        for (int ch = 0; ch < 3; ch++)
+                            output_3c[newi + ch] = output_4c[i + ch];
+                        newi += 3;
+                    }
+                    free(output_4c);
+                }
+                else if (ch == 1) {//grayscale
+                    int ch1 = 0;
+                    for (int i = 0; i < out_w * out_h * 3; i += 3) {
+                        for (int ch = 0; ch < 3; ch++)
+                            output_3c[i + ch] = output_pixels[ch1];
+                        ch1++;
+                    }
+                }
+
                 free(output_pixels);
                 unsigned char* output_film = (unsigned char*)malloc(film_w * film_h * 4);
                 //memcpy(output_film, film_overlay, film_w * film_h * 4);
@@ -256,20 +279,42 @@ form1::form1() {
             if (w == largeWH && h == largeWH) memcpy(output_pixels, input_pixels, w * h * ch);
             else resize_crop(input_pixels, w, h, output_pixels, largeWH, largeWH, ch);//scale to 48x48 if needed
 
-            if (ch == 4) {//if png?
-                unsigned char* white_background = (unsigned char*)malloc(largeWH * largeWH * ch);
-                memset(white_background, FF, largeWH * largeWH * ch);
+            if (ch == 4) {//rgba
+                unsigned char* white_background = (unsigned char*)malloc(largeWH * largeWH * 4);
+                memset(white_background, FF, largeWH * largeWH * 4);
                 layer_pixels(output_pixels, output_pixels, white_background, largeWH, largeWH, ch, largeWH, largeWH, 4, 0, 0);
                 free(white_background);
-                int newi = 3;
-                for (int i = 3; i < largeWH * largeWH * 4; i += 4) {
-                    for (int ch = 3; ch > 0; ch--)
-                        large_3c[newi - ch] = output_pixels[i - ch];
+                int newi = 0;
+                for (int i = 0; i < largeWH * largeWH * ch; i += ch) {
+                    for (int ch = 0; ch < 3; ch++)
+                        large_3c[newi + ch] = output_pixels[i + ch];
                     newi += 3;
                 }
             }
-            if (ch == 3) {
+            else if (ch == 3) {//rgb
                 memcpy(large_3c, output_pixels, largeWH * largeWH * ch);
+            }
+            else if (ch == 2) {//grayscale a
+                unsigned char* white_background = (unsigned char*)malloc(largeWH * largeWH * ch);
+                unsigned char* output_4c = (unsigned char*)malloc(largeWH * largeWH * 4);
+                memset(white_background, FF, largeWH * largeWH * ch);
+                layer_pixels(output_4c, output_pixels, white_background, largeWH, largeWH, ch, largeWH, largeWH, ch, 0, 0);
+                free(white_background);
+                int newi = 0;
+                for (int i = 0; i < largeWH * largeWH * 4; i += 4) {
+                    for (int ch = 0; ch < 3; ch++)
+                        large_3c[newi + ch] = output_4c[i + ch];
+                    newi += 3;
+                }
+                free(output_4c);
+            }
+            else if (ch == 1) {//grayscale
+                int ch1 = 0;
+                for (int i = 0; i < largeWH * largeWH * 3; i += 3) {
+                    for (int ch = 0; ch < 3; ch++)
+                        large_3c[i + ch] = output_pixels[ch1];
+                    ch1++;
+                }
             }
             iconpreview.image(pixels_to_image(large_3c, largeWH, largeWH, 3));
             stbi_image_free(input_pixels);
@@ -702,7 +747,7 @@ form1::form1() {
 
     randomizeTitleID.parent(finalize);
     randomizeTitleID.size({ 38, 38 });
-    randomizeTitleID.image(LightDark.checked() ? pixels_to_image(invert_pixels(randomize_array, 30, 27, 4), 30, 27, 4) : pixels_to_image(randomize_array, 30, 27, 4));//put shuffle icon here
+    randomizeTitleID.image(LightDark.checked() ? pixels_to_image(invert_pixels(randomize_array, 30, 27, 4), 30, 27, 2) : pixels_to_image(randomize_array, 30, 27, 2));//put shuffle icon here
     randomizeTitleID.click += [&] {
         titleIDbox.text(xtd::ustring::format("{:X5}", RandomTID()));
         titleIDbox.select(titleIDbox.text().size(), 0);//put beam at the end
@@ -774,7 +819,7 @@ form1::form1() {
 
     randomizeProductCode.parent(finalize);
     randomizeProductCode.size({ 38, 38 });
-    randomizeProductCode.image(pixels_to_image(randomize_array, 30, 27, 4));//since invert image permanantly changed the picture, we can just do this now
+    randomizeProductCode.image(pixels_to_image(randomize_array, 30, 27, 2));//since invert image permanantly changed the picture, we can just do this now
     randomizeProductCode.click += [&] {
         std::string set = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         std::string outText = "";

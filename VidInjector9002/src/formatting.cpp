@@ -191,25 +191,63 @@ void layer_pixels(unsigned char* out, unsigned char* foreground, unsigned char* 
 	unsigned char* foreground_4c = (unsigned char*)malloc(forewidth * foreheight * 4);
 	unsigned char* background_4c = (unsigned char*)malloc(backwidth * backheight * 4);
 	const uint8_t FF = 0xFF;
-	if (forechannels == 3) {//if it's 3 make it 4
+
+	//convert the stuff to rgba
+	if (forechannels == 1) {//grayscale
+		int j = 0;
+		for (int i = 0; i < forewidth * foreheight; i++) {
+			for (int ch = 0; ch < 3; ch++)
+				foreground_4c[j + ch] = foreground[i];
+			foreground_4c[j + 3] = FF;
+			j += 4;
+		}
+	}
+	else if (forechannels == 2) {//grayscale alpha
+		int j = 0;
+		for (int i = 0; i < forewidth * foreheight * forechannels; i += forechannels) {
+			for (int ch = 0; ch < 3; ch++)
+				foreground_4c[j + ch] = foreground[i];
+			foreground_4c[j + 3] = foreground[i + 1];
+			j += 4;
+		}
+	}
+	else if (forechannels == 3) {//rgb
 		int j = 0;
 		for (int i = 0; i < forewidth * foreheight * forechannels; i += forechannels) {
 			for (int ch = 0; ch < 3; ch++)
 				foreground_4c[j + ch] = foreground[i + ch];
-			foreground_4c[j + 3] = 0xFF;
+			foreground_4c[j + 3] = FF;
 			j += 4;
 		}
 	}
-	else if (forechannels == 4) {
+	else if (forechannels == 4) {//rgba
 		memcpy(foreground_4c, foreground, forewidth * foreheight * forechannels);
 	}
 
-	if (backchannels == 3) {//if it's 3 make it 4
+	if (backchannels == 1) {//grayscale
+		int j = 0;
+		for (int i = 0; i < backwidth * backheight; i++) {
+			for (int ch = 0; ch < 3; ch++)
+				background_4c[j + ch] = background[i];
+			background_4c[j + 3] = FF;
+			j += 4;
+		}
+	}
+	else if (backchannels == 2) {//grayscale alpha
+		int j = 0;
+		for (int i = 0; i < backwidth * backheight * backchannels; i += backchannels) {
+			for (int ch = 0; ch < 3; ch++)
+				background_4c[j + ch] = background[i];
+			background_4c[j + 3] = background[i + 1];
+			j += 4;
+		}
+	}
+	else if (backchannels == 3) {//rgb
 		int j = 0;
 		for (int i = 0; i < backwidth * backheight * backchannels; i += backchannels) {
 			for (int ch = 0; ch < 3; ch++)
 				background_4c[j + ch] = background[i + ch];
-			background_4c[j + 3] = 0xFF;
+			background_4c[j + 3] = FF;
 			j += 4;
 		}
 	}
@@ -236,10 +274,21 @@ void layer_pixels(unsigned char* out, unsigned char* foreground, unsigned char* 
 }
 
 unsigned char* invert_pixels(unsigned char* input, int width, int height, int channels) {
-	for (int i = 0; i < width * height * channels; i += channels) {
-		input[i] = 0xFF - input[i];//r
-		input[i+1] = 0xFF - input[i+1];//g
-		input[i+2] = 0xFF - input[i+2];//b
+	if (channels == 4 || channels == 3) {
+		for (int i = 0; i < width * height * channels; i += channels) {
+			for (int j = 0; j < 3; j++) 
+				input[i + j] = 0xFF - input[i + j];
+		}
+	}
+	if (channels == 2) {
+		for (int i = 0; i < width * height * channels; i += channels) {
+			input[i] = 0xFF - input[i];
+		}
+	}
+	if (channels == 1) {
+		for (int i = 0; i < width * height; i++) {//faster than multiplying by 1 and += 1 if i were to combine this with the one above?
+			input[i] = 0xFF - input[i];
+		}
 	}
 	return input;
 }

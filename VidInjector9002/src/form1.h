@@ -79,14 +79,27 @@ namespace VidInjector9002 {
 
         xtd::drawing::bitmap pixels_to_image(unsigned char* pixels, int width, int height, int channels) {
             auto texture = xtd::drawing::bitmap{ width, height, };
-            for (int y = 0; y < height; y++)
-                for (int x = 0; x < width; x++) {
-                    if (channels == 4) {
-                        texture.set_pixel(x, y, xtd::drawing::color::from_argb(pixels[(y* width + x) * channels + 3], pixels[(y * width + x) * channels], pixels[(y * width + x) * channels + 1], pixels[(y * width + x) * channels + 2]));//argb
-                    }
-                    else if(channels == 3)
+            if (channels == 4) {
+                for (int y = 0; y < height; y++)
+                    for (int x = 0; x < width; x++)
+                        texture.set_pixel(x, y, xtd::drawing::color::from_argb(pixels[(y * width + x) * channels + 3], pixels[(y * width + x) * channels], pixels[(y * width + x) * channels + 1], pixels[(y * width + x) * channels + 2]));//argb
+            }
+            else if (channels == 3) {
+                for (int y = 0; y < height; y++)
+                    for (int x = 0; x < width; x++)
                         texture.set_pixel(x, y, xtd::drawing::color::from_argb(pixels[(y * width + x) * channels], pixels[(y * width + x) * channels + 1], pixels[(y * width + x) * channels + 2]));//rgb
-                }
+            }
+            else if (channels == 2) {
+                for (int y = 0; y < height; y++)
+                    for (int x = 0; x < width; x++)
+                        texture.set_pixel(x, y, xtd::drawing::color::from_argb(pixels[(y * width + x) * channels + 1], pixels[(y * width + x) * channels], pixels[(y * width + x) * channels], pixels[(y * width + x) * channels]));//a grayscale
+            }
+            else if (channels == 1) {
+                for (int y = 0; y < height; y++)
+                    for (int x = 0; x < width; x++)
+                        texture.set_pixel(x, y, xtd::drawing::color::from_argb(pixels[y * width + x], pixels[y * width + x], pixels[y * width + x]));//grayscale
+
+            }
             return texture;
         }
 
@@ -106,20 +119,42 @@ namespace VidInjector9002 {
                 if (w == out_w && h == out_h) memcpy(output_pixels, input_pixels, w * h * ch);
                 else resize_crop(input_pixels, w, h, output_pixels, out_w, out_h, ch);//scale to 200x120 if needed
                 free(input_pixels);
-                if (ch == 4) {//if png?
-                    unsigned char* white_background = (unsigned char*)malloc(out_w * out_h * ch);
-                    memset(white_background, FF, out_w * out_h * ch);
-                    layer_pixels(output_pixels, output_pixels, white_background, out_w, out_h, ch, out_w, out_h, ch, 0, 0);
+                if (ch == 4) {//rgba
+                    unsigned char* white_background = (unsigned char*)malloc(out_w * out_h * 4);
+                    memset(white_background, FF, out_w * out_h * 4);
+                    layer_pixels(output_pixels, output_pixels, white_background, out_w, out_h, ch, out_w, out_h, 4, 0, 0);
                     free(white_background);
-                    int newi = 3;
-                    for (int i = 3; i < out_w * out_h * 4; i += 4) {
-                        for (int ch = 3; ch > 0; ch--)
-                            output_3c[newi - ch] = output_pixels[i - ch];
+                    int newi = 0;
+                    for (int i = 0; i < out_w * out_h * ch; i += ch) {
+                        for (int ch = 0; ch < 3; ch++)
+                            output_3c[newi + ch] = output_pixels[i + ch];
                         newi += 3;
                     }
                 }
-                if (ch == 3) {
+                else if (ch == 3) {//rgb
                     memcpy(output_3c, output_pixels, out_w * out_h * ch);
+                }
+                else if (ch == 2) {//ga
+                    unsigned char* white_background = (unsigned char*)malloc(out_w * out_h * ch);
+                    unsigned char* output_4c = (unsigned char*)malloc(out_w * out_h * 4);
+                    memset(white_background, FF, out_w * out_h * ch);
+                    layer_pixels(output_4c, output_pixels, white_background, out_w, out_h, ch, out_w, out_h, ch, 0, 0);
+                    free(white_background);
+                    int newi = 0;
+                    for (int i = 0; i < out_w * out_h * 4; i += 4) {
+                        for (int ch = 0; ch < 3; ch++)
+                            output_3c[newi + ch] = output_4c[i + ch];
+                        newi += 3;
+                    }
+                    free(output_4c);
+                }
+                else if (ch == 1) {//g
+                    int ch1 = 0;
+                    for (int i = 0; i < out_w * out_h * 3; i += 3) {
+                        for (int ch = 0; ch < 3; ch++)
+                            output_3c[i + ch] = output_pixels[ch1];
+                        ch1++;
+                    }
                 }
                 free(output_pixels);
                 unsigned char* output_film = (unsigned char*)malloc(film_w * film_h * 4);
