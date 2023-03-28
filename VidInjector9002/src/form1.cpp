@@ -747,7 +747,7 @@ form1::form1() {
 
     randomizeTitleID.parent(finalize);
     randomizeTitleID.size({ 38, 38 });
-    randomizeTitleID.image(LightDark.checked() ? pixels_to_image(invert_pixels(randomize_array, 30, 27, 4), 30, 27, 2) : pixels_to_image(randomize_array, 30, 27, 2));//put shuffle icon here
+    randomizeTitleID.image(LightDark.checked() ? pixels_to_image(invert_pixels(randomize_array, 30, 27, 2), 30, 27, 2) : pixels_to_image(randomize_array, 30, 27, 2));//put shuffle icon here
     randomizeTitleID.click += [&] {
         titleIDbox.text(xtd::ustring::format("{:X5}", RandomTID()));
         titleIDbox.select(titleIDbox.text().size(), 0);//put beam at the end
