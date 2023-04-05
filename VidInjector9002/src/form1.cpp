@@ -253,9 +253,10 @@ form1::form1() {
     };
 
     iconpreview.parent(parameters);
+    iconpreview.cursor(xtd::forms::cursors::hand());
     iconpreview.border_style(xtd::forms::border_style::fixed_3d);
     iconpreview.size({ 52, 52 });
-    iconpreview.image(empty(48, 48));
+    SetIconPreview();
     //iconpreview.location({ iconbrowse.location().x() + iconbrowse.width() + 2, iconbrowse.location().y() + 2 });
 
     iconerror.parent(parameters);
@@ -267,65 +268,14 @@ form1::form1() {
 
     iconbox.text_changed += [&] {
         if (autoSaveParams && loaded) saveSettings();
-        int w = 0, h = 0, ch = 0;
-        int largeWH = 48;
-        if (std::filesystem::exists(iconbox.text().c_str()) && stbi_info(iconbox.text().c_str(), &w, &h, &ch)) {
-            unsigned char* input_pixels = stbi_load(iconbox.text().c_str(), &w, &h, &ch, 0);
-            unsigned char* output_pixels = (unsigned char*)malloc(largeWH * largeWH * ch);
-            unsigned char* large_3c = (unsigned char*)malloc(largeWH * largeWH * 3);
-            //const int smallLW = 24;
-            const uint8_t FF = 0xFF;
+        SetIconPreview();
+    };
 
-            if (w == largeWH && h == largeWH) memcpy(output_pixels, input_pixels, w * h * ch);
-            else resize_crop(input_pixels, w, h, output_pixels, largeWH, largeWH, ch);//scale to 48x48 if needed
-
-            if (ch == 4) {//rgba
-                unsigned char* white_background = (unsigned char*)malloc(largeWH * largeWH * 4);
-                memset(white_background, FF, largeWH * largeWH * 4);
-                layer_pixels(output_pixels, output_pixels, white_background, largeWH, largeWH, ch, largeWH, largeWH, 4, 0, 0);
-                free(white_background);
-                int newi = 0;
-                for (int i = 0; i < largeWH * largeWH * ch; i += ch) {
-                    for (int ch = 0; ch < 3; ch++)
-                        large_3c[newi + ch] = output_pixels[i + ch];
-                    newi += 3;
-                }
-            }
-            else if (ch == 3) {//rgb
-                memcpy(large_3c, output_pixels, largeWH * largeWH * ch);
-            }
-            else if (ch == 2) {//grayscale a
-                unsigned char* white_background = (unsigned char*)malloc(largeWH * largeWH * ch);
-                unsigned char* output_4c = (unsigned char*)malloc(largeWH * largeWH * 4);
-                memset(white_background, FF, largeWH * largeWH * ch);
-                layer_pixels(output_4c, output_pixels, white_background, largeWH, largeWH, ch, largeWH, largeWH, ch, 0, 0);
-                free(white_background);
-                int newi = 0;
-                for (int i = 0; i < largeWH * largeWH * 4; i += 4) {
-                    for (int ch = 0; ch < 3; ch++)
-                        large_3c[newi + ch] = output_4c[i + ch];
-                    newi += 3;
-                }
-                free(output_4c);
-            }
-            else if (ch == 1) {//grayscale
-                int ch1 = 0;
-                for (int i = 0; i < largeWH * largeWH * 3; i += 3) {
-                    for (int ch = 0; ch < 3; ch++)
-                        large_3c[i + ch] = output_pixels[ch1];
-                    ch1++;
-                }
-            }
-            iconpreview.image(pixels_to_image(large_3c, largeWH, largeWH, 3));
-            stbi_image_free(input_pixels);
-            free(output_pixels);
-            free(large_3c);
-            iconerror.hide();
-        }
-        else {
-            iconpreview.image(empty(largeWH, largeWH));
-            iconerror.show();
-        }
+    iconpreview.click += [&] {
+        borderMode++;
+        if (borderMode > 2) borderMode = 0;
+        SetIconPreview();
+        saveParameters();
     };
 
     shortnametxt.parent(parameters);
@@ -549,8 +499,7 @@ form1::form1() {
     bannermulti.location({ menubannertxt.location().x() + menubannertxt.width() + 3, menubannertxt.location().y() + ((menubannertxt.height() - bannermulti.height()) / 2) });
 
     menubannerpreview.parent(parameters);
-    if (mode.selected_index()) menubannerpreview.cursor(xtd::forms::cursors::hand());
-    else menubannerpreview.cursor(xtd::forms::cursors::no());
+    menubannerpreview.cursor(mode.selected_index() ? xtd::forms::cursors::hand() : xtd::forms::cursors::no());
     //menubannerpreview.border_style(xtd::forms::border_style::fixed_3d);
     menubannerpreview.size({ 264, 154 });
     menubannerpreview.location({ copybox.location().x() + copybox.width() + (parameters.width() - (copybox.location().x() + copybox.width())) / 2, copycheck.location().y() + ((copycheck.height() + copybox.height() + 3) - menubannerpreview.height()) / 2});
@@ -1247,7 +1196,7 @@ form1::form1() {
             minorBarTxt.text(xtd::ustring::format("{} exefs/icon.bin", CreatingFile));
             minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
 
-            if (!convertToIcon(iconbox.text(), xtd::ustring::format("{}/{}/temp/exefs/icon.bin", ProgramDir, resourcesPath).c_str(), UTF8toUTF16(shortname.text()), UTF8toUTF16(longname.text()), UTF8toUTF16(publisher.text()))) {
+            if (!convertToIcon(iconbox.text(), xtd::ustring::format("{}/{}/temp/exefs/icon.bin", ProgramDir, resourcesPath).c_str(), UTF8toUTF16(shortname.text()), UTF8toUTF16(longname.text()), UTF8toUTF16(publisher.text()), 2)) {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToConvertImage, iconbox.text()), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 builder.cancel_async();
                 return;
@@ -1720,6 +1669,7 @@ form1::form1() {
 
     if (autoLoadParams || LoadFromArgv) {
         loadParameters();
+        SetIconPreview();
     }
     loaded = true;
     top_most(false);

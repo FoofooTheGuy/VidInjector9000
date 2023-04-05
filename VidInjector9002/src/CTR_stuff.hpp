@@ -6,6 +6,7 @@
 #include <chrono>
 #include <random>
 
+#include "images.h"
 #include "files.hpp"
 #include "formatting.hpp"
 #include "zip_file.hpp"
@@ -27,10 +28,12 @@ unsigned long RandomTID();
 void resize_crop(const unsigned char* input_pixels, int input_w, int input_h, unsigned char* output_pixels, int output_w, int output_h, int num_channels);
 
 bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader);
-//note: text has to be utf16
-//input: path to input image (size doesnt really matter)
-//output: icon.bin out
-bool convertToIcon(std::string input, std::string output, std::string shortname, std::string longname, std::string publisher);
+/*note: text has to be utf16
+input: path to input image (size doesnt really matter)
+output: icon.bin out
+borderMode: 0 for no border, 1 for overlap, 2 for fit within it
+*/
+bool convertToIcon(std::string input, std::string output, std::string shortname, std::string longname, std::string publisher, int borderMode);
 
 //these are from bannertool with slight edits
 #define CBMD_NUM_CGFXS 14
@@ -55,3 +58,4 @@ typedef struct {
 uint32_t lz11_get_occurence_length(uint8_t* newPtr, uint32_t newLength, uint8_t* oldPtr, uint32_t oldLength, uint32_t* disp);
 void* lz11_compress(uint32_t* size, void* input, uint32_t inputSize);
 void* cbmd_build_data(uint32_t* size, CBMD cbmd);
+void image_data_to_tiles(void* out, void* img, uint32_t width, uint32_t height);

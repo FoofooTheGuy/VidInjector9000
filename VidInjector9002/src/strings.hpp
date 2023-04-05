@@ -90,6 +90,7 @@ extern xtd::ustring StrVerParam;
 extern xtd::ustring IntMultiParam;
 extern xtd::ustring StrBannerParam;
 extern xtd::ustring StrIconParam;
+extern xtd::ustring IntIconBorderParam;
 extern xtd::ustring StrSNameParam;
 extern xtd::ustring StrLNameParam;
 extern xtd::ustring StrPublisherParam;

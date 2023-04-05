@@ -245,13 +245,13 @@ void layer_pixels(unsigned char* out, unsigned char* foreground, unsigned char* 
 	else if (backchannels == 3) {//rgb
 		int j = 0;
 		for (int i = 0; i < backwidth * backheight * backchannels; i += backchannels) {
-			for (int ch = 0; ch < 3; ch++)
+			for (int ch = 0; ch < backchannels; ch++)
 				background_4c[j + ch] = background[i + ch];
 			background_4c[j + 3] = FF;
 			j += 4;
 		}
 	}
-	else if (forechannels == 4) {
+	else if (backchannels == 4) {//rgba
 		memcpy(background_4c, background, backwidth * backheight * backchannels);
 	}
 

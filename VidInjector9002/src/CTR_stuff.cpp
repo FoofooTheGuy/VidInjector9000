@@ -53,7 +53,7 @@ unsigned long RandomTID() {
     return TID;
 }
 
-void resize_crop(const unsigned char* input_pixels, int input_w, int input_h, unsigned char* output_pixels, int output_w, int output_h, int num_channels) {//this has to be here because of stbir_resize_uint8
+void resize_crop(const unsigned char* input_pixels, int input_w, int input_h, unsigned char* output_pixels, int output_w, int output_h, int num_channels) {//this has to be here because of stbir_resize_uint8 and i dont wann include that everywhere because it's all inline
 	int width, height;
 	float aspect_ratio = static_cast<float>(input_w) / static_cast<float>(input_h);
 
@@ -120,9 +120,11 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 	const int out_h = 120;
 	const uint8_t FF = 0xFF;
 	if (!stbi_info(input.c_str(), &w, &h, &comp)) {
-		return false;
+		ch = 3;
+		input_pixels = (unsigned char*)malloc(out_w * out_h * ch);
+		memset(input_pixels, FF, out_w * out_h * ch);
 	}
-	input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
+	else input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
 	output_pixels = (unsigned char*)malloc(out_w * out_h * ch);
 	if (w == out_w && h == out_h) memcpy(output_pixels, input_pixels, w * h * ch);
 	else resize_crop(input_pixels, w, h, output_pixels, out_w, out_h, ch);//scale to 200x120 if needed
@@ -166,6 +168,7 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 			ch1++;
 		}
 	}
+	free(output_pixels);
 
 	//layer 200x120 image on a 256x128 image
 	output_fin = (unsigned char*)malloc(new_w * new_h * 3);
@@ -193,7 +196,7 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 	return true;
 }
 
-bool convertToIcon(std::string input, std::string output, std::string shortname, std::string longname, std::string publisher) {//bare bones SMDH creation. thanks 3dbrew
+bool convertToIcon(std::string input, std::string output, std::string shortname, std::string longname, std::string publisher, int borderMode) {//bare bones SMDH creation. thanks 3dbrew
 	unsigned char* input_pixels;
 	unsigned char* output_pixels;
 	unsigned char* large_3c;
@@ -203,12 +206,46 @@ bool convertToIcon(std::string input, std::string output, std::string shortname,
 	const int smallLW = 24;
 	const uint8_t FF = 0xFF;
 	if (!stbi_info(input.c_str(), &w, &h, &comp)) {
-		return false;
+		w = largeLW;
+		h = largeLW;
+		ch = 4;
+		input_pixels = (unsigned char*)malloc(largeLW * largeLW * ch);
+		memset(input_pixels, FF, largeLW * largeLW * ch);
 	}
-	input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
+	else input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
 	output_pixels = (unsigned char*)malloc(largeLW * largeLW * ch);
 	if (w == largeLW && h == largeLW) memcpy(output_pixels, input_pixels, w * h * ch);
 	else resize_crop(input_pixels, w, h, output_pixels, largeLW, largeLW, ch);//scale to 48x48 if needed
+
+	if (borderMode == 1) {
+		unsigned char* output_4c = (unsigned char*)malloc(largeLW * largeLW * 4);
+		unsigned char* white_background = (unsigned char*)malloc(largeLW * largeLW * 4);//fix the bugs by not fixing the bugs! :D
+		memset(white_background, FF, largeLW * largeLW * 4);
+		layer_pixels(output_4c, output_pixels, white_background, largeLW, largeLW, ch, largeLW, largeLW, 4, 0, 0);
+		free(white_background);
+		layer_pixels(output_4c, icon_border, output_4c, largeLW, largeLW, 4, largeLW, largeLW, 4, 0, 0);
+		ch = 4;
+		free(output_pixels);
+		output_pixels = (unsigned char*)malloc(largeLW * largeLW * ch);
+		memcpy(output_pixels, output_4c, largeLW * largeLW * ch);
+		free(output_4c);
+	}
+	else if (borderMode == 2) {
+		unsigned char* output_4c = (unsigned char*)malloc(largeLW * largeLW * 4);
+		unsigned char* white_background = (unsigned char*)malloc(largeLW * largeLW * 4);//fix the bugs by not fixing the bugs! :D
+		memset(white_background, FF, largeLW * largeLW * 4);
+		layer_pixels(output_4c, output_pixels, white_background, largeLW, largeLW, ch, largeLW, largeLW, 4, 0, 0);
+		free(white_background);
+		ch = 4;
+		unsigned char* scaled = (unsigned char*)malloc(largeLW * largeLW * ch);
+		stbir_resize_uint8(output_4c, largeLW, largeLW, 0, scaled, largeLW - 10, largeLW - 10, 0, ch);//scale it down
+		layer_pixels(output_4c, icon_border, scaled, largeLW, largeLW, ch, largeLW - 10, largeLW - 10, ch, 5, 5);
+		free(scaled);
+		free(output_pixels);
+		output_pixels = (unsigned char*)malloc(largeLW * largeLW * ch);
+		memcpy(output_pixels, output_4c, largeLW * largeLW * ch);
+		free(output_4c);
+	}
 
 	large_3c = (unsigned char*)malloc(largeLW * largeLW * 3);
 	if (ch == 4) {//rgba
@@ -248,6 +285,7 @@ bool convertToIcon(std::string input, std::string output, std::string shortname,
 			ch1++;
 		}
 	}
+	free(output_pixels);
 
 	small_3c = (unsigned char*)malloc(smallLW * smallLW * 3);
 	stbir_resize_uint8(large_3c, largeLW, largeLW, 0, small_3c, smallLW, smallLW, 0, 3);//make the small icon
