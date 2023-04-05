@@ -1196,7 +1196,7 @@ form1::form1() {
             minorBarTxt.text(xtd::ustring::format("{} exefs/icon.bin", CreatingFile));
             minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
 
-            if (!convertToIcon(iconbox.text(), xtd::ustring::format("{}/{}/temp/exefs/icon.bin", ProgramDir, resourcesPath).c_str(), UTF8toUTF16(shortname.text()), UTF8toUTF16(longname.text()), UTF8toUTF16(publisher.text()), 2)) {
+            if (!convertToIcon(iconbox.text(), xtd::ustring::format("{}/{}/temp/exefs/icon.bin", ProgramDir, resourcesPath).c_str(), UTF8toUTF16(shortname.text()), UTF8toUTF16(longname.text()), UTF8toUTF16(publisher.text()), borderMode)) {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToConvertImage, iconbox.text()), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 builder.cancel_async();
                 return;
