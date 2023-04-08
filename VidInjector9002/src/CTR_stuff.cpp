@@ -55,12 +55,11 @@ unsigned long RandomTID() {
 
 void resize_crop(const unsigned char* input_pixels, int input_w, int input_h, unsigned char* output_pixels, int output_w, int output_h, int num_channels) {//this has to be here because of stbir_resize_uint8 and i dont wann include that everywhere because it's all inline
 	int width, height;
-	float aspect_ratio = static_cast<float>(input_w) / static_cast<float>(input_h);
 
 	//"inspired" by https://github.com/endlessm/chromium-browser/blob/aa8c819d5ad2fcb3854a688a0401975eca721f43/ui/gfx/favicon_size.cc#L13
 	if (input_w > input_h) {//panoramic
 		height = output_h;
-		width = static_cast<int>(aspect_ratio * height);
+		width = static_cast<int>(output_h * static_cast<float>(input_w) / static_cast<float>(input_h));
 	}
 	else if (input_w < input_h) {//portrait
 		height = static_cast<int>(input_h / (static_cast<float>(input_w) / static_cast<float>(output_w)));
@@ -76,7 +75,7 @@ void resize_crop(const unsigned char* input_pixels, int input_w, int input_h, un
 	}
 	if (height < output_h) {
 		height = output_h;
-		width = static_cast<int>(aspect_ratio * height);
+		width = static_cast<int>(output_h * static_cast<float>(input_w) / static_cast<float>(input_h));
 	}
 
 	unsigned char* scaled = (unsigned char*)malloc(width * height * num_channels);
@@ -216,6 +215,7 @@ bool convertToIcon(std::string input, std::string output, std::string shortname,
 	output_pixels = (unsigned char*)malloc(largeLW * largeLW * ch);
 	if (w == largeLW && h == largeLW) memcpy(output_pixels, input_pixels, w * h * ch);
 	else resize_crop(input_pixels, w, h, output_pixels, largeLW, largeLW, ch);//scale to 48x48 if needed
+	stbi_image_free(input_pixels);
 
 	if (borderMode == 1) {
 		unsigned char* output_4c = (unsigned char*)malloc(largeLW * largeLW * 4);
@@ -320,7 +320,6 @@ bool convertToIcon(std::string input, std::string output, std::string shortname,
 	smdh.write(reinterpret_cast<const char*>(tiledlarge), sizeof(tiledlarge));
 
 	//stbi_write_png(output.c_str(), largeLW, largeLW, 3, large_3c, 0);
-	stbi_image_free(input_pixels);
 	free(small_3c);
 	free(large_3c);
 	return true;
