@@ -32,13 +32,12 @@ form1::form1() {
     parameters.parent(tab_control);
     parameters.text(ParametersText);
 
-    debugs.parent(parameters);
+    debugs.parent(finalize);
     debugs.auto_size(true);
     debugs.font(this->font());
-    debugs.text(xtd::ustring::format("{}, {}", parameters.width(), parameters.height()));
-    debugs.location({ 0, parameters.height() - debugs.height() });
-    debugs.anchor(xtd::forms::anchor_styles::bottom | xtd::forms::anchor_styles::left);
-    debugs.hide();//lazy way to get rid of this
+    debugs.text(xtd::ustring::format("{}, {}", finalize.width(), finalize.height()));
+    debugs.location({ 0, 0 });
+    //debugs.hide();//lazy way to get rid of this
 
     //logo button
     Logo.parent(parameters);
@@ -726,11 +725,17 @@ form1::form1() {
         ApplicationName.select(index, 0);
 
 
-        if (UTF8toUTF16(ApplicationName.text()).size() / 2 > 8) {//funny turn utf8 into utf16 and cut in half to ensure ascii sizes even though we already set it all to ascii only characters but whatever
+        if (UTF8toUTF16(ApplicationName.text()).size() / 2 < 1) {//funny turn utf8 into utf16 and cut in half to ensure ascii sizes even though we already set it all to ascii only characters but whatever
+            ApplicationError.text(xtd::ustring::format("{} {}", ErrorText, BadValue));
+            ApplicationError.show();
+        }
+        else if (UTF8toUTF16(ApplicationName.text()).size() / 2 > 8) {
             ApplicationError.text(xtd::ustring::format("{} {} ({}/{})", ErrorText, TextTooLongError, UTF8toUTF16(ApplicationName.text()).size() / 2, 8));
             ApplicationError.show();
         }
         else ApplicationError.hide();
+        if (minorBarTxt.location().y() > randomizeProductCode.location().y() + randomizeProductCode.height()) ApplicationError.location({ Applicationtxt.location().x() + ((Applicationtxt.width() + ApplicationName.width()) - ApplicationError.width()) / 2, Applicationtxt.location().y() + Applicationtxt.height() });
+        else ApplicationError.location({ Applicationtxt.location().x() + ((Applicationtxt.width() + ApplicationName.width()) - ApplicationError.width()) / 2, Applicationtxt.location().y() + Applicationtxt.height() });
     };
 
     ApplicationError.parent(finalize);
@@ -762,9 +767,18 @@ form1::form1() {
             }
         }
 
+        if (UTF8toUTF16(ProductCode.text()).size() / 2 < 4) ProductCodeError.show();
+        else ProductCodeError.hide();
+
         ProductCode.text(toupperstr(temp));
         ProductCode.select(index, 0);
     };
+
+    ProductCodeError.parent(finalize);
+    ProductCodeError.auto_size(true);
+    ProductCodeError.font({ this->font(), xtd::drawing::font_style::bold });
+    ProductCodeError.text(xtd::ustring::format("{} {}", ErrorText, BadValue));
+    ProductCodeError.hide();
 
     randomizeProductCode.parent(finalize);
     randomizeProductCode.size({ 38, 38 });
@@ -830,6 +844,18 @@ form1::form1() {
         cancelBuildButt.enabled(true);
         minorBar.maximum(69);
         minorBar.minimum(0);
+
+        xtd::ustring outfile = save_file(CiaFiles, xtd::ustring::format("{} [000400000{}00]", longname.text(), titleIDbox.text()));
+        {
+            xtd::forms::dialog_result res = xtd::forms::dialog_result::yes;
+            if (std::filesystem::exists(outfile.c_str()))
+                res = xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}", outfile.substr(outfile.find_last_of("/\\") + 1), AlreadyExists, ReplaceIt), ConfirmSave, xtd::forms::message_box_buttons::yes_no, xtd::forms::message_box_icon::question);
+            if (res == xtd::forms::dialog_result::no || res == xtd::forms::dialog_result::none)
+                return;
+            if (outfile.empty())
+                return;
+        }
+
         //extract base
         std::filesystem::remove_all(xtd::ustring::format("{}/{}/temp", ProgramDir, resourcesPath).c_str());
         Generate_Files(xtd::ustring::format("{}/{}/temp", ProgramDir, resourcesPath).c_str(), mode.selected_index());
@@ -969,7 +995,7 @@ form1::form1() {
                     "# タスクの実行回数（10進数）\x0D\x0A"
                     "0\x0D\x0A"
                     "\x0D\x0A"
-                    "# おしらせのあり、なし\x0D\x0A"//not sure what this is, but if you enable it in single vid it instantly crashes... maybe it's the thing telling you to take a break? takes too long to test lol
+                    "# おしらせのあり、なし\x0D\x0A"//not sure what this is, but if you enable it in single vid it instantly crashes... maybe it's the thing telling you to take a break? nah because it's false and that still appears
                     "false\x0D\x0A"
                     "\x0D\x0A"
                     "# 早送り、巻戻しボタンのあり、なし\x0D\x0A"//ff rewind
@@ -1148,11 +1174,11 @@ form1::form1() {
         if (mode.selected_index()) {
             for (int i = 0; i < rows; i++) {
                 unsigned char bimg[65568];
-                if (!std::filesystem::exists(text_box_array.at(i * columns + 2)->text().c_str())) {
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}, {} 4\n{} \"{}\"", row, i + 1, column, FailedToFindPath, text_box_array.at(i * columns + 2)->text()), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                /*if (!std::filesystem::exists(text_box_array.at(i * columns + 2)->text().c_str())) {
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}, {} 3\n{} \"{}\"", row, i + 1, column, FailedToFindPath, text_box_array.at(i * columns + 2)->text()), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     builder.cancel_async();
                     return;
-                }
+                }*/
 
                 minorBarTxt.text(xtd::ustring::format("{} romfs/movie/movie_{}.bimg", CreatingFile, i));
                 minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
@@ -1172,7 +1198,7 @@ form1::form1() {
                 }
             }
             //make movie_bnrname.csv
-            std::filesystem::create_directories(xtd::ustring::format("{}/{}/temp/romfs/settings/movie_bnrname.csv", ProgramDir, resourcesPath).c_str());
+            std::filesystem::create_directories(xtd::ustring::format("{}/{}/temp/romfs/settings", ProgramDir, resourcesPath).c_str());
             std::ofstream movie_bnrname(xtd::ustring::format("{}/{}/temp/romfs/settings/movie_bnrname.csv", ProgramDir, resourcesPath).c_str(), std::ios_base::out | std::ios_base::binary);
             movie_bnrname << "\xFF\xFE" + UTF8toUTF16(std::to_string(rows) + "\x0D\x0A");
             for (unsigned long i = 0; i < rows; i++) {
@@ -1193,11 +1219,11 @@ form1::form1() {
             majorBarTxt.text(xtd::ustring::format("{} exefs", CreatingFile));
             majorBarTxt.location().x((finalize.width() - majorBarTxt.width()) / 2);
 
-            minorBarTxt.text(xtd::ustring::format("{} exefs/icon.bin", CreatingFile));
+            minorBarTxt.text(xtd::ustring::format("{} exefs/icon", CreatingFile));
             minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
 
-            if (!convertToIcon(iconbox.text(), xtd::ustring::format("{}/{}/temp/exefs/icon.bin", ProgramDir, resourcesPath).c_str(), UTF8toUTF16(shortname.text()), UTF8toUTF16(longname.text()), UTF8toUTF16(publisher.text()), borderMode)) {
-                xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToConvertImage, iconbox.text()), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+            if (!convertToIcon(iconbox.text(), xtd::ustring::format("{}/{}/temp/exefs/icon", ProgramDir, resourcesPath).c_str(), UTF8toUTF16(shortname.text()), UTF8toUTF16(longname.text()), UTF8toUTF16(publisher.text()), borderMode)) {
+                xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/{}/temp/exefs/icon", FailedToCreateFile, ProgramDir, resourcesPath), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 builder.cancel_async();
                 return;
             }
@@ -1208,7 +1234,7 @@ form1::form1() {
                 minorBarTxt.text(xtd::ustring::format("{} romfs/icon.icn", CreatingFile));
                 minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
 
-                copyfile(xtd::ustring::format("{}/{}/temp/exefs/icon.bin", ProgramDir, resourcesPath).c_str(), xtd::ustring::format("{}/{}/temp/romfs/icon.icn", ProgramDir, resourcesPath).c_str());
+                copyfile(xtd::ustring::format("{}/{}/temp/exefs/icon", ProgramDir, resourcesPath).c_str(), xtd::ustring::format("{}/{}/temp/romfs/icon.icn", ProgramDir, resourcesPath).c_str());
                 if (!std::filesystem::exists(xtd::ustring::format("{}/{}/temp/romfs/icon.icn", ProgramDir, resourcesPath).c_str())) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/{}/temp/romfs/icon.icn", FailedToCreateFile, ProgramDir, resourcesPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     builder.cancel_async();
@@ -1219,7 +1245,7 @@ form1::form1() {
             }
             builder.report_progress(50);
             //make banner
-            minorBarTxt.text(xtd::ustring::format("{} exefs/banner.bin", CreatingFile));
+            minorBarTxt.text(xtd::ustring::format("{} exefs/banner", CreatingFile));
             minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
 
             unsigned char Checker[4];
@@ -1241,7 +1267,7 @@ form1::form1() {
                 }
             }
             if (CGFX) {
-                copyfile(bannerbox.text(), xtd::ustring::format("{}/{}/temp/exefs/banner.bin", ProgramDir, resourcesPath).c_str());
+                copyfile(bannerbox.text(), xtd::ustring::format("{}/{}/temp/exefs/banner", ProgramDir, resourcesPath).c_str());
             }
             else if (!CGFX) {
                 unsigned char buffer[65536];
@@ -1272,19 +1298,167 @@ form1::form1() {
 
                 void* bnr = cbmd_build_data(&bnrSize, cbmd);
 
-                std::ofstream bnrfile(xtd::ustring::format("{}/{}/temp/exefs/banner.bin", ProgramDir, resourcesPath).c_str(), std::ios_base::out | std::ios_base::binary);
+                std::ofstream bnrfile(xtd::ustring::format("{}/{}/temp/exefs/banner", ProgramDir, resourcesPath).c_str(), std::ios_base::out | std::ios_base::binary);
                 bnrfile.write(reinterpret_cast<const char*>(bnr), bnrSize);
                 bnrfile.close();
             }
-            if (!std::filesystem::exists(xtd::ustring::format("{}/{}/temp/exefs/banner.bin", ProgramDir, resourcesPath).c_str())) {
-                xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/{}/temp/exefs/banner.bin", FailedToCreateFile, ProgramDir, resourcesPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+            if (!std::filesystem::exists(xtd::ustring::format("{}/{}/temp/exefs/banner", ProgramDir, resourcesPath).c_str())) {
+                xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/{}/temp/exefs/banner", FailedToCreateFile, ProgramDir, resourcesPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 builder.cancel_async();
                 return;
             }
         }
         builder.report_progress(100);
-        //TODO: build CIA
+        if (builder.cancellation_pending()) return;
+        //modify exheader
+        {
+            unsigned long unique_id = 0;
+            stoul_s(unique_id, titleIDbox.text().c_str(), true);
 
+            std::fstream exheader(xtd::ustring::format("{}/{}/temp/exheader.bin", ProgramDir, resourcesPath).c_str(), std::ios::in | std::ios::out | std::ios::binary);
+            for (int i = 0; i < 8; i++) {//write application name only 8 bytes because that's the limit. i had to do this loop because it was being weird with .write
+                exheader.seekp(i);
+                exheader << char(ApplicationName.text().c_str()[i]);
+            }
+            exheader.seekp(0x1C9);
+            exheader.write(reinterpret_cast<const char*>(&unique_id), sizeof(long));//oh no oh no here we go with the size in bytes of the number accross platoforms (it's 4 for me which would be 32bit which makes sense, why would anyone change this?)
+            exheader.seekp(0x201);
+            exheader.write(reinterpret_cast<const char*>(&unique_id), sizeof(long));
+            exheader.seekp(0x601);
+            exheader.write(reinterpret_cast<const char*>(&unique_id), sizeof(long));
+            exheader.close();
+        }
+        //CIA creation
+        {
+            majorBarTxt.text(xtd::ustring::format("{} {}", CreatingFile, outfile.substr(outfile.find_last_of("/\\") + 1)));
+            minorBarTxt.text(xtd::ustring::format("{} {}", CreatingFile, outfile.substr(outfile.find_last_of("/\\") + 1)));
+            builder.report_progress(0);
+            std::ofstream baseCIA(xtd::ustring::format("{}/{}/temp/base.cia", ProgramDir, resourcesPath).c_str(), std::ios_base::out | std::ios_base::binary);
+            baseCIA.write(reinterpret_cast<const char*>(base_cia), sizeof(base_cia));
+            baseCIA.close();
+
+            #define TRYB(expr, lbl) if((res = ( expr )) != NNC_R_OK) goto lbl
+            
+            nnc_subview certchain, ticket, tmd_strm, logo;
+            nnc_buildable_ncch ncch0b;
+            nnc_tmd_header tmd;
+            nnc_cia_writable_ncch ncch0;
+            nnc_ncch_header ncch_hdr;
+            nnc_cia_content_reader reader;
+            nnc_cia_content_stream ncch0stream;
+            nnc_file exheader;
+            nnc_cia_header cia_hdr;
+            nnc_result res;
+            nnc_wfile wf;
+            nnc_file f;
+            nnc_vfs romfs;
+            nnc_vfs exefs;
+            nnc_keypair kp;
+            nnc_seeddb sdb;
+
+            if (builder.cancellation_pending()) return;
+
+            TRYB(nnc_file_open(&f, xtd::ustring::format("{}/{}/temp/base.cia", ProgramDir, resourcesPath).c_str()), out1); /* open the input file */
+            TRYB(nnc_wfile_open(&wf, outfile.c_str()), out2); /* open the output file */
+            TRYB(nnc_read_cia_header(NNC_RSP(&f), &cia_hdr), out3); /* read the cia header */
+            nnc_cia_open_certchain(&cia_hdr, NNC_RSP(&f), &certchain); /* open the certificate chain for later copying it into the new cia */
+            nnc_cia_open_ticket(&cia_hdr, NNC_RSP(&f), &ticket); /* open the ticket for later copying it into the new cia */
+            nnc_cia_open_tmd(&cia_hdr, NNC_RSP(&f), &tmd_strm); /* open the tmd which we will modify some things of and then write tot he new cia */
+            TRYB(nnc_read_tmd_header(NNC_RSP(&tmd_strm), &tmd), out3); /* parse the ticket */
+            TRYB(nnc_cia_make_reader(&cia_hdr, NNC_RSP(&f), nnc_get_default_keyset(), &reader), out3); /* create a content (= NCCH) reader */
+            TRYB(nnc_cia_open_content(&reader, 0, &ncch0stream, NULL), out4); /* open the first content (NCCH0) */
+            TRYB(nnc_read_ncch_header(NNC_RSP(&ncch0stream), &ncch_hdr), out5); /* parse the NCCH header */
+            
+            if (builder.cancellation_pending()) goto out5;
+            
+            TRYB(nnc_vfs_init(&romfs), out5); /* initialize a VFS */
+            TRYB(nnc_vfs_link_directory(&romfs.root_directory, xtd::ustring::format("{}/{}/temp/romfs", ProgramDir, resourcesPath).c_str(), nnc_vfs_identity_transform, NULL), out6); /* populate the VFS, another source of files could be a RomFS, see #nnc_romfs_to_vfs */
+            TRYB(nnc_vfs_init(&exefs), out5); /* initialize a VFS */
+            TRYB(nnc_vfs_link_directory(&exefs.root_directory, xtd::ustring::format("{}/{}/temp/exefs", ProgramDir, resourcesPath).c_str(), nnc_vfs_identity_transform, NULL), out10);
+            
+            builder.report_progress(10);
+
+            if ((res = nnc_scan_seeddb(&sdb)) != NNC_R_OK) /* scan for a seeddb for use with "new crypto" and set it as the default */
+            nnc_set_default_seeddb(&sdb);
+            TRYB(nnc_fill_keypair(&kp, nnc_get_default_keyset(), nnc_get_default_seeddb(), &ncch_hdr), out7); /* generate the cryptographic keys for if the NCCH is encrypted */
+            if (nnc_file_open(&exheader, xtd::ustring::format("{}/{}/temp/exheader.bin", ProgramDir, resourcesPath).c_str()) != NNC_R_OK) {/* open exheader file */
+                xtd::forms::message_box::show(*this, xtd::ustring::format("failed to open '{}/{}/temp/exheader.bin'", ProgramDir, resourcesPath), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                goto out10;
+            }
+            nnc_exheader exhdr;
+            if (nnc_read_exheader(NNC_RSP(&exheader), &exhdr) != NNC_R_OK) {
+                xtd::forms::message_box::show(*this, xtd::ustring::format("failed to read exheader from '{}/{}/temp/exheader.bin'", ProgramDir, resourcesPath), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                goto out10;
+            }
+            TRYB(nnc_ncch_section_logo(&ncch_hdr, NNC_RSP(&ncch0stream), &logo), out9); /* logo stream */
+
+            builder.report_progress(25);
+
+             /* setup the parameters for building, for more options see the documentation. */
+            ncch0.type = NNC_CIA_NCCHBUILD_BUILD;
+            ncch0.ncch = &ncch0b;
+            nnc_condense_ncch(&ncch0b.chdr, &ncch_hdr);
+            ncch0b.wflags = NNC_NCCH_WF_ROMFS_VFS | NNC_NCCH_WF_EXEFS_VFS | NNC_NCCH_WF_EXHEADER_STREAM;
+            if (builder.cancellation_pending()) goto out10;
+            ncch0b.romfs = &romfs;
+            ncch0b.exefs = &exefs;
+            ncch0b.exheader = &exheader;
+            ncch0b.logo = NNC_RSP(&logo);
+            ncch0b.plain = NULL;
+            ncch0b.chdr.partition_id = exhdr.title_id;
+            ncch0b.chdr.title_id = exhdr.title_id;
+            tmd.content_count = 1;
+            tmd.title_id = exhdr.title_id;
+            builder.report_progress(35);
+            {
+                //change the title ID of the ticket
+                char* ticket_contents = (char*)malloc(NNC_RS_CALL0(ticket, size));
+                nnc_u32 out_size = 0;
+                if (NNC_RS_CALL(ticket, read, (nnc_u8*)ticket_contents, NNC_RS_CALL0(ticket, size), &out_size) != NNC_R_OK)
+                    goto out11;
+                if (out_size != NNC_RS_CALL0(ticket, size))
+                    goto out11;
+                nnc_memory modified_ticket;
+                {
+                    uint64_t TIDbigend = 0;
+                    encode_bigend_u64(exhdr.title_id, &TIDbigend);
+                    *(nnc_u64*)&ticket_contents[nnc_sig_dsize((nnc_sigtype)ticket_contents[3]) + 0xDC] = TIDbigend;
+                }
+                nnc_mem_open(&modified_ticket, ticket_contents, NNC_RS_CALL0(ticket, size));
+
+                if (builder.cancellation_pending()) goto out11;
+                builder.report_progress(50);
+                /* and finally write the cia */
+                res = nnc_write_cia(
+                    NNC_CIA_WF_CERTCHAIN_STREAM | NNC_CIA_WF_TICKET_STREAM | NNC_CIA_WF_TMD_BUILD,
+                    &certchain, &modified_ticket, &tmd, 1, &ncch0, NNC_WSP(&wf)
+                );
+                builder.report_progress(100);
+            /* cleanup code, with lots of labels to jump to in case of failure depending on where it failed */
+                out11: free(ticket_contents);
+            }
+            out10: nnc_vfs_free(&exefs);
+            out9: NNC_RS_CALL0(exheader, close);
+                //out8: NNC_RS_CALL0(exefs, close);
+            out7: nnc_free_seeddb(&sdb);
+            out6: nnc_vfs_free(&romfs);
+            out5: NNC_RS_CALL0(ncch0stream, close);
+            out4: nnc_cia_free_reader(&reader);
+            out3: NNC_WS_CALL0(wf, close);
+            out2: NNC_RS_CALL0(f, close);
+            out1:
+                if (res != NNC_R_OK)
+                {
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("failed: {}", nnc_strerror(res)), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    return;
+                }
+        }
+        if (std::filesystem::exists(outfile.c_str())) {
+            xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", CiaBuilt, outfile), xtd::ustring::format("NNC"), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::information);
+        }
+        else {
+            xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, outfile), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+        }
     };
 
     builder.progress_changed += [&](object& sender, const xtd::forms::progress_changed_event_args& e) {
@@ -1555,12 +1729,14 @@ form1::form1() {
         bannermulti.location({ menubannertxt.location().x() + menubannertxt.width() + 3, menubannertxt.location().y() + ((menubannertxt.height() - bannermulti.height()) / 2) });
         moflexbrowse.location({ text_box_array.at((rows - 1) * columns + 1)->location().x() + (text_box_array.at((rows - 1) * columns + 1)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 1)->location().y() + text_box_array.at((rows - 1) * columns + 1)->height() });
         multibannerbrowse.location({ text_box_array.at((rows - 1) * columns + 2)->location().x() + (text_box_array.at((rows - 1) * columns + 2)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 2)->location().y() + text_box_array.at((rows - 1) * columns + 2)->height() });
+        
         if (parameters.width() > copybox.location().x() + copybox.width() + FFrewind.width() + menubannerpreview.width()) {
             menubannerpreview.location({ FFrewind.location().x() + FFrewind.width() + (((parameters.width() - (FFrewind.location().x() + FFrewind.width())) - menubannerpreview.width()) / 2), copycheck.location().y() + ((copycheck.height() + copybox.height() + 3) - (menubannerpreview.height() + bannerpreviewleft.height())) / 2 });
         }
         else {
             menubannerpreview.location({ FFrewind.location().x() + FFrewind.width(), copycheck.location().y() + ((copycheck.height() + copybox.height() + 3) - (menubannerpreview.height() + bannerpreviewleft.height())) / 2 });
         }
+
         bannerpreviewleft.location({ menubannerpreview.location().x(), menubannerpreview.location().y() + menubannerpreview.height() });
         bannerpreviewright.location({ menubannerpreview.location().x() + menubannerpreview.width() - bannerpreviewright.width(), bannerpreviewleft.location().y() });
         indextxt.location({ menubannerpreview.location().x() + ((menubannerpreview.width()) - indextxt.width()) / 2, menubannerpreview.location().y() + menubannerpreview.height() });
@@ -1574,65 +1750,43 @@ form1::form1() {
         //jank incoming
         if (finalize.height() < minorBarTxt.height() + minorBar.height() + 5 + majorBarTxt.height() + majorBar.height() + 10 + buildButt.height() + cancelBuildButt.height() + randomizeTitleID.height() + TitleIDError.height() + Applicationtxt.height() + ApplicationError.height() + ProductCodetxt.height() + 4) {
             minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, randomizeTitleID.height() + TitleIDError.height() + Applicationtxt.height() + ApplicationError.height() + ProductCodetxt.height() + 4 });
-            minorBar.location({ (finalize.width() - minorBar.width()) / 2, minorBarTxt.location().y() + minorBarTxt.height() });
-
-            majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, minorBar.location().y() + minorBar.height() + 5 });
-            majorBar.location({ (finalize.width() - majorBar.width()) / 2, majorBarTxt.location().y() + majorBarTxt.height() });
-
-            buildButt.location({ (finalize.width() - buildButt.width()) / 2, majorBar.location().y() + majorBar.height() + 10 });
-            cancelBuildButt.location({ (finalize.width() - cancelBuildButt.width()) / 2, buildButt.location().y() + buildButt.height() });
         }
         else if (finalize.height() / 2 > minorBarTxt.height() + minorBar.height() + 5 + majorBarTxt.height() + majorBar.height() + 10 + buildButt.height() + cancelBuildButt.height()) {
             minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, (finalize.height() / 2) + ((finalize.height() / 2) - (minorBarTxt.height() + minorBar.height() + 5 + majorBarTxt.height() + majorBar.height() + 10 + buildButt.height() + cancelBuildButt.height())) / 2 });
-            minorBar.location({ (finalize.width() - minorBar.width()) / 2, minorBarTxt.location().y() + minorBarTxt.height() });
-
-            majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, minorBar.location().y() + minorBar.height() + 5 });
-            majorBar.location({ (finalize.width() - majorBar.width()) / 2, majorBarTxt.location().y() + majorBarTxt.height() });
-
-            buildButt.location({ (finalize.width() - buildButt.width()) / 2, majorBar.location().y() + majorBar.height() + 10 });
-            cancelBuildButt.location({ (finalize.width() - cancelBuildButt.width()) / 2, buildButt.location().y() + buildButt.height() });
         }
         else {
             minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, finalize.height() - (minorBarTxt.height() + minorBar.height() + 5 + majorBarTxt.height() + majorBar.height() + 10 + buildButt.height() + cancelBuildButt.height()) });
-            minorBar.location({ (finalize.width() - minorBar.width()) / 2, minorBarTxt.location().y() + minorBarTxt.height() });
-
-            majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, minorBar.location().y() + minorBar.height() + 5 });
-            majorBar.location({ (finalize.width() - majorBar.width()) / 2, majorBarTxt.location().y() + majorBarTxt.height() });
-
-            buildButt.location({ (finalize.width() - buildButt.width()) / 2, majorBar.location().y() + majorBar.height() + 10 });
-            cancelBuildButt.location({ (finalize.width() - cancelBuildButt.width()) / 2, buildButt.location().y() + buildButt.height() });
         }
+        minorBar.location({ (finalize.width() - minorBar.width()) / 2, minorBarTxt.location().y() + minorBarTxt.height() });
+
+        majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, minorBar.location().y() + minorBar.height() + 5 });
+        majorBar.location({ (finalize.width() - majorBar.width()) / 2, majorBarTxt.location().y() + majorBarTxt.height() });
+
+        buildButt.location({ (finalize.width() - buildButt.width()) / 2, majorBar.location().y() + majorBar.height() + 10 });
+        cancelBuildButt.location({ (finalize.width() - cancelBuildButt.width()) / 2, buildButt.location().y() + buildButt.height() });
 
         if (minorBarTxt.location().y() > randomizeProductCode.location().y() + randomizeProductCode.height()) {
-            titleIDtxt.location({ (finalize.width() - (titleIDtxt.width() + titleIDbox.width() + ZeroZero.width() + randomizeTitleID.width())) / 2, ((finalize.height() / 2) - (randomizeTitleID.height() + TitleIDError.height() + Applicationtxt.height() + ApplicationError.height() + ProductCodetxt.height())) / 2 });
-            titleIDbox.location({ titleIDtxt.location().x() + titleIDtxt.width(), titleIDtxt.location().y() + (titleIDtxt.height() - titleIDbox.height()) / 2 });
-            ZeroZero.location({ titleIDbox.location().x() + titleIDbox.width(), titleIDtxt.location().y() });
-            randomizeTitleID.location({ ZeroZero.location().x() + ZeroZero.width(), ZeroZero.location().y() + (ZeroZero.height() - randomizeTitleID.height()) / 2 });
-            TitleIDError.location({ titleIDtxt.location().x() + ((titleIDtxt.width() + titleIDbox.width() + ZeroZero.width() + randomizeTitleID.width()) - TitleIDError.width()) / 2, randomizeTitleID.location().y() + randomizeTitleID.height() });
-
-            Applicationtxt.location({ (finalize.width() - (Applicationtxt.width() + ApplicationName.width() + 4)) / 2, TitleIDError.location().y() + TitleIDError.height() });
-            ApplicationName.location({ Applicationtxt.location().x() + Applicationtxt.width() + 4, Applicationtxt.location().y() + (Applicationtxt.height() - ApplicationName.height()) / 2 });
-            ApplicationError.location({ Applicationtxt.location().x() + ((Applicationtxt.width() + ApplicationName.width()) - ApplicationError.width()) / 2, Applicationtxt.location().y() + Applicationtxt.height() });
-
-            ProductCodetxt.location({ (finalize.width() - (ProductCodetxt.width() + ProductCode.width() + randomizeProductCode.width())) / 2, ApplicationError.location().y() + ApplicationError.height() });
-            ProductCode.location({ ProductCodetxt.location().x() + ProductCodetxt.width(), ProductCodetxt.location().y() + (ProductCodetxt.height() - ProductCode.height()) / 2 });
-            randomizeProductCode.location({ ProductCode.location().x() + ProductCode.width(), ProductCodetxt.location().y() + (ProductCodetxt.height() - randomizeProductCode.height()) / 2 });
+            titleIDtxt.location({ (finalize.width() - (titleIDtxt.width() + titleIDbox.width() + ZeroZero.width() + randomizeTitleID.width())) / 2, ((finalize.height() / 2) - (randomizeTitleID.height() + TitleIDError.height() + Applicationtxt.height() + ApplicationError.height() + randomizeProductCode.height() + ProductCodeError.height())) / 2 });
         }
         else {
-            titleIDtxt.location({ (finalize.width() - (titleIDtxt.width() + titleIDbox.width() + ZeroZero.width() + randomizeTitleID.width())) / 2, minorBarTxt.location().y() - (randomizeTitleID.height() + TitleIDError.height() + Applicationtxt.height() + ApplicationError.height() + ProductCodetxt.height()) });
-            titleIDbox.location({ titleIDtxt.location().x() + titleIDtxt.width(), titleIDtxt.location().y() + (titleIDtxt.height() - titleIDbox.height()) / 2 });
-            ZeroZero.location({ titleIDbox.location().x() + titleIDbox.width(), titleIDtxt.location().y() });
-            randomizeTitleID.location({ ZeroZero.location().x() + ZeroZero.width(), ZeroZero.location().y() + (ZeroZero.height() - randomizeTitleID.height()) / 2 });
-            TitleIDError.location({ titleIDtxt.location().x() + ((titleIDtxt.width() + titleIDbox.width() + ZeroZero.width() + randomizeTitleID.width()) - TitleIDError.width()) / 2, randomizeTitleID.location().y() + randomizeTitleID.height() });
-
-            Applicationtxt.location({ (finalize.width() - (Applicationtxt.width() + ApplicationName.width() + 4)) / 2, TitleIDError.location().y() + TitleIDError.height() });
-            ApplicationName.location({ Applicationtxt.location().x() + Applicationtxt.width() + 4, Applicationtxt.location().y() + (Applicationtxt.height() - ApplicationName.height()) / 2 });
-            ApplicationError.location({ Applicationtxt.location().x() + ((Applicationtxt.width() + ApplicationName.width()) - ApplicationError.width()) / 2, Applicationtxt.location().y() + Applicationtxt.height() });
-
-            ProductCodetxt.location({ (finalize.width() - (ProductCodetxt.width() + ProductCode.width() + randomizeProductCode.width())) / 2, ApplicationError.location().y() + ApplicationError.height() });
-            ProductCode.location({ ProductCodetxt.location().x() + ProductCodetxt.width(), ProductCodetxt.location().y() + (ProductCodetxt.height() - ProductCode.height()) / 2 });
-            randomizeProductCode.location({ ProductCode.location().x() + ProductCode.width(), ProductCodetxt.location().y() + (ProductCodetxt.height() - randomizeProductCode.height()) / 2 });
+            titleIDtxt.location({ (finalize.width() - (titleIDtxt.width() + titleIDbox.width() + ZeroZero.width() + randomizeTitleID.width())) / 2, minorBarTxt.location().y() - (randomizeTitleID.height() + TitleIDError.height() + Applicationtxt.height() + ApplicationError.height() + randomizeProductCode.height() + ProductCodeError.height()) });
         }
+        debugs.text(xtd::ustring::format("{}, {}", minorBarTxt.location().y(), randomizeProductCode.location().y() + randomizeProductCode.height()));
+
+        titleIDbox.location({ titleIDtxt.location().x() + titleIDtxt.width(), titleIDtxt.location().y() + (titleIDtxt.height() - titleIDbox.height()) / 2 });
+        ZeroZero.location({ titleIDbox.location().x() + titleIDbox.width(), titleIDtxt.location().y() });
+        randomizeTitleID.location({ ZeroZero.location().x() + ZeroZero.width(), ZeroZero.location().y() + (ZeroZero.height() - randomizeTitleID.height()) / 2 });
+        TitleIDError.location({ titleIDtxt.location().x() + ((titleIDtxt.width() + titleIDbox.width() + ZeroZero.width() + randomizeTitleID.width()) - TitleIDError.width()) / 2, randomizeTitleID.location().y() + randomizeTitleID.height() });
+
+        Applicationtxt.location({ (finalize.width() - (Applicationtxt.width() + ApplicationName.width() + 4)) / 2, TitleIDError.location().y() + TitleIDError.height() });
+        ApplicationName.location({ Applicationtxt.location().x() + Applicationtxt.width() + 4, Applicationtxt.location().y() + (Applicationtxt.height() - ApplicationName.height()) / 2 });
+        ApplicationError.location({ Applicationtxt.location().x() + ((Applicationtxt.width() + ApplicationName.width()) - ApplicationError.width()) / 2, Applicationtxt.location().y() + Applicationtxt.height() });
+
+        ProductCodetxt.location({ (finalize.width() - (ProductCodetxt.width() + ProductCode.width() + randomizeProductCode.width())) / 2, ApplicationError.location().y() + ApplicationError.height() });
+        ProductCode.location({ ProductCodetxt.location().x() + ProductCodetxt.width(), ProductCodetxt.location().y() + (ProductCodetxt.height() - ProductCode.height()) / 2 });
+        randomizeProductCode.location({ ProductCode.location().x() + ProductCode.width(), ProductCodetxt.location().y() + (ProductCodetxt.height() - randomizeProductCode.height()) / 2 });
+        ProductCodeError.location({ ProductCodetxt.location().x() + ((ProductCodetxt.width() + ProductCode.width() + randomizeProductCode.width()) - ProductCodeError.width()) / 2, ProductCodetxt.location().y() + ProductCodetxt.height() });
+
 
         maintitle.location({ (settings.width() - maintitle.width()) / 2, 3 });
         subtitle.location({ (settings.width() - subtitle.width()) / 2, maintitle.height() + maintitle.location().y() });

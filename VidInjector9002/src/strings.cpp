@@ -77,6 +77,8 @@ xtd::ustring row = "row";
 xtd::ustring column = "column";
 xtd::ustring CreatingFile = "Creating the file:";
 xtd::ustring CopyingMoflex = "Copying MoFlex files...";
+xtd::ustring CiaFiles = "CTR Importable Archive (.cia)|*.cia";
+xtd::ustring CiaBuilt = "The CIA was built to:";
 
 xtd::ustring Languagedir = "English";
 
@@ -186,3 +188,5 @@ xtd::ustring inLangrow = "row";
 xtd::ustring inLangcolumn = "column";
 xtd::ustring inLangCreatingFile = "CreatingFile";
 xtd::ustring inLangCopyingMoflex = "CopyingMoflex";
+xtd::ustring inLangCiaFiles = "CiaFiles";
+xtd::ustring inLangCiaBuilt = "CiaBuilt";

@@ -119,6 +119,8 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 	const int out_h = 120;
 	const uint8_t FF = 0xFF;
 	if (!stbi_info(input.c_str(), &w, &h, &comp)) {
+		w = out_w;
+		h = out_h;
 		ch = 3;
 		input_pixels = (unsigned char*)malloc(out_w * out_h * ch);
 		memset(input_pixels, FF, out_w * out_h * ch);
@@ -130,6 +132,7 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 	stbi_image_free(input_pixels);
 
 	output_3c = (unsigned char*)malloc(out_w * out_h * 3);
+	if (output_3c == NULL) return false;
 	if (ch == 4) {//rgba
 		unsigned char* white_background = (unsigned char*)malloc(out_w * out_h * 4);
 		memset(white_background, FF, out_w * out_h * 4);
@@ -174,9 +177,8 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 	memset(output_fin, 0, new_w * new_h * 3);
 	for (int y = 0; y < out_h; y++)
 		for (int x = 0; x < out_w; x++) {
-			output_fin[(y * (new_w)+x) * 3] = output_3c[(y * (out_w)+x) * 3];
-			output_fin[(y * (new_w)+x) * 3 + 1] = output_3c[(y * (out_w)+x) * 3 + 1];
-			output_fin[(y * (new_w)+x) * 3 + 2] = output_3c[(y * (out_w)+x) * 3 + 2];
+			for (int ch = 0; ch < 3; ch++)
+				output_fin[(y * (new_w)+x) * 3 + ch] = output_3c[(y * (out_w)+x) * 3 + ch];
 		}
 
 	unsigned char tiledbanner[65536];
@@ -248,6 +250,10 @@ bool convertToIcon(std::string input, std::string output, std::string shortname,
 	}
 
 	large_3c = (unsigned char*)malloc(largeLW * largeLW * 3);
+	if (large_3c == NULL) {
+		free(large_3c);
+		return false;
+	}
 	if (ch == 4) {//rgba
 		unsigned char* white_background = (unsigned char*)malloc(largeLW * largeLW * 4);
 		memset(white_background, FF, largeLW * largeLW * 4);
@@ -293,6 +299,11 @@ bool convertToIcon(std::string input, std::string output, std::string shortname,
 	unsigned char tiledlarge[0x1200];
 	image_data_to_tiles(tiledsmall, small_3c, smallLW, smallLW);
 	image_data_to_tiles(tiledlarge, large_3c, largeLW, largeLW);
+	if (shortname.size() > 0x80 || longname.size() > 0x100 || publisher.size() > 0x80) {
+		free(small_3c);
+		free(large_3c);
+		return false;
+	}
 	std::ofstream smdh(output, std::ios_base::out | std::ios_base::binary);
 	smdh << "SMDH";//make smdh!
 	for (int i = 0; i < 4; i++)
