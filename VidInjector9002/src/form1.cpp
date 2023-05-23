@@ -37,7 +37,7 @@ form1::form1() {
     debugs.font(this->font());
     debugs.text(xtd::ustring::format("{}, {}", finalize.width(), finalize.height()));
     debugs.location({ 0, 0 });
-    //debugs.hide();//lazy way to get rid of this
+    debugs.hide();//lazy way to get rid of this
 
     //logo button
     Logo.parent(parameters);
@@ -767,7 +767,7 @@ form1::form1() {
             }
         }
 
-        if (UTF8toUTF16(ProductCode.text()).size() / 2 < 4) ProductCodeError.show();
+        if (UTF8toUTF16(ProductCode.text()).size() / 2 != 4) ProductCodeError.show();
         else ProductCodeError.hide();
 
         ProductCode.text(toupperstr(temp));
@@ -825,6 +825,7 @@ form1::form1() {
     buildButt.text(BuildCIAText);
     buildButt.size({ buildButt.width() * 2, buildButt.height() * 2});
     buildButt.click += [&] {
+        ableObjects(false);
         buildButt.enabled(false);
         builder.run_worker_async();
     };
@@ -1312,6 +1313,10 @@ form1::form1() {
         if (builder.cancellation_pending()) return;
         //modify exheader
         {
+            if (ApplicationName.text().empty()) {
+                xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}", AppNameText, BadValue), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                return;
+            }
             unsigned long unique_id = 0;
             stoul_s(unique_id, titleIDbox.text().c_str(), true);
 
@@ -1407,6 +1412,18 @@ form1::form1() {
             ncch0b.plain = NULL;
             ncch0b.chdr.partition_id = exhdr.title_id;
             ncch0b.chdr.title_id = exhdr.title_id;
+
+            if (UTF8toUTF16(ProductCode.text()).size() / 2 != 4) {
+                xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}", ProductCodetext, BadValue), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                goto out10;
+            }
+            {
+                xtd::ustring productCodeFull = "";
+                productCodeFull += "CTR-H-";
+                productCodeFull += ProductCode.text();
+                strcpy(ncch0b.chdr.product_code, productCodeFull.c_str());//modify product code
+            }
+
             tmd.content_count = 1;
             tmd.title_id = exhdr.title_id;
             builder.report_progress(35);
@@ -1473,6 +1490,7 @@ form1::form1() {
         minorBar.minimum(0);
         cancelBuildButt.enabled(false);
         buildButt.enabled(true);
+        ableObjects(true);
     };
 
     //settings
@@ -1644,7 +1662,6 @@ form1::form1() {
         mode.selected_index(as<xtd::forms::choice&>(sender).selected_index());
         copycheck.enabled(mode.selected_index());
         copybox.enabled(mode.selected_index() && copycheck.checked());
-        //menutitletxt.enabled(mode.selected_index());
         menubannertxt.enabled(mode.selected_index());
         for (int i = 2; i <= rows * columns - 1; i++)
             text_box_array.at(i)->enabled(mode.selected_index());
@@ -1748,14 +1765,17 @@ form1::form1() {
         majorBar.width(finalize.width() - 23);
 
         //jank incoming
-        if (finalize.height() < minorBarTxt.height() + minorBar.height() + 5 + majorBarTxt.height() + majorBar.height() + 10 + buildButt.height() + cancelBuildButt.height() + randomizeTitleID.height() + TitleIDError.height() + Applicationtxt.height() + ApplicationError.height() + ProductCodetxt.height() + 4) {
-            minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, randomizeTitleID.height() + TitleIDError.height() + Applicationtxt.height() + ApplicationError.height() + ProductCodetxt.height() + 4 });
+        if (finalize.height() < minorBarTxt.height() + minorBar.height() + 5 + majorBarTxt.height() + majorBar.height() + 10 + buildButt.height() + cancelBuildButt.height() + randomizeTitleID.height() + TitleIDError.height() + Applicationtxt.height() + ApplicationError.height() + randomizeProductCode.height() + ProductCodeError.height()) {
+            minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, randomizeTitleID.height() + TitleIDError.height() + Applicationtxt.height() + ApplicationError.height() + randomizeProductCode.height() + ProductCodeError.height() });
+            titleIDtxt.location({ (finalize.width() - (titleIDtxt.width() + titleIDbox.width() + ZeroZero.width() + randomizeTitleID.width())) / 2, (minorBarTxt.location().y() + minorBarTxt.height()) - (randomizeTitleID.height() + TitleIDError.height() + Applicationtxt.height() + ApplicationError.height() + randomizeProductCode.height() + ProductCodeError.height() + 5) });
         }
         else if (finalize.height() / 2 > minorBarTxt.height() + minorBar.height() + 5 + majorBarTxt.height() + majorBar.height() + 10 + buildButt.height() + cancelBuildButt.height()) {
             minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, (finalize.height() / 2) + ((finalize.height() / 2) - (minorBarTxt.height() + minorBar.height() + 5 + majorBarTxt.height() + majorBar.height() + 10 + buildButt.height() + cancelBuildButt.height())) / 2 });
+            titleIDtxt.location({ (finalize.width() - (titleIDtxt.width() + titleIDbox.width() + ZeroZero.width() + randomizeTitleID.width())) / 2, ((finalize.height() / 2) - (randomizeTitleID.height() + TitleIDError.height() + Applicationtxt.height() + ApplicationError.height() + randomizeProductCode.height() + ProductCodeError.height())) / 2 });
         }
         else {
             minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, finalize.height() - (minorBarTxt.height() + minorBar.height() + 5 + majorBarTxt.height() + majorBar.height() + 10 + buildButt.height() + cancelBuildButt.height()) });
+            titleIDtxt.location({ (finalize.width() - (titleIDtxt.width() + titleIDbox.width() + ZeroZero.width() + randomizeTitleID.width())) / 2, ((finalize.height() / 2) - (randomizeTitleID.height() + TitleIDError.height() + Applicationtxt.height() + ApplicationError.height() + randomizeProductCode.height() + ProductCodeError.height())) / 2 });
         }
         minorBar.location({ (finalize.width() - minorBar.width()) / 2, minorBarTxt.location().y() + minorBarTxt.height() });
 
@@ -1764,14 +1784,6 @@ form1::form1() {
 
         buildButt.location({ (finalize.width() - buildButt.width()) / 2, majorBar.location().y() + majorBar.height() + 10 });
         cancelBuildButt.location({ (finalize.width() - cancelBuildButt.width()) / 2, buildButt.location().y() + buildButt.height() });
-
-        if (minorBarTxt.location().y() > randomizeProductCode.location().y() + randomizeProductCode.height()) {
-            titleIDtxt.location({ (finalize.width() - (titleIDtxt.width() + titleIDbox.width() + ZeroZero.width() + randomizeTitleID.width())) / 2, ((finalize.height() / 2) - (randomizeTitleID.height() + TitleIDError.height() + Applicationtxt.height() + ApplicationError.height() + randomizeProductCode.height() + ProductCodeError.height())) / 2 });
-        }
-        else {
-            titleIDtxt.location({ (finalize.width() - (titleIDtxt.width() + titleIDbox.width() + ZeroZero.width() + randomizeTitleID.width())) / 2, minorBarTxt.location().y() - (randomizeTitleID.height() + TitleIDError.height() + Applicationtxt.height() + ApplicationError.height() + randomizeProductCode.height() + ProductCodeError.height()) });
-        }
-        debugs.text(xtd::ustring::format("{}, {}", minorBarTxt.location().y(), randomizeProductCode.location().y() + randomizeProductCode.height()));
 
         titleIDbox.location({ titleIDtxt.location().x() + titleIDtxt.width(), titleIDtxt.location().y() + (titleIDtxt.height() - titleIDbox.height()) / 2 });
         ZeroZero.location({ titleIDbox.location().x() + titleIDbox.width(), titleIDtxt.location().y() });

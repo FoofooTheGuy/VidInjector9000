@@ -756,8 +756,33 @@ namespace VidInjector9002 {
                 std::filesystem::copy(inpath, outpath, std::filesystem::copy_options::recursive);
         }
 
-        void ableObjects(bool disable) {//true for enable all, false for disable all except build cia and cancel
-
+        void ableObjects(bool able) {//true for enable all modifying buttons and stuff, false for disable all
+            mode.enabled(able);
+            bannerbox.enabled(able);
+            bannerbrowse.enabled(able);
+            iconbox.enabled(able);
+            iconbrowse.enabled(able);
+            iconpreview.enabled(able);
+            shortname.enabled(able);
+            longname.enabled(able);
+            publisher.enabled(able);
+            copycheck.enabled(able ? mode.selected_index() : able);
+            copybox.enabled(able ? (mode.selected_index() && copycheck.checked()) : able);
+            FFrewind.enabled(able);
+            FadeOpt.enabled(able);
+            for (int i = 0; i < rows * columns; i++) {
+                text_box_array.at(i)->enabled(able);
+            }
+            moflexbrowse.enabled(able);
+            multibannerbrowse.enabled(able ? mode.selected_index() : able);
+            menubannerpreview.enabled(able);
+            appendmedia.enabled(able);
+            removemedia.enabled(able);
+            titleIDbox.enabled(able);
+            randomizeTitleID.enabled(able);
+            ApplicationName.enabled(able);
+            ProductCode.enabled(able);
+            randomizeProductCode.enabled(able);
         }
 
         //objects
@@ -821,8 +846,6 @@ namespace VidInjector9002 {
         int columns = 3;
         int rows = 1;
         xtd::forms::label playertitletxt;
-        //xtd::forms::label menutitletxt;
-        //xtd::forms::picture_box titlemulti;
         xtd::forms::label moflextxt;
         xtd::forms::label menubannertxt;
         xtd::forms::picture_box bannermulti;
