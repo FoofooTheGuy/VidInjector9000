@@ -4,7 +4,7 @@
 #include "./internal.h"
 
 
-nnc_result nnc_read_ticket(nnc_rstream* rs, nnc_ticket* tik)
+nnc_result nnc_read_ticket(nnc_rstream *rs, nnc_ticket *tik)
 {
 	result ret;
 	TRY(NNC_RS_PCALL(rs, seek_abs, 0));
@@ -34,7 +34,7 @@ nnc_result nnc_read_ticket(nnc_rstream* rs, nnc_ticket* tik)
 	return NNC_R_OK;
 }
 
-nnc_result nnc_write_ticket(nnc_ticket* tik, nnc_wstream* ws)
+nnc_result nnc_write_ticket(nnc_ticket *tik, nnc_wstream *ws)
 {
 	result ret;
 	/* write signature */
@@ -66,11 +66,12 @@ nnc_result nnc_write_ticket(nnc_ticket* tik, nnc_wstream* ws)
 	return NNC_R_OK;
 }
 
-result nnc_ticket_signature_hash(nnc_rstream* rs, nnc_ticket* tik, nnc_sha_hash digest)
+result nnc_ticket_signature_hash(nnc_rstream *rs, nnc_ticket *tik, nnc_sha_hash digest)
 {
 	u32 pos = nnc_sig_size(tik->sig.type);
-	if (!pos) return NNC_R_INVALID_SIG;
+	if(!pos) return NNC_R_INVALID_SIG;
 	NNC_RS_PCALL(rs, seek_abs, pos);
 	/* we need to hash the entire thing except the actual signature itself */
 	return nnc_sighash(rs, tik->sig.type, digest, NNC_RS_PCALL0(rs, size) - pos);
 }
+

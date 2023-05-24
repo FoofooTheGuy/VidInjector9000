@@ -9,7 +9,7 @@
 #define CINFO_SIZE (NNC_CINFO_MAX_SIZE * 0x24)
 
 
-result nnc_read_tmd_header(rstream* rs, nnc_tmd_header* tmd)
+result nnc_read_tmd_header(rstream *rs, nnc_tmd_header *tmd)
 {
 	result ret;
 	TRY(NNC_RS_PCALL(rs, seek_abs, 0));
@@ -38,55 +38,55 @@ result nnc_read_tmd_header(rstream* rs, nnc_tmd_header* tmd)
 	return NNC_R_OK;
 }
 
-static u32 get_cinfo_pos(nnc_tmd_header* tmd)
+static u32 get_cinfo_pos(nnc_tmd_header *tmd)
 {
 	u32 ret = nnc_sig_size(tmd->sig.type);
-	if (!ret) return 0;
+	if(!ret) return 0;
 	return ret + 0xC4;
 }
 
-static u32 get_crec_pos(nnc_tmd_header* tmd)
+static u32 get_crec_pos(nnc_tmd_header *tmd)
 {
 	u32 ret = nnc_sig_size(tmd->sig.type);
-	if (!ret) return 0;
+	if(!ret) return 0;
 	return ret + 0x9C4;
 }
 
-static result parse_info_records(u8* buf, nnc_cinfo_record* records)
+static result parse_info_records(u8 *buf, nnc_cinfo_record *records)
 {
-	for (u8 i = 0; i < NNC_CINFO_MAX_SIZE; ++i)
+	for(u8 i = 0; i < NNC_CINFO_MAX_SIZE; ++i)
 	{
-		u8* blk = buf + (i * 0x24);
+		u8 *blk = buf + (i * 0x24);
 		/* 0x00 */ records[i].offset = BE16P(&blk[0x00]);
 		/* 0x02 */ records[i].count = BE16P(&blk[0x02]);
-		if (records[i].count == 0)
+		if(records[i].count == 0)
 			break; /* end */
 		/* 0x04 */ memcpy(records[i].hash, &blk[0x04], 0x20);
 	}
 	return NNC_R_OK;
 }
 
-result nnc_verify_read_tmd_info_records(rstream* rs, nnc_tmd_header* tmd,
-	nnc_cinfo_record* records)
+result nnc_verify_read_tmd_info_records(rstream *rs, nnc_tmd_header *tmd,
+	nnc_cinfo_record *records)
 {
 	u32 pos = get_cinfo_pos(tmd);
-	if (!pos) return NNC_R_INVALID_SIG;
+	if(!pos) return NNC_R_INVALID_SIG;
 
 	result ret;
 	u8 data[CINFO_SIZE];
 	nnc_sha256_hash digest;
 	TRY(read_at_exact(rs, pos, data, CINFO_SIZE));
 	TRY(nnc_crypto_sha256(data, digest, CINFO_SIZE));
-	if (memcmp(digest, tmd->hash, sizeof(digest)) != 0)
+	if(memcmp(digest, tmd->hash, sizeof(digest)) != 0)
 		return NNC_R_CORRUPT;
 	return parse_info_records(data, records);
 }
 
-result nnc_read_tmd_info_records(rstream* rs, nnc_tmd_header* tmd,
-	nnc_cinfo_record* records)
+result nnc_read_tmd_info_records(rstream *rs, nnc_tmd_header *tmd,
+	nnc_cinfo_record *records)
 {
 	u32 pos = get_cinfo_pos(tmd);
-	if (!pos) return NNC_R_INVALID_SIG;
+	if(!pos) return NNC_R_INVALID_SIG;
 
 	result ret;
 	u8 data[CINFO_SIZE];
@@ -94,10 +94,10 @@ result nnc_read_tmd_info_records(rstream* rs, nnc_tmd_header* tmd,
 	return parse_info_records(data, records);
 }
 
-bool nnc_verify_tmd_info_records(rstream* rs, nnc_tmd_header* tmd)
+bool nnc_verify_tmd_info_records(rstream *rs, nnc_tmd_header *tmd)
 {
 	u32 pos = get_cinfo_pos(tmd);
-	if (!pos) return false;
+	if(!pos) return false;
 
 	nnc_sha256_hash digest;
 	TRYB(NNC_RS_PCALL(rs, seek_abs, pos));
@@ -105,34 +105,34 @@ bool nnc_verify_tmd_info_records(rstream* rs, nnc_tmd_header* tmd)
 	return memcmp(digest, tmd->hash, sizeof(digest)) == 0;
 }
 
-bool nnc_verify_tmd_chunk_records(rstream* rs, nnc_tmd_header* tmd, nnc_cinfo_record* records)
+bool nnc_verify_tmd_chunk_records(rstream *rs, nnc_tmd_header *tmd, nnc_cinfo_record *records)
 {
 	u32 pos = get_crec_pos(tmd);
-	if (!pos) return false;
+	if(!pos) return false;
 	TRYB(NNC_RS_PCALL(rs, seek_abs, pos));
 	u32 to_hash = tmd->content_count;
-	for (u32 i = 0; records[i].count != 0 && to_hash != 0; ++i)
+	for(u32 i = 0; records[i].count != 0 && to_hash != 0; ++i)
 	{
 		to_hash -= records[i].count;
 		/* sizeof(chunk_record) = 0x30 */
 		u32 hash_size = records[i].count * 0x30;
 		nnc_sha256_hash digest;
 		TRYB(nnc_crypto_sha256_part(rs, digest, hash_size));
-		if (memcmp(digest, records[i].hash, sizeof(digest)) != 0)
+		if(memcmp(digest, records[i].hash, sizeof(digest)) != 0)
 			return false;
 	}
 	return to_hash == 0;
 }
 
-result nnc_read_tmd_chunk_records(rstream* rs, nnc_tmd_header* tmd, nnc_chunk_record* records)
+result nnc_read_tmd_chunk_records(rstream *rs, nnc_tmd_header *tmd, nnc_chunk_record *records)
 {
 	u32 pos = get_crec_pos(tmd);
-	if (!pos) return NNC_R_INVALID_SIG;
+	if(!pos) return NNC_R_INVALID_SIG;
 	result ret;
 	TRY(NNC_RS_PCALL(rs, seek_abs, pos));
-	for (u16 i = 0; i < tmd->content_count; ++i)
+	for(u16 i = 0; i < tmd->content_count; ++i)
 	{
-		nnc_chunk_record* rec = &records[i];
+		nnc_chunk_record *rec = &records[i];
 		u8 blk[0x30];
 		TRY(read_exact(rs, blk, sizeof(blk)));
 		/* 0x00 */ rec->id = BE32P(&blk[0x00]);
@@ -144,19 +144,19 @@ result nnc_read_tmd_chunk_records(rstream* rs, nnc_tmd_header* tmd, nnc_chunk_re
 	return NNC_R_OK;
 }
 
-result nnc_tmd_signature_hash(nnc_rstream* rs, nnc_tmd_header* tmd, nnc_sha_hash digest)
+result nnc_tmd_signature_hash(nnc_rstream *rs, nnc_tmd_header *tmd, nnc_sha_hash digest)
 {
 	u32 pos = nnc_sig_size(tmd->sig.type);
-	if (!pos) return NNC_R_INVALID_SIG;
+	if(!pos) return NNC_R_INVALID_SIG;
 	NNC_RS_PCALL(rs, seek_abs, pos);
 	/* 0xC4 = sizeof(tmd_header) */
 	return nnc_sighash(rs, tmd->sig.type, digest, 0xC4);
 }
 
-result nnc_write_tmd(nnc_tmd_header* tmd, nnc_chunk_record* records, u16 numrecords, nnc_wstream* ws)
+result nnc_write_tmd(nnc_tmd_header *tmd, nnc_chunk_record *records, u16 numrecords, nnc_wstream *ws)
 {
 	/* We write version 1, so that should be in the struct as well */
-	if (numrecords != tmd->content_count || tmd->version != 1)
+	if(numrecords != tmd->content_count || tmd->version != 1)
 		return NNC_R_INVAL;
 
 	result ret;
@@ -165,8 +165,8 @@ result nnc_write_tmd(nnc_tmd_header* tmd, nnc_chunk_record* records, u16 numreco
 	/* generate the records data... */
 	typedef u8 record[0x30];
 	size_t reclen = sizeof(record) * numrecords;
-	record* recdata = malloc(reclen);
-	for (int i = 0; i < numrecords; ++i)
+	record *recdata = malloc(reclen);
+	for(int i = 0; i < numrecords; ++i)
 	{
 		U32P(&recdata[i][0x00]) = BE32(records[i].id);
 		U16P(&recdata[i][0x04]) = BE16(records[i].index);
@@ -177,13 +177,13 @@ result nnc_write_tmd(nnc_tmd_header* tmd, nnc_chunk_record* records, u16 numreco
 
 	/* generate content info record */
 	u8 header[0x84 + CINFO_SIZE];
-	u8* cinfo = &header[0x84];
+	u8 *cinfo = &header[0x84];
 	memset(&cinfo[0x24], 0, CINFO_UNUSED_SIZE);
 
 	U16P(&cinfo[0x00]) = 0;
 	U16P(&cinfo[0x02]) = BE16(numrecords);
 	/* has all records and put them in */
-	nnc_crypto_sha256((u8*)recdata, &cinfo[0x04], reclen);
+	nnc_crypto_sha256((u8 *) recdata, &cinfo[0x04], reclen);
 
 	/* and finally we generate the header */
 	header[0x00] = tmd->version;
@@ -207,7 +207,7 @@ result nnc_write_tmd(nnc_tmd_header* tmd, nnc_chunk_record* records, u16 numreco
 	nnc_crypto_sha256(cinfo, &header[0x64], CINFO_SIZE);
 
 	TRYLBL(NNC_WS_PCALL(ws, write, header, sizeof(header)), out);
-	TRYLBL(NNC_WS_PCALL(ws, write, (u8*)recdata, reclen), out);
+	TRYLBL(NNC_WS_PCALL(ws, write, (u8 *) recdata, reclen), out);
 
 out:
 	free(recdata);
@@ -219,3 +219,4 @@ nnc_u32 nnc_calculate_tmd_size(u16 content_count, enum nnc_sigtype sig_type)
 	/* signature, issuer, header, content info records, content chunk records */
 	return nnc_sig_size(sig_type) + 0x40 + 0x84 + 0x24 * 64 + 0x30 * content_count;
 }
+

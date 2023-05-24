@@ -6,11 +6,11 @@
 #define inc_nnc_base_h
 
 #ifdef __cplusplus
-#define NNC_BEGIN extern "C" {
-#define NNC_END   }
+	#define NNC_BEGIN extern "C" {
+	#define NNC_END   }
 #else
-#define NNC_BEGIN
-#define NNC_END
+	#define NNC_BEGIN
+	#define NNC_END
 #endif
 
 #include <stdbool.h>
@@ -67,16 +67,16 @@ enum nnc_result_codes {
 };
 
 enum nnc_tid_category {
-	NNC_TID_CAT_NORMAL = 0x0,     ///< Exact normal (= games/homebrew) category.
+	NNC_TID_CAT_NORMAL    = 0x0,     ///< Exact normal (= games/homebrew) category.
 	NNC_TID_CAT_DLP_CHILD = 0x1,     ///< DLP Child.
-	NNC_TID_CAT_DEMO = 0x2,     ///< Exact demo category.
-	NNC_TID_CAT_AOC = 0x4,     ///< Add-On Content.
-	NNC_TID_CAT_NO_EXE = 0x8,     ///< Can't execute.
-	NNC_TID_CAT_UPDATE = 0xE,     ///< Exact update category (NNC_TID_CAT_DEMO | NNC_TID_CAT_AOC | NNC_TID_CAT_NO_EXE).
-	NNC_TID_CAT_SYSTEM = 0x10,    ///< System.
+	NNC_TID_CAT_DEMO      = 0x2,     ///< Exact demo category.
+	NNC_TID_CAT_AOC       = 0x4,     ///< Add-On Content.
+	NNC_TID_CAT_NO_EXE    = 0x8,     ///< Can't execute.
+	NNC_TID_CAT_UPDATE    = 0xE,     ///< Exact update category (NNC_TID_CAT_DEMO | NNC_TID_CAT_AOC | NNC_TID_CAT_NO_EXE).
+	NNC_TID_CAT_SYSTEM    = 0x10,    ///< System.
 	NNC_TID_CAT_NOT_MOUNT = 0x80,    ///< Not require right for mount.
-	NNC_TID_CAT_DLC = 0x8C,    ///< Exact DLC category (NNC_TID_CAT_DEMO | NNC_TID_CAT_AOC | NNC_TID_CAT_NO_EXE | NNC_TID_CAT_NOT_MOUNT).
-	NNC_TID_CAT_TWL = 0x8000,  ///< TWL (DSi).
+	NNC_TID_CAT_DLC       = 0x8C,    ///< Exact DLC category (NNC_TID_CAT_DEMO | NNC_TID_CAT_AOC | NNC_TID_CAT_NO_EXE | NNC_TID_CAT_NOT_MOUNT).
+	NNC_TID_CAT_TWL       = 0x8000,  ///< TWL (DSi).
 };
 
 
@@ -86,13 +86,13 @@ enum nnc_tid_category {
  *  \param minor  (optional) Output minor version.
  *  \param patch  (optional) Output patch version.
  */
-void nnc_parse_version(nnc_u16 ver, nnc_u8* major, nnc_u8* minor, nnc_u8* patch);
+void nnc_parse_version(nnc_u16 ver, nnc_u8 *major, nnc_u8 *minor, nnc_u8 *patch);
 
 /** \brief      Gets an result string from an nnc_result.
  *  \param res  Result to get string from.
  *  \returns    NULL if \p res is invalid.
  */
-const char* nnc_strerror(nnc_result res);
+const char *nnc_strerror(nnc_result res);
 
 /** \brief    Computes the log2 result of x.
  *  \param x  Value to calculate the log2 of.
@@ -110,7 +110,7 @@ nnc_u32 nnc_pow2(nnc_u32 exp);
  *  \name   Title IDs
  */
 
- /** Empty 3ds title ID. */
+/** Empty 3ds title ID. */
 #define NNC_BASE_TID 0x0004000000000000
 
 /** Gets the category of a title ID, to be used with \ref nnc_tid_category. */
@@ -120,13 +120,14 @@ nnc_u32 nnc_tid_unique_id(nnc_u64 tid);
 /** Gets the variation of a title ID. */
 nnc_u8 nnc_tid_variation(nnc_u64 tid);
 /** Sets the category of a title ID, use values from \ref nnc_tid_category. */
-void nnc_tid_set_category(nnc_u64* tid, nnc_u16 category);
+void nnc_tid_set_category(nnc_u64 *tid, nnc_u16 category);
 /** Sets the unique ID of a title ID. */
-void nnc_tid_set_unique_id(nnc_u64* tid, nnc_u32 uniqid);
+void nnc_tid_set_unique_id(nnc_u64 *tid, nnc_u32 uniqid);
 /** Sets the variation of a title ID. */
-void nnc_tid_set_variation(nnc_u64* tid, nnc_u8 variation);
+void nnc_tid_set_variation(nnc_u64 *tid, nnc_u8 variation);
 
 /** \} */
 
 NNC_END
 #endif
+

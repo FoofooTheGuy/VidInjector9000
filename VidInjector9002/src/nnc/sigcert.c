@@ -1,16 +1,16 @@
 
 #include "mbedtls/mbedtls/version.h"
-#include "nnc/sigcert.h"
 #include "mbedtls/mbedtls/pk.h"
+#include "nnc/sigcert.h"
 #include <string.h>
 #include <stdlib.h>
 #include "./internal.h"
 
 /* In MbedTLS version 3 struct members are now accessed with MBEDTLS_PRIVATE */
 #if MBEDTLS_VERSION_MAJOR == 3
-#define ACCESS_PRIV(name) MBEDTLS_PRIVATE(name)
+	#define ACCESS_PRIV(name) MBEDTLS_PRIVATE(name)
 #else
-#define ACCESS_PRIV(name) name
+	#define ACCESS_PRIV(name) name
 #endif
 
 #define NNC_SIGTYPE_IS_NONE(s) ((s) >= NNC_SIG_NONE && (s) <= NNC_SIG_NONE + NNC_SIG_ECDSA_SHA256)
@@ -19,31 +19,31 @@
 #define CERT_MAX 2
 
 static u16 size_lut[0x6] = { 0x200, 0x100, 0x3C, 0x200, 0x100, 0x3C };
-static u16 pad_lut[0x6] = { 0x3C,  0x3C,  0x40, 0x3C,  0x3C,  0x40 };
+static u16 pad_lut[0x6]  = { 0x3C,  0x3C,  0x40, 0x3C,  0x3C,  0x40 };
 #define SIG_MAX_SIZE 0x240
 
 
 u16 nnc_sig_size(enum nnc_sigtype sig)
 {
-	if (NNC_SIGTYPE_IS_NONE(sig))
+	if(NNC_SIGTYPE_IS_NONE(sig))
 		sig -= NNC_SIG_NONE;
-	if (sig > SIGN_MAX) return 0;
+	if(sig > SIGN_MAX) return 0;
 	return size_lut[sig] + pad_lut[sig] + 0x04;
 }
 
 u16 nnc_sig_dsize(enum nnc_sigtype sig)
 {
-	if (sig > SIGN_MAX) return 0;
+	if(sig > SIGN_MAX) return 0;
 	return size_lut[sig];
 }
 
-result nnc_read_sig(rstream* rs, nnc_signature* sig)
+result nnc_read_sig(rstream *rs, nnc_signature *sig)
 {
 	/* this function is a tad bit cursed due to alignment */
 	result ret;
 	u8 signum[4 + 12];
 	TRY(read_exact(rs, signum, sizeof(signum)));
-	if (signum[0] != 0x00 || signum[1] != 0x01 || signum[2] != 0x00 || signum[3] > SIGN_MAX)
+	if(signum[0] != 0x00 || signum[1] != 0x01 || signum[2] != 0x00 || signum[3] > SIGN_MAX)
 		return NNC_R_INVALID_SIG;
 	sig->type = signum[3];
 	nnc_u8 sigdata[0x270];
@@ -56,9 +56,9 @@ result nnc_read_sig(rstream* rs, nnc_signature* sig)
 	return NNC_R_OK;
 }
 
-nnc_result nnc_write_sig(nnc_signature* sig, nnc_wstream* ws)
+nnc_result nnc_write_sig(nnc_signature *sig, nnc_wstream *ws)
 {
-	if (NNC_SIGTYPE_IS_NONE(sig->type))
+	if(NNC_SIGTYPE_IS_NONE(sig->type))
 	{
 		u8 data[SIG_MAX_SIZE + 0x40 /* + issuer */];
 		memset(data, 0x00, sizeof(data));
@@ -68,7 +68,7 @@ nnc_result nnc_write_sig(nnc_signature* sig, nnc_wstream* ws)
 		memcpy(&data[nnc_sig_size(sig->type)], sig->issuer, sizeof(sig->issuer));
 		return NNC_WS_PCALL(ws, write, data, nnc_sig_size(sig->type) + 0x40);
 	}
-	if (sig->type > SIGN_MAX)
+	if(sig->type > SIGN_MAX)
 		return NNC_R_INVALID_SIG;
 	u8 data[0x240 + 0x40];
 	data[0] = 0x00;
@@ -83,9 +83,9 @@ nnc_result nnc_write_sig(nnc_signature* sig, nnc_wstream* ws)
 	return NNC_WS_PCALL(ws, write, data, 4 + data_size + pad_size + 0x40);
 }
 
-const char* nnc_sigstr(enum nnc_sigtype sig)
+const char *nnc_sigstr(enum nnc_sigtype sig)
 {
-	switch (sig)
+	switch(sig)
 	{
 	case NNC_SIG_RSA_4096_SHA1:
 		return "RSA 4096 - SHA1";
@@ -105,42 +105,42 @@ const char* nnc_sigstr(enum nnc_sigtype sig)
 	return NULL;
 }
 
-static void import_rsa(mbedtls_rsa_context* ctx, u8* mod, u16 mod_size, u8* exp)
+static void import_rsa(mbedtls_rsa_context *ctx, u8 *mod, u16 mod_size, u8 *exp)
 {
 	mbedtls_mpi_read_binary(&ctx->ACCESS_PRIV(N), mod, mod_size);
 	mbedtls_mpi_read_binary(&ctx->ACCESS_PRIV(E), exp, 0x4);
 	ctx->ACCESS_PRIV(len) = mod_size;
 }
 
-static bool setup_pk(nnc_certchain* chain, nnc_signature* sig, mbedtls_pk_context* ctx)
+static bool setup_pk(nnc_certchain *chain, nnc_signature *sig, mbedtls_pk_context *ctx)
 {
-	nnc_certificate* cert;
+	nnc_certificate *cert;
 	/* (usually?) in the form (issuer user)-(certificate used to verify certificate)-(certificate name) */
-	char* signame = strrchr(sig->issuer, '-');
-	if (signame) ++signame;
+	char *signame = strrchr(sig->issuer, '-');
+	if(signame) ++signame;
 	else        signame = sig->issuer; /* fall back to full issuer */
-	for (int i = 0; i < chain->len; ++i)
+	for(int i = 0; i < chain->len; ++i)
 	{
 		cert = &chain->certs[i];
-		if (strcmp(cert->name, signame) == 0)
+		if(strcmp(cert->name, signame) == 0)
 		{
 			/* found cert we want to import */
-			switch (cert->type)
+			switch(cert->type)
 			{
 			case NNC_CERT_RSA_2048:
-				if (!(sig->type == NNC_SIG_RSA_2048_SHA1 || sig->type == NNC_SIG_RSA_2048_SHA256))
+				if(!(sig->type == NNC_SIG_RSA_2048_SHA1 || sig->type == NNC_SIG_RSA_2048_SHA256))
 					continue; /* invalid cert/sig pair */
 				import_rsa(mbedtls_pk_rsa(*ctx), cert->data.rsa2048.modulus,
 					0x100, cert->data.rsa2048.exp);
 				return true;
 			case NNC_CERT_RSA_4096:
-				if (!(sig->type == NNC_SIG_RSA_4096_SHA1 || sig->type == NNC_SIG_RSA_4096_SHA256))
+				if(!(sig->type == NNC_SIG_RSA_4096_SHA1 || sig->type == NNC_SIG_RSA_4096_SHA256))
 					continue; /* invalid cert/sig pair */
 				import_rsa(mbedtls_pk_rsa(*ctx), cert->data.rsa4096.modulus,
 					0x200, cert->data.rsa4096.exp);
 				return true;
 			case NNC_CERT_ECDSA:
-				if (!(sig->type == NNC_SIG_ECDSA_SHA1 || sig->type == NNC_SIG_ECDSA_SHA256))
+				if(!(sig->type == NNC_SIG_ECDSA_SHA1 || sig->type == NNC_SIG_ECDSA_SHA256))
 					continue; /* invalid cert/sig pair */
 				/* TODO: implement ECDSA certificates */
 				continue;
@@ -150,10 +150,10 @@ static bool setup_pk(nnc_certchain* chain, nnc_signature* sig, mbedtls_pk_contex
 	return false;
 }
 
-result nnc_verify_signature(nnc_certchain* chain, nnc_signature* sig, nnc_sha_hash hash)
+result nnc_verify_signature(nnc_certchain *chain, nnc_signature *sig, nnc_sha_hash hash)
 {
-	const mbedtls_pk_info_t* pkinfo;
-	switch (sig->type)
+	const mbedtls_pk_info_t *pkinfo;
+	switch(sig->type)
 	{
 	case NNC_SIG_RSA_4096_SHA1:
 	case NNC_SIG_RSA_2048_SHA1:
@@ -169,12 +169,12 @@ result nnc_verify_signature(nnc_certchain* chain, nnc_signature* sig, nnc_sha_ha
 		pkinfo = NULL;
 		break;
 	}
-	if (!pkinfo) return NNC_R_INVALID_SIG;
+	if(!pkinfo) return NNC_R_INVALID_SIG;
 
 	mbedtls_pk_context ctx;
 	mbedtls_pk_init(&ctx);
 	mbedtls_pk_setup(&ctx, pkinfo);
-	if (!setup_pk(chain, sig, &ctx))
+	if(!setup_pk(chain, sig, &ctx))
 	{
 		mbedtls_pk_free(&ctx);
 		return NNC_R_CERT_NOT_FOUND;
@@ -182,7 +182,7 @@ result nnc_verify_signature(nnc_certchain* chain, nnc_signature* sig, nnc_sha_ha
 
 	bool ret;
 
-	switch (sig->type)
+	switch(sig->type)
 	{
 	case NNC_SIG_RSA_4096_SHA1:
 	case NNC_SIG_RSA_2048_SHA1:
@@ -202,9 +202,9 @@ result nnc_verify_signature(nnc_certchain* chain, nnc_signature* sig, nnc_sha_ha
 	return ret ? NNC_R_OK : NNC_R_BAD_SIG;
 }
 
-nnc_result nnc_sighash(nnc_rstream* rs, enum nnc_sigtype sig, nnc_sha_hash digest, u32 size)
+nnc_result nnc_sighash(nnc_rstream *rs, enum nnc_sigtype sig, nnc_sha_hash digest, u32 size)
 {
-	switch (sig)
+	switch(sig)
 	{
 	case NNC_SIG_RSA_4096_SHA1:
 	case NNC_SIG_RSA_2048_SHA1:
@@ -220,7 +220,7 @@ nnc_result nnc_sighash(nnc_rstream* rs, enum nnc_sigtype sig, nnc_sha_hash diges
 	return NNC_R_INVALID_SIG;
 }
 
-nnc_result nnc_read_certchain(nnc_rstream* rs, nnc_certchain* chain, bool extend)
+nnc_result nnc_read_certchain(nnc_rstream *rs, nnc_certchain *chain, bool extend)
 {
 	NNC_RS_PCALL(rs, seek_abs, 0);
 	u32 size = NNC_RS_PCALL0(rs, size);
@@ -229,32 +229,32 @@ nnc_result nnc_read_certchain(nnc_rstream* rs, nnc_certchain* chain, bool extend
 	result res;
 
 	u32 len = 0;
-	if (chain)
+	if(chain)
 	{
-		if (extend) chain->certs = realloc(chain->certs, sizeof(nnc_certificate) * (chain->len + 3));
+		if(extend) chain->certs = realloc(chain->certs, sizeof(nnc_certificate) * (chain->len + 3));
 		else { chain->certs = malloc(sizeof(nnc_certificate) * 3); chain->len = 0; }
-		if (!chain->certs) return NNC_R_NOMEM;
+		if(!chain->certs) return NNC_R_NOMEM;
 		len = chain->len;
 	}
 
 	nnc_certificate dummy;
-	nnc_certificate* cert = &dummy;
-	while (NNC_RS_PCALL0(rs, tell) != size)
+	nnc_certificate *cert = &dummy;
+	while(NNC_RS_PCALL0(rs, tell) != size)
 	{
 		/* we need to allocate more */
-		if (chain && !left)
+		if(chain && !left)
 		{
 			chain->certs = realloc(chain->certs, sizeof(nnc_certificate) * (len + 3));
-			if (!chain->certs) return NNC_R_NOMEM;
+			if(!chain->certs) return NNC_R_NOMEM;
 			left = 3;
 		}
 		--left;
 
-		if (chain) cert = &chain->certs[len];
-		if ((res = nnc_read_sig(rs, &cert->sig)) != NNC_R_OK)
+		if(chain) cert = &chain->certs[len];
+		if((res = nnc_read_sig(rs, &cert->sig)) != NNC_R_OK)
 			goto err;
 		u8 first_blocks[0x48 + 8];
-		if ((res = read_exact(rs, first_blocks, sizeof(first_blocks))) != NNC_R_OK)
+		if((res = read_exact(rs, first_blocks, sizeof(first_blocks))) != NNC_R_OK)
 			goto err;
 		cert->type = BE32P(&first_blocks[0x00]);
 		memcpy(cert->name, &first_blocks[0x04], 0x40);
@@ -263,7 +263,7 @@ nnc_result nnc_read_certchain(nnc_rstream* rs, nnc_certchain* chain, bool extend
 		memcpy(cert->data.raw, &first_blocks[0x48], 8);
 		u32 padding_size, cert_size;
 		nnc_u8 rest_data[0x230];
-		switch (cert->type)
+		switch(cert->type)
 		{
 		case NNC_CERT_RSA_2048:
 			cert_size = 0x104 - 8;
@@ -281,21 +281,21 @@ nnc_result nnc_read_certchain(nnc_rstream* rs, nnc_certchain* chain, bool extend
 			res = NNC_R_INVALID_CERT;
 			goto err;
 		}
-		if ((res = read_exact(rs, rest_data, cert_size + padding_size)) != NNC_R_OK)
+		if((res = read_exact(rs, rest_data, cert_size + padding_size)) != NNC_R_OK)
 			goto err;
 		memcpy(&cert->data.raw[8], rest_data, cert_size);
 		++len;
 	}
 
-	if (chain) chain->len = len;
+	if(chain) chain->len = len;
 	return NNC_R_OK;
 err:
-	if (chain && !extend)
+	if(chain && !extend)
 		free(chain->certs);
 	return res;
 }
 
-void nnc_scan_certchains(nnc_certchain* chain)
+void nnc_scan_certchains(nnc_certchain *chain)
 {
 	chain->len = 0;
 	bool extend = false;
@@ -321,7 +321,8 @@ void nnc_scan_certchains(nnc_certchain* chain)
 #undef DOFILE
 }
 
-void nnc_free_certchain(nnc_certchain* chain)
+void nnc_free_certchain(nnc_certchain *chain)
 {
-	if (chain->len) free(chain->certs);
+	if(chain->len) free(chain->certs);
 }
+
