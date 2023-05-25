@@ -68,7 +68,13 @@ namespace VidInjector9002 {
         }
 
         void on_form_closing(xtd::forms::form_closing_event_args& e) override {
-            e.cancel(xtd::forms::message_box::show(*this, Losedata, ConfirmClose, xtd::forms::message_box_buttons::yes_no, xtd::forms::message_box_icon::question) == xtd::forms::dialog_result::no);
+            xtd::forms::dialog_result res = xtd::forms::message_box::show(*this, Losedata, ConfirmClose, xtd::forms::message_box_buttons::yes_no, xtd::forms::message_box_icon::question);
+            if (res == xtd::forms::dialog_result::no) {//no close
+                e.cancel(true);
+            }
+            else if (res == xtd::forms::dialog_result::yes) {//yes close
+                &xtd::forms::application::exit_thread;//obliterate the process
+            }
         };
 
         xtd::drawing::image empty(int width, int height) {

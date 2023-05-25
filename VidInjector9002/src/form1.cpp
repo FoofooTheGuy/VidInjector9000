@@ -1146,7 +1146,7 @@ form1::form1() {
                 if (mode.selected_index()) {
 
                     if (builder.cancellation_pending()) return;
-                    minorBarTxt.text(xtd::ustring::format("{} {}/{}", CopyingMoflex, i, rows));
+                    minorBarTxt.text(xtd::ustring::format("{} {}/{}", CopyingMoflex, i + 1, rows));
                     minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
 
                     copyfile(text_box_array.at(i * columns + 1)->text().c_str(), xtd::ustring::format("{}/{}/temp/romfs/movie/movie_{}.moflex", ProgramDir, resourcesPath, i).c_str());
@@ -1319,6 +1319,10 @@ form1::form1() {
             }
             unsigned long unique_id = 0;
             stoul_s(unique_id, titleIDbox.text().c_str(), true);
+            if (!TIDisValid(unique_id)) {
+                xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}", TitleIDText, BadValue), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                return;
+            }
 
             std::fstream exheader(xtd::ustring::format("{}/{}/temp/exheader.bin", ProgramDir, resourcesPath).c_str(), std::ios::in | std::ios::out | std::ios::binary);
             for (int i = 0; i < 8; i++) {//write application name only 8 bytes because that's the limit. i had to do this loop because it was being weird with .write
