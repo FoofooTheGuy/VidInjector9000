@@ -159,6 +159,7 @@ typedef struct nnc_wstream {
 
 typedef struct nnc_wfile {
 	const nnc_wstream_funcs *funcs;
+	nnc_u32 off;
 	FILE *f;
 } nnc_wfile;
 
