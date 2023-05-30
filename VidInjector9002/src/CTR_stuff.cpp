@@ -174,6 +174,7 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 
 	//layer 200x120 image on a 256x128 image
 	output_fin = (unsigned char*)malloc(new_w * new_h * 3);
+	if (output_fin == NULL) return false;
 	memset(output_fin, 0, new_w * new_h * 3);
 	for (int y = 0; y < out_h; y++)
 		for (int x = 0; x < out_w; x++) {

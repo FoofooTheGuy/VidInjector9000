@@ -1330,11 +1330,11 @@ form1::form1() {
                 exheader << char(ApplicationName.text().c_str()[i]);
             }
             exheader.seekp(0x1C9);
-            exheader.write(reinterpret_cast<const char*>(&unique_id), sizeof(long));//oh no oh no here we go with the size in bytes of the number accross platoforms (it's 4 for me which would be 32bit which makes sense, why would anyone change this?)
+            exheader.write(reinterpret_cast<const char*>(&unique_id), sizeof(uint32_t));
             exheader.seekp(0x201);
-            exheader.write(reinterpret_cast<const char*>(&unique_id), sizeof(long));
+            exheader.write(reinterpret_cast<const char*>(&unique_id), sizeof(uint32_t));
             exheader.seekp(0x601);
-            exheader.write(reinterpret_cast<const char*>(&unique_id), sizeof(long));
+            exheader.write(reinterpret_cast<const char*>(&unique_id), sizeof(uint32_t));
             exheader.close();
         }
         //CIA creation
