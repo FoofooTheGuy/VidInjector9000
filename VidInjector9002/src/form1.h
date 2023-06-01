@@ -310,7 +310,6 @@ namespace VidInjector9002 {
                 removemedia.location({ ((text_box_array.at(0)->width() * columns) - (removemedia.width() + appendmedia.width() + 2)) / 2, text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
                 appendmedia.location({ removemedia.location().x() + removemedia.width() + 2, removemedia.location().y() });
             }
-            if (rows == 27) appendmedia.enabled(false);
             for (int i = columns; i <= rows * columns - 1; i++)
                 text_box_array.at(i)->enabled(mode.selected_index());
             rowtxt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - rowtxt.width()) / 2, removemedia.location().y() + removemedia.height() });
@@ -320,7 +319,7 @@ namespace VidInjector9002 {
             bannerpreviewright.enabled(mode.selected_index() && bannerpreviewindex != rows - 1);
             indextxt.text(xtd::ustring::format("{}/{}", bannerpreviewindex + 1, rows));
             removemedia.enabled(true);
-            appendmedia.enabled(true);
+            appendmedia.enabled(rows < 27);
         }
 
         void doRemoveMedia() {
@@ -337,7 +336,6 @@ namespace VidInjector9002 {
                 removemedia.location({ ((text_box_array.at(0)->width() * columns) - (removemedia.width() + appendmedia.width() + 2)) / 2, text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
                 appendmedia.location({ removemedia.location().x() + removemedia.width() + 2, removemedia.location().y() });
             }
-            if (rows == 1) removemedia.enabled(false);
             for (int i = columns; i <= rows * columns - 1; i++)
                 text_box_array.at(i)->enabled(mode.selected_index());
             rowtxt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - rowtxt.width()) / 2, removemedia.location().y() + removemedia.height() });
@@ -348,7 +346,7 @@ namespace VidInjector9002 {
             bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
             bannerpreviewright.enabled(mode.selected_index() && bannerpreviewindex != rows - 1);
             indextxt.text(xtd::ustring::format("{}/{}", bannerpreviewindex + 1, rows));
-            removemedia.enabled(true);
+            removemedia.enabled(rows > 1);
             appendmedia.enabled(true);
         }
 
@@ -776,14 +774,16 @@ namespace VidInjector9002 {
             copybox.enabled(able ? (mode.selected_index() && copycheck.checked()) : able);
             FFrewind.enabled(able);
             FadeOpt.enabled(able);
-            for (int i = 0; i < rows * columns; i++) {
+            for (int i = 0; i < 2; i++) {
                 text_box_array.at(i)->enabled(able);
             }
+            for (int i = 2; i <= rows * columns - 1; i++)
+                text_box_array.at(i)->enabled(able ? mode.selected_index() : able);
             moflexbrowse.enabled(able);
             multibannerbrowse.enabled(able ? mode.selected_index() : able);
             menubannerpreview.enabled(able);
-            appendmedia.enabled(able);
-            removemedia.enabled(able);
+            appendmedia.enabled(rows < 27 && (able ? mode.selected_index() : able));
+            removemedia.enabled(rows > 1 && (able ? mode.selected_index() : able));
             titleIDbox.enabled(able);
             randomizeTitleID.enabled(able);
             ApplicationName.enabled(able);
