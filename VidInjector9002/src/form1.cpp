@@ -862,13 +862,13 @@ form1::form1() {
         Generate_Files(xtd::ustring::format("{}/{}/temp", ProgramDir, resourcesPath).c_str(), mode.selected_index());
 
         majorBarTxt.text(xtd::ustring::format("{} romfs", CreatingFile));
+        majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, majorBarTxt.location().y() });
         majorBarTxt.show();
-        majorBarTxt.location().x((finalize.width() - majorBarTxt.width()) / 2);//why no work?
 
         //make movie_title.csv (player title)
         {
             minorBarTxt.text(xtd::ustring::format("{} romfs/movie_title.csv", CreatingFile));
-            minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
+            minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
             minorBarTxt.show();
 
             std::filesystem::create_directories(xtd::ustring::format("{}/{}/temp/romfs/movie", ProgramDir, resourcesPath).c_str());
@@ -904,7 +904,7 @@ form1::form1() {
         //make settingsTL.csv (menu title and stuff)
         {
             minorBarTxt.text(xtd::ustring::format("{} romfs/settings/settingsTL.csv", CreatingFile));
-            minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
+            minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
 
             std::filesystem::create_directories(xtd::ustring::format("{}/{}/temp/romfs/settings", ProgramDir, resourcesPath).c_str());
             std::ofstream settingsTL(xtd::ustring::format("{}/{}/temp/romfs/settings/settingsTL.csv", ProgramDir, resourcesPath).c_str(), std::ios_base::out | std::ios_base::binary);
@@ -1147,7 +1147,7 @@ form1::form1() {
 
                     if (builder.cancellation_pending()) return;
                     minorBarTxt.text(xtd::ustring::format("{} {}/{}", CopyingMoflex, i + 1, rows));
-                    minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
+                    minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
 
                     copyfile(text_box_array.at(i * columns + 1)->text().c_str(), xtd::ustring::format("{}/{}/temp/romfs/movie/movie_{}.moflex", ProgramDir, resourcesPath, i).c_str());
                     if (!std::filesystem::exists(xtd::ustring::format("{}/{}/temp/romfs/movie/movie_{}.moflex", ProgramDir, resourcesPath, i).c_str())) {//this probably only happens if there's no disk space
@@ -1159,7 +1159,7 @@ form1::form1() {
                 else {
                     if (builder.cancellation_pending()) return;
                     minorBarTxt.text(xtd::ustring::format("{} 1/1", CopyingMoflex));
-                    minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
+                    minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
                     copyfile(text_box_array.at(i * columns + 1)->text().c_str(), xtd::ustring::format("{}/{}/temp/romfs/movie/movie.moflex", ProgramDir, resourcesPath).c_str());
                     if (!std::filesystem::exists(xtd::ustring::format("{}/{}/temp/romfs/movie/movie.moflex", ProgramDir, resourcesPath).c_str())) {//this probably only happens if there's no disk space
                         xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/{}/temp/romfs/movie/movie.moflex", FailedToCreateFile, ProgramDir, resourcesPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
@@ -1182,7 +1182,7 @@ form1::form1() {
                 }*/
 
                 minorBarTxt.text(xtd::ustring::format("{} romfs/movie/movie_{}.bimg", CreatingFile, i));
-                minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
+                minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
 
                 if (convertToBimg(text_box_array.at(i * columns + 2)->text(), bimg, true)) {
                     std::filesystem::create_directories(xtd::ustring::format("{}/{}/temp/romfs/movie", ProgramDir, resourcesPath).c_str());
@@ -1218,10 +1218,10 @@ form1::form1() {
         {
             builder.report_progress(0);
             majorBarTxt.text(xtd::ustring::format("{} exefs", CreatingFile));
-            majorBarTxt.location().x((finalize.width() - majorBarTxt.width()) / 2);
+            majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, majorBarTxt.location().y() });
 
             minorBarTxt.text(xtd::ustring::format("{} exefs/icon", CreatingFile));
-            minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
+            minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
 
             if (!convertToIcon(iconbox.text(), xtd::ustring::format("{}/{}/temp/exefs/icon", ProgramDir, resourcesPath).c_str(), UTF8toUTF16(shortname.text()), UTF8toUTF16(longname.text()), UTF8toUTF16(publisher.text()), borderMode)) {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/{}/temp/exefs/icon", FailedToCreateFile, ProgramDir, resourcesPath), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
@@ -1230,10 +1230,10 @@ form1::form1() {
             }
             if (mode.selected_index()) {//multi vid needs an icon here so that it can make ext data or something (the game crashes if it isnt here)
                 majorBarTxt.text(xtd::ustring::format("{} romfs", CreatingFile));
-                majorBarTxt.location().x((finalize.width() - majorBarTxt.width()) / 2);
+                majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, majorBarTxt.location().y() });
 
                 minorBarTxt.text(xtd::ustring::format("{} romfs/icon.icn", CreatingFile));
-                minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
+                minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
 
                 copyfile(xtd::ustring::format("{}/{}/temp/exefs/icon", ProgramDir, resourcesPath).c_str(), xtd::ustring::format("{}/{}/temp/romfs/icon.icn", ProgramDir, resourcesPath).c_str());
                 if (!std::filesystem::exists(xtd::ustring::format("{}/{}/temp/romfs/icon.icn", ProgramDir, resourcesPath).c_str())) {
@@ -1242,12 +1242,12 @@ form1::form1() {
                     return;
                 }
                 majorBarTxt.text(xtd::ustring::format("{} exefs", CreatingFile));
-                majorBarTxt.location().x((finalize.width() - majorBarTxt.width()) / 2);
+                majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, majorBarTxt.location().y() });
             }
             builder.report_progress(50);
             //make banner
             minorBarTxt.text(xtd::ustring::format("{} exefs/banner", CreatingFile));
-            minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
+            majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, majorBarTxt.location().y() });
 
             unsigned char Checker[4];
             bool CGFX = false;
@@ -1340,7 +1340,9 @@ form1::form1() {
         //CIA creation
         {
             majorBarTxt.text(xtd::ustring::format("{} {}", CreatingFile, outfile.substr(outfile.find_last_of("/\\") + 1)));
+            majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, majorBarTxt.location().y() });
             minorBarTxt.text(xtd::ustring::format("{} {}", CreatingFile, outfile.substr(outfile.find_last_of("/\\") + 1)));
+            minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
             builder.report_progress(0);
             std::ofstream baseCIA(xtd::ustring::format("{}/{}/temp/base.cia", ProgramDir, resourcesPath).c_str(), std::ios_base::out | std::ios_base::binary);
             baseCIA.write(reinterpret_cast<const char*>(base_cia), sizeof(base_cia));
