@@ -1522,7 +1522,7 @@ form1::form1() {
     savebutt.size({ settings.width() - 10, 35 });
     savebutt.location({ (settings.width() - savebutt.width()) / 2, (settings.height() / 3) - savebutt.height()});
     savebutt.click += [&] {
-        parampath = save_file(ParamFilesList, DefaultParamFile);
+        parampath = save_file(ParamFilesList, DefaultParamFile, (parampath.empty() ? xtd::environment::get_folder_path(xtd::environment::special_folder::desktop) : parampath));
         xtd::forms::dialog_result res = xtd::forms::dialog_result::yes;
         if (std::filesystem::exists(parampath.c_str()))
             res = xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}", parampath.substr(parampath.find_last_of("/\\") + 1), AlreadyExists, ReplaceIt), ConfirmSave, xtd::forms::message_box_buttons::yes_no, xtd::forms::message_box_icon::question);
@@ -1541,6 +1541,7 @@ form1::form1() {
     loadbutt.click += [&] {
         parampath = load_file(ParamFilesList, parampath);
         loadParameters();
+        loaded = true;//re-enable this after the previous function disabled it (it's okay because if you clicked this, we're loaded)
     };
 
     AutoSave.parent(settings);

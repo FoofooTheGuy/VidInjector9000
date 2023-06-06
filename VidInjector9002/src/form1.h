@@ -434,6 +434,7 @@ namespace VidInjector9002 {
         }
 
         bool loadParameters() {
+            loaded = false;//do this so stuff this calls doesnt try to save the parameters while it's loading
             //xtd::forms::message_box::show(*this, xtd::ustring::format("{}", parampath), FormText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::warning);
             xtd::ustring outstr = "";
             unsigned long outrealint = 0;
@@ -598,13 +599,6 @@ namespace VidInjector9002 {
                     good = false;
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}({})\n{}.", FailedToFindVar, StrMoflexParam, y, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 }
-                /*if (fileParse(outstr, parampath, xtd::ustring::format("{}({})", StrMTitleParam, y))) {
-                    text_box_array.at(y * columns + 2)->text(outstr);
-                }
-                else {
-                    good = false;
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}({})\n{}.", FailedToFindVar, StrMTitleParam, y, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                }*/
                 if (fileParse(outstr, parampath, xtd::ustring::format("{}({})", StrMBannerParam, y))) {
                     text_box_array.at(y * columns + 2)->text(outstr);
                 }
