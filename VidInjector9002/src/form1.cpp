@@ -82,7 +82,8 @@ form1::form1() {
     bannerbrowse.location({ parameters.width() - 597, bannerbox.location().y() - (bannerbrowse.height() / 2 - bannerbox.height() / 2) });//tether to bannerbox
     bannerbrowse.text(Browse);
     bannerbrowse.click += [&] {
-        bannerbox.text(load_file(xtd::ustring::format("{} {}{}{}", SupportedImage200x120, SupportedImageList, CGFXList, AllFilesList), bannerbox.text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures)));
+        xtd::ustring filepath = load_file(xtd::ustring::format("{} {}{}{}", SupportedImage200x120, SupportedImageList, CGFXList, AllFilesList), bannerbox.text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
+        if (!filepath.empty()) bannerbox.text(filepath);
     };
 
     bannererror.parent(parameters);
@@ -248,7 +249,8 @@ form1::form1() {
     iconbrowse.location({ iconbox.location().x() + iconbox.width() + 1, iconbox.location().y() - (iconbrowse.height() / 2 - iconbox.height() / 2) });//tether to iconbox
     iconbrowse.text(Browse);
     iconbrowse.click += [&] {
-        iconbox.text(load_file(xtd::ustring::format("{} {}{}", SupportedImage48x48, SupportedImageList), iconbox.text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures)));
+        xtd::ustring filepath = load_file(xtd::ustring::format("{} {}{}", SupportedImage48x48, SupportedImageList), iconbox.text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
+        if(!filepath.empty()) iconbox.text(filepath);
     };
 
     iconpreview.parent(parameters);
@@ -506,7 +508,7 @@ form1::form1() {
         if (autoSaveParams && loaded) saveSettings();
         if (mode.selected_index()) {
             xtd::ustring filepath = load_file(xtd::ustring::format("{} {}{}", SupportedImage200x120, SupportedImageList), text_box_array.at(bannerpreviewindex * columns + 2)->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
-            if (filepath != "") text_box_array.at(bannerpreviewindex * columns + 2)->text(filepath);
+            if (!filepath.empty()) text_box_array.at(bannerpreviewindex * columns + 2)->text(filepath);
             setMultiBannerPreview(bannerpreviewindex);
             //bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
             //bannerpreviewright.enabled(mode.selected_index() && bannerpreviewindex != rows - 1);
@@ -1522,7 +1524,9 @@ form1::form1() {
     savebutt.size({ settings.width() - 10, 35 });
     savebutt.location({ (settings.width() - savebutt.width()) / 2, (settings.height() / 3) - savebutt.height()});
     savebutt.click += [&] {
-        parampath = save_file(ParamFilesList, DefaultParamFile, (parampath.empty() ? xtd::environment::get_folder_path(xtd::environment::special_folder::desktop) : parampath));
+        xtd::ustring filepath = save_file(ParamFilesList, (parampath.empty() ? DefaultParamFile : parampath.substr(parampath.find_last_of("/\\") + 1)), (parampath.empty() ? xtd::environment::get_folder_path(xtd::environment::special_folder::desktop) : parampath));
+        if (!filepath.empty()) parampath = filepath;
+        else return;
         xtd::forms::dialog_result res = xtd::forms::dialog_result::yes;
         if (std::filesystem::exists(parampath.c_str()))
             res = xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}", parampath.substr(parampath.find_last_of("/\\") + 1), AlreadyExists, ReplaceIt), ConfirmSave, xtd::forms::message_box_buttons::yes_no, xtd::forms::message_box_icon::question);
@@ -1539,7 +1543,9 @@ form1::form1() {
     loadbutt.size({ settings.width() - 10, savebutt.height() });
     loadbutt.location({ (settings.width() - loadbutt.width()) / 2, savebutt.location().y() + savebutt.height()});//tether to save button
     loadbutt.click += [&] {
-        parampath = load_file(ParamFilesList, parampath);
+        xtd::ustring filepath = load_file(ParamFilesList, parampath);
+        if (!filepath.empty()) parampath = filepath;
+        else return;
         loadParameters();
         loaded = true;//re-enable this after the previous function disabled it (it's okay because if you clicked this, we're loaded)
     };
