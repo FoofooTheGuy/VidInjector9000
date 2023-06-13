@@ -27,6 +27,15 @@ namespace VidInjector9002 {
         /// @brief The main entry point for the application.
         static void main();
 
+        xtd::ustring removeInvalids(xtd::ustring str) {//replace invalid characters with '_', like for file names
+            xtd::ustring out;
+            for (const auto& c : str) {
+                if (c == '\"' || c == '\\' || c == '/' || c == ':' || c == '<' || c == '>' || c == '*' || c == '?' || c == '|') out += '_';
+                else out += c;
+            }
+            return out;
+        }
+
         //filter is like "All Image Files|*.bmp;*.gif;*.jpg;*.jpeg;*.png;*.tif;*.tiff;*.xpm|Bitmap Files|*.bmp|Gif Files|*.gif|Jpeg Files|*.jpg;*.jpeg|Png Files|*.png|Tiff Files|*.tif;*.tiff|xpm Files|*.xpm"
         std::vector<xtd::ustring> load_files(xtd::ustring filter, xtd::ustring old_path = "", xtd::ustring start_folder = xtd::environment::get_folder_path(xtd::environment::special_folder::desktop)) {
             xtd::forms::open_file_dialog dialog;

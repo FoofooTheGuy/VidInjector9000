@@ -848,7 +848,7 @@ form1::form1() {
         minorBar.maximum(69);
         minorBar.minimum(0);
 
-        xtd::ustring outfile = save_file(CiaFiles, xtd::ustring::format("{} [000400000{}00]", longname.text(), titleIDbox.text()));
+        xtd::ustring outfile = save_file(CiaFiles, xtd::ustring::format("{} [000400000{}00]", removeInvalids(longname.text()), titleIDbox.text()));
         {
             xtd::forms::dialog_result res = xtd::forms::dialog_result::yes;
             if (std::filesystem::exists(outfile.c_str()))
