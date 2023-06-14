@@ -1738,15 +1738,15 @@ form1::form1() {
         FadeOpt.location({ FFrewind.location().x(), ((copycheck.height() + copybox.height() + 2) / 2) + copycheck.location().y() + ((((copycheck.height() + copybox.height() + 2) / 2) - FFrewind.height()) / 2) });
 
         mediabox.size({ parameters.width() - 46, parameters.height() - (copybox.location().y() + copybox.height() + playertitletxt.height()) - debugs.height() });
-        if (mediabox.width() < ((bannermulti.location().x() - menubannertxt.location().x()) + bannermulti.width()) * columns) {
+        if (mediabox.width() < (menubannertxt.width() + bannermulti.width() + 3) * columns) {
             for (int y = 0; y < rows; y++)
                 for (int x = 0; x < columns; x++)
-                    text_box_array.at(y * columns + x)->width((bannermulti.location().x() - menubannertxt.location().x()) + bannermulti.width() - 4);
+                    text_box_array.at(y * columns + x)->width(menubannertxt.width() + bannermulti.width() + 3);
         }
         else {
             for (int y = 0; y < rows; y++)
                 for (int x = 0; x < columns; x++)
-                    text_box_array.at(y * columns + x)->width((mediabox.width() / columns) - (((copybox.location().x()) / columns) + 1) / columns - 4);
+                    text_box_array.at(y * columns + x)->width((mediabox.width() / columns) - ((mediabox.location().x()) / columns) / columns);
         }
         for (int y = 0; y < rows; y++)
             for (int x = 1; x < columns; x++)
