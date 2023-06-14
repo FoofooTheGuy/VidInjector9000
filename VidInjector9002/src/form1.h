@@ -310,7 +310,7 @@ namespace VidInjector9002 {
                         text_box_array.at(y * columns + x)->font(this->font());
                         text_box_array.at(y * columns + x)->cursor(xtd::forms::cursors::ibeam());
                         if (mediabox.width() < ((bannermulti.location().x() - menubannertxt.location().x()) + bannermulti.width()) * columns) text_box_array.at(y * columns + x)->width((bannermulti.location().x() - menubannertxt.location().x()) + bannermulti.width());
-                        else text_box_array.at(y * columns + x)->width((mediabox.width() / columns) - (((copybox.location().x()) / columns) + 1) / columns - 4);
+                        else text_box_array.at(y * columns + x)->width((mediabox.width() / columns) - (((copybox.location().x()) / columns) + 1) / columns);
                         text_box_array.at(y * columns + x)->location({ text_box_array.at(0)->location().x() + (x * text_box_array.at(y * columns + x)->width()), text_box_array.at(0)->location().y() + (y * text_box_array.at(y * columns + x)->height()) });
                     }
                 rows++;
