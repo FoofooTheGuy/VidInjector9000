@@ -32,10 +32,10 @@ form1::form1() {
     parameters.parent(tab_control);
     parameters.text(ParametersText);
 
-    debugs.parent(finalize);
+    debugs.parent(parameters);
     debugs.auto_size(true);
     debugs.font(this->font());
-    debugs.text(xtd::ustring::format("{}, {}", finalize.width(), finalize.height()));
+    //debugs.text(xtd::ustring::format("{}, {}", finalize.width(), finalize.height()));
     debugs.location({ 0, 0 });
     debugs.hide();//lazy way to get rid of this
 
@@ -1693,7 +1693,7 @@ form1::form1() {
     };
 
     resize += [&] {
-        //debugs.text(xtd::ustring::format("{}, {}", parameters.width(), parameters.height()));
+        //debugs.text(xtd::ustring::format("{}", mediabox.height()));
         tab_control.size({ client_size().width() - tab_control.location().x() * 2, client_size().height() - tab_control.location().y() * 2 });
         if (parameters.width() < iconerror.location().x() + iconerror.width() + iconpreview.width() + 480) {
             iconbrowse.location({ (iconerror.location().x() + iconerror.width()) - iconbrowse.width() - 1, iconbox.location().y() - (iconbrowse.height() / 2 - iconbox.height() / 2) });
@@ -1738,28 +1738,43 @@ form1::form1() {
         FadeOpt.location({ FFrewind.location().x(), ((copycheck.height() + copybox.height() + 2) / 2) + copycheck.location().y() + ((((copycheck.height() + copybox.height() + 2) / 2) - FFrewind.height()) / 2) });
 
         mediabox.size({ parameters.width() - 46, parameters.height() - (copybox.location().y() + copybox.height() + playertitletxt.height()) - debugs.height() });
-        if (mediabox.width() < (menubannertxt.width() + bannermulti.width() + 3) * columns) {
-            for (int y = 0; y < rows; y++)
-                for (int x = 0; x < columns; x++)
-                    text_box_array.at(y * columns + x)->width(menubannertxt.width() + bannermulti.width() + 3);
+        if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + rowtxt.height() + 5) {//if scroll is there (add 5 for good measure. we don't want the horizontal scroll showing up)
+            if (mediabox.width() < (menubannertxt.width() + bannermulti.width() + 3) * columns) {
+                for (int y = 0; y < rows; y++)
+                    for (int x = 0; x < columns; x++)
+                        text_box_array.at(y * columns + x)->width(menubannertxt.width() + bannermulti.width() + 3);
+            }
+            else {
+                for (int y = 0; y < rows; y++)
+                    for (int x = 0; x < columns; x++)
+                        text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns) - 20) / columns);
+            }
         }
         else {
-            for (int y = 0; y < rows; y++)
-                for (int x = 0; x < columns; x++)
-                    text_box_array.at(y * columns + x)->width((mediabox.width() / columns) - ((mediabox.location().x()) / columns) / columns);
+            if (mediabox.width() < (menubannertxt.width() + bannermulti.width() + 3) * columns) {
+                for (int y = 0; y < rows; y++)
+                    for (int x = 0; x < columns; x++)
+                        text_box_array.at(y * columns + x)->width(menubannertxt.width() + bannermulti.width() + 3);
+            }
+            else {
+                for (int y = 0; y < rows; y++)
+                    for (int x = 0; x < columns; x++)
+                        text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns)) / columns);
+            }
         }
         for (int y = 0; y < rows; y++)
             for (int x = 1; x < columns; x++)
                 text_box_array.at(y * columns + x)->location({ text_box_array.at(0)->location().x() + (x * text_box_array.at(y * columns + x)->width()), text_box_array.at(0)->location().y() + (y * text_box_array.at(y * columns + x)->height()) });
         playertitletxt.location({ mediabox.location().x() + text_box_array.at(0)->location().x() + (text_box_array.at(0)->width() - playertitletxt.width()) / 2, copybox.location().y() + copybox.height() });
         moflextxt.location({ mediabox.location().x() + text_box_array.at(1)->location().x() + (text_box_array.at(1)->width() - moflextxt.width()) / 2, copybox.location().y() + copybox.height() });
-        //menutitletxt.location({ mediabox.location().x() + text_box_array.at(2)->location().x() + (text_box_array.at(2)->width() - ((titlemulti.location().x() - menutitletxt.location().x()) + titlemulti.width())) / 2, copybox.location().y() + copybox.height() });
         menubannertxt.location({ mediabox.location().x() + text_box_array.at(2)->location().x() + (text_box_array.at(2)->width() - ((bannermulti.location().x() - menubannertxt.location().x()) + bannermulti.width())) / 2, copybox.location().y() + copybox.height() });
-        //titlemulti.location({ menutitletxt.location().x() + menutitletxt.width() + 3, menutitletxt.location().y() + ((menutitletxt.height() - titlemulti.height()) / 2) });
         bannermulti.location({ menubannertxt.location().x() + menubannertxt.width() + 3, menubannertxt.location().y() + ((menubannertxt.height() - bannermulti.height()) / 2) });
         moflexbrowse.location({ text_box_array.at((rows - 1) * columns + 1)->location().x() + (text_box_array.at((rows - 1) * columns + 1)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 1)->location().y() + text_box_array.at((rows - 1) * columns + 1)->height() });
         multibannerbrowse.location({ text_box_array.at((rows - 1) * columns + 2)->location().x() + (text_box_array.at((rows - 1) * columns + 2)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 2)->location().y() + text_box_array.at((rows - 1) * columns + 2)->height() });
-        
+        removemedia.location({ ((text_box_array.at(0)->width() * columns) - (removemedia.width() + appendmedia.width() + 2)) / 2, text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
+        appendmedia.location({ removemedia.location().x() + removemedia.width() + 2, removemedia.location().y() });
+        rowtxt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - rowtxt.width()) / 2, removemedia.location().y() + removemedia.height() });
+
         if (parameters.width() > copybox.location().x() + copybox.width() + FFrewind.width() + menubannerpreview.width()) {
             menubannerpreview.location({ FFrewind.location().x() + FFrewind.width() + (((parameters.width() - (FFrewind.location().x() + FFrewind.width())) - menubannerpreview.width()) / 2), copycheck.location().y() + ((copycheck.height() + copybox.height() + 3) - (menubannerpreview.height() + bannerpreviewleft.height())) / 2 });
         }
@@ -1770,9 +1785,7 @@ form1::form1() {
         bannerpreviewleft.location({ menubannerpreview.location().x(), menubannerpreview.location().y() + menubannerpreview.height() });
         bannerpreviewright.location({ menubannerpreview.location().x() + menubannerpreview.width() - bannerpreviewright.width(), bannerpreviewleft.location().y() });
         indextxt.location({ menubannerpreview.location().x() + ((menubannerpreview.width()) - indextxt.width()) / 2, menubannerpreview.location().y() + menubannerpreview.height() });
-        removemedia.location({ ((text_box_array.at(0)->width() * columns) - (removemedia.width() + appendmedia.width() + 2)) / 2, text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
-        appendmedia.location({ removemedia.location().x() + removemedia.width() + 2, removemedia.location().y() });
-        rowtxt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - rowtxt.width()) / 2, removemedia.location().y() + removemedia.height() });
+
 
         minorBar.width(finalize.width() - 23);
         majorBar.width(finalize.width() - 23);

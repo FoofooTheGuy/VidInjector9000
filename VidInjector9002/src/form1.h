@@ -309,19 +309,28 @@ namespace VidInjector9002 {
                         text_box_array.at(y * columns + x)->parent(mediabox);//assign it data
                         text_box_array.at(y * columns + x)->font(this->font());
                         text_box_array.at(y * columns + x)->cursor(xtd::forms::cursors::ibeam());
-                        if (mediabox.width() < ((bannermulti.location().x() - menubannertxt.location().x()) + bannermulti.width()) * columns) text_box_array.at(y * columns + x)->width((bannermulti.location().x() - menubannertxt.location().x()) + bannermulti.width());
-                        else text_box_array.at(y * columns + x)->width((mediabox.width() / columns) - (((copybox.location().x()) / columns) + 1) / columns);
+                        if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + rowtxt.height() + 5) {
+                            if (mediabox.width() < ((bannermulti.location().x() - menubannertxt.location().x()) + bannermulti.width()) * columns) {
+                                text_box_array.at(y * columns + x)->width(menubannertxt.width() + bannermulti.width() + 3);
+                            }
+                            else {
+                                text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns) - 20) / columns);
+                            }
+                        }
+                        else {
+                            if (mediabox.width() < ((bannermulti.location().x() - menubannertxt.location().x()) + bannermulti.width()) * columns) {
+                                text_box_array.at(y * columns + x)->width(menubannertxt.width() + bannermulti.width() + 3);
+                            }
+                            else {
+                                text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns)) / columns);
+                            }
+                        }
                         text_box_array.at(y * columns + x)->location({ text_box_array.at(0)->location().x() + (x * text_box_array.at(y * columns + x)->width()), text_box_array.at(0)->location().y() + (y * text_box_array.at(y * columns + x)->height()) });
                     }
                 rows++;
-                multibannerbrowse.location({ text_box_array.at((rows - 1) * columns + 2)->location().x() + (text_box_array.at((rows - 1) * columns + 2)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 2)->location().y() + text_box_array.at((rows - 1) * columns + 2)->height() });
-                moflexbrowse.location({ text_box_array.at((rows - 1) * columns + 1)->location().x() + (text_box_array.at((rows - 1) * columns + 1)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 1)->location().y() + text_box_array.at((rows - 1) * columns + 1)->height() });
-                removemedia.location({ ((text_box_array.at(0)->width() * columns) - (removemedia.width() + appendmedia.width() + 2)) / 2, text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
-                appendmedia.location({ removemedia.location().x() + removemedia.width() + 2, removemedia.location().y() });
             }
             for (int i = columns; i <= rows * columns - 1; i++)
                 text_box_array.at(i)->enabled(mode.selected_index());
-            rowtxt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - rowtxt.width()) / 2, removemedia.location().y() + removemedia.height() });
             rowtxt.text(xtd::ustring::format("{}/27", rows));
             removemedia.enabled(mode.selected_index());
             bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
@@ -329,6 +338,30 @@ namespace VidInjector9002 {
             indextxt.text(xtd::ustring::format("{}/{}", bannerpreviewindex + 1, rows));
             removemedia.enabled(true);
             appendmedia.enabled(rows < 27);
+            if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + rowtxt.height() + 5) {//if the scroll appears, change the size of everything
+                if (mediabox.width() < (menubannertxt.width() + bannermulti.width() + 3) * columns) {
+                    for (int y = 0; y < rows; y++)
+                        for (int x = 0; x < columns; x++)
+                            text_box_array.at(y * columns + x)->width(menubannertxt.width() + bannermulti.width() + 3);
+                }
+                else {
+                    for (int y = 0; y < rows; y++)
+                        for (int x = 0; x < columns; x++)
+                            text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns) - 20) / columns);
+                }
+                for (int y = 0; y < rows; y++)
+                    for (int x = 1; x < columns; x++)
+                        text_box_array.at(y * columns + x)->location({ text_box_array.at(0)->location().x() + (x * text_box_array.at(y * columns + x)->width()), text_box_array.at(0)->location().y() + (y * text_box_array.at(y * columns + x)->height()) });
+            }
+            playertitletxt.location({ mediabox.location().x() + text_box_array.at(0)->location().x() + (text_box_array.at(0)->width() - playertitletxt.width()) / 2, copybox.location().y() + copybox.height() });
+            moflextxt.location({ mediabox.location().x() + text_box_array.at(1)->location().x() + (text_box_array.at(1)->width() - moflextxt.width()) / 2, copybox.location().y() + copybox.height() });
+            menubannertxt.location({ mediabox.location().x() + text_box_array.at(2)->location().x() + (text_box_array.at(2)->width() - ((bannermulti.location().x() - menubannertxt.location().x()) + bannermulti.width())) / 2, copybox.location().y() + copybox.height() });
+            bannermulti.location({ menubannertxt.location().x() + menubannertxt.width() + 3, menubannertxt.location().y() + ((menubannertxt.height() - bannermulti.height()) / 2) });
+            moflexbrowse.location({ text_box_array.at((rows - 1) * columns + 1)->location().x() + (text_box_array.at((rows - 1) * columns + 1)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 1)->location().y() + text_box_array.at((rows - 1) * columns + 1)->height() });
+            multibannerbrowse.location({ text_box_array.at((rows - 1) * columns + 2)->location().x() + (text_box_array.at((rows - 1) * columns + 2)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 2)->location().y() + text_box_array.at((rows - 1) * columns + 2)->height() });
+            removemedia.location({ ((text_box_array.at(0)->width() * columns) - (removemedia.width() + appendmedia.width() + 2)) / 2, text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
+            appendmedia.location({ removemedia.location().x() + removemedia.width() + 2, removemedia.location().y() });
+            rowtxt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - rowtxt.width()) / 2, removemedia.location().y() + removemedia.height() });
         }
 
         void doRemoveMedia() {
@@ -340,14 +373,9 @@ namespace VidInjector9002 {
                     text_box_array.pop_back();
                 }
                 rows--;
-                multibannerbrowse.location({ text_box_array.at((rows - 1) * columns + 2)->location().x() + (text_box_array.at((rows - 1) * columns + 2)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 2)->location().y() + text_box_array.at((rows - 1) * columns + 2)->height() });
-                moflexbrowse.location({ text_box_array.at((rows - 1) * columns + 1)->location().x() + (text_box_array.at((rows - 1) * columns + 1)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 1)->location().y() + text_box_array.at((rows - 1) * columns + 1)->height() });
-                removemedia.location({ ((text_box_array.at(0)->width() * columns) - (removemedia.width() + appendmedia.width() + 2)) / 2, text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
-                appendmedia.location({ removemedia.location().x() + removemedia.width() + 2, removemedia.location().y() });
             }
             for (int i = columns; i <= rows * columns - 1; i++)
                 text_box_array.at(i)->enabled(mode.selected_index());
-            rowtxt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - rowtxt.width()) / 2, removemedia.location().y() + removemedia.height() });
             rowtxt.text(xtd::ustring::format("{}/27", rows));
             appendmedia.enabled(mode.selected_index());
             if (bannerpreviewindex == rows)//if you were previewing the removed one, change the selected index
@@ -357,6 +385,44 @@ namespace VidInjector9002 {
             indextxt.text(xtd::ustring::format("{}/{}", bannerpreviewindex + 1, rows));
             removemedia.enabled(rows > 1);
             appendmedia.enabled(true);
+            if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + rowtxt.height() + 5) {
+                if (mediabox.width() < (menubannertxt.width() + bannermulti.width() + 3) * columns) {
+                    for (int y = 0; y < rows; y++)
+                        for (int x = 0; x < columns; x++)
+                            text_box_array.at(y * columns + x)->width(menubannertxt.width() + bannermulti.width() + 3);
+                }
+                else {
+                    for (int y = 0; y < rows; y++)
+                        for (int x = 0; x < columns; x++)
+                            text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns) - 20) / columns);
+                }
+            }
+            else {//do this here because if you are removing it can remove the scroll
+                if (mediabox.width() < (menubannertxt.width() + bannermulti.width() + 3) * columns) {
+                    for (int y = 0; y < rows; y++)
+                        for (int x = 0; x < columns; x++)
+                            text_box_array.at(y * columns + x)->width(menubannertxt.width() + bannermulti.width() + 3);
+                }
+                else {
+                    for (int y = 0; y < rows; y++)
+                        for (int x = 0; x < columns; x++)
+                            text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns)) / columns);
+                }
+            }
+            for (int y = 0; y < rows; y++)
+                for (int x = 1; x < columns; x++)
+                    text_box_array.at(y * columns + x)->location({ text_box_array.at(0)->location().x() + (x * text_box_array.at(y * columns + x)->width()), text_box_array.at(0)->location().y() + (y * text_box_array.at(y * columns + x)->height()) });
+            playertitletxt.location({ mediabox.location().x() + text_box_array.at(0)->location().x() + (text_box_array.at(0)->width() - playertitletxt.width()) / 2, copybox.location().y() + copybox.height() });
+            moflextxt.location({ mediabox.location().x() + text_box_array.at(1)->location().x() + (text_box_array.at(1)->width() - moflextxt.width()) / 2, copybox.location().y() + copybox.height() });
+            menubannertxt.location({ mediabox.location().x() + text_box_array.at(2)->location().x() + (text_box_array.at(2)->width() - ((bannermulti.location().x() - menubannertxt.location().x()) + bannermulti.width())) / 2, copybox.location().y() + copybox.height() });
+            bannermulti.location({ menubannertxt.location().x() + menubannertxt.width() + 3, menubannertxt.location().y() + ((menubannertxt.height() - bannermulti.height()) / 2) });
+            moflexbrowse.location({ text_box_array.at((rows - 1) * columns + 1)->location().x() + (text_box_array.at((rows - 1) * columns + 1)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 1)->location().y() + text_box_array.at((rows - 1) * columns + 1)->height() });
+            multibannerbrowse.location({ text_box_array.at((rows - 1) * columns + 2)->location().x() + (text_box_array.at((rows - 1) * columns + 2)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 2)->location().y() + text_box_array.at((rows - 1) * columns + 2)->height() });
+            removemedia.location({ ((text_box_array.at(0)->width() * columns) - (removemedia.width() + appendmedia.width() + 2)) / 2, text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
+            appendmedia.location({ removemedia.location().x() + removemedia.width() + 2, removemedia.location().y() });
+            rowtxt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - rowtxt.width()) / 2, removemedia.location().y() + removemedia.height() });
+            bannermulti.hide();//so it doesnt have the text messing it up when the stuff moves horizontally
+            bannermulti.show();
         }
 
         void encode_bigend_u64(uint64_t value, void* dest)//https://stackoverflow.com/a/36552262
