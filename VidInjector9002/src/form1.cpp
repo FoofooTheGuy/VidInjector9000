@@ -32,10 +32,10 @@ form1::form1() {
     parameters.parent(tab_control);
     parameters.text(ParametersText);
 
-    debugs.parent(parameters);
+    debugs.parent(finalize);
     debugs.auto_size(true);
     debugs.font(this->font());
-    //debugs.text(xtd::ustring::format("{}, {}", finalize.width(), finalize.height()));
+    debugs.text(xtd::ustring::format("M{}, {}", finalize.width(), finalize.height()));
     debugs.location({ 0, 0 });
     debugs.hide();//lazy way to get rid of this
 
@@ -1737,7 +1737,7 @@ form1::form1() {
         FFrewind.location({ copybox.location().x() + copybox.width() + 15, copycheck.location().y() + ((((copycheck.height() + copybox.height() + 2) / 2) - FFrewind.height()) / 2) });
         FadeOpt.location({ FFrewind.location().x(), ((copycheck.height() + copybox.height() + 2) / 2) + copycheck.location().y() + ((((copycheck.height() + copybox.height() + 2) / 2) - FFrewind.height()) / 2) });
 
-        mediabox.size({ parameters.width() - 46, parameters.height() - (copybox.location().y() + copybox.height() + playertitletxt.height()) - debugs.height() });
+        mediabox.size({ parameters.width() - copybox.location().x() * 2, parameters.height() - (copybox.location().y() + copybox.height() + playertitletxt.height()) - copybox.location().x() });
         if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + rowtxt.height() + 5) {//if scroll is there (add 5 for good measure. we don't want the horizontal scroll showing up)
             if (mediabox.width() < (menubannertxt.width() + bannermulti.width() + 3) * columns) {
                 for (int y = 0; y < rows; y++)
