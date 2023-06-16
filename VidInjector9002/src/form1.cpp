@@ -79,7 +79,7 @@ form1::form1() {
     bannerbrowse.parent(parameters);
     bannerbrowse.size({ 119, 35 });
     bannerbrowse.font(this->font());
-    bannerbrowse.location({ parameters.width() - 597, bannerbox.location().y() - (bannerbrowse.height() / 2 - bannerbox.height() / 2) });//tether to bannerbox
+    bannerbrowse.location({ parameters.width() - 597, bannerbox.location().y() - (bannerbrowse.height() / 2 - bannerbox.height() / 2) });//tether to bannerbox (this is here because the stuff that doesnt move is reliant on it)
     bannerbrowse.text(Browse);
     bannerbrowse.click += [&] {
         xtd::ustring filepath = load_file(xtd::ustring::format("{} {}{}{}", SupportedImage200x120, SupportedImageList, CGFXList, AllFilesList), bannerbox.text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
@@ -96,7 +96,7 @@ form1::form1() {
     bannerpreview.parent(parameters);
     //bannerpreview.border_style(xtd::forms::border_style::fixed_3d);
     bannerpreview.size({ 264, 154 });//add 4 to each if you do the border
-    bannerpreview.location({ (bannerbrowse.location().x() + bannerbrowse.width() + 2) + (((parameters.width() - (bannerbrowse.location().x() + bannerbrowse.width() + 2)) - bannerpreview.width()) / 2), (shortname.location().y() - (bannerpreview.height() + bannerpreviewtxt.height())) / 2 });
+    //bannerpreview.location({ (bannerbrowse.location().x() + bannerbrowse.width() + 2) + (((parameters.width() - (bannerbrowse.location().x() + bannerbrowse.width() + 2)) - bannerpreview.width()) / 2), (shortname.location().y() - (bannerpreview.height() + bannerpreviewtxt.height())) / 2 });
     {
         int ch = 4;
         int out_w = 200;
@@ -460,7 +460,7 @@ form1::form1() {
     mediabox.parent(parameters);
     mediabox.border_style(xtd::forms::border_style::fixed_3d);
     mediabox.location({ copybox.location().x(), copybox.location().y() + copybox.height() + playertitletxt.height() });
-    mediabox.size({ parameters.width() - 46, parameters.height() - (copybox.location().y() + copybox.height() + playertitletxt.height()) - debugs.height() });
+    //mediabox.size({ parameters.width() - copybox.location().x() * 2, parameters.height() - (copybox.location().y() + copybox.height() + playertitletxt.height()) - copybox.location().x() });
     mediabox.auto_scroll(true);
 
     /*titlemulti.parent(parameters);
@@ -497,13 +497,13 @@ form1::form1() {
     bannermulti.mouse_leave += [&] {
         MultiOnly.hide();
     };
-    bannermulti.location({ menubannertxt.location().x() + menubannertxt.width() + 3, menubannertxt.location().y() + ((menubannertxt.height() - bannermulti.height()) / 2) });
+    //bannermulti.location({ menubannertxt.location().x() + menubannertxt.width() + 3, menubannertxt.location().y() + ((menubannertxt.height() - bannermulti.height()) / 2) });
 
     menubannerpreview.parent(parameters);
     menubannerpreview.cursor(mode.selected_index() ? xtd::forms::cursors::hand() : xtd::forms::cursors::no());
     //menubannerpreview.border_style(xtd::forms::border_style::fixed_3d);
     menubannerpreview.size({ 264, 154 });
-    menubannerpreview.location({ copybox.location().x() + copybox.width() + (parameters.width() - (copybox.location().x() + copybox.width())) / 2, copycheck.location().y() + ((copycheck.height() + copybox.height() + 3) - menubannerpreview.height()) / 2});
+    //menubannerpreview.location({ copybox.location().x() + copybox.width() + (parameters.width() - (copybox.location().x() + copybox.width())) / 2, copycheck.location().y() + ((copycheck.height() + copybox.height() + 3) - menubannerpreview.height()) / 2});
     menubannerpreview.click += [&] {
         if (autoSaveParams && loaded) saveSettings();
         if (mode.selected_index()) {
