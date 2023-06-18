@@ -569,9 +569,9 @@ form1::form1() {
     //moflexbrowse.location({ text_box_array.at((rows - 1) * columns + 1)->location().x() + (text_box_array.at((rows - 1) * columns + 1)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 1)->location().y() + text_box_array.at((rows - 1) * columns + 1)->height() });
     moflexbrowse.text(Browse);
     moflexbrowse.click += [&] {
-        /*disabled because it doesnt put the full path for some reason, only file name and idk how to fix, if it's even possible for me to fix it
-        if (mode.selected_index()) {
-            std::vector<xtd::ustring> files = load_files(MoflexFilesList);
+        //disabled because it doesnt put the full path for some reason, only file name, and idk how to fix, if it's even possible for me to fix it
+        /*if (mode.selected_index()) {
+            std::vector<xtd::ustring> files = load_files(MoflexFilesList, text_box_array[(rows - 1) * columns + 1]->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_videos));
             if (files.size() == 1 && !files.empty()) text_box_array[(rows - 1) * columns + 1]->text(files.at(0));
             else {
                 for (size_t i = 0; i < files.size(); i++) {
@@ -582,7 +582,7 @@ form1::form1() {
         }
         else {*/
         xtd::ustring filepath = load_file(MoflexFilesList, text_box_array[(rows - 1) * columns + 1]->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_videos));
-        if(!filepath.empty()) text_box_array[(rows - 1) * columns + 1]->text(filepath);
+        if(!filepath.empty()) text_box_array[(mode.selected_index() ? ((rows - 1) * columns + 1) : (0 * columns + 1))]->text(filepath);
         //}//unmark this if you ever find a fix for it lol
     };
 
@@ -1491,6 +1491,7 @@ form1::form1() {
     };
 
     builder.run_worker_completed += [&] {
+        std::filesystem::remove_all(xtd::ustring::format("{}/{}/temp", ProgramDir, resourcesPath).c_str());
         minorBarTxt.hide();
         majorBarTxt.hide();
         majorBar.value(0);
