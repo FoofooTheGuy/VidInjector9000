@@ -911,6 +911,30 @@ form1::form1() {
             std::filesystem::create_directories(xtd::ustring::format("{}/{}/temp/romfs/settings", ProgramDir, resourcesPath).c_str());
             std::ofstream settingsTL(xtd::ustring::format("{}/{}/temp/romfs/settings/settingsTL.csv", ProgramDir, resourcesPath).c_str(), std::ios_base::out | std::ios_base::binary);
 
+            std::string outlongname = longname.text();
+            if (outlongname[0] == '#') {//sneakily fix the string huhuhu
+                outlongname[0] = '\\';
+                outlongname.insert(1, "x23");
+            }
+            for (unsigned long long j = 0; j < outlongname.size(); j++) {
+                if (outlongname[j] == ',') {
+                    outlongname[j] = '\\';
+                    outlongname.insert(j + 1, "x2C");
+                }
+            }
+
+            std::string outpublisher = publisher.text();
+            if (outpublisher[0] == '#') {//sneakily fix the string huhuhu
+                outpublisher[0] = '\\';
+                outpublisher.insert(1, "x23");
+            }
+            for (unsigned long long j = 0; j < outlongname.size(); j++) {
+                if (outpublisher[j] == ',') {
+                    outpublisher[j] = '\\';
+                    outpublisher.insert(j + 1, "x2C");
+                }
+            }
+
             settingsTL << "\xFF\xFE" +
                 UTF8toUTF16("# おしらせURL\x0D\x0A"//hard to read because of line breaks but hey better than hex
                     "# JP:\x0D\x0A"
@@ -951,43 +975,43 @@ form1::form1() {
                     "\x0D\x0A"
                     "# アプリ名（ロングネーム）\x0D\x0A"//app long name
                     "# JP:\x0D\x0A"
-                    + longname.text() + "\x0D\x0A"
+                    + outlongname + "\x0D\x0A"
                     "\x0D\x0A"
                     "# EN:\x0D\x0A"
-                    + longname.text() + "\x0D\x0A"
+                    + outlongname + "\x0D\x0A"
                     "\x0D\x0A"
                     "# FR:\x0D\x0A"
-                    + longname.text() + "\x0D\x0A"
+                    + outlongname + "\x0D\x0A"
                     "\x0D\x0A"
                     "# GE:\x0D\x0A"
-                    + longname.text() + "\x0D\x0A"
+                    + outlongname + "\x0D\x0A"
                     "\x0D\x0A"
                     "# IT:\x0D\x0A"
-                    + longname.text() + "\x0D\x0A"
+                    + outlongname + "\x0D\x0A"
                     "\x0D\x0A"
                     "# SP:\x0D\x0A"
-                    + longname.text() + "\x0D\x0A"
+                    + outlongname + "\x0D\x0A"
                     "\x0D\x0A"
                     "# CN:\x0D\x0A"
-                    + longname.text() + "\x0D\x0A"
+                    + outlongname + "\x0D\x0A"
                     "\x0D\x0A"
                     "# KO:\x0D\x0A"
-                    + longname.text() + "\x0D\x0A"
+                    + outlongname + "\x0D\x0A"
                     "\x0D\x0A"
                     "# DU:\x0D\x0A"
-                    + longname.text() + "\x0D\x0A"
+                    + outlongname + "\x0D\x0A"
                     "\x0D\x0A"
                     "# PO:\x0D\x0A"
-                    + longname.text() + "\x0D\x0A"
+                    + outlongname + "\x0D\x0A"
                     "\x0D\x0A"
                     "# RU:\x0D\x0A"
-                    + longname.text() + "\x0D\x0A"
+                    + outlongname + "\x0D\x0A"
                     "\x0D\x0A"
                     "# TW:\x0D\x0A"
-                    + longname.text() + "\x0D\x0A"
+                    + outlongname + "\x0D\x0A"
                     "\x0D\x0A"
                     "# 拡張セーブデータのID（16進数）\x0D\x0A"//save data ID
-                    + titleIDbox.text() + "\x0D\x0A"//make it the save as title ID because yes
+                    + titleIDbox.text().c_str() + "\x0D\x0A"//make it the save as title ID because yes
                     "\x0D\x0A"
                     "# NADLタスクのID\x0D\x0A"
                     "none\x0D\x0A"
@@ -1014,40 +1038,40 @@ form1::form1() {
                     "\x0D\x0A"
                     "# 動画パブリッシャー名\x0D\x0A"//publisher name
                     "# JP:\x0D\x0A"
-                    + publisher.text().c_str() + "\x0D\x0A"//why does this have to be c_str but longname doesnt? oh well
+                    + outpublisher + "\x0D\x0A"
                     "\x0D\x0A"
                     "# EN:\x0D\x0A"
-                    + publisher.text().c_str() + "\x0D\x0A"
+                    + outpublisher + "\x0D\x0A"
                     "\x0D\x0A"
                     "# FR:\x0D\x0A"
-                    + publisher.text().c_str() + "\x0D\x0A"
+                    + outpublisher + "\x0D\x0A"
                     "\x0D\x0A"
                     "# GE:\x0D\x0A"
-                    + publisher.text().c_str() + "\x0D\x0A"
+                    + outpublisher + "\x0D\x0A"
                     "\x0D\x0A"
                     "# IT:\x0D\x0A"
-                    + publisher.text().c_str() + "\x0D\x0A"
+                    + outpublisher + "\x0D\x0A"
                     "\x0D\x0A"
                     "# SP:\x0D\x0A"
-                    + publisher.text().c_str() + "\x0D\x0A"
+                    + outpublisher + "\x0D\x0A"
                     "\x0D\x0A"
                     "# CN:\x0D\x0A"
-                    + publisher.text().c_str() + "\x0D\x0A"
+                    + outpublisher + "\x0D\x0A"
                     "\x0D\x0A"
                     "# KO:\x0D\x0A"
-                    + publisher.text().c_str() + "\x0D\x0A"
+                    + outpublisher + "\x0D\x0A"
                     "\x0D\x0A"
                     "# DU:\x0D\x0A"
-                    + publisher.text().c_str() + "\x0D\x0A"
+                    + outpublisher + "\x0D\x0A"
                     "\x0D\x0A"
                     "# PO:\x0D\x0A"
-                    + publisher.text().c_str() + "\x0D\x0A"
+                    + outpublisher + "\x0D\x0A"
                     "\x0D\x0A"
                     "# RU:\x0D\x0A"
-                    + publisher.text().c_str() + "\x0D\x0A"
+                    + outpublisher + "\x0D\x0A"
                     "\x0D\x0A"
                     "# TW:\x0D\x0A"
-                    + publisher.text().c_str() + "\x0D\x0A"
+                    + outpublisher + "\x0D\x0A"
                     "\x0D\x0A"
                     "# WEBブラウザ用のURL\x0D\x0A"//web browser URL (?)
                     "# JP:\x0D\x0A"

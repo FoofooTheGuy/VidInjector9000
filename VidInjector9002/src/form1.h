@@ -857,6 +857,7 @@ namespace VidInjector9002 {
             ApplicationName.enabled(able);
             ProductCode.enabled(able);
             randomizeProductCode.enabled(able);
+            loadbutt.enabled(able);
         }
 
         //objects
