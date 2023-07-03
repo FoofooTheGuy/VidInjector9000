@@ -582,7 +582,18 @@ form1::form1() {
         }
         else {*/
         xtd::ustring filepath = load_file(MoflexFilesList, text_box_array[(rows - 1) * columns + 1]->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_videos));
-        if(!filepath.empty()) text_box_array[(mode.selected_index() ? ((rows - 1) * columns + 1) : (0 * columns + 1))]->text(filepath);
+        if (filepath.empty()) return;//big brain time
+        if (!mode.selected_index()) {
+            text_box_array[0 * columns + 1]->text(filepath);
+            return;
+        }
+        int emptyRow;
+        for (emptyRow = 0; emptyRow < rows - 1; emptyRow++) {
+            if (text_box_array[emptyRow * columns + 1]->text().empty()) {
+                break;
+            }
+        }
+        text_box_array[emptyRow * columns + 1]->text(filepath);
         //}//unmark this if you ever find a fix for it lol
     };
 
@@ -602,8 +613,15 @@ form1::form1() {
             }
         }*/
         xtd::ustring filepath = load_file(xtd::ustring::format("{} {}{}", SupportedImage200x120, SupportedImageList), text_box_array.at((rows - 1) * columns + 2)->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
-        if (!filepath.empty()) text_box_array.at((rows - 1) * columns + 2)->text(filepath);
-        setMultiBannerPreview(rows - 1);
+        if (filepath.empty()) return;
+        int emptyRow;
+        for (emptyRow = 0; emptyRow < rows - 1; emptyRow++) {
+            if (text_box_array[emptyRow * columns + 2]->text().empty()) {
+                break;
+            }
+        }
+        text_box_array.at(emptyRow * columns + 2)->text(filepath);
+        setMultiBannerPreview(emptyRow);
         bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
         bannerpreviewright.enabled(mode.selected_index() && bannerpreviewindex != rows - 1);
     };
