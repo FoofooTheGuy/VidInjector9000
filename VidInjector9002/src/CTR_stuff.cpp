@@ -46,7 +46,7 @@ unsigned long RandomTID() {
     static std::mt19937 rng;
 
     while (!TIDisValid(TID)) {//loop until we get a good value
-        rng.seed(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+        rng.seed(static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count()));
         std::uniform_int_distribution<unsigned long> uniform(min, max);
         TID = uniform(rng);
     }
@@ -127,12 +127,19 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 	}
 	else input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
 	output_pixels = (unsigned char*)malloc(out_w * out_h * ch);
+	if (output_pixels == NULL) {
+		free(output_pixels);
+		return false;
+	}
 	if (w == out_w && h == out_h) memcpy(output_pixels, input_pixels, w * h * ch);
 	else resize_crop(input_pixels, w, h, output_pixels, out_w, out_h, ch);//scale to 200x120 if needed
 	stbi_image_free(input_pixels);
 
 	output_3c = (unsigned char*)malloc(out_w * out_h * 3);
-	if (output_3c == NULL) return false;
+	if (output_3c == NULL) {
+		free(output_3c);
+		return false;
+	}
 	if (ch == 4) {//rgba
 		unsigned char* white_background = (unsigned char*)malloc(out_w * out_h * 4);
 		memset(white_background, FF, out_w * out_h * 4);
@@ -140,24 +147,32 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 		free(white_background);
 		int newi = 0;
 		for (int i = 0; i < out_w * out_h * ch; i += ch) {
-			for (int ch = 0; ch < 3; ch++)
-				output_3c[newi + ch] = output_pixels[i + ch];
+			for (int c = 0; c < 3; c++)
+				output_3c[newi + c] = output_pixels[i + c];
 			newi += 3;
 		}
 	}
 	else if (ch == 3) {//rgb
-		memcpy(output_3c, output_pixels, out_w * out_h * ch);
+		memcpy(output_3c, output_pixels, out_w * out_h * ch);//it warns about ch being big but that will never happen because we just checked that it is 3
 	}
 	else if (ch == 2) {//grayscale a
 		unsigned char* white_background = (unsigned char*)malloc(out_w * out_h * ch);
+		if (white_background == NULL) {
+			free(white_background);
+			return false;
+		}
 		unsigned char* output_4c = (unsigned char*)malloc(out_w * out_h * 4);
+		if (output_4c == NULL) {
+			free(output_4c);
+			return false;
+		}
 		memset(white_background, FF, out_w * out_h * ch);
 		layer_pixels(output_4c, output_pixels, white_background, out_w, out_h, ch, out_w, out_h, ch, 0, 0);
 		free(white_background);
 		int newi = 0;
 		for (int i = 0; i < out_w * out_h * 4; i += 4) {
-			for (int ch = 0; ch < 3; ch++)
-				output_3c[newi + ch] = output_4c[i + ch];
+			for (int c = 0; c < 3; c++)
+				output_3c[newi + c] = output_4c[i + c];
 			newi += 3;
 		}
 		free(output_4c);
@@ -165,8 +180,8 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 	else if (ch == 1) {//grayscale
 		int ch1 = 0;
 		for (int i = 0; i < out_w * out_h * 3; i += 3) {
-			for (int ch = 0; ch < 3; ch++)
-				output_3c[i + ch] = output_pixels[ch1];
+			for (int c = 0; c < 3; c++)
+				output_3c[i + c] = output_pixels[ch1];
 			ch1++;
 		}
 	}
@@ -178,8 +193,8 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 	memset(output_fin, 0, new_w * new_h * 3);
 	for (int y = 0; y < out_h; y++)
 		for (int x = 0; x < out_w; x++) {
-			for (int ch = 0; ch < 3; ch++)
-				output_fin[(y * (new_w)+x) * 3 + ch] = output_3c[(y * (out_w)+x) * 3 + ch];
+			for (int c = 0; c < 3; c++)
+				output_fin[(y * (new_w)+x) * 3 + c] = output_3c[(y * (out_w)+x) * 3 + c];
 		}
 
 	unsigned char tiledbanner[65536];
@@ -262,8 +277,8 @@ bool convertToIcon(std::string input, std::string output, std::string shortname,
 		free(white_background);
 		int newi = 0;
 		for (int i = 0; i < largeLW * largeLW * ch; i += ch) {
-			for (int ch = 0; ch < 3; ch++)
-				large_3c[newi + ch] = output_pixels[i + ch];
+			for (int c = 0; c < 3; c++)
+				large_3c[newi + c] = output_pixels[i + c];
 			newi += 3;
 		}
 	}
@@ -278,8 +293,8 @@ bool convertToIcon(std::string input, std::string output, std::string shortname,
 		free(white_background);
 		int newi = 0;
 		for (int i = 0; i < largeLW * largeLW * 4; i += 4) {
-			for (int ch = 0; ch < 3; ch++)
-				large_3c[newi + ch] = output_4c[i + ch];
+			for (int c = 0; c < 3; c++)
+				large_3c[newi + c] = output_4c[i + c];
 			newi += 3;
 		}
 		free(output_4c);
@@ -287,8 +302,8 @@ bool convertToIcon(std::string input, std::string output, std::string shortname,
 	else if (ch == 1) {//grayscale
 		int ch1 = 0;
 		for (int i = 0; i < largeLW * largeLW * 3; i += 3) {
-			for (int ch = 0; ch < 3; ch++)
-				large_3c[i + ch] = output_pixels[ch1];
+			for (int c = 0; c < 3; c++)
+				large_3c[i + c] = output_pixels[ch1];
 			ch1++;
 		}
 	}
