@@ -171,8 +171,8 @@ form1::form1() {
                     free(white_background);
                     int newi = 0;
                     for (int i = 0; i < out_w * out_h * ch; i += ch) {
-                        for (int ch = 0; ch < 3; ch++)
-                            output_3c[newi + ch] = output_pixels[i + ch];
+                        for (int c = 0; c < 3; c++)
+                            output_3c[newi + c] = output_pixels[i + c];
                         newi += 3;
                     }
                 }
@@ -187,8 +187,8 @@ form1::form1() {
                     free(white_background);
                     int newi = 0;
                     for (int i = 0; i < out_w * out_h * 4; i += 4) {
-                        for (int ch = 0; ch < 3; ch++)
-                            output_3c[newi + ch] = output_4c[i + ch];
+                        for (int c = 0; c < 3; c++)
+                            output_3c[newi + c] = output_4c[i + c];
                         newi += 3;
                     }
                     free(output_4c);
@@ -196,8 +196,8 @@ form1::form1() {
                 else if (ch == 1) {//grayscale
                     int ch1 = 0;
                     for (int i = 0; i < out_w * out_h * 3; i += 3) {
-                        for (int ch = 0; ch < 3; ch++)
-                            output_3c[i + ch] = output_pixels[ch1];
+                        for (int c = 0; c < 3; c++)
+                            output_3c[i + c] = output_pixels[ch1];
                         ch1++;
                     }
                 }
@@ -583,10 +583,6 @@ form1::form1() {
         else {*/
         xtd::ustring filepath = load_file(MoflexFilesList, text_box_array[(rows - 1) * columns + 1]->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_videos));
         if (filepath.empty()) return;//big brain time
-        if (!mode.selected_index()) {
-            text_box_array[0 * columns + 1]->text(filepath);
-            return;
-        }
         int emptyRow;
         for (emptyRow = 0; emptyRow < rows - 1; emptyRow++) {
             if (text_box_array[emptyRow * columns + 1]->text().empty()) {
@@ -808,7 +804,7 @@ form1::form1() {
         std::string outText = "";
         static std::mt19937 rng;
         for (int i = 0; i < 4; i++) {
-            rng.seed(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+            rng.seed(static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count()));
             std::uniform_int_distribution<unsigned long> uniform(0, sizeof(set) - 1);
             outText += set[uniform(rng)];
         }
@@ -1246,7 +1242,7 @@ form1::form1() {
             std::filesystem::create_directories(xtd::ustring::format("{}/{}/temp/romfs/settings", ProgramDir, resourcesPath).c_str());
             std::ofstream movie_bnrname(xtd::ustring::format("{}/{}/temp/romfs/settings/movie_bnrname.csv", ProgramDir, resourcesPath).c_str(), std::ios_base::out | std::ios_base::binary);
             movie_bnrname << "\xFF\xFE" + UTF8toUTF16(std::to_string(rows) + "\x0D\x0A");
-            for (unsigned long i = 0; i < rows; i++) {
+            for (int i = 0; i < rows; i++) {
                 movie_bnrname << UTF8toUTF16("movie_" + std::to_string(i) + ".bimg\x0D\x0A");
             }
             movie_bnrname.close();

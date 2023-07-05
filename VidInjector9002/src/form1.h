@@ -142,8 +142,8 @@ namespace VidInjector9002 {
                     free(white_background);
                     int newi = 0;
                     for (int i = 0; i < out_w * out_h * ch; i += ch) {
-                        for (int ch = 0; ch < 3; ch++)
-                            output_3c[newi + ch] = output_pixels[i + ch];
+                        for (int c = 0; c < 3; c++)
+                            output_3c[newi + c] = output_pixels[i + c];
                         newi += 3;
                     }
                 }
@@ -158,8 +158,8 @@ namespace VidInjector9002 {
                     free(white_background);
                     int newi = 0;
                     for (int i = 0; i < out_w * out_h * 4; i += 4) {
-                        for (int ch = 0; ch < 3; ch++)
-                            output_3c[newi + ch] = output_4c[i + ch];
+                        for (int c = 0; c < 3; c++)
+                            output_3c[newi + c] = output_4c[i + c];
                         newi += 3;
                     }
                     free(output_4c);
@@ -167,8 +167,8 @@ namespace VidInjector9002 {
                 else if (ch == 1) {//g
                     int ch1 = 0;
                     for (int i = 0; i < out_w * out_h * 3; i += 3) {
-                        for (int ch = 0; ch < 3; ch++)
-                            output_3c[i + ch] = output_pixels[ch1];
+                        for (int c = 0; c < 3; c++)
+                            output_3c[i + c] = output_pixels[ch1];
                         ch1++;
                     }
                 }
@@ -255,8 +255,8 @@ namespace VidInjector9002 {
                 free(white_background);
                 int newi = 0;
                 for (int i = 0; i < largeWH * largeWH * ch; i += ch) {
-                    for (int ch = 0; ch < 3; ch++)
-                        large_3c[newi + ch] = output_pixels[i + ch];
+                    for (int c = 0; c < 3; c++)
+                        large_3c[newi + c] = output_pixels[i + c];
                     newi += 3;
                 }
             }
@@ -271,8 +271,8 @@ namespace VidInjector9002 {
                 free(white_background);
                 int newi = 0;
                 for (int i = 0; i < largeWH * largeWH * 4; i += 4) {
-                    for (int ch = 0; ch < 3; ch++)
-                        large_3c[newi + ch] = output_4c[i + ch];
+                    for (int c = 0; c < 3; c++)
+                        large_3c[newi + c] = output_4c[i + c];
                     newi += 3;
                 }
                 free(output_4c);
@@ -280,8 +280,8 @@ namespace VidInjector9002 {
             else if (ch == 1) {//grayscale
                 int ch1 = 0;
                 for (int i = 0; i < largeWH * largeWH * 3; i += 3) {
-                    for (int ch = 0; ch < 3; ch++)
-                        large_3c[i + ch] = output_pixels[ch1];
+                    for (int c = 0; c < 3; c++)
+                        large_3c[i + c] = output_pixels[ch1];
                     ch1++;
                 }
             }
