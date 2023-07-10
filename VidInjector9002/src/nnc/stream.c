@@ -25,7 +25,11 @@ static result file_seek_abs(nnc_file *self, u32 pos)
 {
 	if(self->size == 0 && pos == 0) return NNC_R_OK;
 	if(pos >= self->size) return NNC_R_SEEK_RANGE;
+#if NNC_PLATFORM_UNIX || defined(__CYGWIN__)
 	fseek(self->f, pos, SEEK_SET);
+#elif NNC_PLATFORM_WINDOWS
+	_fseeki64(self->f, pos, SEEK_SET);
+#endif
 	return NNC_R_OK;
 }
 
@@ -33,7 +37,11 @@ static result file_seek_rel(nnc_file *self, u32 pos)
 {
 	u32 npos = ftell(self->f) + pos;
 	if(npos >= self->size) return NNC_R_SEEK_RANGE;
+#if NNC_PLATFORM_UNIX || defined(__CYGWIN__)
 	fseek(self->f, npos, SEEK_SET);
+#elif NNC_PLATFORM_WINDOWS
+	_fseeki64(self->f, npos, SEEK_SET);
+#endif
 	return NNC_R_OK;
 }
 
@@ -60,10 +68,18 @@ static const nnc_rstream_funcs file_funcs = {
 
 static u32 get_file_size(FILE *file)
 {
+#if NNC_PLATFORM_UNIX || defined(__CYGWIN__)
 	u32 pos = ftell(file);
 	fseek(file, 0, SEEK_END);
 	u32 size = ftell(file);
 	fseek(file, pos, SEEK_SET);
+#elif NNC_PLATFORM_WINDOWS
+	u32 pos = _ftelli64(file);
+	_fseeki64(file, 0, SEEK_END);
+	u32 size = _ftelli64(file);
+	_fseeki64(file, pos, SEEK_SET);
+#endif
+	
 	return size;
 }
 
