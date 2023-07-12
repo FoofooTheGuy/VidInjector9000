@@ -23,17 +23,19 @@
 #define result nnc_result
 
 #ifdef __GNUC__
-	#define BSWAP_BUILTIN
-	#define bswap16 __builtin_bswap16
-	#define bswap32 __builtin_bswap32
-	#define bswap64 __builtin_bswap64
+#define BSWAP_BUILTIN
+#define bswap16 __builtin_bswap16
+#define bswap32 __builtin_bswap32
+#define bswap64 __builtin_bswap64
 #else
-	#define bswap16 nnc_bswap16
-	#define bswap32 nnc_bswap32
-	#define bswap64 nnc_bswap64
+#define bswap16 nnc_bswap16
+#define bswap32 nnc_bswap32
+#define bswap64 nnc_bswap64
 #endif
 
 #define rstream nnc_rstream
+
+/* TODO: These should be ported to big-endian platforms as well */
 
 #define BE16(a) (bswap16(a))
 #define BE32(a) (bswap32(a))
@@ -63,6 +65,7 @@
 #define ALIGN(a, n)        (((a) + ((n) - 1)) & ~((n) - 1)) /* N.B.: `n' must be a power of 2! */
 #define ALIGN_DOWN(a, n)   (((a) & ~((n) - 1)))             /* N.B.: `n' must be a power of 2! */
 #define IS_UNALIGNED(a, n) ((a) & ((n) - 1))                /* N.B.: `n' must be a power of 2! */
+#define IS_ALIGNED(a, n)   (!IS_UNALIGNED(a, n))            /* N.B.: `n' must be a power of 2! */
 
 #define NNC_BYTE_TO_MU(a) (ALIGN(a, NNC_MEDIA_UNIT) / NNC_MEDIA_UNIT)
 
@@ -72,40 +75,39 @@ nnc_u32 nnc_bswap32(nnc_u32 a);
 nnc_u64 nnc_bswap64(nnc_u64 a);
 #endif
 
-#if defined(_WIN32) || defined(__MINGW32__) || defined(__CYGWIN__)
-	#define NNC_PLATFORM_WINDOWS 1
+#if defined(_WIN32) /* || defined(__MINGW32__) || defined(__CYGWIN__) // though these are technically windows, winapi should not be used */
+#define NNC_PLATFORM_WINDOWS 1
 #elif defined(__unix__) || defined(__linux__) || defined(__APPLE__)
-	#define NNC_PLATFORM_UNIX 1
+#define NNC_PLATFORM_UNIX 1
 #elif defined(_3DS) || defined(__3DS__)
-	#define NNC_PLATFORM_3DS 1
+#define NNC_PLATFORM_3DS 1
 #endif
 
 /* forward declaration from stream.h */
 struct nnc_rstream;
 #define read_at_exact nnc_read_at_exact
-result nnc_read_at_exact(struct nnc_rstream *rs, u32 offset, u8 *data, u32 dsize);
+result nnc_read_at_exact(struct nnc_rstream* rs, u32 offset, u8* data, u32 dsize);
 #define read_exact nnc_read_exact
-result nnc_read_exact(struct nnc_rstream *rs, u8 *data, u32 dsize);
+result nnc_read_exact(struct nnc_rstream* rs, u8* data, u32 dsize);
 #define dumpmem nnc_dumpmem
 /* for debugging */
-void nnc_dumpmem(void *mem, u32 len);
+void nnc_dumpmem(void* mem, u32 len);
 #define find_support_file nnc_find_support_file
 #define SUP_FILE_NAME_LEN (1024 + 1)
-bool nnc_find_support_file(const char *name, char *output);
+bool nnc_find_support_file(const char* name, char* output);
 #define strdup nnc_strdup
-char *nnc_strdup(const char *s);
+char* nnc_strdup(const char* s);
 
 struct dynbuf {
-	u8 *buffer;
+	u8* buffer;
 	u32 alloc, used;
 };
 
 #define dynbuf_new nnc_dynbuf_new
-nnc_result nnc_dynbuf_new(struct dynbuf *db, u32 initial_size);
+nnc_result nnc_dynbuf_new(struct dynbuf* db, u32 initial_size);
 #define dynbuf_push nnc_dynbuf_push
-nnc_result nnc_dynbuf_push(struct dynbuf *db, u8 *data, u32 len);
+nnc_result nnc_dynbuf_push(struct dynbuf* db, u8* data, u32 len);
 #define dynbuf_free nnc_dynbuf_free
-void nnc_dynbuf_free(struct dynbuf *db);
+void nnc_dynbuf_free(struct dynbuf* db);
 
 #endif
-

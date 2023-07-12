@@ -13,10 +13,17 @@
 	#define NNC_END
 #endif
 
+#ifndef NNC_TRY_VARIABLE
+	#define NNC_TRY_VARIABLE res
+#endif
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>
 NNC_BEGIN
+
+#define NNC_TRY(expr) do { if(( NNC_TRY_VARIABLE = (expr) ) != NNC_R_OK) return NNC_TRY_VARIABLE; } while(0)
+#define NNC_TRYB(expr, lbl) do { if(( NNC_TRY_VARIABLE = (expr) ) != NNC_R_OK) goto lbl; } while(0)
 
 /** Media units to bytes. */
 #define NNC_MU_TO_BYTE(a) ((a) * NNC_MEDIA_UNIT)
@@ -130,4 +137,3 @@ void nnc_tid_set_variation(nnc_u64 *tid, nnc_u8 variation);
 
 NNC_END
 #endif
-

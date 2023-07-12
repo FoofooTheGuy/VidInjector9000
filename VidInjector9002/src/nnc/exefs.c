@@ -71,7 +71,7 @@ result nnc_write_exefs(nnc_vfs *vfs, nnc_wstream *ws)
 	unsigned i, namelen;
 	size_t cumulative_offset = 0, size;
 	nnc_vfs_file_node *node;
-	nnc_vfs_stream *source;
+	nnc_vfs_stream source;
 	result ret;
 	nnc_sha256_hash hash;
 	u32 copied;
@@ -89,9 +89,9 @@ result nnc_write_exefs(nnc_vfs *vfs, nnc_wstream *ws)
 
 		/* we may as well use the stream here instead of nnc_vfs_node_size() since we need to hash as well */
 		TRY(nnc_vfs_open_node(node, &source));
-		size = NNC_RS_PCALL0(source, size);
-		ret = nnc_crypto_sha256_stream(source, hash);
-		nnc_vfs_close_node(source);
+		size = nnc_rs_size(&source);
+		ret = nnc_crypto_sha256_stream((nnc_rstream *) &source, hash);
+		nnc_rs_close(&source);
 		if(ret != NNC_R_OK)
 			return ret;
 
@@ -109,8 +109,8 @@ result nnc_write_exefs(nnc_vfs *vfs, nnc_wstream *ws)
 	for(i = 0; i < vfs->root_directory.filecount; ++i)
 	{
 		TRY(nnc_vfs_open_node(&vfs->root_directory.file_children[i], &source));
-		ret = nnc_copy(source, ws, &copied);
-		nnc_vfs_close_node(source);
+		ret = nnc_copy((nnc_rstream *) &source, ws, &copied);
+		nnc_rs_close(&source);
 		if(ret != NNC_R_OK)
 			return ret;
 		TRY(nnc_write_padding(ws, ALIGN(copied, NNC_EXEFS_ALIGNMENT) - copied));
@@ -118,4 +118,3 @@ result nnc_write_exefs(nnc_vfs *vfs, nnc_wstream *ws)
 
 	return NNC_R_OK;
 }
-
