@@ -334,3 +334,12 @@ void crop_pixels(const unsigned char* input, int width, int height, int channels
 			}
 		}
 }
+
+int getLargestNumber(std::vector<int> &nums) {
+	int largest = 0;
+	for (const auto& n : nums) {
+		if (n > largest)
+			largest = n;
+	}
+	return largest;
+}

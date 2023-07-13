@@ -2,6 +2,7 @@
 
 #include <string>
 #include <cstring>
+#include <vector>
 
 #ifdef SIZE_MAX
 #define _SIZE_MAX ((SIZE_MAX) >> 1)
@@ -31,3 +32,5 @@ y_offset: y position of the input image to start cropping from
 out_w: width of cropped image
 out_h: height of cropped image*/
 void crop_pixels(const unsigned char* input, int width, int height, int channels, unsigned char* output, int x_offset, int y_offset, int out_w, int out_h);
+//input a vector output an int
+int getLargestNumber(std::vector<int>& nums);
