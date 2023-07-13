@@ -1389,7 +1389,7 @@ form1::form1() {
             baseCIA.close();
 
             #define TRYB(expr, lbl) if((res = ( expr )) != NNC_R_OK) goto lbl
-            
+
             nnc_subview certchain, ticket, tmd_strm, logo;
             nnc_buildable_ncch ncch0b;
             nnc_tmd_header tmd;
@@ -1419,18 +1419,18 @@ form1::form1() {
             TRYB(nnc_cia_make_reader(&cia_hdr, NNC_RSP(&f), nnc_get_default_keyset(), &reader), out3); /* create a content (= NCCH) reader */
             TRYB(nnc_cia_open_content(&reader, 0, &ncch0stream, NULL), out4); /* open the first content (NCCH0) */
             TRYB(nnc_read_ncch_header(NNC_RSP(&ncch0stream), &ncch_hdr), out5); /* parse the NCCH header */
-            
+
             if (builder.cancellation_pending()) goto out5;
-            
+
             TRYB(nnc_vfs_init(&romfs), out5); /* initialize a VFS */
             TRYB(nnc_vfs_link_directory(&romfs.root_directory, xtd::ustring::format("{}/{}/temp/romfs", ProgramDir, resourcesPath).c_str(), nnc_vfs_identity_transform, NULL), out6); /* populate the VFS, another source of files could be a RomFS, see #nnc_romfs_to_vfs */
             TRYB(nnc_vfs_init(&exefs), out5); /* initialize a VFS */
             TRYB(nnc_vfs_link_directory(&exefs.root_directory, xtd::ustring::format("{}/{}/temp/exefs", ProgramDir, resourcesPath).c_str(), nnc_vfs_identity_transform, NULL), out10);
-            
+
             builder.report_progress(10);
 
             if ((res = nnc_scan_seeddb(&sdb)) != NNC_R_OK) /* scan for a seeddb for use with "new crypto" and set it as the default */
-            nnc_set_default_seeddb(&sdb);
+                nnc_set_default_seeddb(&sdb);
             TRYB(nnc_fill_keypair(&kp, nnc_get_default_keyset(), nnc_get_default_seeddb(), &ncch_hdr), out7); /* generate the cryptographic keys for if the NCCH is encrypted */
             if (nnc_file_open(&exheader, xtd::ustring::format("{}/{}/temp/exheader.bin", ProgramDir, resourcesPath).c_str()) != NNC_R_OK) {/* open exheader file */
                 xtd::forms::message_box::show(*this, xtd::ustring::format("failed to open '{}/{}/temp/exheader.bin'", ProgramDir, resourcesPath), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
@@ -1445,7 +1445,7 @@ form1::form1() {
 
             builder.report_progress(25);
 
-             /* setup the parameters for building, for more options see the documentation. */
+            /* setup the parameters for building, for more options see the documentation. */
             ncch0.type = NNC_CIA_NCCHBUILD_BUILD;
             ncch0.ncch = &ncch0b;
             nnc_condense_ncch(&ncch0b.chdr, &ncch_hdr);
@@ -1497,24 +1497,24 @@ form1::form1() {
                     &certchain, &modified_ticket, &tmd, 1, &ncch0, NNC_WSP(&wf)
                 );
                 builder.report_progress(100);
-            /* cleanup code, with lots of labels to jump to in case of failure depending on where it failed */
-                out11: free(ticket_contents);
+                /* cleanup code, with lots of labels to jump to in case of failure depending on where it failed */
+            out11: free(ticket_contents);
             }
-            out10: nnc_vfs_free(&exefs);
-            out9: NNC_RS_CALL0(exheader, close);
-                //out8: NNC_RS_CALL0(exefs, close);
-            out7: nnc_free_seeddb(&sdb);
-            out6: nnc_vfs_free(&romfs);
-            out5: NNC_RS_CALL0(ncch0stream, close);
-            out4: nnc_cia_free_reader(&reader);
-            out3: NNC_WS_CALL0(wf, close);
-            out2: NNC_RS_CALL0(f, close);
-            out1:
-                if (res != NNC_R_OK)
-                {
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("failed: {}", nnc_strerror(res)), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    return;
-                }
+        out10: nnc_vfs_free(&exefs);
+        out9: NNC_RS_CALL0(exheader, close);
+            //out8: NNC_RS_CALL0(exefs, close);
+        out7: nnc_free_seeddb(&sdb);
+        out6: nnc_vfs_free(&romfs);
+        out5: NNC_RS_CALL0(ncch0stream, close);
+        out4: nnc_cia_free_reader(&reader);
+        out3: NNC_WS_CALL0(wf, close);
+        out2: NNC_RS_CALL0(f, close);
+        out1:
+            if (res != NNC_R_OK)
+            {
+                xtd::forms::message_box::show(*this, xtd::ustring::format("failed: {}", nnc_strerror(res)), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                return;
+            }
         }
         if (std::filesystem::exists(outfile.c_str())) {
             xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", CiaBuilt, outfile), xtd::ustring::format("NNC"), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::information);
@@ -1775,30 +1775,34 @@ form1::form1() {
         iconpreview.location({ iconbrowse.location().x() + iconbrowse.width() + 2, iconbrowse.location().y() + 1 });
         FFrewind.location({ copybox.location().x() + copybox.width() + 15, copycheck.location().y() + ((((copycheck.height() + copybox.height() + 2) / 2) - FFrewind.height()) / 2) });
         FadeOpt.location({ FFrewind.location().x(), ((copycheck.height() + copybox.height() + 2) / 2) + copycheck.location().y() + ((((copycheck.height() + copybox.height() + 2) / 2) - FFrewind.height()) / 2) });
+        {//put this stuff in it's own scope for less variable clutter (???)
+            std::vector<int> wideVec = { moflextxt.width(), playertitletxt.width(), menubannertxt.width() + bannermulti.width() + 3 };
+            int WideMediaText = getLargestNumber(wideVec);
 
-        mediabox.size({ parameters.width() - copybox.location().x() * 2, parameters.height() - (copybox.location().y() + copybox.height() + playertitletxt.height()) - copybox.location().x() });
-        if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + rowtxt.height() + 5) {//if scroll is there (add 5 for good measure. we don't want the horizontal scroll showing up)
-            if (mediabox.width() < (menubannertxt.width() + bannermulti.width() + 3) * columns) {
-                for (int y = 0; y < rows; y++)
-                    for (int x = 0; x < columns; x++)
-                        text_box_array.at(y * columns + x)->width(menubannertxt.width() + bannermulti.width() + 3);
+            mediabox.size({ parameters.width() - copybox.location().x() * 2, parameters.height() - (copybox.location().y() + copybox.height() + playertitletxt.height()) - copybox.location().x() });
+            if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + rowtxt.height() + 5) {//if scroll is there (add 5 for good measure. we don't want the horizontal scroll showing up)
+                if (mediabox.width() < WideMediaText * columns) {
+                    for (int y = 0; y < rows; y++)
+                        for (int x = 0; x < columns; x++)
+                            text_box_array.at(y * columns + x)->width(WideMediaText);
+                }
+                else {
+                    for (int y = 0; y < rows; y++)
+                        for (int x = 0; x < columns; x++)
+                            text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns) - 20) / columns);
+                }
             }
             else {
-                for (int y = 0; y < rows; y++)
-                    for (int x = 0; x < columns; x++)
-                        text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns) - 20) / columns);
-            }
-        }
-        else {
-            if (mediabox.width() < (menubannertxt.width() + bannermulti.width() + 3) * columns) {
-                for (int y = 0; y < rows; y++)
-                    for (int x = 0; x < columns; x++)
-                        text_box_array.at(y * columns + x)->width(menubannertxt.width() + bannermulti.width() + 3);
-            }
-            else {
-                for (int y = 0; y < rows; y++)
-                    for (int x = 0; x < columns; x++)
-                        text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns)) / columns);
+                if (mediabox.width() < WideMediaText * columns) {
+                    for (int y = 0; y < rows; y++)
+                        for (int x = 0; x < columns; x++)
+                            text_box_array.at(y * columns + x)->width(WideMediaText);
+                }
+                else {
+                    for (int y = 0; y < rows; y++)
+                        for (int x = 0; x < columns; x++)
+                            text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns)) / columns);
+                }
             }
         }
         for (int y = 0; y < rows; y++)
