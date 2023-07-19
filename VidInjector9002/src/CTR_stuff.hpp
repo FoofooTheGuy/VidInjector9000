@@ -16,6 +16,10 @@
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #define STB_IMAGE_RESIZE_STATIC
 #include "stb_image_resize.h"
+//#define STB_IMAGE_WRITE_IMPLEMENTATION
+//#include "stb_image_write.h"
+
+#include "nnc/nnc/swizzle.h"
 
 //only put the name of the dir (not / at the end)
 void Generate_Files(std::string dir, bool Multi);
@@ -58,4 +62,3 @@ typedef struct {
 uint32_t lz11_get_occurence_length(uint8_t* newPtr, uint32_t newLength, uint8_t* oldPtr, uint32_t oldLength, uint32_t* disp);
 void* lz11_compress(uint32_t* size, void* input, uint32_t inputSize);
 void* cbmd_build_data(uint32_t* size, CBMD cbmd);
-void image_data_to_tiles(void* out, void* img, uint32_t width, uint32_t height);

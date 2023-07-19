@@ -9,7 +9,12 @@
 #endif
 
 std::string UTF8toUTF16(std::string input);
-
+/*convert any format to rgba
+(1 channel, 2 channel, 3 channel, 4 channel)
+if you input 4 channel it will just memcpy it so never do that
+make sure output is initialized to width * height * 4
+*/
+void ToRGBA(const unsigned char* input, unsigned char* output, int width, int height, int channels);
 /*layers pixel array onto another
 it wont resize if you put a larger image onto a smaller one, (only put a smaller image on a larger image)
 larger or equal size background than forground recommended
@@ -33,4 +38,4 @@ out_w: width of cropped image
 out_h: height of cropped image*/
 void crop_pixels(const unsigned char* input, int width, int height, int channels, unsigned char* output, int x_offset, int y_offset, int out_w, int out_h);
 //input a vector output an int
-int getLargestNumber(std::vector<int>& nums);
+int getLargestNumber(std::vector<int> &nums);

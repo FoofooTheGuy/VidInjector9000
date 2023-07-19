@@ -84,20 +84,6 @@ void resize_crop(const unsigned char* input_pixels, int input_w, int input_h, un
 	free(scaled);
 }
 
-void image_data_to_tiles(void* out, void* img, uint32_t width, uint32_t height) {//from bannertool, edited for rgb565 only
-	for (uint32_t y = 0; y < height; y++) {
-		for (uint32_t x = 0; x < width; x++) {
-			uint32_t index = (((y >> 3) * (width >> 3) + (x >> 3)) << 6) + ((x & 1) | ((y & 1) << 1) | ((x & 2) << 1) | ((y & 2) << 2) | ((x & 4) << 2) | ((y & 4) << 3));
-
-			uint8_t* pixel = &((uint8_t*)img)[(y * width + x) * 3];
-			uint16_t color = 0;
-			color = (uint16_t)((((uint8_t)(pixel[0]) & ~0x7) << 8) | (((uint8_t)(pixel[1]) & ~0x3) << 3) | ((uint8_t)(pixel[2]) >> 3));
-
-			((uint16_t*)out)[index] = color;
-		}
-	}
-}
-
 const unsigned char bimgheader[32]{
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
@@ -110,7 +96,7 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 {
 	unsigned char* input_pixels;
 	unsigned char* output_pixels;
-	unsigned char* output_3c;
+	unsigned char* output_4c;
 	unsigned char* output_fin;
 	int w, h, ch, comp;
 	const int new_w = 256;
@@ -118,87 +104,91 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 	const int out_w = 200;
 	const int out_h = 120;
 	const uint8_t FF = 0xFF;
+	if (std::filesystem::exists(input)) {
+		std::string extension = input;
+		extension.erase(extension.begin(), extension.end() - 5);
+		if (extension == ".bimg") {
+			if (std::filesystem::file_size(input) == 0x10020) {
+				w = 256;
+				h = 128;
+				int ich = sizeof(nnc_u16);
+				int och = sizeof(nnc_u32);
+				std::ifstream infile;
+				infile.open(input, std::ios_base::in | std::ios_base::binary);//input file
+				unsigned char* input_data = (unsigned char*)malloc((w * h * ich) + 0x20);
+				if (!input_data) {
+					free(input_data);
+					return false;
+				}
+				char Byte;
+				int it = 0;
+				infile.read(&Byte, 1);//grab first byte of data
+				while (infile) {//continue until input stream fails
+					input_data[it] = Byte;
+					infile.read(&Byte, 1);//grab next byte of file
+					it++;
+				}
+				infile.close();
+				for (int i = 0; i < 0x1C; i++) {
+					if (input_data[i] != bimgheader[i]) {
+						free(input_data);
+						return false;
+					}
+				}
+				if (writeHeader) {
+					memcpy(outBuffer, input_data, (w * h * ich) + 0x20);
+				}
+				else {
+					memcpy(outBuffer, &input_data[0x20], (w * h * ich));
+				}
+				return true;
+			}
+			return false;
+		}
+	}
 	if (!stbi_info(input.c_str(), &w, &h, &comp)) {
 		w = out_w;
 		h = out_h;
-		ch = 3;
+		ch = 4;
 		input_pixels = (unsigned char*)malloc(out_w * out_h * ch);
+		if (input_pixels == NULL) {
+			free(input_pixels);
+			return false;
+		}
 		memset(input_pixels, FF, out_w * out_h * ch);
 	}
 	else input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
 	output_pixels = (unsigned char*)malloc(out_w * out_h * ch);
 	if (output_pixels == NULL) {
 		free(output_pixels);
+		free(input_pixels);
 		return false;
 	}
 	if (w == out_w && h == out_h) memcpy(output_pixels, input_pixels, w * h * ch);
 	else resize_crop(input_pixels, w, h, output_pixels, out_w, out_h, ch);//scale to 200x120 if needed
-	stbi_image_free(input_pixels);
+	free(input_pixels);
 
-	output_3c = (unsigned char*)malloc(out_w * out_h * 3);
-	if (output_3c == NULL) {
-		free(output_3c);
+	output_4c = (unsigned char*)malloc(out_w * out_h * 4);
+	if (output_4c == NULL) {
+		free(output_pixels);
+		free(output_4c);
 		return false;
 	}
-	if (ch == 4) {//rgba
-		unsigned char* white_background = (unsigned char*)malloc(out_w * out_h * 4);
-		memset(white_background, FF, out_w * out_h * 4);
-		layer_pixels(output_pixels, output_pixels, white_background, out_w, out_h, ch, out_w, out_h, 4, 0, 0);
-		free(white_background);
-		int newi = 0;
-		for (int i = 0; i < out_w * out_h * ch; i += ch) {
-			for (int c = 0; c < 3; c++)
-				output_3c[newi + c] = output_pixels[i + c];
-			newi += 3;
-		}
-	}
-	else if (ch == 3) {//rgb
-		memcpy(output_3c, output_pixels, out_w * out_h * ch);//it warns about ch being big but that will never happen because we just checked that it is 3
-	}
-	else if (ch == 2) {//grayscale a
-		unsigned char* white_background = (unsigned char*)malloc(out_w * out_h * ch);
-		if (white_background == NULL) {
-			free(white_background);
-			return false;
-		}
-		unsigned char* output_4c = (unsigned char*)malloc(out_w * out_h * 4);
-		if (output_4c == NULL) {
-			free(output_4c);
-			return false;
-		}
-		memset(white_background, FF, out_w * out_h * ch);
-		layer_pixels(output_4c, output_pixels, white_background, out_w, out_h, ch, out_w, out_h, ch, 0, 0);
-		free(white_background);
-		int newi = 0;
-		for (int i = 0; i < out_w * out_h * 4; i += 4) {
-			for (int c = 0; c < 3; c++)
-				output_3c[newi + c] = output_4c[i + c];
-			newi += 3;
-		}
-		free(output_4c);
-	}
-	else if (ch == 1) {//grayscale
-		int ch1 = 0;
-		for (int i = 0; i < out_w * out_h * 3; i += 3) {
-			for (int c = 0; c < 3; c++)
-				output_3c[i + c] = output_pixels[ch1];
-			ch1++;
-		}
-	}
+	ToRGBA(output_pixels, output_4c, out_w, out_h, ch);
 	free(output_pixels);
 
 	//layer 200x120 image on a 256x128 image
-	output_fin = (unsigned char*)malloc(new_w * new_h * 3);
-	if (output_fin == NULL) return false;
-	memset(output_fin, 0, new_w * new_h * 3);
-	for (int y = 0; y < out_h; y++)
-		for (int x = 0; x < out_w; x++) {
-			for (int c = 0; c < 3; c++)
-				output_fin[(y * (new_w)+x) * 3 + c] = output_3c[(y * (out_w)+x) * 3 + c];
-		}
+	output_fin = (unsigned char*)malloc(new_w * new_h * 4);
+	if (output_fin == NULL) {
+		free(output_fin);
+		free(output_4c);
+		return false;
+	}
+	memset(output_fin, 0, new_w * new_h * 4);
+	layer_pixels(output_fin, output_4c, output_fin, new_w, new_h, 4, new_w, new_h, 4, 0, 0);
 
-	unsigned char tiledbanner[65536];
-	image_data_to_tiles(tiledbanner, output_fin, new_w, new_h);
+	unsigned char tiledbanner[new_w * new_h * sizeof(nnc_u16)];
+	nnc_swizzle_zorder_rgba8_to_le_rgb565(reinterpret_cast<nnc_u32*>(output_fin), reinterpret_cast<nnc_u16*>(tiledbanner), new_w, new_h);
 	if (writeHeader) {
 		memcpy(outBuffer, bimgheader, sizeof(bimgheader));
 		memcpy(outBuffer + sizeof(bimgheader), tiledbanner, sizeof(tiledbanner));
@@ -209,15 +199,15 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 
 	//stbi_write_png("imag.png", new_w, new_h, 3, output_fin, 0);
 	free(output_fin);
-	free(output_3c);
+	free(output_4c);
 	return true;
 }
 
 bool convertToIcon(std::string input, std::string output, std::string shortname, std::string longname, std::string publisher, int borderMode) {//bare bones SMDH creation. thanks 3dbrew
 	unsigned char* input_pixels;
 	unsigned char* output_pixels;
-	unsigned char* large_3c;
-	unsigned char* small_3c;
+	unsigned char* large_4c;
+	unsigned char* small_4c;
 	int w, h, ch, comp;
 	const int largeLW = 48;
 	const int smallLW = 24;
@@ -231,6 +221,11 @@ bool convertToIcon(std::string input, std::string output, std::string shortname,
 	}
 	else input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
 	output_pixels = (unsigned char*)malloc(largeLW * largeLW * ch);
+	if (output_pixels == NULL) {
+		free(output_pixels);
+		free(input_pixels);
+		return false;
+	}
 	if (w == largeLW && h == largeLW) memcpy(output_pixels, input_pixels, w * h * ch);
 	else resize_crop(input_pixels, w, h, output_pixels, largeLW, largeLW, ch);//scale to 48x48 if needed
 	stbi_image_free(input_pixels);
@@ -265,59 +260,24 @@ bool convertToIcon(std::string input, std::string output, std::string shortname,
 		free(output_4c);
 	}
 
-	large_3c = (unsigned char*)malloc(largeLW * largeLW * 3);
-	if (large_3c == NULL) {
-		free(large_3c);
+	large_4c = (unsigned char*)malloc(largeLW * largeLW * 4);
+	if (large_4c == NULL) {
+		free(large_4c);
 		return false;
 	}
-	if (ch == 4) {//rgba
-		unsigned char* white_background = (unsigned char*)malloc(largeLW * largeLW * 4);
-		memset(white_background, FF, largeLW * largeLW * 4);
-		layer_pixels(output_pixels, output_pixels, white_background, largeLW, largeLW, ch, largeLW, largeLW, 4, 0, 0);
-		free(white_background);
-		int newi = 0;
-		for (int i = 0; i < largeLW * largeLW * ch; i += ch) {
-			for (int c = 0; c < 3; c++)
-				large_3c[newi + c] = output_pixels[i + c];
-			newi += 3;
-		}
-	}
-	else if (ch == 3) {//rgb
-		memcpy(large_3c, output_pixels, largeLW * largeLW * ch);
-	}
-	else if (ch == 2) {//grayscale a
-		unsigned char* white_background = (unsigned char*)malloc(largeLW * largeLW * ch);
-		unsigned char* output_4c = (unsigned char*)malloc(largeLW * largeLW * 4);
-		memset(white_background, FF, largeLW * largeLW * ch);
-		layer_pixels(output_4c, output_pixels, white_background, largeLW, largeLW, ch, largeLW, largeLW, ch, 0, 0);
-		free(white_background);
-		int newi = 0;
-		for (int i = 0; i < largeLW * largeLW * 4; i += 4) {
-			for (int c = 0; c < 3; c++)
-				large_3c[newi + c] = output_4c[i + c];
-			newi += 3;
-		}
-		free(output_4c);
-	}
-	else if (ch == 1) {//grayscale
-		int ch1 = 0;
-		for (int i = 0; i < largeLW * largeLW * 3; i += 3) {
-			for (int c = 0; c < 3; c++)
-				large_3c[i + c] = output_pixels[ch1];
-			ch1++;
-		}
-	}
+	ToRGBA(output_pixels, large_4c, largeLW, largeLW, ch);
 	free(output_pixels);
 
-	small_3c = (unsigned char*)malloc(smallLW * smallLW * 3);
-	stbir_resize_uint8(large_3c, largeLW, largeLW, 0, small_3c, smallLW, smallLW, 0, 3);//make the small icon
-	unsigned char tiledsmall[0x480];
-	unsigned char tiledlarge[0x1200];
-	image_data_to_tiles(tiledsmall, small_3c, smallLW, smallLW);
-	image_data_to_tiles(tiledlarge, large_3c, largeLW, largeLW);
+	small_4c = (unsigned char*)malloc(smallLW * smallLW * 4);
+	stbir_resize_uint8(large_4c, largeLW, largeLW, 0, small_4c, smallLW, smallLW, 0, 4);//make the small icon
+	unsigned char tiledsmall[smallLW * smallLW * sizeof(nnc_u16)];
+	unsigned char tiledlarge[largeLW * largeLW * sizeof(nnc_u16)];
+	nnc_swizzle_zorder_be_rgba8_to_le_rgb565(reinterpret_cast<nnc_u32*>(small_4c), reinterpret_cast<nnc_u16*>(tiledsmall), smallLW, smallLW);
+	nnc_swizzle_zorder_be_rgba8_to_le_rgb565(reinterpret_cast<nnc_u32*>(large_4c), reinterpret_cast<nnc_u16*>(tiledlarge), largeLW, largeLW);
+	//stbi_write_png("imag.png", largeLW, largeLW, 4, large_4c, 0);
 	if (shortname.size() > 0x80 || longname.size() > 0x100 || publisher.size() > 0x80) {
-		free(small_3c);
-		free(large_3c);
+		free(small_4c);
+		free(large_4c);
 		return false;
 	}
 	std::ofstream smdh(output, std::ios_base::out | std::ios_base::binary);
@@ -347,8 +307,8 @@ bool convertToIcon(std::string input, std::string output, std::string shortname,
 	smdh.write(reinterpret_cast<const char*>(tiledlarge), sizeof(tiledlarge));
 
 	//stbi_write_png(output.c_str(), largeLW, largeLW, 3, large_3c, 0);
-	free(small_3c);
-	free(large_3c);
+	free(small_4c);
+	free(large_4c);
 	return true;
 }
 

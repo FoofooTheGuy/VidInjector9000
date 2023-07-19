@@ -82,7 +82,7 @@ form1::form1() {
     bannerbrowse.location({ parameters.width() - 597, bannerbox.location().y() - (bannerbrowse.height() / 2 - bannerbox.height() / 2) });//tether to bannerbox (this is here because the stuff that doesnt move is reliant on it)
     bannerbrowse.text(Browse);
     bannerbrowse.click += [&] {
-        xtd::ustring filepath = load_file(xtd::ustring::format("{} {}{}{}", SupportedImage200x120, SupportedImageList, CGFXList, AllFilesList), bannerbox.text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
+        xtd::ustring filepath = load_file(xtd::ustring::format("{} {}{}{}", SupportedImage200x120, SupportedImageListBanner, CGFXList, AllFilesList), bannerbox.text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
         if (!filepath.empty()) bannerbox.text(filepath);
     };
 
@@ -138,94 +138,94 @@ form1::form1() {
         unsigned char Checker[4];
         bool CGFX = false;
         std::ifstream inbanner(bannerbox.text(), std::ios::binary);
-        if (std::filesystem::exists(bannerbox.text().c_str())) {
-            for (int i = 0; i < 4; i++) {
-                inbanner >> Checker[i];//https://stackoverflow.com/a/2974735
-                if (Checker[i] == bannerMagic[i]) {
-                    bannerpreview.image(empty(0, 0));
-                    customnotif.show();
-                    CGFX = true;
-                }
-                else {
-                    bannerpreview.image(pixels_to_image(film_overlay, 264, 154, 4));
-                    customnotif.hide();
-                    CGFX = false;
-                    break;
-                }
+        if (!std::filesystem::exists(bannerbox.text().c_str())) {
+            setDefaultBannerPreview(bannerpreview, &bannererror);
+            return;
+        }
+        for (int i = 0; i < 4; i++) {
+            inbanner >> Checker[i];//https://stackoverflow.com/a/2974735
+            if (Checker[i] == bannerMagic[i]) {
+                bannerpreview.image(empty(0, 0));
+                customnotif.show();
+                CGFX = true;
+            }
+            else {
+                bannerpreview.image(pixels_to_image(film_overlay, 264, 154, 4));
+                customnotif.hide();
+                CGFX = false;
+                break;
             }
         }
-        if (!CGFX) {
-            if (std::filesystem::exists(bannerbox.text().c_str()) && stbi_info(bannerbox.text().c_str(), &w, &h, &ch)) {
-                unsigned char* input_pixels = stbi_load(bannerbox.text().c_str(), &w, &h, &ch, 0);
-                unsigned char* output_pixels = (unsigned char*)malloc(out_w * out_h * ch);
-                unsigned char* output_3c = (unsigned char*)malloc(out_w * out_h * 3);
-                const uint8_t FF = 0xFF;
-
-                if (w == out_w && h == out_h) memcpy(output_pixels, input_pixels, w * h * ch);
-                else resize_crop(input_pixels, w, h, output_pixels, out_w, out_h, ch);//scale to 200x120 if needed
-                free(input_pixels);
-                if (ch == 4) {//rgba
-                    unsigned char* white_background = (unsigned char*)malloc(out_w * out_h * 4);
-                    memset(white_background, FF, out_w * out_h * 4);
-                    layer_pixels(output_pixels, output_pixels, white_background, out_w, out_h, ch, out_w, out_h, 4, 0, 0);
-                    free(white_background);
-                    int newi = 0;
-                    for (int i = 0; i < out_w * out_h * ch; i += ch) {
-                        for (int c = 0; c < 3; c++)
-                            output_3c[newi + c] = output_pixels[i + c];
-                        newi += 3;
+        std::string extension = bannerbox.text();
+        extension.erase(extension.begin(), extension.end() - 5);
+        if (extension == ".bimg") {
+            if (std::filesystem::file_size(bannerbox.text().c_str()) == 0x10020) {
+                w = 256;
+                h = 128;
+                int ich = sizeof(nnc_u16);
+                int och = sizeof(nnc_u32);
+                std::ifstream input;
+                input.open(bannerbox.text().c_str(), std::ios_base::in | std::ios_base::binary);//input file
+                unsigned char* input_data = (unsigned char*)malloc((w * h * ich) + 0x20);
+                char Byte;
+                int it = 0;
+                input.read(&Byte, 1);//grab first byte of data
+                while (input) {//continue until input stream fails
+                    input_data[it] = Byte;
+                    input.read(&Byte, 1);//grab next byte of file
+                    it++;
+                }
+                input.close();
+                for (int i = 0; i < 0x1C; i++) {
+                    if (input_data[i] != bimgheader[i]) {
+                        free(input_data);
+                        setDefaultBannerPreview(bannerpreview, &bannererror);
+                        return;
                     }
                 }
-                else if (ch == 3) {//rgb
-                    memcpy(output_3c, output_pixels, out_w * out_h * ch);
-                }
-                else if (ch == 2) {//grayscale a
-                    unsigned char* white_background = (unsigned char*)malloc(out_w * out_h * ch);
-                    unsigned char* output_4c = (unsigned char*)malloc(out_w * out_h * 4);
-                    memset(white_background, FF, out_w * out_h * ch);
-                    layer_pixels(output_4c, output_pixels, white_background, out_w, out_h, ch, out_w, out_h, ch, 0, 0);
-                    free(white_background);
-                    int newi = 0;
-                    for (int i = 0; i < out_w * out_h * 4; i += 4) {
-                        for (int c = 0; c < 3; c++)
-                            output_3c[newi + c] = output_4c[i + c];
-                        newi += 3;
-                    }
-                    free(output_4c);
-                }
-                else if (ch == 1) {//grayscale
-                    int ch1 = 0;
-                    for (int i = 0; i < out_w * out_h * 3; i += 3) {
-                        for (int c = 0; c < 3; c++)
-                            output_3c[i + c] = output_pixels[ch1];
-                        ch1++;
-                    }
-                }
-
+                unsigned char* output_pixels = (unsigned char*)malloc(w * h * och);
+                nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(&input_data[0x20]), reinterpret_cast<nnc_u32*>(output_pixels), w, h);
+                free(input_data);
+                unsigned char* output_cropped = (unsigned char*)malloc(out_w * out_w * och);
+                crop_pixels(output_pixels, w, h, och, output_cropped, 0, 0, out_w, out_h);
                 free(output_pixels);
                 unsigned char* output_film = (unsigned char*)malloc(film_w * film_h * 4);
-                //memcpy(output_film, film_overlay, film_w * film_h * 4);
-                layer_pixels(output_film, film_overlay, output_3c, film_w, film_h, 4, out_w, out_h, 3, 32, 11);
-                free(output_3c);
+                layer_pixels(output_film, film_overlay, output_cropped, film_w, film_h, 4, out_w, out_h, 4, 32, 11);
+                //stbi_write_png(xtd::ustring::format("{}/{}/output_film.png", ProgramDir, resourcesPath).c_str(), film_w, film_h, och, output_film, 0);
+                free(output_cropped);
                 bannerpreview.image(pixels_to_image(output_film, film_w, film_h, 4));
                 bannererror.hide();
                 free(output_film);
                 customnotif.hide();
             }
             else {
-                ch = 4;
-                unsigned char* output_4c = (unsigned char*)malloc(out_w * out_h * ch);
-                memset(output_4c, 0xFF, out_w * out_h * ch);
+                setDefaultBannerPreview(bannerpreview, &bannererror);
+            }
+        }
+        else if (!CGFX) {
+            if (stbi_info(bannerbox.text().c_str(), &w, &h, &ch)) {
+                unsigned char* input_pixels = stbi_load(bannerbox.text().c_str(), &w, &h, &ch, 0);
+                unsigned char* output_pixels = (unsigned char*)malloc(out_w * out_h * ch);
+                unsigned char* output_4c = (unsigned char*)malloc(out_w * out_h * 4);
+                const uint8_t FF = 0xFF;
 
+                if (w == out_w && h == out_h) memcpy(output_pixels, input_pixels, w * h * ch);
+                else resize_crop(input_pixels, w, h, output_pixels, out_w, out_h, ch);//scale to 200x120 if needed
+                free(input_pixels);
+                ToRGBA(output_pixels, output_4c, out_w, out_h, ch);
+
+                free(output_pixels);
                 unsigned char* output_film = (unsigned char*)malloc(film_w * film_h * 4);
-                layer_pixels(output_film, film_overlay, output_4c, film_w, film_h, 4, out_w, out_h, ch, 32, 11);
+                //memcpy(output_film, film_overlay, film_w * film_h * 4);
+                layer_pixels(output_film, film_overlay, output_4c, film_w, film_h, 4, out_w, out_h, 4, 32, 11);
                 free(output_4c);
-
-                customnotif.hide();
                 bannerpreview.image(pixels_to_image(output_film, film_w, film_h, 4));
-                bannererror.show();
-
+                bannererror.hide();
                 free(output_film);
+                customnotif.hide();
+            }
+            else {
+                setDefaultBannerPreview(bannerpreview, &bannererror);
             }
         }
     };
@@ -608,7 +608,7 @@ form1::form1() {
                 if (!files.at(i).empty()) text_box_array[i * columns + 2]->text(files.at(i));
             }
         }*/
-        xtd::ustring filepath = load_file(xtd::ustring::format("{} {}{}", SupportedImage200x120, SupportedImageList), text_box_array.at((rows - 1) * columns + 2)->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
+        xtd::ustring filepath = load_file(xtd::ustring::format("{} {}{}", SupportedImage200x120, SupportedImageListBanner), text_box_array.at((rows - 1) * columns + 2)->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
         if (filepath.empty()) return;
         int emptyRow;
         for (emptyRow = 0; emptyRow < rows - 1; emptyRow++) {
@@ -858,6 +858,7 @@ form1::form1() {
     builder.worker_supports_cancellation(true);
     builder.worker_reports_progress(true);
     builder.do_work += [&] {
+        finalize.cursor(xtd::forms::cursors::app_starting());
         cancelBuildButt.enabled(true);
         minorBar.maximum(69);
         minorBar.minimum(0);
@@ -1538,6 +1539,7 @@ form1::form1() {
         cancelBuildButt.enabled(false);
         buildButt.enabled(true);
         ableObjects(true);
+        finalize.cursor(xtd::forms::cursors::default_cursor());
     };
 
     //settings
@@ -1733,6 +1735,7 @@ form1::form1() {
 
     resize += [&] {
         //debugs.text(xtd::ustring::format("{}", mediabox.height()));
+        //std::this_thread::sleep_for(std::chrono::milliseconds(500));//did this to decrease the flicker but it's annoying so turn it off
         tab_control.size({ client_size().width() - tab_control.location().x() * 2, client_size().height() - tab_control.location().y() * 2 });
         if (parameters.width() < iconerror.location().x() + iconerror.width() + iconpreview.width() + 480) {
             iconbrowse.location({ (iconerror.location().x() + iconerror.width()) - iconbrowse.width() - 1, iconbox.location().y() - (iconbrowse.height() / 2 - iconbox.height() / 2) });

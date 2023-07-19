@@ -15,6 +15,7 @@
 #include "CTR_stuff.hpp"//stb is included in here
 #include "nnc/nnc/cia.h"
 #include "nnc/nnc/ticket.h"
+#include "nnc/nnc/swizzle.h"
 
 /// @brief Represents the namespace that contains application objects.
 namespace VidInjector9002 {
@@ -119,6 +120,26 @@ namespace VidInjector9002 {
             return texture;
         }
 
+        void setDefaultBannerPreview(xtd::forms::picture_box &banner, xtd::forms::label *error) {
+            int ch = 4;
+            int out_w = 200;
+            int out_h = 120;
+            int film_w = 264;
+            int film_h = 154;
+            unsigned char* output_4c = (unsigned char*)malloc(out_w * out_h * ch);
+            memset(output_4c, 0xFF, out_w * out_h * ch);
+
+            unsigned char* output_film = (unsigned char*)malloc(film_w * film_h * 4);
+            layer_pixels(output_film, film_overlay, output_4c, film_w, film_h, 4, out_w, out_h, ch, 32, 11);
+            free(output_4c);
+
+            customnotif.hide();
+            banner.image(pixels_to_image(output_film, film_w, film_h, 4));
+            if(error != nullptr) error->show();
+
+            free(output_film);
+        }
+
         //arg is which row to get the path from
         void setMultiBannerPreview(int y) {
             int w = 0, h = 0, ch = 0;
@@ -126,72 +147,74 @@ namespace VidInjector9002 {
             int out_h = 120;
             int film_w = 264;
             int film_h = 154;
-            if (std::filesystem::exists(text_box_array.at(y * columns + 2)->text().c_str()) && stbi_info(text_box_array.at(y * columns + 2)->text().c_str(), &w, &h, &ch)) {
-                unsigned char* input_pixels = stbi_load(text_box_array.at(y * columns + 2)->text().c_str(), &w, &h, &ch, 0);
-                unsigned char* output_pixels = (unsigned char*)malloc(out_w * out_h * ch);
-                unsigned char* output_3c = (unsigned char*)malloc(out_w * out_h * 3);
-                const uint8_t FF = 0xFF;
-
-                if (w == out_w && h == out_h) memcpy(output_pixels, input_pixels, w * h * ch);
-                else resize_crop(input_pixels, w, h, output_pixels, out_w, out_h, ch);//scale to 200x120 if needed
-                free(input_pixels);
-                if (ch == 4) {//rgba
-                    unsigned char* white_background = (unsigned char*)malloc(out_w * out_h * 4);
-                    memset(white_background, FF, out_w * out_h * 4);
-                    layer_pixels(output_pixels, output_pixels, white_background, out_w, out_h, ch, out_w, out_h, 4, 0, 0);
-                    free(white_background);
-                    int newi = 0;
-                    for (int i = 0; i < out_w * out_h * ch; i += ch) {
-                        for (int c = 0; c < 3; c++)
-                            output_3c[newi + c] = output_pixels[i + c];
-                        newi += 3;
+            if (std::filesystem::exists(text_box_array.at(y * columns + 2)->text().c_str())) {
+                std::string extension = text_box_array.at(y * columns + 2)->text().c_str();
+                extension.erase(extension.begin(), extension.end() - 5);
+                if (extension == ".bimg") {
+                    if (std::filesystem::file_size(text_box_array.at(y * columns + 2)->text().c_str()) == 0x10020) {
+                        w = 256;
+                        h = 128;
+                        int ich = sizeof(nnc_u16);
+                        int och = sizeof(nnc_u32);
+                        std::ifstream input;
+                        input.open(text_box_array.at(y * columns + 2)->text().c_str(), std::ios_base::in | std::ios_base::binary);
+                        unsigned char* input_data = (unsigned char*)malloc((w * h * ich) + 0x20);
+                        char Byte;
+                        int it = 0;
+                        input.read(&Byte, 1);//grab first byte of data
+                        while (input) {//continue until input stream fails
+                            input_data[it] = Byte;
+                            input.read(&Byte, 1);//grab next byte of file
+                            it++;
+                        }
+                        input.close();
+                        for (int i = 0; i < 0x1C; i++) {
+                            if (input_data[i] != bimgheader[i]) {
+                                free(input_data);
+                                setDefaultBannerPreview(menubannerpreview, nullptr);
+                                return;
+                            }
+                        }
+                        unsigned char* output_pixels = (unsigned char*)malloc(w * h * och);
+                        nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(&input_data[0x20]), reinterpret_cast<nnc_u32*>(output_pixels), w, h);
+                        free(input_data);
+                        unsigned char* output_cropped = (unsigned char*)malloc(out_w * out_w * och);
+                        crop_pixels(output_pixels, w, h, och, output_cropped, 0, 0, out_w, out_h);
+                        free(output_pixels);
+                        unsigned char* output_film = (unsigned char*)malloc(film_w * film_h * 4);
+                        layer_pixels(output_film, film_overlay, output_cropped, film_w, film_h, 4, out_w, out_h, 4, 32, 11);
+                        free(output_cropped);
+                        menubannerpreview.image(pixels_to_image(output_film, film_w, film_h, 4));
+                        free(output_film);
+                    }
+                    else {
+                        setDefaultBannerPreview(menubannerpreview, nullptr);
                     }
                 }
-                else if (ch == 3) {//rgb
-                    memcpy(output_3c, output_pixels, out_w * out_h * ch);
-                }
-                else if (ch == 2) {//ga
-                    unsigned char* white_background = (unsigned char*)malloc(out_w * out_h * ch);
+                else if (stbi_info(text_box_array.at(y * columns + 2)->text().c_str(), &w, &h, &ch)) {
+                    unsigned char* input_pixels = stbi_load(text_box_array.at(y * columns + 2)->text().c_str(), &w, &h, &ch, 0);
+                    unsigned char* output_pixels = (unsigned char*)malloc(out_w * out_h * ch);
                     unsigned char* output_4c = (unsigned char*)malloc(out_w * out_h * 4);
-                    memset(white_background, FF, out_w * out_h * ch);
-                    layer_pixels(output_4c, output_pixels, white_background, out_w, out_h, ch, out_w, out_h, ch, 0, 0);
-                    free(white_background);
-                    int newi = 0;
-                    for (int i = 0; i < out_w * out_h * 4; i += 4) {
-                        for (int c = 0; c < 3; c++)
-                            output_3c[newi + c] = output_4c[i + c];
-                        newi += 3;
-                    }
+                    const uint8_t FF = 0xFF;
+
+                    if (w == out_w && h == out_h) memcpy(output_pixels, input_pixels, w * h * ch);
+                    else resize_crop(input_pixels, w, h, output_pixels, out_w, out_h, ch);//scale to 200x120 if needed
+                    free(input_pixels);
+                    ToRGBA(output_pixels, output_4c, out_w, out_h, ch);
+                    free(output_pixels);
+                    unsigned char* output_film = (unsigned char*)malloc(film_w * film_h * 4);
+                    //memcpy(output_film, film_overlay, film_w * film_h * 4);
+                    layer_pixels(output_film, film_overlay, output_4c, film_w, film_h, 4, out_w, out_h, 4, 32, 11);
                     free(output_4c);
+                    menubannerpreview.image(pixels_to_image(output_film, film_w, film_h, 4));
+                    free(output_film);
                 }
-                else if (ch == 1) {//g
-                    int ch1 = 0;
-                    for (int i = 0; i < out_w * out_h * 3; i += 3) {
-                        for (int c = 0; c < 3; c++)
-                            output_3c[i + c] = output_pixels[ch1];
-                        ch1++;
-                    }
+                else {
+                    setDefaultBannerPreview(menubannerpreview, nullptr);
                 }
-                free(output_pixels);
-                unsigned char* output_film = (unsigned char*)malloc(film_w * film_h * 4);
-                //memcpy(output_film, film_overlay, film_w * film_h * 4);
-                layer_pixels(output_film, film_overlay, output_3c, film_w, film_h, 4, out_w, out_h, 3, 32, 11);
-                free(output_3c);
-                menubannerpreview.image(pixels_to_image(output_film, film_w, film_h, 4));
-                free(output_film);
             }
             else {
-                ch = 4;
-                unsigned char* output_4c = (unsigned char*)malloc(out_w * out_h * ch);
-                memset(output_4c, 0xFF, out_w * out_h * ch);
-
-                unsigned char* output_film = (unsigned char*)malloc(film_w * film_h * 4);
-                layer_pixels(output_film, film_overlay, output_4c, film_w, film_h, 4, out_w, out_h, ch, 32, 11);
-                free(output_4c);
-
-                menubannerpreview.image(pixels_to_image(output_film, film_w, film_h, 4));
-
-                free(output_film);
+            setDefaultBannerPreview(menubannerpreview, nullptr);
             }
             bannerpreviewindex = y;
             indextxt.text(xtd::ustring::format("{}/{}", bannerpreviewindex + 1, rows));
@@ -710,8 +733,8 @@ namespace VidInjector9002 {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToFindPath, xtd::ustring::format("{}/{}/language/{}/Language.txt", ProgramDir, resourcesPath, Lang)), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 return false;
             }
-            std::vector<xtd::ustring*> inLangVec = { &inLangLanguage, &inLangFormText, &inLangByMeText, &inLangParametersText, &inLangFinalizeText, &inLangOptionsText, &inLangModeText, &inLangSingleVideo, &inLangMultiVideo, &inLangBannerText, &inLangBrowse, &inLangSupportedImage48x48, &inLangSupportedImage200x120, &inLangSupportedImageList, &inLangCGFXList, &inLangAllFilesList, &inLangMoflexFilesList, &inLangParamFilesList, &inLangErrorText, &inLangImageInfoError, &inLangBannerPreviewText, &inLangCustomNotifText, &inLangIconText, &inLangShortNameText, &inLangLongNameText, &inLangPublisherText, &inLangTextTooLongError, &inLangMultiOnlyText, &inLangCopyrightCheckText, &inLangFFrewindText, &inLangFadeOptText, &inLangPlayerTitleText, &inLangMoflexFileText, &inLangMenuBannerText, &inLangSaveButtText, &inLangLoadButtText, &inLangAutoSaveText, &inLangAutoLoadText, &inLangLightModeText, &inLangDarkModeText, &inLangLanguageText, &inLangRestartText, &inLangConfirmClose, &inLangLosedata, &inLangConfirmSave, &inLangAlreadyExists, &inLangReplaceIt, &inLangBadValue, &inLangBadVersion, &inLangSupportedVersion, &inLangBeANumber, &inLangMissingVariableError, &inLangFailedToFindVar, &inLangFailedToFindPath, &inLangFailedToCreateFile, &inLangFailedToConvertImage, &inLangValueNoChange, &inLangnoMoreThan27, &inLangParametersLoaded, &inLangSuccessfullyLoaded, &inLangFailedToLoad, &inLangValidStillLoaded, &inLangTheFile, &inLangDoesntExist, &inLangLanguageChanged, &inLangRestartProgram, &inLangWasEnabled, &inLangTitleIDText, &inLangAppNameText, &inLangProductCodetext, &inLangBuildCIAText, &inLangCancel, &inLangMoflexError, &inLangrow, &inLangcolumn, &inLangCreatingFile, &inLangCopyingMoflex, &inLangCiaFiles, &inLangCiaBuilt, };
-            std::vector<xtd::ustring*> LangVec = { &Language, &FormText, &ByMeText, &ParametersText, &FinalizeText, &OptionsText, &ModeText, &SingleVideo, &MultiVideo, &BannerText, &Browse, &SupportedImage48x48, &SupportedImage200x120, &SupportedImageList, &CGFXList, &AllFilesList, &MoflexFilesList, &ParamFilesList, &ErrorText, &ImageInfoError, &BannerPreviewText, &CustomNotifText, &IconText, &ShortNameText, &LongNameText, &PublisherText, &TextTooLongError, &MultiOnlyText, &CopyrightCheckText, &FFrewindText, &FadeOptText, &PlayerTitleText, &MoflexFileText, &MenuBannerText, &SaveButtText, &LoadButtText, &AutoSaveText, &AutoLoadText, &LightModeText, &DarkModeText, &LanguageText, &RestartText, &ConfirmClose, &Losedata, &ConfirmSave, &AlreadyExists, &ReplaceIt, &BadValue, &BadVersion, &SupportedVersion, &BeANumber, &MissingVariableError, &FailedToFindVar, &FailedToFindPath, &FailedToCreateFile, &FailedToConvertImage, &ValueNoChange, &noMoreThan27, &ParametersLoaded, &SuccessfullyLoaded, &FailedToLoad, &ValidStillLoaded, &TheFile, &DoesntExist, &LanguageChanged, &RestartProgram, &WasEnabled, &TitleIDText, &AppNameText, &ProductCodetext, &BuildCIAText, &Cancel, &MoflexError, &row, &column, &CreatingFile, &CopyingMoflex, &CiaFiles, &CiaBuilt, };
+            std::vector<xtd::ustring*> inLangVec = { &inLangLanguage, &inLangFormText, &inLangByMeText, &inLangParametersText, &inLangFinalizeText, &inLangOptionsText, &inLangModeText, &inLangSingleVideo, &inLangMultiVideo, &inLangBannerText, &inLangBrowse, &inLangSupportedImage48x48, &inLangSupportedImage200x120, &inLangSupportedImageListBanner, &inLangSupportedImageList, &inLangCGFXList, &inLangAllFilesList, &inLangMoflexFilesList, &inLangParamFilesList, &inLangErrorText, &inLangImageInfoError, &inLangBannerPreviewText, &inLangCustomNotifText, &inLangIconText, &inLangShortNameText, &inLangLongNameText, &inLangPublisherText, &inLangTextTooLongError, &inLangMultiOnlyText, &inLangCopyrightCheckText, &inLangFFrewindText, &inLangFadeOptText, &inLangPlayerTitleText, &inLangMoflexFileText, &inLangMenuBannerText, &inLangSaveButtText, &inLangLoadButtText, &inLangAutoSaveText, &inLangAutoLoadText, &inLangLightModeText, &inLangDarkModeText, &inLangLanguageText, &inLangRestartText, &inLangConfirmClose, &inLangLosedata, &inLangConfirmSave, &inLangAlreadyExists, &inLangReplaceIt, &inLangBadValue, &inLangBadVersion, &inLangSupportedVersion, &inLangBeANumber, &inLangMissingVariableError, &inLangFailedToFindVar, &inLangFailedToFindPath, &inLangFailedToCreateFile, &inLangFailedToConvertImage, &inLangValueNoChange, &inLangnoMoreThan27, &inLangParametersLoaded, &inLangSuccessfullyLoaded, &inLangFailedToLoad, &inLangValidStillLoaded, &inLangTheFile, &inLangDoesntExist, &inLangLanguageChanged, &inLangRestartProgram, &inLangWasEnabled, &inLangTitleIDText, &inLangAppNameText, &inLangProductCodetext, &inLangBuildCIAText, &inLangCancel, &inLangMoflexError, &inLangrow, &inLangcolumn, &inLangCreatingFile, &inLangCopyingMoflex, &inLangCiaFiles, &inLangCiaBuilt, };
+            std::vector<xtd::ustring*> LangVec = { &Language, &FormText, &ByMeText, &ParametersText, &FinalizeText, &OptionsText, &ModeText, &SingleVideo, &MultiVideo, &BannerText, &Browse, &SupportedImage48x48, &SupportedImage200x120, &SupportedImageListBanner, &SupportedImageList, &CGFXList, &AllFilesList, &MoflexFilesList, &ParamFilesList, &ErrorText, &ImageInfoError, &BannerPreviewText, &CustomNotifText, &IconText, &ShortNameText, &LongNameText, &PublisherText, &TextTooLongError, &MultiOnlyText, &CopyrightCheckText, &FFrewindText, &FadeOptText, &PlayerTitleText, &MoflexFileText, &MenuBannerText, &SaveButtText, &LoadButtText, &AutoSaveText, &AutoLoadText, &LightModeText, &DarkModeText, &LanguageText, &RestartText, &ConfirmClose, &Losedata, &ConfirmSave, &AlreadyExists, &ReplaceIt, &BadValue, &BadVersion, &SupportedVersion, &BeANumber, &MissingVariableError, &FailedToFindVar, &FailedToFindPath, &FailedToCreateFile, &FailedToConvertImage, &ValueNoChange, &noMoreThan27, &ParametersLoaded, &SuccessfullyLoaded, &FailedToLoad, &ValidStillLoaded, &TheFile, &DoesntExist, &LanguageChanged, &RestartProgram, &WasEnabled, &TitleIDText, &AppNameText, &ProductCodetext, &BuildCIAText, &Cancel, &MoflexError, &row, &column, &CreatingFile, &CopyingMoflex, &CiaFiles, &CiaBuilt, };
             for (size_t i = 0; i < inLangVec.size(); i++) {
                 if (fileParse(outstr, xtd::ustring::format("{}/{}/language/{}/Language.txt", ProgramDir, resourcesPath, Lang), *inLangVec[i])) {
                     *LangVec[i] = outstr;

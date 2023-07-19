@@ -187,81 +187,56 @@ std::string UTF8toUTF16(std::string input) {//not to be confused with utf8_to_ut
 	return output;
 }
 
+void ToRGBA(const unsigned char* input, unsigned char* output, int width, int height, int channels) {
+	if (channels == 1) {//grayscale
+		int j = 0;
+		for (int i = 0; i < width * height; i++) {
+			for (int ch = 0; ch < 3; ch++)
+				output[j + ch] = input[i];
+			output[j + 3] = 0xFF;
+			j += 4;
+		}
+	}
+	else if (channels == 2) {//grayscale alpha
+		int j = 0;
+		for (int i = 0; i < width * height * channels; i += channels) {
+			for (int ch = 0; ch < 3; ch++)
+				output[j + ch] = input[i];
+			output[j + 3] = input[i + 1];
+			j += 4;
+		}
+	}
+	else if (channels == 3) {//rgb
+		int j = 0;
+		for (int i = 0; i < width * height * channels; i += channels) {
+			for (int ch = 0; ch < 3; ch++)
+				output[j + ch] = input[i + ch];
+			output[j + 3] = 0xFF;
+			j += 4;
+		}
+	}
+	else if (channels == 4) {//rgba
+		memcpy(output, input, width * height * channels);
+	}
+}
+
 void layer_pixels(unsigned char* out, unsigned char* foreground, unsigned char* background, int forewidth, int foreheight, int forechannels, int backwidth, int backheight, int backchannels, int x_offset, int y_offset) {
 	unsigned char* foreground_4c = (unsigned char*)malloc(forewidth * foreheight * 4);
 	unsigned char* background_4c = (unsigned char*)malloc(backwidth * backheight * 4);
 	const uint8_t FF = 0xFF;
 
-	//convert the stuff to rgba
-	if (forechannels == 1) {//grayscale
-		int j = 0;
-		for (int i = 0; i < forewidth * foreheight; i++) {
-			for (int ch = 0; ch < 3; ch++)
-				foreground_4c[j + ch] = foreground[i];
-			foreground_4c[j + 3] = FF;
-			j += 4;
-		}
-	}
-	else if (forechannels == 2) {//grayscale alpha
-		int j = 0;
-		for (int i = 0; i < forewidth * foreheight * forechannels; i += forechannels) {
-			for (int ch = 0; ch < 3; ch++)
-				foreground_4c[j + ch] = foreground[i];
-			foreground_4c[j + 3] = foreground[i + 1];
-			j += 4;
-		}
-	}
-	else if (forechannels == 3) {//rgb
-		int j = 0;
-		for (int i = 0; i < forewidth * foreheight * forechannels; i += forechannels) {
-			for (int ch = 0; ch < 3; ch++)
-				foreground_4c[j + ch] = foreground[i + ch];
-			foreground_4c[j + 3] = FF;
-			j += 4;
-		}
-	}
-	else if (forechannels == 4) {//rgba
-		memcpy(foreground_4c, foreground, forewidth * foreheight * forechannels);
-	}
-
-	if (backchannels == 1) {//grayscale
-		int j = 0;
-		for (int i = 0; i < backwidth * backheight; i++) {
-			for (int ch = 0; ch < 3; ch++)
-				background_4c[j + ch] = background[i];
-			background_4c[j + 3] = FF;
-			j += 4;
-		}
-	}
-	else if (backchannels == 2) {//grayscale alpha
-		int j = 0;
-		for (int i = 0; i < backwidth * backheight * backchannels; i += backchannels) {
-			for (int ch = 0; ch < 3; ch++)
-				background_4c[j + ch] = background[i];
-			background_4c[j + 3] = background[i + 1];
-			j += 4;
-		}
-	}
-	else if (backchannels == 3) {//rgb
-		int j = 0;
-		for (int i = 0; i < backwidth * backheight * backchannels; i += backchannels) {
-			for (int ch = 0; ch < backchannels; ch++)
-				background_4c[j + ch] = background[i + ch];
-			background_4c[j + 3] = FF;
-			j += 4;
-		}
-	}
-	else if (backchannels == 4) {//rgba
-		memcpy(background_4c, background, backwidth * backheight * backchannels);
-	}
+	ToRGBA(foreground, foreground_4c, forewidth, foreheight, forechannels);
+	ToRGBA(background, background_4c, backwidth, backheight, backchannels);
 
 	for (int y = 0; y < foreheight; y++)
 		for (int x = 0; x < forewidth; x++) {
 			if (x >= x_offset && x < forewidth - x_offset && y >= y_offset && y < backheight + y_offset) {
 				//https://stackoverflow.com/a/64655571
 				uint8_t alpha_out = foreground_4c[(y * foreheight + x) * 4 + 3] + (background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + 3] * (FF - foreground_4c[(y * foreheight + x) * 4 + 3]) / FF);
-				for (int ch = 0; ch < 3; ch++)
-					out[(y * forewidth + x) * 4 + ch] = (foreground_4c[(y * forewidth + x) * 4 + ch] * foreground_4c[(y * forewidth + x) * 4 + 3] + background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + ch] * FF * (FF - foreground_4c[(y * forewidth + x) * 4 + 3]) / FF) / alpha_out;
+				for (int ch = 0; ch < 3; ch++) {
+					if (alpha_out) out[(y * forewidth + x) * 4 + ch] = (foreground_4c[(y * forewidth + x) * 4 + ch] * foreground_4c[(y * forewidth + x) * 4 + 3] + background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + ch] * background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + 3] * (FF - foreground_4c[(y * forewidth + x) * 4 + 3]) / FF) / alpha_out;
+					else out[(y * forewidth + x) * 4 + ch] = (foreground_4c[(y * forewidth + x) * 4 + ch] * foreground_4c[(y * forewidth + x) * 4 + 3] + background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + ch] * background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + 3] * (FF - foreground_4c[(y * forewidth + x) * 4 + 3]) / FF);
+				}
 				out[(y * forewidth + x) * 4 + 3] = alpha_out;
 			}
 			else {
