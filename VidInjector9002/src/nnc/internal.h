@@ -20,6 +20,9 @@
 #define i32 nnc_i32
 #define i64 nnc_i64
 
+#define f32 nnc_f32
+#define f64 nnc_f64
+
 #define result nnc_result
 
 #ifdef __GNUC__
@@ -97,6 +100,23 @@ void nnc_dumpmem(void* mem, u32 len);
 bool nnc_find_support_file(const char* name, char* output);
 #define strdup nnc_strdup
 char* nnc_strdup(const char* s);
+
+union nnc_f32_converter {
+	f32 flt;
+	u32 uint;
+};
+
+static inline f32 nnc_load_f32_le(nnc_u8* addr)
+{
+	union nnc_f32_converter conv = { .uint = LE32P(addr) };
+	return conv.flt;
+}
+
+static inline void nnc_store_f32_le(nnc_u8* addr, f32 val)
+{
+	union nnc_f32_converter conv = { .flt = val };
+	U32P(addr) = LE32(conv.uint);
+}
 
 struct dynbuf {
 	u8* buffer;
