@@ -97,7 +97,9 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 	unsigned char* input_pixels;
 	unsigned char* output_pixels;
 	unsigned char* output_4c;
+	unsigned char* white;
 	unsigned char* output_fin;
+	unsigned char* black;
 	int w, h, ch, comp;
 	const int new_w = 256;
 	const int new_h = 128;
@@ -156,6 +158,7 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 			return false;
 		}
 		memset(input_pixels, FF, out_w * out_h * ch);
+		stbi_write_png("input_pixels.png", out_w, out_h, ch, input_pixels, 0);
 	}
 	else input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
 	output_pixels = (unsigned char*)malloc(out_w * out_h * ch);
@@ -175,7 +178,18 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 		return false;
 	}
 	ToRGBA(output_pixels, output_4c, out_w, out_h, ch);
+	white = (unsigned char*)malloc(out_w * out_h * 4);
+	if (white == NULL) {
+		free(white);
+		free(output_pixels);
+		free(output_4c);
+		return false;
+	}
+	memset(white, 0xFF, out_w * out_h * 4);
+	layer_pixels(output_4c, output_pixels, white, out_w, out_h, ch, out_w, out_h, 4, 0, 0);
+	free(white);
 	free(output_pixels);
+	stbi_write_png("output_4c.png", out_w, out_h, 4, output_4c, 0);
 
 	//layer 200x120 image on a 256x128 image
 	output_fin = (unsigned char*)malloc(new_w * new_h * 4);
@@ -184,11 +198,23 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 		free(output_4c);
 		return false;
 	}
-	memset(output_fin, 0, new_w * new_h * 4);
-	layer_pixels(output_fin, output_4c, output_fin, new_w, new_h, 4, new_w, new_h, 4, 0, 0);
+
+	black = (unsigned char*)malloc(new_w * new_h * 3);
+	if (black == NULL) {
+		free(black);
+		free(output_fin);
+		free(output_4c);
+		return false;
+	}
+	memset(black, 0, new_w * new_h * 3);
+	layer_pixels(output_fin, output_4c, black, out_w, out_h, 4, new_w, new_h, 3, 0, 0);
+	stbi_write_png("output_fin.png", new_w, new_h, 4, output_fin, 0);
+	free(black);
+	free(output_4c);
 
 	unsigned char tiledbanner[new_w * new_h * sizeof(nnc_u16)];
-	nnc_swizzle_zorder_rgba8_to_le_rgb565(reinterpret_cast<nnc_u32*>(output_fin), reinterpret_cast<nnc_u16*>(tiledbanner), new_w, new_h);
+	nnc_swizzle_zorder_be_rgba8_to_le_rgb565(reinterpret_cast<nnc_u32*>(output_fin), reinterpret_cast<nnc_u16*>(tiledbanner), new_w, new_h);
+	free(output_fin);
 	if (writeHeader) {
 		memcpy(outBuffer, bimgheader, sizeof(bimgheader));
 		memcpy(outBuffer + sizeof(bimgheader), tiledbanner, sizeof(tiledbanner));
@@ -196,10 +222,6 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 	else {
 		memcpy(outBuffer, tiledbanner, sizeof(tiledbanner));
 	}
-
-	//stbi_write_png("imag.png", new_w, new_h, 3, output_fin, 0);
-	free(output_fin);
-	free(output_4c);
 	return true;
 }
 
