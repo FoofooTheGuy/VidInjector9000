@@ -99,7 +99,6 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 	unsigned char* output_4c;
 	unsigned char* white;
 	unsigned char* output_fin;
-	unsigned char* black;
 	int w, h, ch, comp;
 	const int new_w = 256;
 	const int new_h = 128;
@@ -114,7 +113,6 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 				w = 256;
 				h = 128;
 				int ich = sizeof(nnc_u16);
-				int och = sizeof(nnc_u32);
 				std::ifstream infile;
 				infile.open(input, std::ios_base::in | std::ios_base::binary);//input file
 				unsigned char* input_data = (unsigned char*)malloc((w * h * ich) + 0x20);
@@ -158,7 +156,6 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 			return false;
 		}
 		memset(input_pixels, FF, out_w * out_h * ch);
-		stbi_write_png("input_pixels.png", out_w, out_h, ch, input_pixels, 0);
 	}
 	else input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
 	output_pixels = (unsigned char*)malloc(out_w * out_h * ch);
@@ -189,7 +186,6 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 	layer_pixels(output_4c, output_pixels, white, out_w, out_h, ch, out_w, out_h, 4, 0, 0);
 	free(white);
 	free(output_pixels);
-	stbi_write_png("output_4c.png", out_w, out_h, 4, output_4c, 0);
 
 	//layer 200x120 image on a 256x128 image
 	output_fin = (unsigned char*)malloc(new_w * new_h * 4);
@@ -199,17 +195,16 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 		return false;
 	}
 
-	black = (unsigned char*)malloc(new_w * new_h * 3);
-	if (black == NULL) {
-		free(black);
-		free(output_fin);
-		free(output_4c);
-		return false;
-	}
-	memset(black, 0, new_w * new_h * 3);
-	layer_pixels(output_fin, output_4c, black, out_w, out_h, 4, new_w, new_h, 3, 0, 0);
-	stbi_write_png("output_fin.png", new_w, new_h, 4, output_fin, 0);
-	free(black);
+	memset(output_fin, 0, new_w * new_h * 4);
+	for (int i = 3; i < new_w * new_h * 4; i += 4)
+		output_fin[i] = 0xFF;//make alpha 0xFF
+	//layer_pixels(output_fin, output_4c, black, out_w, out_h, 4, new_w, new_h, 3, 0, 0);//why doesnt this work for this????
+	for (int y = 0; y < out_h; y++)
+		for (int x = 0; x < out_w; x++) {
+			for (int c = 0; c < 4; c++)
+				output_fin[(y * (new_w) + x) * 4 + c] = output_4c[(y * (out_w) + x) * 4 + c];
+		}
+	//stbi_write_png("output_fin.png", new_w, new_h, 4, output_fin, 0);
 	free(output_4c);
 
 	unsigned char tiledbanner[new_w * new_h * sizeof(nnc_u16)];

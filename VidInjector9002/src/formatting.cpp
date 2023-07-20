@@ -233,10 +233,8 @@ void layer_pixels(unsigned char* out, unsigned char* foreground, unsigned char* 
 			if (x >= x_offset && x < forewidth - x_offset && y >= y_offset && y < backheight + y_offset) {
 				//https://stackoverflow.com/a/64655571
 				uint8_t alpha_out = foreground_4c[(y * foreheight + x) * 4 + 3] + (background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + 3] * (FF - foreground_4c[(y * foreheight + x) * 4 + 3]) / FF);
-				for (int ch = 0; ch < 3; ch++) {
-					if (alpha_out) out[(y * forewidth + x) * 4 + ch] = (foreground_4c[(y * forewidth + x) * 4 + ch] * foreground_4c[(y * forewidth + x) * 4 + 3] + background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + ch] * background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + 3] * (FF - foreground_4c[(y * forewidth + x) * 4 + 3]) / FF) / alpha_out;
-					else out[(y * forewidth + x) * 4 + ch] = (foreground_4c[(y * forewidth + x) * 4 + ch] * foreground_4c[(y * forewidth + x) * 4 + 3] + background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + ch] * background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + 3] * (FF - foreground_4c[(y * forewidth + x) * 4 + 3]) / FF);
-				}
+				for (int ch = 0; ch < 3; ch++)
+					out[(y * forewidth + x) * 4 + ch] = (foreground_4c[(y * forewidth + x) * 4 + ch] * foreground_4c[(y * forewidth + x) * 4 + 3] + background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + ch] * FF * (FF - foreground_4c[(y * forewidth + x) * 4 + 3]) / FF) / alpha_out;
 				out[(y * forewidth + x) * 4 + 3] = alpha_out;
 			}
 			else {

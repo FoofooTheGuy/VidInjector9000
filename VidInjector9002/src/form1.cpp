@@ -206,14 +206,16 @@ form1::form1() {
             if (stbi_info(bannerbox.text().c_str(), &w, &h, &ch)) {
                 unsigned char* input_pixels = stbi_load(bannerbox.text().c_str(), &w, &h, &ch, 0);
                 unsigned char* output_pixels = (unsigned char*)malloc(out_w * out_h * ch);
-                unsigned char* output_4c = (unsigned char*)malloc(out_w * out_h * 4);
                 const uint8_t FF = 0xFF;
 
                 if (w == out_w && h == out_h) memcpy(output_pixels, input_pixels, w * h * ch);
                 else resize_crop(input_pixels, w, h, output_pixels, out_w, out_h, ch);//scale to 200x120 if needed
                 free(input_pixels);
-                ToRGBA(output_pixels, output_4c, out_w, out_h, ch);
-
+                unsigned char* output_4c = (unsigned char*)malloc(out_w * out_h * 4);
+                unsigned char* white = (unsigned char*)malloc(out_w * out_h * 4);
+                memset(white, 0xFF, out_w* out_h * 4);
+                layer_pixels(output_4c, output_pixels, white, out_w, out_h, ch, out_w, out_h, 4, 0, 0);
+                free(white);
                 free(output_pixels);
                 unsigned char* output_film = (unsigned char*)malloc(film_w * film_h * 4);
                 //memcpy(output_film, film_overlay, film_w * film_h * 4);
@@ -1215,7 +1217,7 @@ form1::form1() {
         //convert to bimg (multi vid only)
         if (mode.selected_index()) {
             for (int i = 0; i < rows; i++) {
-                unsigned char bimg[65568];
+                unsigned char bimg[256 * 128 * sizeof(nnc_u16) + 0x20];
                 /*if (!std::filesystem::exists(text_box_array.at(i * columns + 2)->text().c_str())) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}, {} 3\n{} \"{}\"", row, i + 1, column, FailedToFindPath, text_box_array.at(i * columns + 2)->text()), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     builder.cancel_async();

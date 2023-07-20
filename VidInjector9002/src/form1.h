@@ -194,13 +194,17 @@ namespace VidInjector9002 {
                 else if (stbi_info(text_box_array.at(y * columns + 2)->text().c_str(), &w, &h, &ch)) {
                     unsigned char* input_pixels = stbi_load(text_box_array.at(y * columns + 2)->text().c_str(), &w, &h, &ch, 0);
                     unsigned char* output_pixels = (unsigned char*)malloc(out_w * out_h * ch);
-                    unsigned char* output_4c = (unsigned char*)malloc(out_w * out_h * 4);
+
                     const uint8_t FF = 0xFF;
 
                     if (w == out_w && h == out_h) memcpy(output_pixels, input_pixels, w * h * ch);
                     else resize_crop(input_pixels, w, h, output_pixels, out_w, out_h, ch);//scale to 200x120 if needed
                     free(input_pixels);
-                    ToRGBA(output_pixels, output_4c, out_w, out_h, ch);
+                    unsigned char* output_4c = (unsigned char*)malloc(out_w * out_h * 4);
+                    unsigned char* white = (unsigned char*)malloc(out_w * out_h * 4);
+                    memset(white, 0xFF, out_w * out_h * 4);
+                    layer_pixels(output_4c, output_pixels, white, out_w, out_h, ch, out_w, out_h, 4, 0, 0);
+                    free(white);
                     free(output_pixels);
                     unsigned char* output_film = (unsigned char*)malloc(film_w * film_h * 4);
                     //memcpy(output_film, film_overlay, film_w * film_h * 4);
