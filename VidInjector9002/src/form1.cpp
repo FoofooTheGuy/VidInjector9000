@@ -59,7 +59,7 @@ form1::form1() {
     mode.parent(parameters);
     mode.auto_size(true);
     mode.font(this->font());
-    mode.location({ 105, modetxt.location().y() + modetxt.height()});//tether to modetxt
+    mode.location({ 105, modetxt.location().y() + modetxt.height() });//tether to modetxt
     mode.items().push_back_range({ SingleVideo, MultiVideo });
     mode.selected_index(0);
 
@@ -72,7 +72,7 @@ form1::form1() {
 
     bannerbox.parent(parameters);
     bannerbox.font(this->font());
-    bannerbox.location({ bannertxt.location().x() + bannertxt.width() + 5, bannertxt.location().y() + (bannertxt.height() - bannerbox.height()) / 2});//tether to bannertxt
+    bannerbox.location({ bannertxt.location().x() + bannertxt.width() + 5, bannertxt.location().y() + (bannertxt.height() - bannerbox.height()) / 2 });//tether to bannertxt
     bannerbox.width(parameters.width() - bannerbox.location().x() - 599);
     bannerbox.cursor(xtd::forms::cursors::ibeam());
 
@@ -136,7 +136,8 @@ form1::form1() {
         int film_w = 264;
         int film_h = 154;
         unsigned char Checker[4];
-        bool CGFX = false;
+        bool banner = false;
+        int ich = sizeof(nnc_u16);
         std::ifstream inbanner(bannerbox.text(), std::ios::binary);
         if (!std::filesystem::exists(bannerbox.text().c_str())) {
             setDefaultBannerPreview(bannerpreview, &bannererror);
@@ -147,13 +148,39 @@ form1::form1() {
             if (Checker[i] == bannerMagic[i]) {
                 bannerpreview.image(empty(0, 0));
                 customnotif.show();
-                CGFX = true;
+                banner = true;
             }
             else {
                 bannerpreview.image(pixels_to_image(film_overlay, 264, 154, 4));
                 customnotif.hide();
-                CGFX = false;
+                banner = false;
                 break;
+            }
+        }
+        if (banner) {
+            unsigned char bimg[0x10000];
+            bannerpreview.image(empty(0, 0));
+            customnotif.show();
+            if (!CBMDtoBimg(bannerbox.text(), bimg)) {
+                bannerpreview.image(empty(0, 0));
+                customnotif.show();
+            }
+            else {
+                w = 256;
+                h = 128;
+                int och = sizeof(nnc_u32);
+                unsigned char* output_pixels = (unsigned char*)malloc(w * h * och);
+                nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(&bimg), reinterpret_cast<nnc_u32*>(output_pixels), w, h);
+                unsigned char* output_cropped = (unsigned char*)malloc(out_w * out_w * och);
+                crop_pixels(output_pixels, w, h, och, output_cropped, 0, 0, out_w, out_h);
+                free(output_pixels);
+                unsigned char* output_film = (unsigned char*)malloc(film_w * film_h * 4);
+                layer_pixels(output_film, film_overlay, output_cropped, film_w, film_h, 4, out_w, out_h, 4, 32, 11);
+                free(output_cropped);
+                bannerpreview.image(pixels_to_image(output_film, film_w, film_h, 4));
+                bannererror.hide();
+                //free(output_film);
+                customnotif.hide();
             }
         }
         std::string extension = bannerbox.text();
@@ -162,7 +189,6 @@ form1::form1() {
             if (std::filesystem::file_size(bannerbox.text().c_str()) == 0x10020) {
                 w = 256;
                 h = 128;
-                int ich = sizeof(nnc_u16);
                 int och = sizeof(nnc_u32);
                 std::ifstream input;
                 input.open(bannerbox.text().c_str(), std::ios_base::in | std::ios_base::binary);//input file
@@ -202,7 +228,7 @@ form1::form1() {
                 setDefaultBannerPreview(bannerpreview, &bannererror);
             }
         }
-        else if (!CGFX) {
+        else if (!banner) {
             if (stbi_info(bannerbox.text().c_str(), &w, &h, &ch)) {
                 unsigned char* input_pixels = stbi_load(bannerbox.text().c_str(), &w, &h, &ch, 0);
                 unsigned char* output_pixels = (unsigned char*)malloc(out_w * out_h * ch);
@@ -213,7 +239,7 @@ form1::form1() {
                 free(input_pixels);
                 unsigned char* output_4c = (unsigned char*)malloc(out_w * out_h * 4);
                 unsigned char* white = (unsigned char*)malloc(out_w * out_h * 4);
-                memset(white, 0xFF, out_w* out_h * 4);
+                memset(white, 0xFF, out_w * out_h * 4);
                 layer_pixels(output_4c, output_pixels, white, out_w, out_h, ch, out_w, out_h, 4, 0, 0);
                 free(white);
                 free(output_pixels);
@@ -252,7 +278,7 @@ form1::form1() {
     iconbrowse.text(Browse);
     iconbrowse.click += [&] {
         xtd::ustring filepath = load_file(xtd::ustring::format("{} {}{}", SupportedImage48x48, SupportedImageList), iconbox.text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
-        if(!filepath.empty()) iconbox.text(filepath);
+        if (!filepath.empty()) iconbox.text(filepath);
     };
 
     iconpreview.parent(parameters);
@@ -283,7 +309,7 @@ form1::form1() {
 
     shortnametxt.parent(parameters);
     shortnametxt.auto_size(true);
-    shortnametxt.font({ this->font(), 15 } );
+    shortnametxt.font({ this->font(), 15 });
     shortnametxt.location({ 20, iconerror.location().y() + iconerror.height() + 1 });//put it below icontxt
     shortnametxt.text(ShortNameText);
 
@@ -385,7 +411,7 @@ form1::form1() {
         if (autoSaveParams && loaded) saveSettings();
         copybox.enabled(mode.selected_index() && copycheck.checked());
     };
-    
+
     copybox.parent(parameters);
     copybox.multiline(true);
     copybox.accepts_return(true);
@@ -492,8 +518,8 @@ form1::form1() {
     bannermulti.cursor(xtd::forms::cursors::help());
     bannermulti.mouse_move += [&](object& sender, const xtd::forms::mouse_event_args& e) {
         MultiOnly.location({ bannermulti.location().x() + e.location().x(), bannermulti.location().y() + e.location().y() - MultiOnly.height() });
-        if(MultiOnly.location().x() + MultiOnly.width() > parameters.width())
-            MultiOnly.location({ bannermulti.location().x() + e.location().x() - MultiOnly.width(), bannermulti.location().y() + e.location().y() - MultiOnly.height()});
+        if (MultiOnly.location().x() + MultiOnly.width() > parameters.width())
+            MultiOnly.location({ bannermulti.location().x() + e.location().x() - MultiOnly.width(), bannermulti.location().y() + e.location().y() - MultiOnly.height() });
         MultiOnly.show();
     };
     bannermulti.mouse_leave += [&] {
@@ -683,7 +709,7 @@ form1::form1() {
         xtd::ustring temp = titleIDbox.text();
         if (temp.size() > 5)
             temp = titleIDbox.text().substr(0, 5);
-        for (auto &c : temp) {
+        for (auto& c : temp) {
             if (tolowerstr(std::string(1, c)).find_first_of("0123456789abcdef") != 0) {
                 c = '0';
             }
@@ -841,7 +867,7 @@ form1::form1() {
     buildButt.auto_size(true);
     buildButt.font({ this->font(), 15 });
     buildButt.text(BuildCIAText);
-    buildButt.size({ buildButt.width() * 2, buildButt.height() * 2});
+    buildButt.size({ buildButt.width() * 2, buildButt.height() * 2 });
     buildButt.click += [&] {
         ableObjects(false);
         buildButt.enabled(false);
@@ -1391,7 +1417,7 @@ form1::form1() {
             baseCIA.write(reinterpret_cast<const char*>(base_cia), sizeof(base_cia));
             baseCIA.close();
 
-            #define TRYB(expr, lbl) if((res = ( expr )) != NNC_R_OK) goto lbl
+#define TRYB(expr, lbl) if((res = ( expr )) != NNC_R_OK) goto lbl
 
             nnc_subview certchain, ticket, tmd_strm, logo;
             nnc_buildable_ncch ncch0b;
@@ -1565,7 +1591,7 @@ form1::form1() {
     savebutt.font({ this->font(), 12 });
     savebutt.text(SaveButtText);
     savebutt.size({ settings.width() - 10, 35 });
-    savebutt.location({ (settings.width() - savebutt.width()) / 2, (settings.height() / 3) - savebutt.height()});
+    savebutt.location({ (settings.width() - savebutt.width()) / 2, (settings.height() / 3) - savebutt.height() });
     savebutt.click += [&] {
         xtd::ustring filepath = save_file(ParamFilesList, (parampath.empty() ? DefaultParamFile : parampath.substr(parampath.find_last_of("/\\") + 1)), (parampath.empty() ? xtd::environment::get_folder_path(xtd::environment::special_folder::desktop) : parampath));
         if (!filepath.empty()) parampath = filepath;
@@ -1584,7 +1610,7 @@ form1::form1() {
     loadbutt.font({ this->font(), 12 });
     loadbutt.text(LoadButtText);
     loadbutt.size({ settings.width() - 10, savebutt.height() });
-    loadbutt.location({ (settings.width() - loadbutt.width()) / 2, savebutt.location().y() + savebutt.height()});//tether to save button
+    loadbutt.location({ (settings.width() - loadbutt.width()) / 2, savebutt.location().y() + savebutt.height() });//tether to save button
     loadbutt.click += [&] {
         xtd::ustring filepath = load_file(ParamFilesList, parampath);
         if (!filepath.empty()) parampath = filepath;
@@ -1663,7 +1689,7 @@ form1::form1() {
         else xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}", FailedToFindPath, entry), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
     }
     for (int i = 0; i < LanguageVec.size(); i++) {
-        if(LanguageVec.at(i) == Languagedir) {
+        if (LanguageVec.at(i) == Languagedir) {
             LanguageChoiche.selected_index(i);
             break;
         }
@@ -1712,7 +1738,7 @@ form1::form1() {
     version.auto_size(true);
     version.font(this->font());
     version.text(programVersion);
-    version.location({ (settings.width() - version.width()) / 2, settings.height() - version.height()});
+    version.location({ (settings.width() - version.width()) / 2, settings.height() - version.height() });
 
     mode.selected_index_changed += [&](object& sender, const xtd::event_args& e) {
         mode.selected_index(as<xtd::forms::choice&>(sender).selected_index());

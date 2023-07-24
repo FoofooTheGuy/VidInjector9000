@@ -19,9 +19,9 @@
 
 /// @brief Represents the namespace that contains application objects.
 namespace VidInjector9002 {
-  /// @brief Represents the main form.
-  class form1 : public xtd::forms::form {
-  public:
+    /// @brief Represents the main form.
+    class form1 : public xtd::forms::form {
+    public:
         /// @brief Initializes a new instance of the form1 class.
         form1();
 
@@ -120,7 +120,7 @@ namespace VidInjector9002 {
             return texture;
         }
 
-        void setDefaultBannerPreview(xtd::forms::picture_box &banner, xtd::forms::label *error) {
+        void setDefaultBannerPreview(xtd::forms::picture_box& banner, xtd::forms::label* error) {
             int ch = 4;
             int out_w = 200;
             int out_h = 120;
@@ -135,7 +135,7 @@ namespace VidInjector9002 {
 
             customnotif.hide();
             banner.image(pixels_to_image(output_film, film_w, film_h, 4));
-            if(error != nullptr) error->show();
+            if (error != nullptr) error->show();
 
             free(output_film);
         }
@@ -218,7 +218,7 @@ namespace VidInjector9002 {
                 }
             }
             else {
-            setDefaultBannerPreview(menubannerpreview, nullptr);
+                setDefaultBannerPreview(menubannerpreview, nullptr);
             }
             bannerpreviewindex = y;
             indextxt.text(xtd::ustring::format("{}/{}", bannerpreviewindex + 1, rows));
@@ -753,7 +753,7 @@ namespace VidInjector9002 {
 
         void saveSettings() {
             if (autoSaveParams && saveParametersNow) {
-                if(!std::filesystem::exists(parampath.c_str())) parampath = xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, DefaultParamFile);
+                if (!std::filesystem::exists(parampath.c_str())) parampath = xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, DefaultParamFile);
                 saveParameters();
             }
             std::ofstream settingsfile(xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, settingsPath).c_str(), std::ios_base::out | std::ios_base::binary);
@@ -900,7 +900,7 @@ namespace VidInjector9002 {
         bool autoLoadParams = false;
         int borderMode = 2;
         xtd::forms::font_dialog font_dialog;
-		xtd::forms::label MultiOnly;
+        xtd::forms::label MultiOnly;
 
         xtd::forms::tab_control tab_control;
         xtd::forms::tab_page parameters;
@@ -929,20 +929,20 @@ namespace VidInjector9002 {
 
         xtd::forms::label shortnametxt;
         xtd::forms::text_box shortname;
-		xtd::forms::label shorterror;
+        xtd::forms::label shorterror;
         xtd::forms::label longnametxt;
         xtd::forms::text_box longname;
-		xtd::forms::label longerror;
-		xtd::forms::label publishertxt;
-		xtd::forms::text_box publisher;
-		xtd::forms::label publishererror;
+        xtd::forms::label longerror;
+        xtd::forms::label publishertxt;
+        xtd::forms::text_box publisher;
+        xtd::forms::label publishererror;
 
-		xtd::forms::check_box copycheck;
-		xtd::forms::text_box copybox;
-		xtd::forms::picture_box copymulti;
+        xtd::forms::check_box copycheck;
+        xtd::forms::text_box copybox;
+        xtd::forms::picture_box copymulti;
 
-		xtd::forms::check_box FFrewind;
-		xtd::forms::check_box FadeOpt;
+        xtd::forms::check_box FFrewind;
+        xtd::forms::check_box FadeOpt;
 
         xtd::forms::panel mediabox;
         int columns = 3;
@@ -990,7 +990,7 @@ namespace VidInjector9002 {
 
         xtd::forms::button buildButt;
         xtd::forms::button cancelBuildButt;
-        
+
         xtd::forms::background_worker builder;
 
         //settings
@@ -1011,5 +1011,5 @@ namespace VidInjector9002 {
         unsigned char* banner_image;
         unsigned char* large_icon;
         unsigned char* small_icon;
-  };
+    };
 }

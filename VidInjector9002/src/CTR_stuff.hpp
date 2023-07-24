@@ -62,3 +62,9 @@ typedef struct {
 uint32_t lz11_get_occurence_length(uint8_t* newPtr, uint32_t newLength, uint8_t* oldPtr, uint32_t oldLength, uint32_t* disp);
 void* lz11_compress(uint32_t* size, void* input, uint32_t inputSize);
 void* cbmd_build_data(uint32_t* size, CBMD cbmd);
+
+/*
+inpath: string path to file
+outbuff: output buffer for image data. make sure it is 0x10000 in size
+*/
+bool CBMDtoBimg(std::string inpath, unsigned char* outbuff);

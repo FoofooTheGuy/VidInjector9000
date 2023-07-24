@@ -1,56 +1,56 @@
 #include "CTR_stuff.hpp"
 
 void Generate_Files(std::string dir, bool Multi) {
-    if(!std::filesystem::exists(dir)) std::filesystem::create_directories(dir);
-    miniz_cpp::zip_file file;
-    file.load(Multi ? Multivid : Singlevid);
-    std::vector<std::string> list = file.namelist();
-    for (auto& member : list) {//plant seeds
-        if (member.find_last_of("/") == member.size() - 1)
-            std::filesystem::create_directory(dir + "/" + member);
-    }
-    file.extractall(dir, list);//grow fruit (don't you mean grow tree?)
+	if (!std::filesystem::exists(dir)) std::filesystem::create_directories(dir);
+	miniz_cpp::zip_file file;
+	file.load(Multi ? Multivid : Singlevid);
+	std::vector<std::string> list = file.namelist();
+	for (auto& member : list) {//plant seeds
+		if (member.find_last_of("/") == member.size() - 1)
+			std::filesystem::create_directory(dir + "/" + member);
+	}
+	file.extractall(dir, list);//grow fruit (don't you mean grow tree?)
 }
 
 bool TIDisValid(unsigned long TID) {
-    unsigned long min = 0xC0000;
-    unsigned long max = 0xEFFFF;
-    switch (TID)
-    {
-    case 0xc0d00://Side-Scrolling Example
-    case 0xce1cc://CHMM
-    case 0xd921e://homebrew launcher loader
-    case 0xda001://Smash Bros Dummy Application
-    case 0xda002://3ds quick shutdown
-    case 0xda003://Wifi Toggle
-    case 0xe7a5a://NASA ALL
-    case 0xec100://PKSM
-    case 0xed990://NotifyMii
-    case 0xeffec://FileKong
-    case 0xeffed://TriaAl
-    case 0:
-    {
-        return false;
-    }
-    break;
-    default:
-        if (TID > max || TID < min) return false;
-    }
-    return true;
+	unsigned long min = 0xC0000;
+	unsigned long max = 0xEFFFF;
+	switch (TID)
+	{
+	case 0xc0d00://Side-Scrolling Example
+	case 0xce1cc://CHMM
+	case 0xd921e://homebrew launcher loader
+	case 0xda001://Smash Bros Dummy Application
+	case 0xda002://3ds quick shutdown
+	case 0xda003://Wifi Toggle
+	case 0xe7a5a://NASA ALL
+	case 0xec100://PKSM
+	case 0xed990://NotifyMii
+	case 0xeffec://FileKong
+	case 0xeffed://TriaAl
+	case 0:
+	{
+		return false;
+	}
+	break;
+	default:
+		if (TID > max || TID < min) return false;
+	}
+	return true;
 }
 
 unsigned long RandomTID() {
-    unsigned long min = 0xC0000;
-    unsigned long max = 0xEFFFF;
-    unsigned long TID = 0;
-    static std::mt19937 rng;
+	unsigned long min = 0xC0000;
+	unsigned long max = 0xEFFFF;
+	unsigned long TID = 0;
+	static std::mt19937 rng;
 
-    while (!TIDisValid(TID)) {//loop until we get a good value
-        rng.seed(static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count()));
-        std::uniform_int_distribution<unsigned long> uniform(min, max);
-        TID = uniform(rng);
-    }
-    return TID;
+	while (!TIDisValid(TID)) {//loop until we get a good value
+		rng.seed(static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count()));
+		std::uniform_int_distribution<unsigned long> uniform(min, max);
+		TID = uniform(rng);
+	}
+	return TID;
 }
 
 void resize_crop(const unsigned char* input_pixels, int input_w, int input_h, unsigned char* output_pixels, int output_w, int output_h, int num_channels) {//this has to be here because of stbir_resize_uint8 and i dont wann include that everywhere because it's all inline
@@ -202,7 +202,7 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 	for (int y = 0; y < out_h; y++)
 		for (int x = 0; x < out_w; x++) {
 			for (int c = 0; c < 4; c++)
-				output_fin[(y * (new_w) + x) * 4 + c] = output_4c[(y * (out_w) + x) * 4 + c];
+				output_fin[(y * (new_w)+x) * 4 + c] = output_4c[(y * (out_w)+x) * 4 + c];
 		}
 	//stbi_write_png("output_fin.png", new_w, new_h, 4, output_fin, 0);
 	free(output_4c);
@@ -456,6 +456,75 @@ void* lz11_compress(uint32_t* size, void* input, uint32_t inputSize) {
 	return buf;
 }
 
+uint32_t Get_Decompressed_size(const uint8_t* in) {
+	uint32_t decompressed_size;
+	memcpy(&decompressed_size, in, sizeof(uint32_t));
+	in += 4;
+
+	uint8_t type = decompressed_size & 0xFF;
+	if (type != 0x11) return -1;
+	decompressed_size >>= 8;
+	return decompressed_size;
+}
+
+uint32_t DecompressLZ11(const uint8_t* in, uint8_t* out) {//https://github.com/citra-emu/citra/blob/bfb6a5b5de1e7a89ceebabe33e792d5c03a2cf46/src/core/hle/service/apt/apt.cpp#L135
+	uint32_t decompressed_size;
+	memcpy(&decompressed_size, in, sizeof(uint32_t));
+	in += 4;
+
+	uint8_t type = decompressed_size & 0xFF;
+	if (type != 0x11) return -1;
+	decompressed_size >>= 8;
+
+	uint32_t current_out_size = 0;
+	uint8_t flags = 0, mask = 1;
+	while (current_out_size < decompressed_size) {
+		if (mask == 1) {
+			flags = *(in++);
+			mask = 0x80;
+		}
+		else {
+			mask >>= 1;
+		}
+
+		if (flags & mask) {
+			uint8_t byte1 = *(in++);
+			uint32_t length = byte1 >> 4;
+			uint32_t offset;
+			if (length == 0) {
+				uint8_t byte2 = *(in++);
+				uint8_t byte3 = *(in++);
+				length = (((byte1 & 0x0F) << 4) | (byte2 >> 4)) + 0x11;
+				offset = (((byte2 & 0x0F) << 8) | byte3) + 0x1;
+			}
+			else if (length == 1) {
+				uint8_t byte2 = *(in++);
+				uint8_t byte3 = *(in++);
+				uint8_t byte4 = *(in++);
+				length = (((byte1 & 0x0F) << 12) | (byte2 << 4) | (byte3 >> 4)) + 0x111;
+				offset = (((byte3 & 0x0F) << 8) | byte4) + 0x1;
+			}
+			else {
+				uint8_t byte2 = *(in++);
+				length = (byte1 >> 4) + 0x1;
+				offset = (((byte1 & 0x0F) << 8) | byte2) + 0x1;
+			}
+
+			for (uint32_t i = 0; i < length; i++) {
+				*out = *(out - offset);
+				++out;
+			}
+
+			current_out_size += length;
+		}
+		else {
+			*(out++) = *(in++);
+			current_out_size++;
+		}
+	}
+	return decompressed_size;
+}
+
 void* cbmd_build_data(uint32_t* size, CBMD cbmd) {//this is here because it has to be static for some reason (it's from bannertool)
 	CBMDHeader header;
 	memset(&header, 0, sizeof(header));
@@ -511,4 +580,91 @@ void* cbmd_build_data(uint32_t* size, CBMD cbmd) {//this is here because it has 
 	}
 
 	return output;
+}
+
+bool CBMDtoBimg(std::string inpath, unsigned char* outbuff) {
+	/*shout-out to https://www.3dbrew.org
+
+		--the plan--
+		cbmd -> (bcwav offset - cgfx offset = cgfx compressed size) -> decompress it ->
+		CGFX header size -> Offset to DICT N -> DICT N entry -> Offset to symbol -> check if it's COMMON0 ->
+		if it isnt, check next dict ->  if it is, go to Offset to object -> yay txob ->
+		make sure the size and format are supported and go to the Texture data offset -> read based on texture data size -> decode blah blah blah
+	*/
+
+	std::ifstream CBMD;
+	CBMD.open(inpath, std::ios_base::in | std::ios_base::binary);
+	uint32_t CBMDmagic = 0;
+	CBMD.seekg(0);
+	CBMD.read(reinterpret_cast<char*>(&CBMDmagic), 0x4);
+	if (CBMDmagic != 0x444D4243) {
+		return false;
+	}
+	//Offset for common CGFX
+	uint32_t CGFXoffset = 0;
+	CBMD.seekg(0x8);
+	CBMD.read(reinterpret_cast<char*>(&CGFXoffset), 0x4);
+	//BCWAV offset
+	uint32_t BCWAVoffset = 0;
+	CBMD.seekg(0x84);
+	CBMD.read(reinterpret_cast<char*>(&BCWAVoffset), 0x4);
+	uint8_t* CGFX = new uint8_t[BCWAVoffset - CGFXoffset];
+	//get stuff and decompress that stuff
+	CBMD.seekg(CGFXoffset);
+	char Byte;
+	size_t it = 0;
+	CBMD.read(&Byte, 1);//grab first byte of CGFXoffset
+	while (it < BCWAVoffset - CGFXoffset) {
+		CGFX[it] = Byte;//append byte to array
+		CBMD.read(&Byte, 1);//grab next byte of file
+		it++;
+	}
+
+	uint8_t* CGFXdecomp = new uint8_t[Get_Decompressed_size(CGFX)];
+	DecompressLZ11(CGFX, CGFXdecomp);
+	delete[] CGFX;
+
+	uint32_t* CGFXmagic = reinterpret_cast<uint32_t*>(&CGFXdecomp[0]);
+	if (*CGFXmagic != 0x58464743) {//CGFX
+		delete[] CGFXdecomp;
+		return false;
+	}
+
+	uint16_t* CGFXheaderSize = reinterpret_cast<uint16_t*>(&CGFXdecomp[0x6]);
+	for (uint32_t N = 0; N < *reinterpret_cast<uint32_t*>(&CGFXdecomp[0x10]); N++) {//loop through Number of entries
+		uint32_t* DICToffset = reinterpret_cast<uint32_t*>(&CGFXdecomp[*CGFXheaderSize + 0xC + (N * 8)]);
+		*DICToffset = *CGFXheaderSize + 0xC + (N * 8) + *DICToffset;//since it's self-relative, do this
+		uint32_t* symbolOffset = reinterpret_cast<uint32_t*>(&CGFXdecomp[*DICToffset + 0x1C + 0x8]);
+		*symbolOffset = *DICToffset + 0x1C + 0x8 + *symbolOffset;//self-relative
+		uint32_t* objectOffset = reinterpret_cast<uint32_t*>(&CGFXdecomp[*DICToffset + 0x1C + 0xC]);
+		*objectOffset = *DICToffset + 0x1C + 0xC + *objectOffset;//self-relative
+		std::string symbol = "";
+		const auto* ch = &CGFXdecomp[*symbolOffset];
+		while (*ch)
+			symbol += *ch++;
+
+		if (strcmp(symbol.c_str(), "COMMON0") == 0) {
+			uint32_t* height = reinterpret_cast<uint32_t*>(&CGFXdecomp[*objectOffset + 0x18]);
+			uint32_t* width = reinterpret_cast<uint32_t*>(&CGFXdecomp[*objectOffset + 0x1C]);
+			uint32_t* mipmap = reinterpret_cast<uint32_t*>(&CGFXdecomp[*objectOffset + 0x28]);
+			uint32_t* formatID = reinterpret_cast<uint32_t*>(&CGFXdecomp[*objectOffset + 0x34]);
+			uint32_t* size = reinterpret_cast<uint32_t*>(&CGFXdecomp[*objectOffset + 0x44]);
+			uint32_t* dataOffset = reinterpret_cast<uint32_t*>(&CGFXdecomp[*objectOffset + 0x48]);
+			*dataOffset = *objectOffset + *dataOffset + 0x48;//self-relative
+			if (*height != 0x80 || *width != 0x100 || *mipmap != 1 || *formatID != 3 || *size != 0x10000) {//make sure it will fit to the video banner
+				delete[] CGFXdecomp;
+				return false;
+			}
+			size_t pos = 0;
+			for (int i = 0; i < 4; i++) {
+				outbuff[pos] = 0;
+				pos++;
+			}
+			memcpy(outbuff, &CGFXdecomp[*dataOffset], *size);
+			delete[] CGFXdecomp;
+			return true;
+		}
+	}
+	delete[] CGFXdecomp;
+	return false;
 }
