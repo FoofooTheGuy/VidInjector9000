@@ -228,20 +228,38 @@ void layer_pixels(unsigned char* out, unsigned char* foreground, unsigned char* 
 	ToRGBA(foreground, foreground_4c, forewidth, foreheight, forechannels);
 	ToRGBA(background, background_4c, backwidth, backheight, backchannels);
 
-	for (int y = 0; y < foreheight; y++)
-		for (int x = 0; x < forewidth; x++) {
-			if (x >= x_offset && x < forewidth - x_offset && y >= y_offset && y < backheight + y_offset) {
-				//https://stackoverflow.com/a/64655571
-				uint8_t alpha_out = foreground_4c[(y * foreheight + x) * 4 + 3] + (background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + 3] * (FF - foreground_4c[(y * foreheight + x) * 4 + 3]) / FF);
-				for (int ch = 0; ch < 3; ch++)
-					out[(y * forewidth + x) * 4 + ch] = (foreground_4c[(y * forewidth + x) * 4 + ch] * foreground_4c[(y * forewidth + x) * 4 + 3] + background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + ch] * FF * (FF - foreground_4c[(y * forewidth + x) * 4 + 3]) / FF) / alpha_out;
-				out[(y * forewidth + x) * 4 + 3] = alpha_out;
+	if (forewidth > backwidth || foreheight > backheight) {
+		for (int y = 0; y < foreheight; y++)
+			for (int x = 0; x < forewidth; x++) {
+				if (x >= x_offset && x < forewidth - x_offset && y >= y_offset && y < backheight + y_offset) {
+					//https://stackoverflow.com/a/64655571
+					uint8_t alpha_out = foreground_4c[(y * foreheight + x) * 4 + 3] + (background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + 3] * (FF - foreground_4c[(y * foreheight + x) * 4 + 3]) / FF);
+					for (int ch = 0; ch < 3; ch++)
+						out[(y * forewidth + x) * 4 + ch] = (foreground_4c[(y * forewidth + x) * 4 + ch] * foreground_4c[(y * forewidth + x) * 4 + 3] + background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + ch] * FF * (FF - foreground_4c[(y * forewidth + x) * 4 + 3]) / FF) / alpha_out;
+					out[(y * forewidth + x) * 4 + 3] = alpha_out;
+				}
+				else {
+					for (int ch = 0; ch < 4; ch++)
+						out[(y * forewidth + x) * 4 + ch] = foreground_4c[(y * forewidth + x) * 4 + ch];
+				}
 			}
-			else {
-				for (int ch = 0; ch < 4; ch++)
-					out[(y * forewidth + x) * 4 + ch] = foreground_4c[(y * forewidth + x) * 4 + ch];
+	}
+	else if (backwidth > forewidth || backheight > foreheight) {//todo: make it work (or dont i dont actually need it now)
+		for (int y = 0; y < backheight; y++)
+			for (int x = 0; x < backwidth; x++) {
+				if (x >= x_offset && x < backwidth - x_offset && y >= y_offset && y < backheight + y_offset) {
+					//https://stackoverflow.com/a/64655571
+					uint8_t alpha_out = foreground_4c[(y * foreheight + x) * 4 + 3] + (background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + 3] * (FF - foreground_4c[(y * foreheight + x) * 4 + 3]) / FF);
+					for (int ch = 0; ch < 3; ch++)
+						out[(y * forewidth + x) * 4 + ch] = (foreground_4c[(y * forewidth + x) * 4 + ch] * foreground_4c[(y * forewidth + x) * 4 + 3] + background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + ch] * FF * (FF - foreground_4c[(y * forewidth + x) * 4 + 3]) / FF) / alpha_out;
+					out[(y * forewidth + x) * 4 + 3] = alpha_out;
+				}
+				else {
+					for (int ch = 0; ch < 4; ch++)
+						out[(y * forewidth + x) * 4 + ch] = foreground_4c[(y * forewidth + x) * 4 + ch];
+				}
 			}
-		}
+	}
 	free(foreground_4c);
 	free(background_4c);
 }
