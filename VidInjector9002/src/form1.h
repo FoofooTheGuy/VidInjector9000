@@ -94,7 +94,7 @@ namespace VidInjector9002 {
             return texture;
         }
 
-        xtd::drawing::bitmap pixels_to_image(unsigned char* pixels, int width, int height, int channels) {
+        xtd::drawing::bitmap pixels_to_image(uint8_t* pixels, int width, int height, int channels) {
             auto texture = xtd::drawing::bitmap{ width, height, };
             if (channels == 4) {
                 for (int y = 0; y < height; y++)
@@ -126,10 +126,10 @@ namespace VidInjector9002 {
             int out_h = 120;
             int film_w = 264;
             int film_h = 154;
-            unsigned char* output_4c = (unsigned char*)malloc(out_w * out_h * ch);
+            uint8_t* output_4c = (uint8_t*)malloc(out_w * out_h * ch);
             memset(output_4c, 0xFF, out_w * out_h * ch);
 
-            unsigned char* output_film = (unsigned char*)malloc(film_w * film_h * 4);
+            uint8_t* output_film = (uint8_t*)malloc(film_w * film_h * 4);
             layer_pixels(output_film, film_overlay, output_4c, film_w, film_h, 4, out_w, out_h, ch, 32, 11);
             free(output_4c);
 
@@ -158,7 +158,7 @@ namespace VidInjector9002 {
                         int och = sizeof(nnc_u32);
                         std::ifstream input;
                         input.open(text_box_array.at(y * columns + 2)->text().c_str(), std::ios_base::in | std::ios_base::binary);
-                        unsigned char* input_data = (unsigned char*)malloc((w * h * ich) + 0x20);
+                        uint8_t* input_data = (uint8_t*)malloc((w * h * ich) + 0x20);
                         char Byte;
                         int it = 0;
                         input.read(&Byte, 1);//grab first byte of data
@@ -175,13 +175,13 @@ namespace VidInjector9002 {
                                 return;
                             }
                         }
-                        unsigned char* output_pixels = (unsigned char*)malloc(w * h * och);
+                        uint8_t* output_pixels = (uint8_t*)malloc(w * h * och);
                         nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(&input_data[0x20]), reinterpret_cast<nnc_u32*>(output_pixels), w, h);
                         free(input_data);
-                        unsigned char* output_cropped = (unsigned char*)malloc(out_w * out_w * och);
+                        uint8_t* output_cropped = (uint8_t*)malloc(out_w * out_w * och);
                         crop_pixels(output_pixels, w, h, och, output_cropped, 0, 0, out_w, out_h);
                         free(output_pixels);
-                        unsigned char* output_film = (unsigned char*)malloc(film_w * film_h * 4);
+                        uint8_t* output_film = (uint8_t*)malloc(film_w * film_h * 4);
                         layer_pixels(output_film, film_overlay, output_cropped, film_w, film_h, 4, out_w, out_h, 4, 32, 11);
                         free(output_cropped);
                         menubannerpreview.image(pixels_to_image(output_film, film_w, film_h, 4));
@@ -192,21 +192,21 @@ namespace VidInjector9002 {
                     }
                 }
                 else if (stbi_info(text_box_array.at(y * columns + 2)->text().c_str(), &w, &h, &ch)) {
-                    unsigned char* input_pixels = stbi_load(text_box_array.at(y * columns + 2)->text().c_str(), &w, &h, &ch, 0);
-                    unsigned char* output_pixels = (unsigned char*)malloc(out_w * out_h * ch);
+                    uint8_t* input_pixels = stbi_load(text_box_array.at(y * columns + 2)->text().c_str(), &w, &h, &ch, 0);
+                    uint8_t* output_pixels = (uint8_t*)malloc(out_w * out_h * ch);
 
                     const uint8_t FF = 0xFF;
 
                     if (w == out_w && h == out_h) memcpy(output_pixels, input_pixels, w * h * ch);
                     else resize_crop(input_pixels, w, h, output_pixels, out_w, out_h, ch);//scale to 200x120 if needed
                     free(input_pixels);
-                    unsigned char* output_4c = (unsigned char*)malloc(out_w * out_h * 4);
-                    unsigned char* white = (unsigned char*)malloc(out_w * out_h * 4);
+                    uint8_t* output_4c = (uint8_t*)malloc(out_w * out_h * 4);
+                    uint8_t* white = (uint8_t*)malloc(out_w * out_h * 4);
                     memset(white, 0xFF, out_w * out_h * 4);
                     layer_pixels(output_4c, output_pixels, white, out_w, out_h, ch, out_w, out_h, 4, 0, 0);
                     free(white);
                     free(output_pixels);
-                    unsigned char* output_film = (unsigned char*)malloc(film_w * film_h * 4);
+                    uint8_t* output_film = (uint8_t*)malloc(film_w * film_h * 4);
                     //memcpy(output_film, film_overlay, film_w * film_h * 4);
                     layer_pixels(output_film, film_overlay, output_4c, film_w, film_h, 4, out_w, out_h, 4, 32, 11);
                     free(output_4c);
@@ -227,9 +227,9 @@ namespace VidInjector9002 {
         void SetIconPreview() {
             int w = 0, h = 0, comp = 0, ch = 0;
             int largeWH = 48;
-            unsigned char* input_pixels;
-            unsigned char* output_pixels;
-            unsigned char* large_3c = (unsigned char*)malloc(largeWH * largeWH * 3);
+            uint8_t* input_pixels;
+            uint8_t* output_pixels;
+            uint8_t* large_3c = (uint8_t*)malloc(largeWH * largeWH * 3);
             //const int smallLW = 24;
             const uint8_t FF = 0xFF;
 
@@ -237,46 +237,46 @@ namespace VidInjector9002 {
                 w = largeWH;
                 h = largeWH;
                 ch = 4;
-                input_pixels = (unsigned char*)malloc(largeWH * largeWH * ch);
+                input_pixels = (uint8_t*)malloc(largeWH * largeWH * ch);
                 memset(input_pixels, FF, largeWH * largeWH * ch);
             }
             else input_pixels = stbi_load(iconbox.text().c_str(), &w, &h, &ch, 0);
-            output_pixels = (unsigned char*)malloc(largeWH * largeWH * ch);
+            output_pixels = (uint8_t*)malloc(largeWH * largeWH * ch);
             if (w == largeWH && h == largeWH) memcpy(output_pixels, input_pixels, w * h * ch);
             else resize_crop(input_pixels, w, h, output_pixels, largeWH, largeWH, ch);//scale to 48x48 if needed
 
             if (borderMode == 1) {
-                unsigned char* output_4c = (unsigned char*)malloc(largeWH * largeWH * 4);
-                unsigned char* white_background = (unsigned char*)malloc(largeWH * largeWH * 4);//fix the bugs by not fixing the bugs! :D
+                uint8_t* output_4c = (uint8_t*)malloc(largeWH * largeWH * 4);
+                uint8_t* white_background = (uint8_t*)malloc(largeWH * largeWH * 4);//fix the bugs by not fixing the bugs! :D
                 memset(white_background, FF, largeWH * largeWH * 4);
                 layer_pixels(output_4c, output_pixels, white_background, largeWH, largeWH, ch, largeWH, largeWH, 4, 0, 0);
                 free(white_background);
                 layer_pixels(output_4c, icon_border, output_4c, largeWH, largeWH, 4, largeWH, largeWH, 4, 0, 0);
                 ch = 4;
                 free(output_pixels);
-                output_pixels = (unsigned char*)malloc(largeWH * largeWH * ch);
+                output_pixels = (uint8_t*)malloc(largeWH * largeWH * ch);
                 memcpy(output_pixels, output_4c, largeWH * largeWH * ch);
                 free(output_4c);
             }
             else if (borderMode == 2) {
-                unsigned char* output_4c = (unsigned char*)malloc(largeWH * largeWH * 4);
-                unsigned char* white_background = (unsigned char*)malloc(largeWH * largeWH * 4);//fix the bugs by not fixing the bugs! :D
+                uint8_t* output_4c = (uint8_t*)malloc(largeWH * largeWH * 4);
+                uint8_t* white_background = (uint8_t*)malloc(largeWH * largeWH * 4);//fix the bugs by not fixing the bugs! :D
                 memset(white_background, FF, largeWH * largeWH * 4);
                 layer_pixels(output_4c, output_pixels, white_background, largeWH, largeWH, ch, largeWH, largeWH, 4, 0, 0);
                 free(white_background);
                 ch = 4;
-                unsigned char* scaled = (unsigned char*)malloc(largeWH * largeWH * ch);
+                uint8_t* scaled = (uint8_t*)malloc(largeWH * largeWH * ch);
                 stbir_resize_uint8(output_4c, largeWH, largeWH, 0, scaled, largeWH - 10, largeWH - 10, 0, ch);//scale it down
                 layer_pixels(output_4c, icon_border, scaled, largeWH, largeWH, ch, largeWH - 10, largeWH - 10, ch, 5, 5);
                 free(scaled);
                 free(output_pixels);
-                output_pixels = (unsigned char*)malloc(largeWH * largeWH * ch);
+                output_pixels = (uint8_t*)malloc(largeWH * largeWH * ch);
                 memcpy(output_pixels, output_4c, largeWH * largeWH * ch);
                 free(output_4c);
             }
 
             if (ch == 4) {//rgba
-                unsigned char* white_background = (unsigned char*)malloc(largeWH * largeWH * 4);
+                uint8_t* white_background = (uint8_t*)malloc(largeWH * largeWH * 4);
                 memset(white_background, FF, largeWH * largeWH * 4);
                 layer_pixels(output_pixels, output_pixels, white_background, largeWH, largeWH, ch, largeWH, largeWH, 4, 0, 0);
                 free(white_background);
@@ -291,8 +291,8 @@ namespace VidInjector9002 {
                 memcpy(large_3c, output_pixels, largeWH * largeWH * ch);
             }
             else if (ch == 2) {//grayscale a
-                unsigned char* white_background = (unsigned char*)malloc(largeWH * largeWH * ch);
-                unsigned char* output_4c = (unsigned char*)malloc(largeWH * largeWH * 4);
+                uint8_t* white_background = (uint8_t*)malloc(largeWH * largeWH * ch);
+                uint8_t* output_4c = (uint8_t*)malloc(largeWH * largeWH * 4);
                 memset(white_background, FF, largeWH * largeWH * ch);
                 layer_pixels(output_4c, output_pixels, white_background, largeWH, largeWH, ch, largeWH, largeWH, ch, 0, 0);
                 free(white_background);
@@ -538,7 +538,7 @@ namespace VidInjector9002 {
             loaded = false;//do this so stuff this calls doesnt try to save the parameters while it's loading
             //xtd::forms::message_box::show(*this, xtd::ustring::format("{}", parampath), FormText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::warning);
             xtd::ustring outstr = "";
-            unsigned long outrealint = 0;
+            uint32_t outrealint = 0;
             bool good = true;
             if (parampath == "") {
                 //xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({}) {}", TheFile, parampath, DoesntExist), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
@@ -668,14 +668,14 @@ namespace VidInjector9002 {
                     good = false;
                 }
                 if (outrealint < rows) {
-                    unsigned long oldrows = rows;
-                    for (unsigned long i = 0; i < oldrows - outrealint; i++) {
+                    uint32_t oldrows = rows;
+                    for (uint32_t i = 0; i < oldrows - outrealint; i++) {
                         doRemoveMedia();
                     }
                 }
                 else if (outrealint > rows) {
-                    unsigned long oldrows = rows;
-                    for (unsigned long i = 0; i < outrealint - oldrows; i++) {
+                    uint32_t oldrows = rows;
+                    for (uint32_t i = 0; i < outrealint - oldrows; i++) {
                         doAppendMedia();
                     }
                 }
@@ -768,7 +768,7 @@ namespace VidInjector9002 {
 
         bool loadSettings() {
             xtd::ustring outstr = "";
-            unsigned long outrealint = 0;
+            uint32_t outrealint = 0;
             bool good = true;
             if (!std::filesystem::exists(xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, settingsPath).c_str())) {
                 std::filesystem::create_directories(xtd::ustring::format("{}/{}", ProgramDir, resourcesPath).c_str());
@@ -1008,8 +1008,8 @@ namespace VidInjector9002 {
         xtd::forms::label version;
         xtd::forms::settings Settings;
 
-        unsigned char* banner_image;
-        unsigned char* large_icon;
-        unsigned char* small_icon;
+        uint8_t* banner_image;
+        uint8_t* large_icon;
+        uint8_t* small_icon;
     };
 }

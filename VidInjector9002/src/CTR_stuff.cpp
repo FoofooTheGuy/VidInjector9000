@@ -12,9 +12,9 @@ void Generate_Files(std::string dir, bool Multi) {
 	file.extractall(dir, list);//grow fruit (don't you mean grow tree?)
 }
 
-bool TIDisValid(unsigned long TID) {
-	unsigned long min = 0xC0000;
-	unsigned long max = 0xEFFFF;
+bool TIDisValid(uint32_t TID) {
+	uint32_t min = 0xC0000;
+	uint32_t max = 0xEFFFF;
 	switch (TID)
 	{
 	case 0xc0d00://Side-Scrolling Example
@@ -39,10 +39,10 @@ bool TIDisValid(unsigned long TID) {
 	return true;
 }
 
-unsigned long RandomTID() {
-	unsigned long min = 0xC0000;
-	unsigned long max = 0xEFFFF;
-	unsigned long TID = 0;
+uint32_t RandomTID() {
+	uint32_t min = 0xC0000;
+	uint32_t max = 0xEFFFF;
+	uint32_t TID = 0;
 	static std::mt19937 rng;
 
 	while (!TIDisValid(TID)) {//loop until we get a good value
@@ -53,7 +53,7 @@ unsigned long RandomTID() {
 	return TID;
 }
 
-void resize_crop(const unsigned char* input_pixels, int input_w, int input_h, unsigned char* output_pixels, int output_w, int output_h, int num_channels) {//this has to be here because of stbir_resize_uint8 and i dont wann include that everywhere because it's all inline
+void resize_crop(const uint8_t* input_pixels, int input_w, int input_h, uint8_t* output_pixels, int output_w, int output_h, int num_channels) {//this has to be here because of stbir_resize_uint8 and i dont wann include that everywhere because it's all inline
 	int width, height;
 
 	//"inspired" by https://github.com/endlessm/chromium-browser/blob/aa8c819d5ad2fcb3854a688a0401975eca721f43/ui/gfx/favicon_size.cc#L13
@@ -78,13 +78,13 @@ void resize_crop(const unsigned char* input_pixels, int input_w, int input_h, un
 		width = static_cast<int>(output_h * static_cast<float>(input_w) / static_cast<float>(input_h));
 	}
 
-	unsigned char* scaled = (unsigned char*)malloc(width * height * num_channels);
+	uint8_t* scaled = (uint8_t*)malloc(width * height * num_channels);
 	stbir_resize_uint8(input_pixels, input_w, input_h, 0, scaled, width, height, 0, num_channels);//scale it down
 	crop_pixels(scaled, width, height, num_channels, output_pixels, (width - output_w) / 2, (height - output_h) / 2, output_w, output_h);
 	free(scaled);
 }
 
-const unsigned char bimgheader[32]{
+const uint8_t bimgheader[32]{
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
 	0x00, 0x01, 0x80, 0x00, 0x01, 0x02, 0x00, 0x00,
@@ -92,13 +92,13 @@ const unsigned char bimgheader[32]{
 };
 
 //based on https://raw.githubusercontent.com/nothings/stb/master/tests/resample_test.cpp
-bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader)// true for write header, false for dont write header
+bool convertToBimg(std::string input, uint8_t* outBuffer, bool writeHeader)// true for write header, false for dont write header
 {
-	unsigned char* input_pixels;
-	unsigned char* output_pixels;
-	unsigned char* output_4c;
-	unsigned char* white;
-	unsigned char* output_fin;
+	uint8_t* input_pixels;
+	uint8_t* output_pixels;
+	uint8_t* output_4c;
+	uint8_t* white;
+	uint8_t* output_fin;
 	int w, h, ch, comp;
 	const int new_w = 256;
 	const int new_h = 128;
@@ -115,7 +115,7 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 				int ich = sizeof(nnc_u16);
 				std::ifstream infile;
 				infile.open(input, std::ios_base::in | std::ios_base::binary);//input file
-				unsigned char* input_data = (unsigned char*)malloc((w * h * ich) + 0x20);
+				uint8_t* input_data = (uint8_t*)malloc((w * h * ich) + 0x20);
 				if (!input_data) {
 					free(input_data);
 					return false;
@@ -150,7 +150,7 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 		w = out_w;
 		h = out_h;
 		ch = 4;
-		input_pixels = (unsigned char*)malloc(out_w * out_h * ch);
+		input_pixels = (uint8_t*)malloc(out_w * out_h * ch);
 		if (input_pixels == NULL) {
 			free(input_pixels);
 			return false;
@@ -158,7 +158,7 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 		memset(input_pixels, FF, out_w * out_h * ch);
 	}
 	else input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
-	output_pixels = (unsigned char*)malloc(out_w * out_h * ch);
+	output_pixels = (uint8_t*)malloc(out_w * out_h * ch);
 	if (output_pixels == NULL) {
 		free(output_pixels);
 		free(input_pixels);
@@ -168,14 +168,14 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 	else resize_crop(input_pixels, w, h, output_pixels, out_w, out_h, ch);//scale to 200x120 if needed
 	free(input_pixels);
 
-	output_4c = (unsigned char*)malloc(out_w * out_h * 4);
+	output_4c = (uint8_t*)malloc(out_w * out_h * 4);
 	if (output_4c == NULL) {
 		free(output_pixels);
 		free(output_4c);
 		return false;
 	}
 	ToRGBA(output_pixels, output_4c, out_w, out_h, ch);
-	white = (unsigned char*)malloc(out_w * out_h * 4);
+	white = (uint8_t*)malloc(out_w * out_h * 4);
 	if (white == NULL) {
 		free(white);
 		free(output_pixels);
@@ -188,7 +188,7 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 	free(output_pixels);
 
 	//layer 200x120 image on a 256x128 image
-	output_fin = (unsigned char*)malloc(new_w * new_h * 4);
+	output_fin = (uint8_t*)malloc(new_w * new_h * 4);
 	if (output_fin == NULL) {
 		free(output_fin);
 		free(output_4c);
@@ -207,7 +207,7 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 	//stbi_write_png("output_fin.png", new_w, new_h, 4, output_fin, 0);
 	free(output_4c);
 
-	unsigned char tiledbanner[new_w * new_h * sizeof(nnc_u16)];
+	uint8_t tiledbanner[new_w * new_h * sizeof(nnc_u16)];
 	nnc_swizzle_zorder_be_rgba8_to_le_rgb565(reinterpret_cast<nnc_u32*>(output_fin), reinterpret_cast<nnc_u16*>(tiledbanner), new_w, new_h);
 	free(output_fin);
 	if (writeHeader) {
@@ -221,10 +221,10 @@ bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader
 }
 
 bool convertToIcon(std::string input, std::string output, std::string shortname, std::string longname, std::string publisher, int borderMode) {//bare bones SMDH creation. thanks 3dbrew
-	unsigned char* input_pixels;
-	unsigned char* output_pixels;
-	unsigned char* large_4c;
-	unsigned char* small_4c;
+	uint8_t* input_pixels;
+	uint8_t* output_pixels;
+	uint8_t* large_4c;
+	uint8_t* small_4c;
 	int w, h, ch, comp;
 	const int largeLW = 48;
 	const int smallLW = 24;
@@ -233,11 +233,11 @@ bool convertToIcon(std::string input, std::string output, std::string shortname,
 		w = largeLW;
 		h = largeLW;
 		ch = 4;
-		input_pixels = (unsigned char*)malloc(largeLW * largeLW * ch);
+		input_pixels = (uint8_t*)malloc(largeLW * largeLW * ch);
 		memset(input_pixels, FF, largeLW * largeLW * ch);
 	}
 	else input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
-	output_pixels = (unsigned char*)malloc(largeLW * largeLW * ch);
+	output_pixels = (uint8_t*)malloc(largeLW * largeLW * ch);
 	if (output_pixels == NULL) {
 		free(output_pixels);
 		free(input_pixels);
@@ -248,36 +248,36 @@ bool convertToIcon(std::string input, std::string output, std::string shortname,
 	stbi_image_free(input_pixels);
 
 	if (borderMode == 1) {
-		unsigned char* output_4c = (unsigned char*)malloc(largeLW * largeLW * 4);
-		unsigned char* white_background = (unsigned char*)malloc(largeLW * largeLW * 4);//fix the bugs by not fixing the bugs! :D
+		uint8_t* output_4c = (uint8_t*)malloc(largeLW * largeLW * 4);
+		uint8_t* white_background = (uint8_t*)malloc(largeLW * largeLW * 4);//fix the bugs by not fixing the bugs! :D
 		memset(white_background, FF, largeLW * largeLW * 4);
 		layer_pixels(output_4c, output_pixels, white_background, largeLW, largeLW, ch, largeLW, largeLW, 4, 0, 0);
 		free(white_background);
 		layer_pixels(output_4c, icon_border, output_4c, largeLW, largeLW, 4, largeLW, largeLW, 4, 0, 0);
 		ch = 4;
 		free(output_pixels);
-		output_pixels = (unsigned char*)malloc(largeLW * largeLW * ch);
+		output_pixels = (uint8_t*)malloc(largeLW * largeLW * ch);
 		memcpy(output_pixels, output_4c, largeLW * largeLW * ch);
 		free(output_4c);
 	}
 	else if (borderMode == 2) {
-		unsigned char* output_4c = (unsigned char*)malloc(largeLW * largeLW * 4);
-		unsigned char* white_background = (unsigned char*)malloc(largeLW * largeLW * 4);//fix the bugs by not fixing the bugs! :D
+		uint8_t* output_4c = (uint8_t*)malloc(largeLW * largeLW * 4);
+		uint8_t* white_background = (uint8_t*)malloc(largeLW * largeLW * 4);//fix the bugs by not fixing the bugs! :D
 		memset(white_background, FF, largeLW * largeLW * 4);
 		layer_pixels(output_4c, output_pixels, white_background, largeLW, largeLW, ch, largeLW, largeLW, 4, 0, 0);
 		free(white_background);
 		ch = 4;
-		unsigned char* scaled = (unsigned char*)malloc(largeLW * largeLW * ch);
+		uint8_t* scaled = (uint8_t*)malloc(largeLW * largeLW * ch);
 		stbir_resize_uint8(output_4c, largeLW, largeLW, 0, scaled, largeLW - 10, largeLW - 10, 0, ch);//scale it down
 		layer_pixels(output_4c, icon_border, scaled, largeLW, largeLW, ch, largeLW - 10, largeLW - 10, ch, 5, 5);
 		free(scaled);
 		free(output_pixels);
-		output_pixels = (unsigned char*)malloc(largeLW * largeLW * ch);
+		output_pixels = (uint8_t*)malloc(largeLW * largeLW * ch);
 		memcpy(output_pixels, output_4c, largeLW * largeLW * ch);
 		free(output_4c);
 	}
 
-	large_4c = (unsigned char*)malloc(largeLW * largeLW * 4);
+	large_4c = (uint8_t*)malloc(largeLW * largeLW * 4);
 	if (large_4c == NULL) {
 		free(large_4c);
 		return false;
@@ -285,10 +285,10 @@ bool convertToIcon(std::string input, std::string output, std::string shortname,
 	ToRGBA(output_pixels, large_4c, largeLW, largeLW, ch);
 	free(output_pixels);
 
-	small_4c = (unsigned char*)malloc(smallLW * smallLW * 4);
+	small_4c = (uint8_t*)malloc(smallLW * smallLW * 4);
 	stbir_resize_uint8(large_4c, largeLW, largeLW, 0, small_4c, smallLW, smallLW, 0, 4);//make the small icon
-	unsigned char tiledsmall[smallLW * smallLW * sizeof(nnc_u16)];
-	unsigned char tiledlarge[largeLW * largeLW * sizeof(nnc_u16)];
+	uint8_t tiledsmall[smallLW * smallLW * sizeof(nnc_u16)];
+	uint8_t tiledlarge[largeLW * largeLW * sizeof(nnc_u16)];
 	nnc_swizzle_zorder_be_rgba8_to_le_rgb565(reinterpret_cast<nnc_u32*>(small_4c), reinterpret_cast<nnc_u16*>(tiledsmall), smallLW, smallLW);
 	nnc_swizzle_zorder_be_rgba8_to_le_rgb565(reinterpret_cast<nnc_u32*>(large_4c), reinterpret_cast<nnc_u16*>(tiledlarge), largeLW, largeLW);
 	//stbi_write_png("imag.png", largeLW, largeLW, 4, large_4c, 0);
@@ -582,16 +582,42 @@ void* cbmd_build_data(uint32_t* size, CBMD cbmd) {//this is here because it has 
 	return output;
 }
 
-bool CBMDtoBimg(std::string inpath, unsigned char* outbuff) {
-	/*shout-out to https://www.3dbrew.org
+bool getCGFXtextureInfo(uint8_t* CGFX, const std::string symbol, uint32_t** dataOffset, uint32_t** height, uint32_t** width, uint32_t** mipmap, uint32_t** formatID, uint32_t** size) {
+	uint32_t* CGFXmagic = reinterpret_cast<uint32_t*>(&CGFX[0]);
+	if (*CGFXmagic != 0x58464743) {//CGFX
+		return false;
+	}
 
-		--the plan--
-		cbmd -> (bcwav offset - cgfx offset = cgfx compressed size) -> decompress it ->
-		CGFX header size -> Offset to DICT N -> DICT N entry -> Offset to symbol -> check if it's COMMON0 ->
-		if it isnt, check next dict ->  if it is, go to Offset to object -> yay txob ->
-		make sure the size and format are supported and go to the Texture data offset -> read based on texture data size -> decode blah blah blah
-	*/
+	uint16_t* CGFXheaderSize = reinterpret_cast<uint16_t*>(&CGFX[0x6]);
+	for (uint32_t N = 0; N < *reinterpret_cast<uint32_t*>(&CGFX[0x10]); N++) {//loop through Number of entries
+		uint32_t* DICToffset = reinterpret_cast<uint32_t*>(&CGFX[*CGFXheaderSize + 0xC + (N * 8)]);
+		*DICToffset += (*CGFXheaderSize + 0xC + (N * 8));//since it's self-relative, do this
+		for (uint32_t i = 0; i < *reinterpret_cast<uint32_t*>(&CGFX[*DICToffset + 0x8]); i++) {
+			uint32_t* symbolOffset = reinterpret_cast<uint32_t*>(&CGFX[*DICToffset + 0x1C + (0x10 * i) + 0x8]);
+			*symbolOffset += (*DICToffset + 0x1C + (0x10 * i) + 0x8);//self-relative
+			uint32_t* objectOffset = reinterpret_cast<uint32_t*>(&CGFX[*DICToffset + 0x1C + (0x10 * i) + 0xC]);
+			*objectOffset += (*DICToffset + 0x1C + (0x10 * i) + 0xC);//self-relative
+			std::string isymbol = "";
+			const auto* ch = &CGFX[*symbolOffset];
+			while (*ch)
+				isymbol += *ch++;
+			if (strcmp(isymbol.c_str(), symbol.c_str()) == 0) {
+				*height = reinterpret_cast<uint32_t*>(&CGFX[*objectOffset + 0x18]);
+				*width = reinterpret_cast<uint32_t*>(&CGFX[*objectOffset + 0x1C]);
+				*mipmap = reinterpret_cast<uint32_t*>(&CGFX[*objectOffset + 0x28]);
+				*formatID = reinterpret_cast<uint32_t*>(&CGFX[*objectOffset + 0x34]);
+				*size = reinterpret_cast<uint32_t*>(&CGFX[*objectOffset + 0x44]);
+				uint32_t* dataOffsetStandin = reinterpret_cast<uint32_t*>(&CGFX[*objectOffset + 0x48]);
+				*dataOffsetStandin += (*objectOffset + 0x48);//self-relative
+				*dataOffset = dataOffsetStandin;
+				return true;
+			}
+		}
+	}
+	return false;
+}
 
+bool getCGFXInfo(const std::string inpath, uint32_t* compressedSize, uint32_t* decompressedSize, uint32_t* CGFXoffset) {
 	std::ifstream CBMD;
 	CBMD.open(inpath, std::ios_base::in | std::ios_base::binary);
 	uint32_t CBMDmagic = 0;
@@ -601,69 +627,85 @@ bool CBMDtoBimg(std::string inpath, unsigned char* outbuff) {
 		return false;
 	}
 	//Offset for common CGFX
-	uint32_t CGFXoffset = 0;
+	uint32_t _CGFXoffset = 0;
 	CBMD.seekg(0x8);
-	CBMD.read(reinterpret_cast<char*>(&CGFXoffset), 0x4);
+	CBMD.read(reinterpret_cast<char*>(&_CGFXoffset), 0x4);
 	//BCWAV offset
 	uint32_t BCWAVoffset = 0;
 	CBMD.seekg(0x84);
 	CBMD.read(reinterpret_cast<char*>(&BCWAVoffset), 0x4);
-	uint8_t* CGFX = new uint8_t[BCWAVoffset - CGFXoffset];
+	uint8_t* CGFX = new uint8_t[BCWAVoffset - _CGFXoffset];
 	//get stuff and decompress that stuff
-	CBMD.seekg(CGFXoffset);
+	CBMD.seekg(_CGFXoffset);
 	char Byte;
 	size_t it = 0;
 	CBMD.read(&Byte, 1);//grab first byte of CGFXoffset
-	while (it < BCWAVoffset - CGFXoffset) {
+	while (it < BCWAVoffset - _CGFXoffset) {
 		CGFX[it] = Byte;//append byte to array
 		CBMD.read(&Byte, 1);//grab next byte of file
 		it++;
 	}
 
-	uint8_t* CGFXdecomp = new uint8_t[Get_Decompressed_size(CGFX)];
-	DecompressLZ11(CGFX, CGFXdecomp);
+	//uint32_t decompressedSize_ = Get_Decompressed_size(CGFX);
+	*decompressedSize = Get_Decompressed_size(CGFX);
+	*compressedSize = BCWAVoffset - _CGFXoffset;
+	*CGFXoffset = _CGFXoffset;
+	return true;
+}
+
+bool CBMDgetCommonCGFX(const std::string inpath, const uint32_t compressedSize, const uint32_t decompressedSize, const uint32_t CGFXoffset, uint8_t* outbuff) {
+	std::ifstream CBMD;
+	CBMD.open(inpath, std::ios_base::in | std::ios_base::binary);
+	uint32_t CBMDmagic = 0;
+	CBMD.seekg(0);
+	CBMD.read(reinterpret_cast<char*>(&CBMDmagic), 0x4);
+	if (CBMDmagic != 0x444D4243) {
+		return false;
+	}
+	uint8_t* CGFX = new uint8_t[compressedSize];
+	//get stuff and decompress that stuff
+	CBMD.seekg(CGFXoffset);
+	char Byte;
+	size_t it = 0;
+	CBMD.read(&Byte, 1);//grab first byte of CGFXoffset
+	while (it < compressedSize) {
+		CGFX[it] = Byte;//append byte to array
+		CBMD.read(&Byte, 1);//grab next byte of file
+		it++;
+	}
+
+	DecompressLZ11(CGFX, outbuff);
 	delete[] CGFX;
 
-	uint32_t* CGFXmagic = reinterpret_cast<uint32_t*>(&CGFXdecomp[0]);
+	uint32_t* CGFXmagic = reinterpret_cast<uint32_t*>(&outbuff[0]);
 	if (*CGFXmagic != 0x58464743) {//CGFX
+		return false;
+	}
+}
+
+bool getCBMDTexture(const std::string inpath, const std::string symbol, uint8_t* outbuff) {
+	uint32_t decompressedSize = 0;
+	uint32_t compressedSize = 0;
+	uint32_t CGFXoffset = 0;
+	if (!getCGFXInfo(inpath, &compressedSize, &decompressedSize, &CGFXoffset)) {
+		return false;
+	}
+	uint8_t* CGFXdecomp = new uint8_t[decompressedSize];
+	if (!CBMDgetCommonCGFX(inpath, compressedSize, decompressedSize, CGFXoffset, CGFXdecomp)) {
 		delete[] CGFXdecomp;
 		return false;
 	}
 
-	uint16_t* CGFXheaderSize = reinterpret_cast<uint16_t*>(&CGFXdecomp[0x6]);
-	for (uint32_t N = 0; N < *reinterpret_cast<uint32_t*>(&CGFXdecomp[0x10]); N++) {//loop through Number of entries
-		uint32_t* DICToffset = reinterpret_cast<uint32_t*>(&CGFXdecomp[*CGFXheaderSize + 0xC + (N * 8)]);
-		*DICToffset = *CGFXheaderSize + 0xC + (N * 8) + *DICToffset;//since it's self-relative, do this
-		uint32_t* symbolOffset = reinterpret_cast<uint32_t*>(&CGFXdecomp[*DICToffset + 0x1C + 0x8]);
-		*symbolOffset = *DICToffset + 0x1C + 0x8 + *symbolOffset;//self-relative
-		uint32_t* objectOffset = reinterpret_cast<uint32_t*>(&CGFXdecomp[*DICToffset + 0x1C + 0xC]);
-		*objectOffset = *DICToffset + 0x1C + 0xC + *objectOffset;//self-relative
-		std::string symbol = "";
-		const auto* ch = &CGFXdecomp[*symbolOffset];
-		while (*ch)
-			symbol += *ch++;
-
-		if (strcmp(symbol.c_str(), "COMMON0") == 0) {
-			uint32_t* height = reinterpret_cast<uint32_t*>(&CGFXdecomp[*objectOffset + 0x18]);
-			uint32_t* width = reinterpret_cast<uint32_t*>(&CGFXdecomp[*objectOffset + 0x1C]);
-			uint32_t* mipmap = reinterpret_cast<uint32_t*>(&CGFXdecomp[*objectOffset + 0x28]);
-			uint32_t* formatID = reinterpret_cast<uint32_t*>(&CGFXdecomp[*objectOffset + 0x34]);
-			uint32_t* size = reinterpret_cast<uint32_t*>(&CGFXdecomp[*objectOffset + 0x44]);
-			uint32_t* dataOffset = reinterpret_cast<uint32_t*>(&CGFXdecomp[*objectOffset + 0x48]);
-			*dataOffset = *objectOffset + *dataOffset + 0x48;//self-relative
-			if (*height != 0x80 || *width != 0x100 || *mipmap != 1 || *formatID != 3 || *size != 0x10000) {//make sure it will fit to the video banner
-				delete[] CGFXdecomp;
-				return false;
-			}
-			size_t pos = 0;
-			for (int i = 0; i < 4; i++) {
-				outbuff[pos] = 0;
-				pos++;
-			}
-			memcpy(outbuff, &CGFXdecomp[*dataOffset], *size);
-			delete[] CGFXdecomp;
-			return true;
-		}
+	uint32_t* dataOffset;
+	uint32_t* height;
+	uint32_t* width;
+	uint32_t* mipmap;
+	uint32_t* formatID;
+	uint32_t* size;
+	if (getCGFXtextureInfo(CGFXdecomp, symbol, &dataOffset, &height, &width, &mipmap, &formatID, &size)) {
+		memcpy(outbuff, &CGFXdecomp[*dataOffset], *size);
+		delete[] CGFXdecomp;
+		return true;
 	}
 	delete[] CGFXdecomp;
 	return false;

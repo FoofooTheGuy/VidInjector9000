@@ -24,14 +24,14 @@
 //only put the name of the dir (not / at the end)
 void Generate_Files(std::string dir, bool Multi);
 
-bool TIDisValid(unsigned long TID);
+bool TIDisValid(uint32_t TID);
 
-unsigned long RandomTID();
+uint32_t RandomTID();
 
 //resize image and maintain aspect ratio and also crop it
-void resize_crop(const unsigned char* input_pixels, int input_w, int input_h, unsigned char* output_pixels, int output_w, int output_h, int num_channels);
+void resize_crop(const uint8_t* input_pixels, int input_w, int input_h, uint8_t* output_pixels, int output_w, int output_h, int num_channels);
 
-bool convertToBimg(std::string input, unsigned char* outBuffer, bool writeHeader);
+bool convertToBimg(std::string input, uint8_t* outBuffer, bool writeHeader);
 /*note: text has to be utf16
 input: path to input image (size doesnt really matter)
 output: icon.bin out
@@ -64,7 +64,23 @@ void* lz11_compress(uint32_t* size, void* input, uint32_t inputSize);
 void* cbmd_build_data(uint32_t* size, CBMD cbmd);
 
 /*
-inpath: string path to file
-outbuff: output buffer for image data. make sure it is 0x10000 in size
+CGFX: array containing the uncompressed CGFX
+symbol: name of the texture you want to get info of
+height, width, mipmap, formatID, size: information extracted from the cgfx
 */
-bool CBMDtoBimg(std::string inpath, unsigned char* outbuff);
+bool getCGFXtextureInfo(uint8_t* CGFX, const std::string symbol, uint32_t** dataOffset, uint32_t** height, uint32_t** width, uint32_t** mipmap, uint32_t** formatID, uint32_t** size);
+/*
+inpath: path to cbmd
+*/
+bool getCGFXInfo(const std::string inpath, uint32_t* compressedSize, uint32_t* decompressedSize, uint32_t* CGFXoffset);
+/*
+
+*/
+bool CBMDgetCommonCGFX(const std::string inpath, const uint32_t compressedSize, const uint32_t decompressedSize, const uint32_t CGFXoffset, uint8_t* outbuff);
+/*
+inpath: string path to file
+symbol: name of the texture you want
+outbuff: output buffer for image data, make sure it is the correct size for the image you want
+return true if succeed, false if fail
+*/
+bool getCBMDTexture(const std::string inpath, const std::string symbol, uint8_t* outbuff);

@@ -103,10 +103,10 @@ form1::form1() {
         int out_h = 120;
         int film_w = 264;
         int film_h = 154;
-        unsigned char* output_4c = (unsigned char*)malloc(out_w * out_h * ch);
+        uint8_t* output_4c = (uint8_t*)malloc(out_w * out_h * ch);
         memset(output_4c, 0xFF, out_w * out_h * ch);
 
-        unsigned char* output_film = (unsigned char*)malloc(film_w * film_h * 4);
+        uint8_t* output_film = (uint8_t*)malloc(film_w * film_h * 4);
         layer_pixels(output_film, film_overlay, output_4c, film_w, film_h, 4, out_w, out_h, ch, 32, 11);
         free(output_4c);
 
@@ -135,7 +135,7 @@ form1::form1() {
         int out_h = 120;
         int film_w = 264;
         int film_h = 154;
-        unsigned char Checker[4];
+        uint8_t Checker[4];
         bool banner = false;
         int ich = sizeof(nnc_u16);
         std::ifstream inbanner(bannerbox.text(), std::ios::binary);
@@ -158,30 +158,33 @@ form1::form1() {
             }
         }
         if (banner) {
-            unsigned char bimg[0x10000];
-            bannerpreview.image(empty(0, 0));
-            customnotif.show();
-            if (!CBMDtoBimg(bannerbox.text(), bimg)) {
+            w = 256;
+            h = 128;
+            uint8_t* bimg = (uint8_t*)malloc(w * h * ich);
+            if (bimg != NULL) {
                 bannerpreview.image(empty(0, 0));
                 customnotif.show();
+                if (!getCBMDTexture(bannerbox.text(), "COMMON0", bimg)) {
+                    bannerpreview.image(empty(0, 0));
+                    customnotif.show();
+                }
+                else {
+                    int och = sizeof(nnc_u32);
+                    uint8_t* output_pixels = (uint8_t*)malloc(w * h * och);
+                    nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(bimg), reinterpret_cast<nnc_u32*>(output_pixels), w, h);
+                    uint8_t* output_cropped = (uint8_t*)malloc(out_w * out_w * och);
+                    crop_pixels(output_pixels, w, h, och, output_cropped, 0, 0, out_w, out_h);
+                    free(output_pixels);
+                    uint8_t* output_film = (uint8_t*)malloc(film_w * film_h * 4);
+                    layer_pixels(output_film, film_overlay, output_cropped, film_w, film_h, 4, out_w, out_h, 4, 32, 11);
+                    free(output_cropped);
+                    bannerpreview.image(pixels_to_image(output_film, film_w, film_h, 4));
+                    free(output_film);
+                    bannererror.hide();
+                    customnotif.hide();
+                }
             }
-            else {
-                w = 256;
-                h = 128;
-                int och = sizeof(nnc_u32);
-                unsigned char* output_pixels = (unsigned char*)malloc(w * h * och);
-                nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(&bimg), reinterpret_cast<nnc_u32*>(output_pixels), w, h);
-                unsigned char* output_cropped = (unsigned char*)malloc(out_w * out_w * och);
-                crop_pixels(output_pixels, w, h, och, output_cropped, 0, 0, out_w, out_h);
-                free(output_pixels);
-                unsigned char* output_film = (unsigned char*)malloc(film_w * film_h * 4);
-                layer_pixels(output_film, film_overlay, output_cropped, film_w, film_h, 4, out_w, out_h, 4, 32, 11);
-                free(output_cropped);
-                bannerpreview.image(pixels_to_image(output_film, film_w, film_h, 4));
-                bannererror.hide();
-                //free(output_film);
-                customnotif.hide();
-            }
+            free(bimg);
         }
         std::string extension = bannerbox.text();
         extension.erase(extension.begin(), extension.end() - 5);
@@ -192,7 +195,7 @@ form1::form1() {
                 int och = sizeof(nnc_u32);
                 std::ifstream input;
                 input.open(bannerbox.text().c_str(), std::ios_base::in | std::ios_base::binary);//input file
-                unsigned char* input_data = (unsigned char*)malloc((w * h * ich) + 0x20);
+                uint8_t* input_data = (uint8_t*)malloc((w * h * ich) + 0x20);
                 char Byte;
                 int it = 0;
                 input.read(&Byte, 1);//grab first byte of data
@@ -209,13 +212,13 @@ form1::form1() {
                         return;
                     }
                 }
-                unsigned char* output_pixels = (unsigned char*)malloc(w * h * och);
+                uint8_t* output_pixels = (uint8_t*)malloc(w * h * och);
                 nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(&input_data[0x20]), reinterpret_cast<nnc_u32*>(output_pixels), w, h);
                 free(input_data);
-                unsigned char* output_cropped = (unsigned char*)malloc(out_w * out_w * och);
+                uint8_t* output_cropped = (uint8_t*)malloc(out_w * out_w * och);
                 crop_pixels(output_pixels, w, h, och, output_cropped, 0, 0, out_w, out_h);
                 free(output_pixels);
-                unsigned char* output_film = (unsigned char*)malloc(film_w * film_h * 4);
+                uint8_t* output_film = (uint8_t*)malloc(film_w * film_h * 4);
                 layer_pixels(output_film, film_overlay, output_cropped, film_w, film_h, 4, out_w, out_h, 4, 32, 11);
                 //stbi_write_png(xtd::ustring::format("{}/{}/output_film.png", ProgramDir, resourcesPath).c_str(), film_w, film_h, och, output_film, 0);
                 free(output_cropped);
@@ -230,20 +233,20 @@ form1::form1() {
         }
         else if (!banner) {
             if (stbi_info(bannerbox.text().c_str(), &w, &h, &ch)) {
-                unsigned char* input_pixels = stbi_load(bannerbox.text().c_str(), &w, &h, &ch, 0);
-                unsigned char* output_pixels = (unsigned char*)malloc(out_w * out_h * ch);
+                uint8_t* input_pixels = stbi_load(bannerbox.text().c_str(), &w, &h, &ch, 0);
+                uint8_t* output_pixels = (uint8_t*)malloc(out_w * out_h * ch);
                 const uint8_t FF = 0xFF;
 
                 if (w == out_w && h == out_h) memcpy(output_pixels, input_pixels, w * h * ch);
                 else resize_crop(input_pixels, w, h, output_pixels, out_w, out_h, ch);//scale to 200x120 if needed
                 free(input_pixels);
-                unsigned char* output_4c = (unsigned char*)malloc(out_w * out_h * 4);
-                unsigned char* white = (unsigned char*)malloc(out_w * out_h * 4);
+                uint8_t* output_4c = (uint8_t*)malloc(out_w * out_h * 4);
+                uint8_t* white = (uint8_t*)malloc(out_w * out_h * 4);
                 memset(white, 0xFF, out_w * out_h * 4);
                 layer_pixels(output_4c, output_pixels, white, out_w, out_h, ch, out_w, out_h, 4, 0, 0);
                 free(white);
                 free(output_pixels);
-                unsigned char* output_film = (unsigned char*)malloc(film_w * film_h * 4);
+                uint8_t* output_film = (uint8_t*)malloc(film_w * film_h * 4);
                 //memcpy(output_film, film_overlay, film_w * film_h * 4);
                 layer_pixels(output_film, film_overlay, output_4c, film_w, film_h, 4, out_w, out_h, 4, 32, 11);
                 free(output_4c);
@@ -715,14 +718,14 @@ form1::form1() {
             }
         }
 
-        unsigned long TID;
-        stoul_s(TID, temp, true);
-        if (!TIDisValid(TID)) TitleIDError.show();
+        uint32_t unique_id;
+        stoul_s(unique_id, temp, true);
+        if (!TIDisValid(unique_id)) TitleIDError.show();
         else TitleIDError.hide();
 
-        while (TID <= 0xFFFFF && TID * 0x10 <= 0xFFFFF && TID != 0) TID = TID * 0x10;
+        while (unique_id <= 0xFFFFF && unique_id * 0x10 <= 0xFFFFF && unique_id != 0) unique_id = unique_id * 0x10;
 
-        titleIDbox.text(xtd::ustring::format("{:X5}", TID));
+        titleIDbox.text(xtd::ustring::format("{:X5}", unique_id));
         titleIDbox.select(index, 0);//put beam at the right place
     };
 
@@ -833,7 +836,7 @@ form1::form1() {
         static std::mt19937 rng;
         for (int i = 0; i < 4; i++) {
             rng.seed(static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count()));
-            std::uniform_int_distribution<unsigned long> uniform(0, sizeof(set) - 1);
+            std::uniform_int_distribution<uint32_t> uniform(0, sizeof(set) - 1);
             outText += set[uniform(rng)];
         }
         ProductCode.text(outText);
@@ -927,7 +930,7 @@ form1::form1() {
                     outstr[0] = '\\';
                     outstr.insert(1, "x23");
                 }
-                for (unsigned long long j = 0; j < outstr.size(); j++) {
+                for (size_t j = 0; j < outstr.size(); j++) {
                     if (outstr[j] == ',') {
                         outstr[j] = '\\';
                         outstr.insert(j + 1, "x2C");
@@ -959,7 +962,7 @@ form1::form1() {
                 outlongname[0] = '\\';
                 outlongname.insert(1, "x23");
             }
-            for (unsigned long long j = 0; j < outlongname.size(); j++) {
+            for (size_t j = 0; j < outlongname.size(); j++) {
                 if (outlongname[j] == ',') {
                     outlongname[j] = '\\';
                     outlongname.insert(j + 1, "x2C");
@@ -971,7 +974,7 @@ form1::form1() {
                 outpublisher[0] = '\\';
                 outpublisher.insert(1, "x23");
             }
-            for (unsigned long long j = 0; j < outlongname.size(); j++) {
+            for (size_t j = 0; j < outlongname.size(); j++) {
                 if (outpublisher[j] == ',') {
                     outpublisher[j] = '\\';
                     outpublisher.insert(j + 1, "x2C");
@@ -1193,7 +1196,7 @@ form1::form1() {
         builder.report_progress(15);
         //copy moflex
         {
-            unsigned char Checker[4];
+            uint8_t Checker[4];
             for (int i = 0; i < (mode.selected_index() ? rows : 1); i++) {
                 if (!std::filesystem::exists(text_box_array.at(i * columns + 1)->text().c_str())) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}, {} 2\n{} \"{}\"", row, i + 1, column, FailedToFindPath, text_box_array.at(i * columns + 1)->text()), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
@@ -1243,7 +1246,7 @@ form1::form1() {
         //convert to bimg (multi vid only)
         if (mode.selected_index()) {
             for (int i = 0; i < rows; i++) {
-                unsigned char bimg[256 * 128 * sizeof(nnc_u16) + 0x20];
+                uint8_t bimg[256 * 128 * sizeof(nnc_u16) + 0x20];
                 /*if (!std::filesystem::exists(text_box_array.at(i * columns + 2)->text().c_str())) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}, {} 3\n{} \"{}\"", row, i + 1, column, FailedToFindPath, text_box_array.at(i * columns + 2)->text()), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     builder.cancel_async();
@@ -1318,7 +1321,7 @@ form1::form1() {
             minorBarTxt.text(xtd::ustring::format("{} exefs/banner", CreatingFile));
             majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, majorBarTxt.location().y() });
 
-            unsigned char Checker[4];
+            uint8_t Checker[4];
             bool CGFX = false;
             std::ifstream inbanner(bannerbox.text(), std::ios::binary);
             if (std::filesystem::exists(bannerbox.text().c_str())) {
@@ -1340,7 +1343,7 @@ form1::form1() {
                 copyfile(bannerbox.text(), xtd::ustring::format("{}/{}/temp/exefs/banner", ProgramDir, resourcesPath).c_str());
             }
             else if (!CGFX) {
-                unsigned char buffer[65536];
+                uint8_t buffer[256 * 128 * sizeof(nnc_u16)];
                 if (!convertToBimg(bannerbox.text(), buffer, false)) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToConvertImage, bannerbox.text()), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     builder.cancel_async();
@@ -1348,8 +1351,8 @@ form1::form1() {
                 }
 
                 //create bcmdl
-                unsigned char* bcmdl;
-                bcmdl = (unsigned char*)malloc(sizeof(bannerheader) + sizeof(buffer) + sizeof(bannerfooter));
+                uint8_t* bcmdl;
+                bcmdl = (uint8_t*)malloc(sizeof(bannerheader) + sizeof(buffer) + sizeof(bannerfooter));
                 memcpy(bcmdl, bannerheader, sizeof(bannerheader));
                 memcpy(bcmdl + sizeof(bannerheader), buffer, sizeof(buffer));
                 memcpy(bcmdl + sizeof(bannerheader) + sizeof(buffer), bannerfooter, sizeof(bannerfooter));
@@ -1386,7 +1389,7 @@ form1::form1() {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}", AppNameText, BadValue), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 return;
             }
-            unsigned long unique_id = 0;
+            uint32_t unique_id = 0;
             stoul_s(unique_id, titleIDbox.text().c_str(), true);
             if (!TIDisValid(unique_id)) {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}", TitleIDText, BadValue), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);

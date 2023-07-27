@@ -187,7 +187,7 @@ std::string UTF8toUTF16(std::string input) {//not to be confused with utf8_to_ut
 	return output;
 }
 
-void ToRGBA(const unsigned char* input, unsigned char* output, int width, int height, int channels) {
+void ToRGBA(const uint8_t* input, uint8_t* output, int width, int height, int channels) {
 	if (channels == 1) {//grayscale
 		int j = 0;
 		for (int i = 0; i < width * height; i++) {
@@ -220,51 +220,33 @@ void ToRGBA(const unsigned char* input, unsigned char* output, int width, int he
 	}
 }
 
-void layer_pixels(unsigned char* out, unsigned char* foreground, unsigned char* background, int forewidth, int foreheight, int forechannels, int backwidth, int backheight, int backchannels, int x_offset, int y_offset) {
-	unsigned char* foreground_4c = (unsigned char*)malloc(forewidth * foreheight * 4);
-	unsigned char* background_4c = (unsigned char*)malloc(backwidth * backheight * 4);
+void layer_pixels(uint8_t* out, uint8_t* foreground, uint8_t* background, int forewidth, int foreheight, int forechannels, int backwidth, int backheight, int backchannels, int x_offset, int y_offset) {
+	uint8_t* foreground_4c = (uint8_t*)malloc(forewidth * foreheight * 4);
+	uint8_t* background_4c = (uint8_t*)malloc(backwidth * backheight * 4);
 	const uint8_t FF = 0xFF;
 
 	ToRGBA(foreground, foreground_4c, forewidth, foreheight, forechannels);
 	ToRGBA(background, background_4c, backwidth, backheight, backchannels);
 
-	if (forewidth > backwidth || foreheight > backheight) {
-		for (int y = 0; y < foreheight; y++)
-			for (int x = 0; x < forewidth; x++) {
-				if (x >= x_offset && x < forewidth - x_offset && y >= y_offset && y < backheight + y_offset) {
-					//https://stackoverflow.com/a/64655571
-					uint8_t alpha_out = foreground_4c[(y * foreheight + x) * 4 + 3] + (background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + 3] * (FF - foreground_4c[(y * foreheight + x) * 4 + 3]) / FF);
-					for (int ch = 0; ch < 3; ch++)
-						out[(y * forewidth + x) * 4 + ch] = (foreground_4c[(y * forewidth + x) * 4 + ch] * foreground_4c[(y * forewidth + x) * 4 + 3] + background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + ch] * FF * (FF - foreground_4c[(y * forewidth + x) * 4 + 3]) / FF) / alpha_out;
-					out[(y * forewidth + x) * 4 + 3] = alpha_out;
-				}
-				else {
-					for (int ch = 0; ch < 4; ch++)
-						out[(y * forewidth + x) * 4 + ch] = foreground_4c[(y * forewidth + x) * 4 + ch];
-				}
+	for (int y = 0; y < foreheight; y++)
+		for (int x = 0; x < forewidth; x++) {
+			if (x >= x_offset && x < forewidth - x_offset && y >= y_offset && y < backheight + y_offset) {
+				//https://stackoverflow.com/a/64655571
+				uint8_t alpha_out = foreground_4c[(y * foreheight + x) * 4 + 3] + (background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + 3] * (FF - foreground_4c[(y * foreheight + x) * 4 + 3]) / FF);
+				for (int ch = 0; ch < 3; ch++)
+					out[(y * forewidth + x) * 4 + ch] = (foreground_4c[(y * forewidth + x) * 4 + ch] * foreground_4c[(y * forewidth + x) * 4 + 3] + background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + ch] * FF * (FF - foreground_4c[(y * forewidth + x) * 4 + 3]) / FF) / alpha_out;
+				out[(y * forewidth + x) * 4 + 3] = alpha_out;
 			}
-	}
-	else if (backwidth > forewidth || backheight > foreheight) {//todo: make it work (or dont i dont actually need it now)
-		for (int y = 0; y < backheight; y++)
-			for (int x = 0; x < backwidth; x++) {
-				if (x >= x_offset && x < backwidth - x_offset && y >= y_offset && y < backheight + y_offset) {
-					//https://stackoverflow.com/a/64655571
-					uint8_t alpha_out = foreground_4c[(y * foreheight + x) * 4 + 3] + (background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + 3] * (FF - foreground_4c[(y * foreheight + x) * 4 + 3]) / FF);
-					for (int ch = 0; ch < 3; ch++)
-						out[(y * forewidth + x) * 4 + ch] = (foreground_4c[(y * forewidth + x) * 4 + ch] * foreground_4c[(y * forewidth + x) * 4 + 3] + background_4c[((y - y_offset) * backwidth + (x - x_offset)) * 4 + ch] * FF * (FF - foreground_4c[(y * forewidth + x) * 4 + 3]) / FF) / alpha_out;
-					out[(y * forewidth + x) * 4 + 3] = alpha_out;
-				}
-				else {
-					for (int ch = 0; ch < 4; ch++)
-						out[(y * forewidth + x) * 4 + ch] = foreground_4c[(y * forewidth + x) * 4 + ch];
-				}
+			else {
+				for (int ch = 0; ch < 4; ch++)
+					out[(y * forewidth + x) * 4 + ch] = foreground_4c[(y * forewidth + x) * 4 + ch];
 			}
-	}
+		}
 	free(foreground_4c);
 	free(background_4c);
 }
 
-unsigned char* invert_pixels(unsigned char* input, int width, int height, int channels) {
+uint8_t* invert_pixels(uint8_t* input, int width, int height, int channels) {
 	if (channels == 4 || channels == 3) {
 		for (int i = 0; i < width * height * channels; i += channels) {
 			for (int j = 0; j < 3; j++) 
@@ -296,7 +278,7 @@ std::string toupperstr(std::string str) {
 	return str;
 }
 
-bool stoul_s(unsigned long& output, std::string input, bool isHex) {
+bool stoul_s(uint32_t& output, std::string input, bool isHex) {
 	std::string lowinput(tolowerstr(input));
 	if (isHex) {
 		if (lowinput.find_first_of("0123456789abcdef") != 0) return false;
@@ -316,7 +298,7 @@ void removeQuotes(std::string& str) {
 	str = out;
 }
 
-void crop_pixels(const unsigned char* input, int width, int height, int channels, unsigned char* output, int x_offset, int y_offset, int out_w, int out_h) {
+void crop_pixels(const uint8_t* input, int width, int height, int channels, uint8_t* output, int x_offset, int y_offset, int out_w, int out_h) {
 	for (int y = 0; y < height; y++)
 		for (int x = 0; x < width; x++) {
 			if (x >= x_offset && x < width - x_offset && y >= y_offset && y < height - y_offset && (x - x_offset) < out_w && (y - y_offset) < out_h) {
