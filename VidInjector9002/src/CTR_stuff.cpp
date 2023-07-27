@@ -207,7 +207,7 @@ bool convertToBimg(std::string input, uint8_t* outBuffer, bool writeHeader)// tr
 	//stbi_write_png("output_fin.png", new_w, new_h, 4, output_fin, 0);
 	free(output_4c);
 
-	uint8_t tiledbanner[new_w * new_h * sizeof(nnc_u16)];
+	uint8_t* tiledbanner = new uint8_t[new_w * new_h * sizeof(nnc_u16)];
 	nnc_swizzle_zorder_be_rgba8_to_le_rgb565(reinterpret_cast<nnc_u32*>(output_fin), reinterpret_cast<nnc_u16*>(tiledbanner), new_w, new_h);
 	free(output_fin);
 	if (writeHeader) {
@@ -589,10 +589,10 @@ bool getCGFXtextureInfo(uint8_t* CGFX, const std::string symbol, uint32_t** data
 	}
 
 	uint16_t* CGFXheaderSize = reinterpret_cast<uint16_t*>(&CGFX[0x6]);
-	for (uint32_t N = 0; N < *reinterpret_cast<uint32_t*>(&CGFX[0x10]); N++) {//loop through Number of entries
+	for (uint32_t N = 0; N < *reinterpret_cast<uint32_t*>(&CGFX[0x10]); N++) {//loop through Number of Dicts
 		uint32_t* DICToffset = reinterpret_cast<uint32_t*>(&CGFX[*CGFXheaderSize + 0xC + (N * 8)]);
 		*DICToffset += (*CGFXheaderSize + 0xC + (N * 8));//since it's self-relative, do this
-		for (uint32_t i = 0; i < *reinterpret_cast<uint32_t*>(&CGFX[*DICToffset + 0x8]); i++) {
+		for (uint32_t i = 0; i < *reinterpret_cast<uint32_t*>(&CGFX[*DICToffset + 0x8]); i++) {//loop through entries in DICT N
 			uint32_t* symbolOffset = reinterpret_cast<uint32_t*>(&CGFX[*DICToffset + 0x1C + (0x10 * i) + 0x8]);
 			*symbolOffset += (*DICToffset + 0x1C + (0x10 * i) + 0x8);//self-relative
 			uint32_t* objectOffset = reinterpret_cast<uint32_t*>(&CGFX[*DICToffset + 0x1C + (0x10 * i) + 0xC]);
@@ -646,10 +646,15 @@ bool getCGFXInfo(const std::string inpath, uint32_t* compressedSize, uint32_t* d
 		it++;
 	}
 
-	//uint32_t decompressedSize_ = Get_Decompressed_size(CGFX);
-	*decompressedSize = Get_Decompressed_size(CGFX);
+	uint32_t decompressedSize_ = Get_Decompressed_size(CGFX);
+	if (decompressedSize_ > 0x80000) {
+		delete[] CGFX;
+		return false;
+	}
+	*decompressedSize = decompressedSize_;
 	*compressedSize = BCWAVoffset - _CGFXoffset;
 	*CGFXoffset = _CGFXoffset;
+	delete[] CGFX;
 	return true;
 }
 
@@ -674,13 +679,17 @@ bool CBMDgetCommonCGFX(const std::string inpath, const uint32_t compressedSize, 
 		it++;
 	}
 
-	DecompressLZ11(CGFX, outbuff);
+	if (DecompressLZ11(CGFX, outbuff) == NULL) {
+		delete[] CGFX;
+		return false;
+	}
 	delete[] CGFX;
 
 	uint32_t* CGFXmagic = reinterpret_cast<uint32_t*>(&outbuff[0]);
 	if (*CGFXmagic != 0x58464743) {//CGFX
 		return false;
 	}
+	return true;
 }
 
 bool getCBMDTexture(const std::string inpath, const std::string symbol, uint8_t* outbuff) {

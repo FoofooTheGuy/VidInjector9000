@@ -160,18 +160,93 @@ form1::form1() {
         if (banner) {
             w = 256;
             h = 128;
-            uint8_t* bimg = (uint8_t*)malloc(w * h * ich);
-            if (bimg != NULL) {
+            uint8_t* CGFXdecomp;
+            {
+                uint32_t decompressedSize = 0;
+                uint32_t compressedSize = 0;
+                uint32_t CGFXoffset = 0;
+                if (!getCGFXInfo(bannerbox.text(), &compressedSize, &decompressedSize, &CGFXoffset)) {
+                    bannerpreview.image(empty(0, 0));
+                    customnotif.show();
+                    return;
+                }
+                CGFXdecomp = new uint8_t[decompressedSize];
+                if (!CBMDgetCommonCGFX(bannerbox.text(), compressedSize, decompressedSize, CGFXoffset, CGFXdecomp)) {
+                    delete[] CGFXdecomp;
+                    bannerpreview.image(empty(0, 0));
+                    customnotif.show();
+                    return;
+                }
+            }
+
+            uint32_t* dataOffset0;
+            uint32_t* height0;
+            uint32_t* width0;
+            uint32_t* mipmap0;
+            uint32_t* formatID0;
+            uint32_t* size0;
+            if (!getCGFXtextureInfo(CGFXdecomp, "COMMON0", &dataOffset0, &height0, &width0, &mipmap0, &formatID0, &size0)) {
+                delete[] CGFXdecomp;
                 bannerpreview.image(empty(0, 0));
                 customnotif.show();
-                if (!getCBMDTexture(bannerbox.text(), "COMMON0", bimg)) {
+                return;
+            }
+            delete[] CGFXdecomp;
+
+            {
+                uint32_t decompressedSize = 0;
+                uint32_t compressedSize = 0;
+                uint32_t CGFXoffset = 0;
+                if (!getCGFXInfo(bannerbox.text(), &compressedSize, &decompressedSize, &CGFXoffset)) {
+                    bannerpreview.image(empty(0, 0));
+                    customnotif.show();
+                    return;
+                }
+                CGFXdecomp = new uint8_t[decompressedSize];
+                if (!CBMDgetCommonCGFX(bannerbox.text(), compressedSize, decompressedSize, CGFXoffset, CGFXdecomp)) {
+                    delete[] CGFXdecomp;
+                    bannerpreview.image(empty(0, 0));
+                    customnotif.show();
+                    return;
+                }
+            }
+
+            uint32_t* dataOffset1;
+            uint32_t* height1;
+            uint32_t* width1;
+            uint32_t* mipmap1;
+            uint32_t* formatID1;
+            uint32_t* size1;
+            if (!getCGFXtextureInfo(CGFXdecomp, "COMMON1", &dataOffset1, &height1, &width1, &mipmap1, &formatID1, &size1)) {
+                delete[] CGFXdecomp;
+                bannerpreview.image(empty(0, 0));
+                customnotif.show();
+                return;
+            }
+
+            uint8_t* COMMON0 = (uint8_t*)malloc(*size0);
+            uint8_t* COMMON1 = (uint8_t*)malloc(*size1);
+            if (COMMON0 != NULL && COMMON1 != NULL) {
+                if (getCBMDTexture(bannerbox.text(), "COMMON1", COMMON1)) {
+                    uint32_t hash = CRC32(COMMON1, *size1);
+                    if (hash != 0x2DB769E8) {
+                        bannerpreview.image(empty(0, 0));
+                        customnotif.show();
+                        free(COMMON0);
+                        free(COMMON1);
+                        return;
+                    }
+                }
+                //bannerpreview.image(empty(0, 0));
+                //customnotif.show();
+                if (!getCBMDTexture(bannerbox.text(), "COMMON0", COMMON0)) {
                     bannerpreview.image(empty(0, 0));
                     customnotif.show();
                 }
                 else {
                     int och = sizeof(nnc_u32);
                     uint8_t* output_pixels = (uint8_t*)malloc(w * h * och);
-                    nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(bimg), reinterpret_cast<nnc_u32*>(output_pixels), w, h);
+                    nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(COMMON0), reinterpret_cast<nnc_u32*>(output_pixels), w, h);
                     uint8_t* output_cropped = (uint8_t*)malloc(out_w * out_w * och);
                     crop_pixels(output_pixels, w, h, och, output_cropped, 0, 0, out_w, out_h);
                     free(output_pixels);
@@ -184,7 +259,9 @@ form1::form1() {
                     customnotif.hide();
                 }
             }
-            free(bimg);
+            delete[] CGFXdecomp;
+            free(COMMON0);
+            free(COMMON1);
         }
         std::string extension = bannerbox.text();
         extension.erase(extension.begin(), extension.end() - 5);
@@ -1322,7 +1399,7 @@ form1::form1() {
             majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, majorBarTxt.location().y() });
 
             uint8_t Checker[4];
-            bool CGFX = false;
+            bool banner = false;
             std::ifstream inbanner(bannerbox.text(), std::ios::binary);
             if (std::filesystem::exists(bannerbox.text().c_str())) {
                 for (int i = 0; i < 4; i++) {
@@ -1330,19 +1407,19 @@ form1::form1() {
                     if (Checker[i] == bannerMagic[i]) {
                         bannerpreview.image(empty(0, 0));
                         customnotif.show();
-                        CGFX = true;
+                        banner = true;
                     }
                     else {
                         customnotif.hide();
-                        CGFX = false;
+                        banner = false;
                         break;
                     }
                 }
             }
-            if (CGFX) {
+            if (banner) {
                 copyfile(bannerbox.text(), xtd::ustring::format("{}/{}/temp/exefs/banner", ProgramDir, resourcesPath).c_str());
             }
-            else if (!CGFX) {
+            else if (!banner) {
                 uint8_t buffer[256 * 128 * sizeof(nnc_u16)];
                 if (!convertToBimg(bannerbox.text(), buffer, false)) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToConvertImage, bannerbox.text()), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);

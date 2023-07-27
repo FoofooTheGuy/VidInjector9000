@@ -39,3 +39,5 @@ out_h: height of cropped image*/
 void crop_pixels(const uint8_t* input, int width, int height, int channels, uint8_t* output, int x_offset, int y_offset, int out_w, int out_h);
 //input a vector output an int
 int getLargestNumber(std::vector<int> &nums);
+
+uint32_t CRC32(void* pData, size_t iLen);
