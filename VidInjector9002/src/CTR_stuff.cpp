@@ -182,8 +182,10 @@ bool convertToBimg(std::string input, uint8_t* outBuffer, bool writeHeader)// tr
 		free(output_4c);
 		return false;
 	}
+	//stbi_write_png("output_pixels.png", out_w, out_h, ch, output_pixels, 0);
 	memset(white, 0xFF, out_w * out_h * 4);
 	layer_pixels(output_4c, output_pixels, white, out_w, out_h, ch, out_w, out_h, 4, 0, 0);
+	//stbi_write_png("output_4c.png", out_w, out_h, 4, output_pixels, 0);
 	free(white);
 	free(output_pixels);
 
@@ -207,7 +209,7 @@ bool convertToBimg(std::string input, uint8_t* outBuffer, bool writeHeader)// tr
 	//stbi_write_png("output_fin.png", new_w, new_h, 4, output_fin, 0);
 	free(output_4c);
 
-	uint8_t* tiledbanner = new uint8_t[new_w * new_h * sizeof(nnc_u16)];
+	uint8_t tiledbanner[new_w * new_h * sizeof(nnc_u16)];
 	nnc_swizzle_zorder_be_rgba8_to_le_rgb565(reinterpret_cast<nnc_u32*>(output_fin), reinterpret_cast<nnc_u16*>(tiledbanner), new_w, new_h);
 	free(output_fin);
 	if (writeHeader) {
