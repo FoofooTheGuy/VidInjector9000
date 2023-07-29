@@ -1051,7 +1051,7 @@ form1::form1() {
                 outpublisher[0] = '\\';
                 outpublisher.insert(1, "x23");
             }
-            for (size_t j = 0; j < outlongname.size(); j++) {
+            for (size_t j = 0; j < outpublisher.size(); j++) {
                 if (outpublisher[j] == ',') {
                     outpublisher[j] = '\\';
                     outpublisher.insert(j + 1, "x2C");
@@ -1405,12 +1405,9 @@ form1::form1() {
                 for (int i = 0; i < 4; i++) {
                     inbanner >> Checker[i];//https://stackoverflow.com/a/2974735
                     if (Checker[i] == bannerMagic[i]) {
-                        bannerpreview.image(empty(0, 0));
-                        customnotif.show();
                         banner = true;
                     }
                     else {
-                        customnotif.hide();
                         banner = false;
                         break;
                     }
@@ -1497,7 +1494,7 @@ form1::form1() {
             baseCIA.write(reinterpret_cast<const char*>(base_cia), sizeof(base_cia));
             baseCIA.close();
 
-#define TRYB(expr, lbl) if((res = ( expr )) != NNC_R_OK) goto lbl
+            #define TRYB(expr, lbl) if((res = ( expr )) != NNC_R_OK) goto lbl
 
             nnc_subview certchain, ticket, tmd_strm, logo;
             nnc_buildable_ncch ncch0b;
@@ -1609,21 +1606,21 @@ form1::form1() {
                 /* cleanup code, with lots of labels to jump to in case of failure depending on where it failed */
             out11: free(ticket_contents);
             }
-        out10: nnc_vfs_free(&exefs);
-        out9: NNC_RS_CALL0(exheader, close);
-            //out8: NNC_RS_CALL0(exefs, close);
-        out7: nnc_free_seeddb(&sdb);
-        out6: nnc_vfs_free(&romfs);
-        out5: NNC_RS_CALL0(ncch0stream, close);
-        out4: nnc_cia_free_reader(&reader);
-        out3: NNC_WS_CALL0(wf, close);
-        out2: NNC_RS_CALL0(f, close);
-        out1:
-            if (res != NNC_R_OK)
-            {
-                xtd::forms::message_box::show(*this, xtd::ustring::format("failed: {}", nnc_strerror(res)), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                return;
-            }
+            out10: nnc_vfs_free(&exefs);
+            out9: NNC_RS_CALL0(exheader, close);
+                //out8: NNC_RS_CALL0(exefs, close);
+            out7: nnc_free_seeddb(&sdb);
+            out6: nnc_vfs_free(&romfs);
+            out5: NNC_RS_CALL0(ncch0stream, close);
+            out4: nnc_cia_free_reader(&reader);
+            out3: NNC_WS_CALL0(wf, close);
+            out2: NNC_RS_CALL0(f, close);
+            out1:
+                if (res != NNC_R_OK)
+                {
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("failed: {}", nnc_strerror(res)), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    return;
+                }
         }
         if (std::filesystem::exists(outfile.c_str())) {
             xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", CiaBuilt, outfile), xtd::ustring::format("NNC"), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::information);
