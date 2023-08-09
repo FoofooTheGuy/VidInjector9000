@@ -322,7 +322,6 @@ form1::form1() {
             if (stbi_info(bannerbox.text().c_str(), &w, &h, &ch)) {
                 uint8_t* input_pixels = stbi_load(bannerbox.text().c_str(), &w, &h, &ch, 0);
                 uint8_t* output_pixels = (uint8_t*)malloc(out_w * out_h * ch);
-                const uint8_t FF = 0xFF;
 
                 if (w == out_w && h == out_h) memcpy(output_pixels, input_pixels, w * h * ch);
                 else resize_crop(input_pixels, w, h, output_pixels, out_w, out_h, ch);//scale to 200x120 if needed
@@ -413,13 +412,13 @@ form1::form1() {
     shorterror.auto_size(true);
     shorterror.font({ this->font(), xtd::drawing::font_style::bold });
     shorterror.location({ shortname.location().x(), shortname.location().y() + shortname.height() });//put it below shortname
-    shorterror.text(xtd::ustring::format("{} {} ({}/{})", ErrorText, TextTooLongError, UTF8toUTF16(shortname.text()).size() / 2, 64));
+    shorterror.text(xtd::ustring::format("{} {} ({}/{})", ErrorText, TextTooLongError, strlen(shortname.text()), 64));
     shorterror.hide();
 
     shortname.text_changed += [&] {
         if (autoSaveParams && loaded) saveSettings();
-        if (UTF8toUTF16(shortname.text()).size() > 0x80) {
-            shorterror.text(xtd::ustring::format("{} {} ({}/{})", ErrorText, TextTooLongError, UTF8toUTF16(shortname.text()).size() / 2, 64));
+        if (strlen(shortname.text()) > 64) {
+            shorterror.text(xtd::ustring::format("{} {} ({}/{})", ErrorText, TextTooLongError, strlen(shortname.text()), 64));
             shorterror.show();
         }
         else shorterror.hide();
@@ -441,13 +440,13 @@ form1::form1() {
     longerror.auto_size(true);
     longerror.font({ this->font(), xtd::drawing::font_style::bold });
     longerror.location({ longname.location().x(), longname.location().y() + longname.height() });//tether to longname box
-    longerror.text(xtd::ustring::format("{} {} ({}/{})", ErrorText, TextTooLongError, UTF8toUTF16(longname.text()).size() / 2, 128));
+    longerror.text(xtd::ustring::format("{} {} ({}/{})", ErrorText, TextTooLongError, strlen(longname.text()), 128));
     longerror.hide();
 
     longname.text_changed += [&] {
         if (autoSaveParams && loaded) saveSettings();
-        if (UTF8toUTF16(longname.text()).size() > 0x100) {
-            longerror.text(xtd::ustring::format("{} {} ({}/{})", ErrorText, TextTooLongError, UTF8toUTF16(longname.text()).size() / 2, 128));
+        if (strlen(longname.text()) > 128) {
+            longerror.text(xtd::ustring::format("{} {} ({}/{})", ErrorText, TextTooLongError, strlen(longname.text()), 128));
             longerror.show();
         }
         else longerror.hide();
@@ -469,13 +468,13 @@ form1::form1() {
     publishererror.auto_size(true);
     publishererror.font({ this->font(), xtd::drawing::font_style::bold });
     publishererror.location({ publisher.location().x(), publisher.location().y() + publisher.height() });//tether to publisher box
-    publishererror.text(xtd::ustring::format("{} {} ({}/{})", ErrorText, TextTooLongError, UTF8toUTF16(publisher.text()).size() / 2, 64));
+    publishererror.text(xtd::ustring::format("{} {} ({}/{})", ErrorText, TextTooLongError, strlen(publisher.text()), 64));
     publishererror.hide();
 
     publisher.text_changed += [&] {
         if (autoSaveParams && loaded) saveSettings();
-        if (UTF8toUTF16(publisher.text()).size() > 0x80) {
-            publishererror.text(xtd::ustring::format("{} {} ({}/{})", ErrorText, TextTooLongError, UTF8toUTF16(publisher.text()).size() / 2, 64));
+        if (strlen(publisher.text()) > 64) {
+            publishererror.text(xtd::ustring::format("{} {} ({}/{})", ErrorText, TextTooLongError, strlen(publisher.text()), 64));
             publishererror.show();
         }
         else publishererror.hide();
@@ -859,12 +858,12 @@ form1::form1() {
         ApplicationName.select(index, 0);
 
 
-        if (UTF8toUTF16(ApplicationName.text()).size() / 2 < 1) {//funny turn utf8 into utf16 and cut in half to ensure ascii sizes even though we already set it all to ascii only characters but whatever
+        if (strlen(ApplicationName.text()) < 1) {
             ApplicationError.text(xtd::ustring::format("{} {}", ErrorText, BadValue));
             ApplicationError.show();
         }
-        else if (UTF8toUTF16(ApplicationName.text()).size() / 2 > 8) {
-            ApplicationError.text(xtd::ustring::format("{} {} ({}/{})", ErrorText, TextTooLongError, UTF8toUTF16(ApplicationName.text()).size() / 2, 8));
+        else if (strlen(ApplicationName.text()) > 8) {
+            ApplicationError.text(xtd::ustring::format("{} {} ({}/{})", ErrorText, TextTooLongError, strlen(ApplicationName.text()), 8));
             ApplicationError.show();
         }
         else ApplicationError.hide();
@@ -875,7 +874,7 @@ form1::form1() {
     ApplicationError.parent(finalize);
     ApplicationError.auto_size(true);
     ApplicationError.font({ this->font(), xtd::drawing::font_style::bold });
-    ApplicationError.text(xtd::ustring::format("{} {} ({}/{})", ErrorText, TextTooLongError, UTF8toUTF16(ApplicationName.text()).size() / 2, 8));
+    ApplicationError.text(xtd::ustring::format("{} {} ({}/{})", ErrorText, TextTooLongError, strlen(ApplicationName.text()), 8));
     ApplicationError.hide();
 
     //product code stuff
@@ -901,7 +900,7 @@ form1::form1() {
             }
         }
 
-        if (UTF8toUTF16(ProductCode.text()).size() / 2 != 4) ProductCodeError.show();
+        if (strlen(ProductCode.text()) != 4) ProductCodeError.show();
         else ProductCodeError.hide();
 
         ProductCode.text(toupperstr(temp));
@@ -1379,7 +1378,8 @@ form1::form1() {
             minorBarTxt.text(xtd::ustring::format("{} exefs/icon", CreatingFile));
             minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
 
-            uint8_t ret = convertToIcon(iconbox.text(), xtd::ustring::format("{}/{}/temp/exefs/icon", ProgramDir, resourcesPath).c_str(), UTF8toUTF16(shortname.text()), UTF8toUTF16(longname.text()), UTF8toUTF16(publisher.text()), borderMode);
+            uint8_t ret = 0;
+            ret = convertToIcon(iconbox.text(), xtd::ustring::format("{}/{}/temp/exefs/icon", ProgramDir, resourcesPath).c_str(), UTF8toUTF16(shortname.text()), UTF8toUTF16(longname.text()), UTF8toUTF16(publisher.text()), borderMode);
             if (ret > 0) {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/{}/temp/exefs/icon", FailedToCreateFile, ProgramDir, resourcesPath), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 builder.cancel_async();
@@ -1426,7 +1426,7 @@ form1::form1() {
             }
             else if (!banner) {
                 uint8_t buffer[256 * 128 * sizeof(nnc_u16)];
-                uint8_t ret = convertToBimg(bannerbox.text(), buffer, false);
+                ret = convertToBimg(bannerbox.text(), buffer, false);
                 if (ret > 0) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"\n({})", FailedToConvertImage, bannerbox.text(), ret), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     builder.cancel_async();
@@ -1574,7 +1574,7 @@ form1::form1() {
             ncch0b.chdr.partition_id = exhdr.title_id;
             ncch0b.chdr.title_id = exhdr.title_id;
 
-            if (UTF8toUTF16(ProductCode.text()).size() / 2 != 4) {
+            if (strlen(ProductCode.text()) != 4) {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}", ProductCodetext, BadValue), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 goto out10;
             }
