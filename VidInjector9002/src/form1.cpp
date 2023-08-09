@@ -161,17 +161,20 @@ form1::form1() {
             w = 256;
             h = 128;
             uint8_t* CGFXdecomp;
+            uint8_t ret = 0;
             {
                 uint32_t decompressedSize = 0;
                 uint32_t compressedSize = 0;
                 uint32_t CGFXoffset = 0;
-                if (!getCGFXInfo(bannerbox.text(), &compressedSize, &decompressedSize, &CGFXoffset)) {
+                ret = getCGFXInfo(bannerbox.text(), &compressedSize, &decompressedSize, &CGFXoffset);
+                if (ret > 0) {
                     bannerpreview.image(empty(0, 0));
                     customnotif.show();
                     return;
                 }
                 CGFXdecomp = new uint8_t[decompressedSize];
-                if (!CBMDgetCommonCGFX(bannerbox.text(), compressedSize, decompressedSize, CGFXoffset, CGFXdecomp)) {
+                ret = CBMDgetCommonCGFX(bannerbox.text(), compressedSize, decompressedSize, CGFXoffset, CGFXdecomp);
+                if (ret > 0) {
                     delete[] CGFXdecomp;
                     bannerpreview.image(empty(0, 0));
                     customnotif.show();
@@ -185,7 +188,8 @@ form1::form1() {
             uint32_t* mipmap0;
             uint32_t* formatID0;
             uint32_t* size0;
-            if (!getCGFXtextureInfo(CGFXdecomp, "COMMON0", &dataOffset0, &height0, &width0, &mipmap0, &formatID0, &size0)) {
+            ret = getCGFXtextureInfo(CGFXdecomp, "COMMON0", &dataOffset0, &height0, &width0, &mipmap0, &formatID0, &size0);
+            if (ret > 0) {
                 delete[] CGFXdecomp;
                 bannerpreview.image(empty(0, 0));
                 customnotif.show();
@@ -197,13 +201,15 @@ form1::form1() {
                 uint32_t decompressedSize = 0;
                 uint32_t compressedSize = 0;
                 uint32_t CGFXoffset = 0;
-                if (!getCGFXInfo(bannerbox.text(), &compressedSize, &decompressedSize, &CGFXoffset)) {
+                ret = getCGFXInfo(bannerbox.text(), &compressedSize, &decompressedSize, &CGFXoffset);
+                if (ret > 0) {
                     bannerpreview.image(empty(0, 0));
                     customnotif.show();
                     return;
                 }
                 CGFXdecomp = new uint8_t[decompressedSize];
-                if (!CBMDgetCommonCGFX(bannerbox.text(), compressedSize, decompressedSize, CGFXoffset, CGFXdecomp)) {
+                ret = CBMDgetCommonCGFX(bannerbox.text(), compressedSize, decompressedSize, CGFXoffset, CGFXdecomp);
+                if (ret > 0) {
                     delete[] CGFXdecomp;
                     bannerpreview.image(empty(0, 0));
                     customnotif.show();
@@ -217,7 +223,8 @@ form1::form1() {
             uint32_t* mipmap1;
             uint32_t* formatID1;
             uint32_t* size1;
-            if (!getCGFXtextureInfo(CGFXdecomp, "COMMON1", &dataOffset1, &height1, &width1, &mipmap1, &formatID1, &size1)) {
+            ret = getCGFXtextureInfo(CGFXdecomp, "COMMON1", &dataOffset1, &height1, &width1, &mipmap1, &formatID1, &size1);
+            if (ret > 0) {
                 delete[] CGFXdecomp;
                 bannerpreview.image(empty(0, 0));
                 customnotif.show();
@@ -227,11 +234,13 @@ form1::form1() {
             uint8_t* COMMON0 = (uint8_t*)malloc(*size0);
             uint8_t* COMMON1 = (uint8_t*)malloc(*size1);
             if (COMMON0 != NULL && COMMON1 != NULL) {
-                if (getCBMDTexture(bannerbox.text(), "COMMON1", COMMON1)) {
+                ret = getCBMDTexture(bannerbox.text(), "COMMON1", COMMON1);
+                if (ret == 0) {//i guess it could be !ret but that is confusing to read lool as if I cared
                     uint32_t hash = CRC32(COMMON1, *size1);
                     if (hash != 0x2DB769E8) {
                         bannerpreview.image(empty(0, 0));
                         customnotif.show();
+                        delete[] CGFXdecomp;
                         free(COMMON0);
                         free(COMMON1);
                         return;
@@ -239,7 +248,8 @@ form1::form1() {
                 }
                 //bannerpreview.image(empty(0, 0));
                 //customnotif.show();
-                if (!getCBMDTexture(bannerbox.text(), "COMMON0", COMMON0)) {
+                ret = getCBMDTexture(bannerbox.text(), "COMMON0", COMMON0);
+                if (ret > 0) {
                     bannerpreview.image(empty(0, 0));
                     customnotif.show();
                 }
@@ -1333,19 +1343,16 @@ form1::form1() {
                 minorBarTxt.text(xtd::ustring::format("{} romfs/movie/movie_{}.bimg", CreatingFile, i));
                 minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
 
-                if (convertToBimg(text_box_array.at(i * columns + 2)->text(), bimg, true)) {
-                    std::filesystem::create_directories(xtd::ustring::format("{}/{}/temp/romfs/movie", ProgramDir, resourcesPath).c_str());
-                    std::ofstream bimgfile(xtd::ustring::format("{}/{}/temp/romfs/movie/movie_{}.bimg", ProgramDir, resourcesPath, i).c_str(), std::ios_base::out | std::ios_base::binary);
-                    bimgfile.write(reinterpret_cast<const char*>(bimg), sizeof(bimg));
-                    bimgfile.close();
+                uint8_t ret = convertToBimg(text_box_array.at(i * columns + 2)->text(), bimg, true);
+                if (ret > 0) {
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/{}/temp/romfs/movie/movie_{}.bimg\n({})", FailedToCreateFile, ProgramDir, resourcesPath, i, ret), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    builder.cancel_async();
+                    return;
                 }
-                else {
-                    if (!std::filesystem::exists(xtd::ustring::format("{}/{}/temp/romfs/movie/movie_{}.bimg", ProgramDir, resourcesPath, i).c_str())) {
-                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/{}/temp/romfs/movie/movie_{}.bimg", FailedToCreateFile, ProgramDir, resourcesPath, i), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                        builder.cancel_async();
-                        return;
-                    }
-                }
+                std::filesystem::create_directories(xtd::ustring::format("{}/{}/temp/romfs/movie", ProgramDir, resourcesPath).c_str());
+                std::ofstream bimgfile(xtd::ustring::format("{}/{}/temp/romfs/movie/movie_{}.bimg", ProgramDir, resourcesPath, i).c_str(), std::ios_base::out | std::ios_base::binary);
+                bimgfile.write(reinterpret_cast<const char*>(bimg), sizeof(bimg));
+                bimgfile.close();
             }
             //make movie_bnrname.csv
             std::filesystem::create_directories(xtd::ustring::format("{}/{}/temp/romfs/settings", ProgramDir, resourcesPath).c_str());
@@ -1372,7 +1379,8 @@ form1::form1() {
             minorBarTxt.text(xtd::ustring::format("{} exefs/icon", CreatingFile));
             minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
 
-            if (!convertToIcon(iconbox.text(), xtd::ustring::format("{}/{}/temp/exefs/icon", ProgramDir, resourcesPath).c_str(), UTF8toUTF16(shortname.text()), UTF8toUTF16(longname.text()), UTF8toUTF16(publisher.text()), borderMode)) {
+            uint8_t ret = convertToIcon(iconbox.text(), xtd::ustring::format("{}/{}/temp/exefs/icon", ProgramDir, resourcesPath).c_str(), UTF8toUTF16(shortname.text()), UTF8toUTF16(longname.text()), UTF8toUTF16(publisher.text()), borderMode);
+            if (ret > 0) {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/{}/temp/exefs/icon", FailedToCreateFile, ProgramDir, resourcesPath), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 builder.cancel_async();
                 return;
@@ -1418,8 +1426,9 @@ form1::form1() {
             }
             else if (!banner) {
                 uint8_t buffer[256 * 128 * sizeof(nnc_u16)];
-                if (!convertToBimg(bannerbox.text(), buffer, false)) {
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToConvertImage, bannerbox.text()), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                uint8_t ret = convertToBimg(bannerbox.text(), buffer, false);
+                if (ret > 0) {
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"\n({})", FailedToConvertImage, bannerbox.text(), ret), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     builder.cancel_async();
                     return;
                 }

@@ -31,13 +31,14 @@ uint32_t RandomTID();
 //resize image and maintain aspect ratio and also crop it
 void resize_crop(const uint8_t* input_pixels, int input_w, int input_h, uint8_t* output_pixels, int output_w, int output_h, int num_channels);
 
-bool convertToBimg(std::string input, uint8_t* outBuffer, bool writeHeader);
+//return 0 if it completed otherwise return some greater number
+uint8_t convertToBimg(std::string input, uint8_t* outBuffer, bool writeHeader);
 /*note: text has to be utf16
 input: path to input image (size doesnt really matter)
 output: icon.bin out
 borderMode: 0 for no border, 1 for overlap, 2 for fit within it
 */
-bool convertToIcon(std::string input, std::string output, std::string shortname, std::string longname, std::string publisher, int borderMode);
+uint8_t convertToIcon(std::string input, std::string output, std::string shortname, std::string longname, std::string publisher, int borderMode);
 
 //these are from bannertool with slight edits
 #define CBMD_NUM_CGFXS 14
@@ -68,19 +69,19 @@ CGFX: array containing the uncompressed CGFX
 symbol: name of the texture you want to get info of
 height, width, mipmap, formatID, size: information extracted from the cgfx
 */
-bool getCGFXtextureInfo(uint8_t* CGFX, const std::string symbol, uint32_t** dataOffset, uint32_t** height, uint32_t** width, uint32_t** mipmap, uint32_t** formatID, uint32_t** size);
+uint8_t getCGFXtextureInfo(uint8_t* CGFX, const std::string symbol, uint32_t** dataOffset, uint32_t** height, uint32_t** width, uint32_t** mipmap, uint32_t** formatID, uint32_t** size);
 /*
 inpath: path to cbmd
 */
-bool getCGFXInfo(const std::string inpath, uint32_t* compressedSize, uint32_t* decompressedSize, uint32_t* CGFXoffset);
+uint8_t getCGFXInfo(const std::string inpath, uint32_t* compressedSize, uint32_t* decompressedSize, uint32_t* CGFXoffset);
 /*
 
 */
-bool CBMDgetCommonCGFX(const std::string inpath, const uint32_t compressedSize, const uint32_t decompressedSize, const uint32_t CGFXoffset, uint8_t* outbuff);
+uint8_t CBMDgetCommonCGFX(const std::string inpath, const uint32_t compressedSize, const uint32_t decompressedSize, const uint32_t CGFXoffset, uint8_t* outbuff);
 /*
 inpath: string path to file
 symbol: name of the texture you want
 outbuff: output buffer for image data, make sure it is the correct size for the image you want
 return true if succeed, false if fail
 */
-bool getCBMDTexture(const std::string inpath, const std::string symbol, uint8_t* outbuff);
+uint8_t getCBMDTexture(const std::string inpath, const std::string symbol, uint8_t* outbuff);

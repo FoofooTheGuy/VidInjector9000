@@ -3,12 +3,14 @@
 #include <string>
 #include <cstring>
 #include <vector>
+#include "nnc/nnc/utf.h"
 
 #ifdef SIZE_MAX
 #define _SIZE_MAX ((SIZE_MAX) >> 1)
 #endif
 
 std::string UTF8toUTF16(std::string input);
+std::string UTF16toUTF8(const std::string& input);
 /*convert any format to rgba
 (1 channel, 2 channel, 3 channel, 4 channel)
 if you input 4 channel it will just memcpy it so never do that

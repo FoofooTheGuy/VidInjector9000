@@ -92,7 +92,7 @@ const uint8_t bimgheader[32]{
 };
 
 //based on https://raw.githubusercontent.com/nothings/stb/master/tests/resample_test.cpp
-bool convertToBimg(std::string input, uint8_t* outBuffer, bool writeHeader)// true for write header, false for dont write header
+uint8_t convertToBimg(std::string input, uint8_t* outBuffer, bool writeHeader)// true for write header, false for dont write header
 {
 	uint8_t* input_pixels;
 	uint8_t* output_pixels;
@@ -118,7 +118,7 @@ bool convertToBimg(std::string input, uint8_t* outBuffer, bool writeHeader)// tr
 				uint8_t* input_data = (uint8_t*)malloc((w * h * ich) + 0x20);
 				if (!input_data) {
 					free(input_data);
-					return false;
+					return 1;
 				}
 				char Byte;
 				int it = 0;
@@ -132,7 +132,7 @@ bool convertToBimg(std::string input, uint8_t* outBuffer, bool writeHeader)// tr
 				for (int i = 0; i < 0x1C; i++) {
 					if (input_data[i] != bimgheader[i]) {
 						free(input_data);
-						return false;
+						return 2;
 					}
 				}
 				if (writeHeader) {
@@ -141,9 +141,9 @@ bool convertToBimg(std::string input, uint8_t* outBuffer, bool writeHeader)// tr
 				else {
 					memcpy(outBuffer, &input_data[0x20], (w * h * ich));
 				}
-				return true;
+				return 0;
 			}
-			return false;
+			return 3;
 		}
 	}
 	if (!stbi_info(input.c_str(), &w, &h, &comp)) {
@@ -153,7 +153,7 @@ bool convertToBimg(std::string input, uint8_t* outBuffer, bool writeHeader)// tr
 		input_pixels = (uint8_t*)malloc(out_w * out_h * ch);
 		if (input_pixels == NULL) {
 			free(input_pixels);
-			return false;
+			return 4;
 		}
 		memset(input_pixels, FF, out_w * out_h * ch);
 	}
@@ -162,7 +162,7 @@ bool convertToBimg(std::string input, uint8_t* outBuffer, bool writeHeader)// tr
 	if (output_pixels == NULL) {
 		free(output_pixels);
 		free(input_pixels);
-		return false;
+		return 5;
 	}
 	if (w == out_w && h == out_h) memcpy(output_pixels, input_pixels, w * h * ch);
 	else resize_crop(input_pixels, w, h, output_pixels, out_w, out_h, ch);//scale to 200x120 if needed
@@ -172,7 +172,7 @@ bool convertToBimg(std::string input, uint8_t* outBuffer, bool writeHeader)// tr
 	if (output_4c == NULL) {
 		free(output_pixels);
 		free(output_4c);
-		return false;
+		return 6;
 	}
 	ToRGBA(output_pixels, output_4c, out_w, out_h, ch);
 	white = (uint8_t*)malloc(out_w * out_h * 4);
@@ -180,7 +180,7 @@ bool convertToBimg(std::string input, uint8_t* outBuffer, bool writeHeader)// tr
 		free(white);
 		free(output_pixels);
 		free(output_4c);
-		return false;
+		return 7;
 	}
 	//stbi_write_png("output_pixels.png", out_w, out_h, ch, output_pixels, 0);
 	memset(white, 0xFF, out_w * out_h * 4);
@@ -194,7 +194,7 @@ bool convertToBimg(std::string input, uint8_t* outBuffer, bool writeHeader)// tr
 	if (output_fin == NULL) {
 		free(output_fin);
 		free(output_4c);
-		return false;
+		return 8;
 	}
 
 	memset(output_fin, 0, new_w * new_h * 4);
@@ -219,10 +219,10 @@ bool convertToBimg(std::string input, uint8_t* outBuffer, bool writeHeader)// tr
 	else {
 		memcpy(outBuffer, tiledbanner, sizeof(tiledbanner));
 	}
-	return true;
+	return 0;
 }
 
-bool convertToIcon(std::string input, std::string output, std::string shortname, std::string longname, std::string publisher, int borderMode) {//bare bones SMDH creation. thanks 3dbrew
+uint8_t convertToIcon(std::string input, std::string output, std::string shortname, std::string longname, std::string publisher, int borderMode) {//bare bones SMDH creation. thanks 3dbrew
 	uint8_t* input_pixels;
 	uint8_t* output_pixels;
 	uint8_t* large_4c;
@@ -243,7 +243,7 @@ bool convertToIcon(std::string input, std::string output, std::string shortname,
 	if (output_pixels == NULL) {
 		free(output_pixels);
 		free(input_pixels);
-		return false;
+		return 1;
 	}
 	if (w == largeLW && h == largeLW) memcpy(output_pixels, input_pixels, w * h * ch);
 	else resize_crop(input_pixels, w, h, output_pixels, largeLW, largeLW, ch);//scale to 48x48 if needed
@@ -282,7 +282,7 @@ bool convertToIcon(std::string input, std::string output, std::string shortname,
 	large_4c = (uint8_t*)malloc(largeLW * largeLW * 4);
 	if (large_4c == NULL) {
 		free(large_4c);
-		return false;
+		return 2;
 	}
 	ToRGBA(output_pixels, large_4c, largeLW, largeLW, ch);
 	free(output_pixels);
@@ -297,7 +297,7 @@ bool convertToIcon(std::string input, std::string output, std::string shortname,
 	if (shortname.size() > 0x80 || longname.size() > 0x100 || publisher.size() > 0x80) {
 		free(small_4c);
 		free(large_4c);
-		return false;
+		return 3;
 	}
 	std::ofstream smdh(output, std::ios_base::out | std::ios_base::binary);
 	smdh << "SMDH";//make smdh!
@@ -328,7 +328,7 @@ bool convertToIcon(std::string input, std::string output, std::string shortname,
 	//stbi_write_png(output.c_str(), largeLW, largeLW, 3, large_3c, 0);
 	free(small_4c);
 	free(large_4c);
-	return true;
+	return 0;
 }
 
 
@@ -584,10 +584,10 @@ void* cbmd_build_data(uint32_t* size, CBMD cbmd) {//this is here because it has 
 	return output;
 }
 
-bool getCGFXtextureInfo(uint8_t* CGFX, const std::string symbol, uint32_t** dataOffset, uint32_t** height, uint32_t** width, uint32_t** mipmap, uint32_t** formatID, uint32_t** size) {
+uint8_t getCGFXtextureInfo(uint8_t* CGFX, const std::string symbol, uint32_t** dataOffset, uint32_t** height, uint32_t** width, uint32_t** mipmap, uint32_t** formatID, uint32_t** size) {
 	uint32_t* CGFXmagic = reinterpret_cast<uint32_t*>(&CGFX[0]);
 	if (*CGFXmagic != 0x58464743) {//CGFX
-		return false;
+		return 1;
 	}
 
 	uint16_t* CGFXheaderSize = reinterpret_cast<uint16_t*>(&CGFX[0x6]);
@@ -612,21 +612,21 @@ bool getCGFXtextureInfo(uint8_t* CGFX, const std::string symbol, uint32_t** data
 				uint32_t* dataOffsetStandin = reinterpret_cast<uint32_t*>(&CGFX[*objectOffset + 0x48]);
 				*dataOffsetStandin += (*objectOffset + 0x48);//self-relative
 				*dataOffset = dataOffsetStandin;
-				return true;
+				return 0;
 			}
 		}
 	}
-	return false;
+	return 2;
 }
 
-bool getCGFXInfo(const std::string inpath, uint32_t* compressedSize, uint32_t* decompressedSize, uint32_t* CGFXoffset) {
+uint8_t getCGFXInfo(const std::string inpath, uint32_t* compressedSize, uint32_t* decompressedSize, uint32_t* CGFXoffset) {
 	std::ifstream CBMD;
 	CBMD.open(inpath, std::ios_base::in | std::ios_base::binary);
 	uint32_t CBMDmagic = 0;
 	CBMD.seekg(0);
 	CBMD.read(reinterpret_cast<char*>(&CBMDmagic), 0x4);
 	if (CBMDmagic != 0x444D4243) {
-		return false;
+		return 1;
 	}
 	//Offset for common CGFX
 	uint32_t _CGFXoffset = 0;
@@ -651,23 +651,23 @@ bool getCGFXInfo(const std::string inpath, uint32_t* compressedSize, uint32_t* d
 	uint32_t decompressedSize_ = Get_Decompressed_size(CGFX);
 	if (decompressedSize_ > 0x80000) {
 		delete[] CGFX;
-		return false;
+		return 2;
 	}
 	*decompressedSize = decompressedSize_;
 	*compressedSize = BCWAVoffset - _CGFXoffset;
 	*CGFXoffset = _CGFXoffset;
 	delete[] CGFX;
-	return true;
+	return 0;
 }
 
-bool CBMDgetCommonCGFX(const std::string inpath, const uint32_t compressedSize, const uint32_t decompressedSize, const uint32_t CGFXoffset, uint8_t* outbuff) {
+uint8_t CBMDgetCommonCGFX(const std::string inpath, const uint32_t compressedSize, const uint32_t decompressedSize, const uint32_t CGFXoffset, uint8_t* outbuff) {
 	std::ifstream CBMD;
 	CBMD.open(inpath, std::ios_base::in | std::ios_base::binary);
 	uint32_t CBMDmagic = 0;
 	CBMD.seekg(0);
 	CBMD.read(reinterpret_cast<char*>(&CBMDmagic), 0x4);
 	if (CBMDmagic != 0x444D4243) {
-		return false;
+		return 3;
 	}
 	uint8_t* CGFX = new uint8_t[compressedSize];
 	//get stuff and decompress that stuff
@@ -683,28 +683,30 @@ bool CBMDgetCommonCGFX(const std::string inpath, const uint32_t compressedSize, 
 
 	if (DecompressLZ11(CGFX, outbuff) == NULL) {
 		delete[] CGFX;
-		return false;
+		return 4;
 	}
 	delete[] CGFX;
 
 	uint32_t* CGFXmagic = reinterpret_cast<uint32_t*>(&outbuff[0]);
 	if (*CGFXmagic != 0x58464743) {//CGFX
-		return false;
+		return 5;
 	}
-	return true;
+	return 0;
 }
 
-bool getCBMDTexture(const std::string inpath, const std::string symbol, uint8_t* outbuff) {
+uint8_t getCBMDTexture(const std::string inpath, const std::string symbol, uint8_t* outbuff) {
 	uint32_t decompressedSize = 0;
 	uint32_t compressedSize = 0;
 	uint32_t CGFXoffset = 0;
-	if (!getCGFXInfo(inpath, &compressedSize, &decompressedSize, &CGFXoffset)) {
-		return false;
+	uint8_t ret = getCGFXInfo(inpath, &compressedSize, &decompressedSize, &CGFXoffset);
+	if (ret > 0) {
+		return ret;
 	}
 	uint8_t* CGFXdecomp = new uint8_t[decompressedSize];
-	if (!CBMDgetCommonCGFX(inpath, compressedSize, decompressedSize, CGFXoffset, CGFXdecomp)) {
+	ret = CBMDgetCommonCGFX(inpath, compressedSize, decompressedSize, CGFXoffset, CGFXdecomp);
+	if (ret > 0) {
 		delete[] CGFXdecomp;
-		return false;
+		return ret;
 	}
 
 	uint32_t* dataOffset;
@@ -716,8 +718,54 @@ bool getCBMDTexture(const std::string inpath, const std::string symbol, uint8_t*
 	if (getCGFXtextureInfo(CGFXdecomp, symbol, &dataOffset, &height, &width, &mipmap, &formatID, &size)) {
 		memcpy(outbuff, &CGFXdecomp[*dataOffset], *size);
 		delete[] CGFXdecomp;
-		return true;
+		return 0;
 	}
 	delete[] CGFXdecomp;
-	return false;
+	return 6;
 }
+
+/*path: input path to text file containing utf16 text
+outVec: output vector containing each line per element
+trim: true for remove lines that start with '#' and empty lines, false for write all lines to outVec
+return 0 if succeeded or negative numbers for fail*/
+uint8_t UTF16fileToUTF8str(const std::string path, std::vector<std::string>* outVec) {
+	std::string output = "";
+	std::string outputUTF8 = "";
+	std::string Line;
+	std::ifstream input;
+	input.open(path.c_str(), std::ios_base::in | std::ios_base::binary);
+	if (!input)
+		return 1;
+
+	char Byte;
+	//size_t it = 0;
+	input.read(&Byte, 1);//grab first byte of file
+	while (input) {//continue until input stream fails
+		output += Byte;//append byte to string
+		input.read(&Byte, 1);//grab next byte of file
+	}
+	input.close();
+	output += '\0';
+	output += '\0';//add utf16 null terminator
+	if (output[0] == 0xFE && output[1] == 0xFF)//if little endian (they should be in big endian anyway and i dont want to convert it)
+		return 2;
+	output.erase(output.begin(), output.begin() + 2);//delete byte order mask
+	outputUTF8 = UTF16toUTF8(output);
+	std::istringstream Textstream(outputUTF8);
+
+	while (getline(Textstream, Line)) {
+		if (Line[0] == '#' || Line[0] == 0xA || Line[0] == 0xD)//do 0xD too because I think windows is being annoying with line breaks as usual
+			continue;
+		outVec->push_back(Line);
+		//printf("%s\n", Line.c_str());
+	}
+	/*std::ofstream outfile("utf8.txt", std::ios_base::out | std::ios_base::binary);
+	for(const auto &LN : outVec)
+		outfile << LN;
+	outfile.close();*/
+	return 0;
+}
+
+//uint8_t readSMDH(std::string input, std::string output, std::string shortname, std::string longname, std::string publisher, int borderMode) {
+
+//}

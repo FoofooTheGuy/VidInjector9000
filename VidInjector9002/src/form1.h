@@ -195,8 +195,6 @@ namespace VidInjector9002 {
                     uint8_t* input_pixels = stbi_load(text_box_array.at(y * columns + 2)->text().c_str(), &w, &h, &ch, 0);
                     uint8_t* output_pixels = (uint8_t*)malloc(out_w * out_h * ch);
 
-                    const uint8_t FF = 0xFF;
-
                     if (w == out_w && h == out_h) memcpy(output_pixels, input_pixels, w * h * ch);
                     else resize_crop(input_pixels, w, h, output_pixels, out_w, out_h, ch);//scale to 200x120 if needed
                     free(input_pixels);

@@ -1,7 +1,6 @@
 #include "formatting.hpp"
 
-//this UTF stuff is from libctru lol
-inline std::size_t strlen(const std::string& str) {//http://www.cplusplus.com/forum/beginner/192031/#msg925794
+std::size_t strlen(const std::string& str) {
 	std::size_t length = 0;
 	for (char c : str) {
 		if ((c & 0xC0) != 0x80) {
@@ -11,170 +10,13 @@ inline std::size_t strlen(const std::string& str) {//http://www.cplusplus.com/fo
 	return length;
 }
 
-//https://github.com/devkitPro/libctru/raw/4e25fb1d6c2ea124a9011c4b65f76f2968a9fb97/libctru/source/util/utf/encode_utf16.c
-inline int
-encode_utf16(uint16_t* out,
-	uint32_t in)
-{
-	if (in < 0x10000)
-	{
-		if (out != NULL)
-			*out++ = in;
-		return 1;
-	}
-	else if (in < 0x110000)
-	{
-		if (out != NULL)
-		{
-			*out++ = (in >> 10) + 0xD7C0;
-			*out++ = (in & 0x3FF) + 0xDC00;
-		}
-		return 2;
-	}
-
-	return -1;
-}
-
-//https://github.com/devkitPro/libctru/raw/4e25fb1d6c2ea124a9011c4b65f76f2968a9fb97/libctru/source/util/utf/decode_utf8.c
-inline int
-decode_utf8(uint32_t* out,
-	const uint8_t* in)
-{
-	uint8_t code1, code2, code3, code4;
-
-	code1 = *in++;
-	if (code1 < 0x80)
-	{
-		/* 1-byte sequence */
-		*out = code1;
-		return 1;
-	}
-	else if (code1 < 0xC2)
-	{
-		return -1;
-	}
-	else if (code1 < 0xE0)
-	{
-		/* 2-byte sequence */
-		code2 = *in++;
-		if ((code2 & 0xC0) != 0x80)
-		{
-			return -1;
-		}
-
-		*out = (code1 << 6) + code2 - 0x3080;
-		return 2;
-	}
-	else if (code1 < 0xF0)
-	{
-		/* 3-byte sequence */
-		code2 = *in++;
-		if ((code2 & 0xC0) != 0x80)
-		{
-			return -1;
-		}
-		if (code1 == 0xE0 && code2 < 0xA0)
-		{
-			return -1;
-		}
-
-		code3 = *in++;
-		if ((code3 & 0xC0) != 0x80)
-		{
-			return -1;
-		}
-
-		*out = (code1 << 12) + (code2 << 6) + code3 - 0xE2080;
-		return 3;
-	}
-	else if (code1 < 0xF5)
-	{
-		/* 4-byte sequence */
-		code2 = *in++;
-		if ((code2 & 0xC0) != 0x80)
-		{
-			return -1;
-		}
-		if (code1 == 0xF0 && code2 < 0x90)
-		{
-			return -1;
-		}
-		if (code1 == 0xF4 && code2 >= 0x90)
-		{
-			return -1;
-		}
-
-		code3 = *in++;
-		if ((code3 & 0xC0) != 0x80)
-		{
-			return -1;
-		}
-
-		code4 = *in++;
-		if ((code4 & 0xC0) != 0x80)
-		{
-			return -1;
-		}
-
-		*out = (code1 << 18) + (code2 << 12) + (code3 << 6) + code4 - 0x3C82080;
-		return 4;
-	}
-
-	return -1;
-}
-
-//https://github.com/devkitPro/libctru/raw/4e25fb1d6c2ea124a9011c4b65f76f2968a9fb97/libctru/source/util/utf/utf8_to_utf16.c
-inline int
-utf8_to_utf16(uint16_t* out,
-	const uint8_t* in,
-	size_t        len)
-{
-	int  rc = 0;
-	int  units;
-	uint32_t code;
-	uint16_t encoded[2];
-
-	do
-	{
-		units = decode_utf8(&code, in);
-		if (units == -1)
-			return -1;
-
-		if (code > 0)
-		{
-			in += units;
-
-			units = encode_utf16(encoded, code);
-			if (units == -1)
-				return -1;
-
-			if (out != NULL)
-			{
-				if (rc + units <= len)
-				{
-					*out++ = encoded[0];
-					if (units > 1)
-						*out++ = encoded[1];
-				}
-			}
-
-			if (_SIZE_MAX - units >= rc)
-				rc += units;
-			else
-				return -1;
-		}
-	} while (code > 0);
-
-	return rc;
-}
-
-std::string UTF8toUTF16(std::string input) {//not to be confused with utf8_to_utf16
+std::string UTF8toUTF16(const std::string input) {
 	std::string output = "";
 	uint8_t* utf8 = new uint8_t[input.size() + 1];
 	uint16_t* utf16 = new uint16_t[strlen(input) * 2 + 1];
 	memcpy(utf8, input.c_str(), input.size());
 	utf8[input.size()] = '\0';
-	utf8_to_utf16(utf16, utf8, input.size());
+	nnc_utf8_to_utf16(utf16, strlen(input) * 2 + 1, utf8, input.size());
 	char* utf16str = new char[strlen(input) * 2 + 1];
 	memcpy(utf16str, utf16, strlen(input) * 2 + 1);
 
@@ -184,6 +26,28 @@ std::string UTF8toUTF16(std::string input) {//not to be confused with utf8_to_ut
 	delete[] utf8;
 	delete[] utf16;
 	delete[] utf16str;
+	return output;
+}
+
+std::string UTF16toUTF8(const std::string& input) {
+	std::string output = "";
+	size_t outLen = 0;
+	size_t utf16length = input.size() / 2;//divide by 2 because it's a u8 size going into a u16 array
+	uint16_t* utf16 = new uint16_t[utf16length];
+	memcpy(utf16, &input[0], input.size());
+	size_t utf8length = nnc_utf16_to_utf8(NULL, 0, utf16, utf16length);
+	uint8_t* utf8 = new uint8_t[utf8length];
+	memset(utf8, 0, utf8length);
+
+	outLen = nnc_utf16_to_utf8(utf8, utf8length, utf16, utf16length);
+	char* utf8str = new char[outLen];
+	memcpy(utf8str, utf8, outLen);
+	for (size_t i = 0; i < outLen; i++)
+		output += utf8str[i];
+
+	delete[] utf8str;
+	delete[] utf16;
+	delete[] utf8;
 	return output;
 }
 
