@@ -274,7 +274,8 @@ form1::form1() {
             free(COMMON1);
         }
         std::string extension = bannerbox.text();
-        extension.erase(extension.begin(), extension.end() - 5);
+        if(extension.find_last_of(".") != std::string::npos)
+            extension.erase(extension.begin(), extension.begin() + extension.find_last_of("."));
         if (extension == ".bimg") {
             if (std::filesystem::file_size(bannerbox.text().c_str()) == 0x10020) {
                 w = 256;
@@ -1290,7 +1291,8 @@ form1::form1() {
                     return;
                 }
                 std::string extension = text_box_array.at(i * columns + 1)->text();
-                extension.erase(extension.begin(), extension.end() - 7);
+                if (extension.find_last_of(".") != std::string::npos)
+                    extension.erase(extension.begin(), extension.begin() + extension.find_last_of("."));
                 std::ifstream inmoflex(text_box_array.at(i * columns + 1)->text().c_str(), std::ios_base::in | std::ios::binary);
                 for (int j = 0; j < 4; j++) {
                     inmoflex >> Checker[j];//https://stackoverflow.com/a/2974735
