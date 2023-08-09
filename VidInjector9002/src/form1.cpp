@@ -922,7 +922,7 @@ form1::form1() {
         static std::mt19937 rng;
         for (int i = 0; i < 4; i++) {
             rng.seed(static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count()));
-            std::uniform_int_distribution<uint32_t> uniform(0, sizeof(set) - 1);
+            std::uniform_int_distribution<uint32_t> uniform(0, set.size() - 1);
             outText += set[uniform(rng)];
         }
         ProductCode.text(outText);
