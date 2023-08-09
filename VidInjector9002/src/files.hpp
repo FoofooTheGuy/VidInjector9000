@@ -1,7 +1,7 @@
 #include <vector>
 
-extern std::vector<unsigned char> Multivid;
-extern std::vector<unsigned char> Singlevid;
-extern const unsigned char BCWAV_array[112528];
-extern const unsigned char M_bmp[462];
-extern const unsigned char base_cia[197056];
+extern std::vector<uint8_t> Multivid;
+extern std::vector<uint8_t> Singlevid;
+extern uint8_t BCWAV_array[112528];
+extern uint8_t M_bmp[462];
+extern uint8_t base_cia[197056];
