@@ -149,7 +149,8 @@ namespace VidInjector9002 {
             int film_h = 154;
             if (std::filesystem::exists(text_box_array.at(y * columns + 2)->text().c_str())) {
                 std::string extension = text_box_array.at(y * columns + 2)->text().c_str();
-                extension.erase(extension.begin(), extension.end() - 5);
+                if (extension.find_last_of(".") != std::string::npos)
+                    extension.erase(extension.begin(), extension.begin() + extension.find_last_of("."));
                 if (extension == ".bimg") {
                     if (std::filesystem::file_size(text_box_array.at(y * columns + 2)->text().c_str()) == 0x10020) {
                         w = 256;
