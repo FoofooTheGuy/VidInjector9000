@@ -223,32 +223,67 @@ namespace VidInjector9002 {
             indextxt.text(xtd::ustring::format("{}/{}", bannerpreviewindex + 1, rows));
         }
 
-        void SetIconPreview() {
+        //set DoText to false if you dont want the text from the smdh to be loaded
+        void SetIconPreview(bool DoText = true) {
             int w = 0, h = 0, comp = 0, ch = 0;
             int largeWH = 48;
             uint8_t* input_pixels;
             uint8_t* output_pixels;
-            uint8_t* large_3c = (uint8_t*)malloc(largeWH * largeWH * 3);
+            uint8_t* large_3c;
             //const int smallLW = 24;
             const uint8_t FF = 0xFF;
+            bool smdhinput = true;
 
-            if (!stbi_info(iconbox.text().c_str(), &w, &h, &comp)) {
-                w = largeWH;
-                h = largeWH;
-                ch = 4;
-                input_pixels = (uint8_t*)malloc(largeWH * largeWH * ch);
-                memset(input_pixels, FF, largeWH * largeWH * ch);
+            while(smdhinput)
+            {
+                nnc_file f;
+
+                if (nnc_file_open(&f, iconbox.text().c_str()) != NNC_R_OK) {
+                    smdhinput = false;
+                    continue;
+                }
+
+                nnc_smdh smdh;
+                if (nnc_read_smdh(NNC_RSP(&f), &smdh) != NNC_R_OK) {
+                    smdhinput = false;
+                    continue;
+                }
+
+                if (smdhinput) {
+
+                    if (DoText) {
+                        shortname.text(to_UTF8(smdh.titles[0].short_desc, sizeof(smdh.titles[0].short_desc) / 2));
+                        longname.text(to_UTF8(smdh.titles[0].long_desc, sizeof(smdh.titles[0].long_desc) / 2));
+                        publisher.text(to_UTF8(smdh.titles[0].publisher, sizeof(smdh.titles[0].publisher) / 2));
+                        borderMode = 0;//if we just wanted the image, this would not be wanted
+                    }
+
+                    ch = 4;
+                    output_pixels = (uint8_t*)malloc(largeWH * largeWH * ch);
+                    nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(smdh.icon_large), reinterpret_cast<nnc_u32*>(output_pixels), largeWH, largeWH);
+                    break;
+                }
             }
-            else input_pixels = stbi_load(iconbox.text().c_str(), &w, &h, &ch, 0);
-            output_pixels = (uint8_t*)malloc(largeWH * largeWH * ch);
-            if (w == largeWH && h == largeWH) memcpy(output_pixels, input_pixels, w * h * ch);
-            else resize_crop(input_pixels, w, h, output_pixels, largeWH, largeWH, ch);//scale to 48x48 if needed
 
-            if (borderMode == 1) {
+            if (!smdhinput) {
+                if (!stbi_info(iconbox.text().c_str(), &w, &h, &comp)) {
+                    w = largeWH;
+                    h = largeWH;
+                    ch = 4;
+                    input_pixels = (uint8_t*)malloc(largeWH * largeWH * ch);
+                    memset(input_pixels, FF, largeWH * largeWH * ch);
+                }
+                else input_pixels = stbi_load(iconbox.text().c_str(), &w, &h, &ch, 0);
+                output_pixels = (uint8_t*)malloc(largeWH * largeWH * ch);
+                if (w == largeWH && h == largeWH) memcpy(output_pixels, input_pixels, w * h * ch);
+                else resize_crop(input_pixels, w, h, output_pixels, largeWH, largeWH, ch);//scale to 48x48 if needed
+                stbi_image_free(input_pixels);//basically the same as free() but whatever
+            }
+            if (borderMode == 1) {//under border
                 uint8_t* output_4c = (uint8_t*)malloc(largeWH * largeWH * 4);
                 uint8_t* white_background = (uint8_t*)malloc(largeWH * largeWH * 4);//fix the bugs by not fixing the bugs! :D
                 memset(white_background, FF, largeWH * largeWH * 4);
-                layer_pixels(output_4c, output_pixels, white_background, largeWH, largeWH, ch, largeWH, largeWH, 4, 0, 0);
+                layer_pixels(output_4c, output_pixels, white_background, largeWH, largeWH, ch, largeWH, largeWH, 4, 0, 0);//it warns about output_pixels being potentially uninitialized but that is impossible
                 free(white_background);
                 layer_pixels(output_4c, icon_border, output_4c, largeWH, largeWH, 4, largeWH, largeWH, 4, 0, 0);
                 ch = 4;
@@ -257,7 +292,7 @@ namespace VidInjector9002 {
                 memcpy(output_pixels, output_4c, largeWH * largeWH * ch);
                 free(output_4c);
             }
-            else if (borderMode == 2) {
+            else if (borderMode == 2) {//inside border
                 uint8_t* output_4c = (uint8_t*)malloc(largeWH * largeWH * 4);
                 uint8_t* white_background = (uint8_t*)malloc(largeWH * largeWH * 4);//fix the bugs by not fixing the bugs! :D
                 memset(white_background, FF, largeWH * largeWH * 4);
@@ -274,6 +309,7 @@ namespace VidInjector9002 {
                 free(output_4c);
             }
 
+            large_3c = (uint8_t*)malloc(largeWH * largeWH * 3);
             if (ch == 4) {//rgba
                 uint8_t* white_background = (uint8_t*)malloc(largeWH * largeWH * 4);
                 memset(white_background, FF, largeWH * largeWH * 4);
@@ -312,13 +348,12 @@ namespace VidInjector9002 {
                 }
             }
             iconpreview.image(pixels_to_image(large_3c, largeWH, largeWH, 3));
-            stbi_image_free(input_pixels);
             free(output_pixels);
             free(large_3c);
             iconerror.hide();
 
 
-            if (!std::filesystem::exists(iconbox.text().c_str()) || !stbi_info(iconbox.text().c_str(), &w, &h, &ch)) {
+            if (!std::filesystem::exists(iconbox.text().c_str()) || (!stbi_info(iconbox.text().c_str(), &w, &h, &ch) && !smdhinput)) {
                 iconerror.show();
             }
         }
@@ -845,13 +880,6 @@ namespace VidInjector9002 {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, StrParamsPath, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
             }
             return good;
-        }
-
-        void copyfile(std::string inpath, std::string outpath) {//also works with directories why is this here oh well
-            if (std::filesystem::exists(outpath))
-                std::filesystem::remove_all(outpath);
-            if (std::filesystem::exists(inpath))
-                std::filesystem::copy(inpath, outpath, std::filesystem::copy_options::recursive);
         }
 
         void ableObjects(bool able) {//true for enable all modifying buttons and stuff, false for disable all

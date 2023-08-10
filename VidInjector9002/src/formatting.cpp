@@ -1,7 +1,7 @@
 #include "formatting.hpp"
 
-std::size_t strlen(const std::string& str) {
-	std::size_t length = 0;
+size_t strlen(const std::string& str) {
+	size_t length = 0;
 	for (char c : str) {
 		if ((c & 0xC0) != 0x80) {
 			++length;
@@ -11,26 +11,20 @@ std::size_t strlen(const std::string& str) {
 }
 
 std::string UTF8toUTF16(const std::string input) {
-	std::string output = "";
 	uint8_t* utf8 = new uint8_t[input.size() + 1];
-	uint16_t* utf16 = new uint16_t[strlen(input) * 2 + 1];
+	uint16_t* utf16 = new uint16_t[strlen(input) * 2];
 	memcpy(utf8, input.c_str(), input.size());
 	utf8[input.size()] = '\0';
 	nnc_utf8_to_utf16(utf16, strlen(input) * 2 + 1, utf8, input.size());
-	char* utf16str = new char[strlen(input) * 2 + 1];
-	memcpy(utf16str, utf16, strlen(input) * 2 + 1);
 
-	for (size_t i = 0; i < strlen(input) * 2; i++)
-		output += utf16str[i];
+	std::string output(reinterpret_cast<char*>(utf16), strlen(input) * 2);
 
 	delete[] utf8;
 	delete[] utf16;
-	delete[] utf16str;
 	return output;
 }
 
 std::string UTF16toUTF8(const std::string& input) {
-	std::string output = "";
 	size_t outLen = 0;
 	size_t utf16length = input.size() / 2;//divide by 2 because it's a u8 size going into a u16 array
 	uint16_t* utf16 = new uint16_t[utf16length];
@@ -40,15 +34,21 @@ std::string UTF16toUTF8(const std::string& input) {
 	memset(utf8, 0, utf8length);
 
 	outLen = nnc_utf16_to_utf8(utf8, utf8length, utf16, utf16length);
-	char* utf8str = new char[outLen];
-	memcpy(utf8str, utf8, outLen);
-	for (size_t i = 0; i < outLen; i++)
-		output += utf8str[i];
+	std::string output(reinterpret_cast<char*>(utf8), outLen);
 
-	delete[] utf8str;
 	delete[] utf16;
 	delete[] utf8;
 	return output;
+}
+
+
+std::string to_UTF8(const nnc_u16* UTF16, const size_t UTF16size) {
+	size_t UTF8size = nnc_utf16_to_utf8(NULL, 0, UTF16, UTF16size) + 1;
+	nnc_u8* str = new nnc_u8[UTF8size];
+	size_t rlen = nnc_utf16_to_utf8(str, UTF8size, UTF16, UTF16size);
+	std::string outstr(reinterpret_cast<char*>(str), UTF8size - 1);
+	delete[] str;
+	return outstr;
 }
 
 void ToRGBA(const uint8_t* input, uint8_t* output, int width, int height, int channels) {
@@ -279,4 +279,11 @@ uint32_t CRC32(void* pData, size_t iLen)
 		uiCRC32 = ((uiCRC32 >> 8) & 0x00FFFFFF) ^ uiCRC32_Table[(uiCRC32 ^ (uint32_t)*pszData++) & 0xFF];
 
 	return (uiCRC32 ^ 0xFFFFFFFF);
+}
+
+void copyfile(std::string inpath, std::string outpath) {//also works with directories
+	if (std::filesystem::exists(outpath))
+		std::filesystem::remove_all(outpath);
+	if (std::filesystem::exists(inpath))
+		std::filesystem::copy(inpath, outpath, std::filesystem::copy_options::recursive);
 }

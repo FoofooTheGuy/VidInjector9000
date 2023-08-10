@@ -3,14 +3,18 @@
 #include <string>
 #include <cstring>
 #include <vector>
+#include <filesystem>
 #include "nnc/nnc/utf.h"
 
 #ifdef SIZE_MAX
 #define _SIZE_MAX ((SIZE_MAX) >> 1)
 #endif
 
-std::string UTF8toUTF16(std::string input);
+size_t strlen(const std::string& str);
+
+std::string UTF8toUTF16(const std::string input);
 std::string UTF16toUTF8(const std::string& input);
+std::string to_UTF8(const nnc_u16* UTF16, const size_t UTF16size);
 /*convert any format to rgba
 (1 channel, 2 channel, 3 channel, 4 channel)
 if you input 4 channel it will just memcpy it so never do that
@@ -43,3 +47,5 @@ void crop_pixels(const uint8_t* input, int width, int height, int channels, uint
 int getLargestNumber(std::vector<int> &nums);
 
 uint32_t CRC32(void* pData, size_t iLen);
+
+void copyfile(std::string inpath, std::string outpath);
