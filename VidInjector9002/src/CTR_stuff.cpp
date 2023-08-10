@@ -742,11 +742,13 @@ uint8_t getCBMDTexture(const std::string inpath, const std::string symbol, uint8
 	uint32_t* mipmap;
 	uint32_t* formatID;
 	uint32_t* size;
-	if (getCGFXtextureInfo(CGFXdecomp, symbol, &dataOffset, &height, &width, &mipmap, &formatID, &size)) {
+	ret = getCGFXtextureInfo(CGFXdecomp, symbol, &dataOffset, &height, &width, &mipmap, &formatID, &size);
+	if (ret == 0) {
 		memcpy(outbuff, &CGFXdecomp[*dataOffset], *size);
 		delete[] CGFXdecomp;
 		return 0;
 	}
+	else return ret;
 	delete[] CGFXdecomp;
 	return 6;
 }
