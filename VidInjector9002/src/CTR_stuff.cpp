@@ -748,9 +748,8 @@ uint8_t getCBMDTexture(const std::string inpath, const std::string symbol, uint8
 		delete[] CGFXdecomp;
 		return 0;
 	}
-	else return ret;
 	delete[] CGFXdecomp;
-	return 6;
+	return ret;
 }
 
 /*path: input path to text file containing utf16 text
