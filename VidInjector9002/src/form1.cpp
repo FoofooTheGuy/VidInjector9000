@@ -367,7 +367,7 @@ form1::form1() {
     iconbrowse.location({ iconbox.location().x() + iconbox.width() + 1, iconbox.location().y() - (iconbrowse.height() / 2 - iconbox.height() / 2) });//tether to iconbox
     iconbrowse.text(Browse);
     iconbrowse.click += [&] {
-        xtd::ustring filepath = load_file(xtd::ustring::format("{} {}{}", SupportedImage48x48, SupportedImageList), iconbox.text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
+        xtd::ustring filepath = load_file(xtd::ustring::format("{} {}{}{}", SupportedImage48x48, SupportedImageList, SMDHList, AllFilesList), iconbox.text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
         if (!filepath.empty()) iconbox.text(filepath);
     };
 
@@ -625,7 +625,7 @@ form1::form1() {
     menubannerpreview.click += [&] {
         if (autoSaveParams && loaded) saveSettings();
         if (mode.selected_index()) {
-            xtd::ustring filepath = load_file(xtd::ustring::format("{} {}{}", SupportedImage200x120, SupportedImageListBanner), text_box_array.at(bannerpreviewindex * columns + 2)->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
+            xtd::ustring filepath = load_file(xtd::ustring::format("{} {}", SupportedImage200x120, SupportedImageListBanner), text_box_array.at(bannerpreviewindex * columns + 2)->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
             if (!filepath.empty()) text_box_array.at(bannerpreviewindex * columns + 2)->text(filepath);
             setMultiBannerPreview(bannerpreviewindex);
             //bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
@@ -726,7 +726,7 @@ form1::form1() {
                 if (!files.at(i).empty()) text_box_array[i * columns + 2]->text(files.at(i));
             }
         }*/
-        xtd::ustring filepath = load_file(xtd::ustring::format("{} {}{}", SupportedImage200x120, SupportedImageListBanner), text_box_array.at((rows - 1) * columns + 2)->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
+        xtd::ustring filepath = load_file(xtd::ustring::format("{} {}", SupportedImage200x120, SupportedImageListBanner), text_box_array.at((rows - 1) * columns + 2)->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
         if (filepath.empty()) return;
         int emptyRow;
         for (emptyRow = 0; emptyRow < rows - 1; emptyRow++) {

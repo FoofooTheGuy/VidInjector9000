@@ -7,6 +7,7 @@
 #include <random>
 
 #include "images.h"
+#include "arrays.h"
 #include "files.hpp"
 #include "formatting.hpp"
 #include "zip_file.hpp"
@@ -20,6 +21,7 @@
 //#include "stb_image_write.h"
 
 #include "nnc/nnc/swizzle.h"
+#include "nnc/nnc/smdh.h"
 
 //only put the name of the dir (not / at the end)
 void Generate_Files(std::string dir, bool Multi);

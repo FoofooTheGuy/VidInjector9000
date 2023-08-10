@@ -233,12 +233,12 @@ uint8_t convertToIcon(std::string input, std::string output, std::string shortna
 
 		if (nnc_file_open(&f, input.c_str()) != NNC_R_OK) {
 			smdhinput = false;
-			continue;
+			break;
 		}
 
 		if (nnc_read_smdh(NNC_RSP(&f), &smdhIn) != NNC_R_OK) {
 			smdhinput = false;
-			continue;
+			break;
 		}
 
 		if (smdhinput) {
