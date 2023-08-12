@@ -375,7 +375,7 @@ form1::form1() {
     iconpreview.cursor(xtd::forms::cursors::hand());
     iconpreview.border_style(xtd::forms::border_style::fixed_3d);
     iconpreview.size({ 52, 52 });
-    if(loaded) SetIconPreview();
+    //if(loaded) SetIconPreview();
     //iconpreview.location({ iconbrowse.location().x() + iconbrowse.width() + 2, iconbrowse.location().y() + 2 });
 
     iconerror.parent(parameters);
@@ -2023,8 +2023,8 @@ form1::form1() {
 
     if (autoLoadParams || LoadFromArgv) {
         loadParameters();
-        SetIconPreview();
     }
+    SetIconPreview();
     loaded = true;
     top_most(false);
 

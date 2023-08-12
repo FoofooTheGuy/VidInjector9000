@@ -353,7 +353,7 @@ namespace VidInjector9002 {
             iconerror.hide();
 
 
-            if (!std::filesystem::exists(iconbox.text().c_str()) || (!stbi_info(iconbox.text().c_str(), &w, &h, &ch) && !smdhinput)) {
+            if ((!std::filesystem::exists(iconbox.text().c_str()) || (!stbi_info(iconbox.text().c_str(), &w, &h, &ch) && !smdhinput)) && !iconbox.text().empty()) {
                 iconerror.show();
             }
         }
