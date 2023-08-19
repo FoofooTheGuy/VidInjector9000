@@ -10,7 +10,7 @@
 #define _SIZE_MAX ((SIZE_MAX) >> 1)
 #endif
 
-size_t strlen(const std::string& str);
+size_t chrcount(const std::string& str);
 
 std::string UTF8toUTF16(const std::string input);
 std::string UTF16toUTF8(const std::string& input);

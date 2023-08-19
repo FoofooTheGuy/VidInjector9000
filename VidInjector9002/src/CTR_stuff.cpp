@@ -247,6 +247,7 @@ uint8_t convertToIcon(std::string input, std::string output, std::string shortna
 			nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(smdhIn.icon_large), reinterpret_cast<nnc_u32*>(output_pixels), largeWH, largeWH);
 			break;
 		}
+		NNC_RS_CALL0(f, close);
 	}
 
 	if (!smdhinput) {
@@ -746,16 +747,12 @@ uint8_t getCBMDTexture(const std::string inpath, const std::string symbol, uint8
 	if (ret == 0) {
 		memcpy(outbuff, &CGFXdecomp[*dataOffset], *size);
 		delete[] CGFXdecomp;
-		return 0;
+		return ret;
 	}
 	delete[] CGFXdecomp;
 	return ret;
 }
 
-/*path: input path to text file containing utf16 text
-outVec: output vector containing each line per element
-trim: true for remove lines that start with '#' and empty lines, false for write all lines to outVec
-return 0 if succeeded or other numbers for fail*/
 uint8_t UTF16fileToUTF8str(const std::string path, std::vector<std::string>* outVec) {
 	std::string output = "";
 	std::string outputUTF8 = "";
@@ -773,8 +770,6 @@ uint8_t UTF16fileToUTF8str(const std::string path, std::vector<std::string>* out
 		input.read(&Byte, 1);//grab next byte of file
 	}
 	input.close();
-	output += '\0';
-	output += '\0';//add utf16 null terminator
 	if (output[0] == 0xFE && output[1] == 0xFF)//if little endian (they should be in big endian anyway and i dont want to convert it)
 		return 2;
 	output.erase(output.begin(), output.begin() + 2);//delete byte order mask
@@ -787,9 +782,60 @@ uint8_t UTF16fileToUTF8str(const std::string path, std::vector<std::string>* out
 		outVec->push_back(Line);
 		//printf("%s\n", Line.c_str());
 	}
-	/*std::ofstream outfile("utf8.txt", std::ios_base::out | std::ios_base::binary);
-	for(const auto &LN : outVec)
-		outfile << LN;
-	outfile.close();*/
 	return 0;
+}
+
+//stolen from NNC romfs test
+std::string extract_dir(nnc_romfs_ctx* ctx, nnc_romfs_info* info, const char* path, int baselen) {
+	std::filesystem::create_directories(path);
+
+	nnc_result res = NNC_R_OK;
+	nnc_romfs_iterator it = nnc_romfs_mkit(ctx, info);
+	nnc_romfs_info ent;
+	char pathbuf[2048];
+	int len = strlen(path);
+	strcpy(pathbuf, path);
+	pathbuf[len++] = '/';
+	while (nnc_romfs_next(&it, &ent))
+	{
+		std::string dir(nnc_romfs_info_filename(ctx, &ent));
+		if (ent.type == nnc_romfs_info::NNC_ROMFS_DIR && strcmp(dir.c_str(), "movie") != 0 && strcmp(dir.c_str(), "settings") != 0)//R.I.P. all the files that we do not care about
+			continue;
+		strcpy(pathbuf + len, dir.c_str());
+		if (ent.type == nnc_romfs_info::NNC_ROMFS_DIR)
+			extract_dir(ctx, &ent, pathbuf, baselen);
+		else
+		{
+			FILE* out = fopen(pathbuf, "wb");
+			if (out == NULL) {
+				return "fopen(pathbuf, \"wb\");";
+			}
+			/* empty files just need to be touched */
+			if (ent.u.f.size)
+			{
+				/* slurping the file is a bit inefficient for large
+				 * files but it's fine for this test */
+				nnc_u8* cbuf = (nnc_u8*)malloc(ent.u.f.size);
+				nnc_subview sv;
+				res = nnc_romfs_open_subview(ctx, &sv, &ent);
+				if (res != NNC_R_OK)
+					goto out;
+				nnc_u32 r;
+				res = NNC_RS_CALL(sv, read, cbuf, ent.u.f.size, &r);
+				if (res != NNC_R_OK)
+					goto out;
+				if (r != ent.u.f.size) goto out;
+				if (fwrite(cbuf, ent.u.f.size, 1, out) != 1)
+					goto out;
+			out:
+				fclose(out);
+				free(cbuf);
+				continue;
+			}
+			fclose(out);
+		}
+	}
+	if (res != NNC_R_OK)
+		return nnc_strerror(res);
+	return "";
 }

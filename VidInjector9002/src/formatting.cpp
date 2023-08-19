@@ -1,6 +1,6 @@
 #include "formatting.hpp"
 
-size_t strlen(const std::string& str) {
+size_t chrcount(const std::string& str) {
 	size_t length = 0;
 	for (char c : str) {
 		if ((c & 0xC0) != 0x80) {
@@ -12,12 +12,12 @@ size_t strlen(const std::string& str) {
 
 std::string UTF8toUTF16(const std::string input) {
 	uint8_t* utf8 = new uint8_t[input.size() + 1];
-	uint16_t* utf16 = new uint16_t[strlen(input) * 2];
+	uint16_t* utf16 = new uint16_t[chrcount(input) * 2];
 	memcpy(utf8, input.c_str(), input.size());
 	utf8[input.size()] = '\0';
-	nnc_utf8_to_utf16(utf16, strlen(input) * 2 + 1, utf8, input.size());
+	nnc_utf8_to_utf16(utf16, chrcount(input) * 2 + 1, utf8, input.size());
 
-	std::string output(reinterpret_cast<char*>(utf16), strlen(input) * 2);
+	std::string output(reinterpret_cast<char*>(utf16), chrcount(input) * 2);
 
 	delete[] utf8;
 	delete[] utf16;
@@ -29,7 +29,7 @@ std::string UTF16toUTF8(const std::string& input) {
 	size_t utf16length = input.size() / 2;//divide by 2 because it's a u8 size going into a u16 array
 	uint16_t* utf16 = new uint16_t[utf16length];
 	memcpy(utf16, &input[0], input.size());
-	size_t utf8length = nnc_utf16_to_utf8(NULL, 0, utf16, utf16length);
+	size_t utf8length = nnc_utf16_to_utf8(NULL, 0, utf16, utf16length) + 1;
 	uint8_t* utf8 = new uint8_t[utf8length];
 	memset(utf8, 0, utf8length);
 
@@ -46,7 +46,7 @@ std::string to_UTF8(const nnc_u16* UTF16, const size_t UTF16size) {
 	size_t UTF8size = nnc_utf16_to_utf8(NULL, 0, UTF16, UTF16size) + 1;
 	nnc_u8* str = new nnc_u8[UTF8size];
 	size_t rlen = nnc_utf16_to_utf8(str, UTF8size, UTF16, UTF16size);
-	std::string outstr(reinterpret_cast<char*>(str), UTF8size - 1);
+	std::string outstr(reinterpret_cast<char*>(str), rlen);
 	delete[] str;
 	return outstr;
 }

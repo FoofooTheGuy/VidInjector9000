@@ -21,6 +21,7 @@
 //#include "stb_image_write.h"
 
 #include "nnc/nnc/swizzle.h"
+#include "nnc/nnc/romfs.h"
 #include "nnc/nnc/smdh.h"
 
 //only put the name of the dir (not / at the end)
@@ -87,3 +88,12 @@ outbuff: output buffer for image data, make sure it is the correct size for the 
 return true if succeed, false if fail
 */
 uint8_t getCBMDTexture(const std::string inpath, const std::string symbol, uint8_t* outbuff);
+
+/*path: input path to text file containing utf16 text
+outVec: output vector containing each line per element
+trim: true for remove lines that start with '#' and empty lines, false for write all lines to outVec
+return 0 if succeeded or other numbers for fail*/
+uint8_t UTF16fileToUTF8str(const std::string path, std::vector<std::string>* outVec);
+
+//output: string of error or empty string if it completed
+std::string extract_dir(nnc_romfs_ctx* ctx, nnc_romfs_info* info, const char* path, int baselen);
