@@ -1938,17 +1938,17 @@ form1::form1() {
                     if (!stoul_s(row, trimmed.at(31), false))
                         row = 1;
                 }
-                if (row < rows) {
-                    uint32_t oldrows = rows;
-                    for (uint32_t i = 0; i < oldrows - row; i++) {
-                        doRemoveMedia();
-                    }
+            }
+            if (row < rows) {
+                uint32_t oldrows = rows;
+                for (uint32_t i = 0; i < oldrows - row; i++) {
+                    doRemoveMedia();
                 }
-                else if (row > rows) {
-                    uint32_t oldrows = rows;
-                    for (uint32_t i = 0; i < row - oldrows; i++) {
-                        doAppendMedia();
-                    }
+            }
+            else if (row > rows) {
+                uint32_t oldrows = rows;
+                for (uint32_t i = 0; i < row - oldrows; i++) {
+                    doAppendMedia();
                 }
             }
             trimmed.clear();
