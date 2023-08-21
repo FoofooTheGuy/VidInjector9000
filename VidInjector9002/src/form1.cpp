@@ -1996,7 +1996,12 @@ form1::form1() {
             else {
                 row = 0;
                 for (auto& LN : trimmed) {
-                    LN.erase(LN.find(","), LN.size() - 1);
+                    while (LN[0] == ',') {
+                        LN.erase(0, 1);
+                    }
+                    if (LN.find(',') < LN.size()) {
+                        LN.erase(LN.find(','), LN.size() - 1);
+                    }
                     text_box_array.at(row * columns + 0)->text(LN.c_str());
                     if (row < rows)
                         ++row;
