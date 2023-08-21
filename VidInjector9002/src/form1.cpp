@@ -1849,6 +1849,8 @@ form1::form1() {
         }
         //set banner and icon
         {
+            bannerbox.text("");
+            iconbox.text("");
             bannerbox.text(xtd::ustring::format("{}/banner.bin", exefspath));
             iconbox.text(xtd::ustring::format("{}/icon.bin", exefspath));
         }
@@ -1978,8 +1980,10 @@ form1::form1() {
                 }
                 setMultiBannerPreview(bannerpreviewindex);
             }
-            else {
+            else {//this pretty much means it's a single video
                 mode.selected_index(0);
+                text_box_array.at(2)->text("");
+                setMultiBannerPreview(0);
             }
             trimmed.clear();
         }
@@ -2003,10 +2007,14 @@ form1::form1() {
         }
         //set moflex files
         {
-            for (int i = 0; i < rows; i++) {
-                if (!std::filesystem::exists(xtd::ustring::format("{}/movie/movie_{}.moflex", romfspath, i).c_str()))
-                    continue;
-                text_box_array.at(i * columns + 1)->text(xtd::ustring::format("{}/movie/movie_{}.moflex", romfspath, i));
+            if (std::filesystem::exists(xtd::ustring::format("{}/movie/movie.moflex", romfspath).c_str()))//single video only has this
+                text_box_array.at(1)->text(xtd::ustring::format("{}/movie/movie.moflex", romfspath));
+            else {
+                for (int i = 0; i < rows; i++) {
+                    if (!std::filesystem::exists(xtd::ustring::format("{}/movie/movie_{}.moflex", romfspath, i).c_str()))
+                        continue;
+                    text_box_array.at(i * columns + 1)->text(xtd::ustring::format("{}/movie/movie_{}.moflex", romfspath, i));
+                }
             }
         }
         ableObjects(true);
