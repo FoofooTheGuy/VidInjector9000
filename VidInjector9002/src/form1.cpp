@@ -1758,7 +1758,7 @@ form1::form1() {
 
             res = nnc_read_cia_header(NNC_RSP(&f), &header);
             if(res != NNC_R_OK)
-                goto end;
+                goto end0;
 
             nnc_keyset_default(&kset, NNC_KEYSET_RETAIL);
             res = nnc_cia_make_reader(&header, NNC_RSP(&f), &kset, &reader);
@@ -1836,8 +1836,9 @@ form1::form1() {
                 NNC_RS_CALL0(ncch, close);
             end1:
                 nnc_cia_free_reader(&reader);
-            end:
+            end0:
                 NNC_RS_CALL0(f, close);
+            end:
                 if (!extractErr.empty()) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{}", extractErr.c_str()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 }
