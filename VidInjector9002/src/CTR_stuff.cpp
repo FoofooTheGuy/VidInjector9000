@@ -246,6 +246,7 @@ uint8_t convertToIcon(std::string input, std::string output, std::string shortna
 			nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(smdhIn.icon_large), reinterpret_cast<nnc_u32*>(output_pixels), largeWH, largeWH);
 		}
 		NNC_RS_CALL0(f, close);
+		break;
 	}
 
 	if (!smdhinput) {
