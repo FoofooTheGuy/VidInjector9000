@@ -238,14 +238,12 @@ uint8_t convertToIcon(std::string input, std::string output, std::string shortna
 
 		if (nnc_read_smdh(NNC_RSP(&f), &smdhIn) != NNC_R_OK) {
 			smdhinput = false;
-			break;
 		}
 
 		if (smdhinput) {
 			ch = 4;
 			output_pixels = (uint8_t*)malloc(largeWH * largeWH * ch);
 			nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(smdhIn.icon_large), reinterpret_cast<nnc_u32*>(output_pixels), largeWH, largeWH);
-			break;
 		}
 		NNC_RS_CALL0(f, close);
 	}

@@ -245,7 +245,6 @@ namespace VidInjector9002 {
 
                 if (nnc_read_smdh(NNC_RSP(&f), &smdh) != NNC_R_OK) {
                     smdhinput = false;
-                    break;
                 }
 
                 if (smdhinput) {
