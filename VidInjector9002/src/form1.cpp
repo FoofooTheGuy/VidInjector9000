@@ -1724,7 +1724,7 @@ form1::form1() {
         if (filepath.empty())
             return;
 
-        finalize.cursor(xtd::forms::cursors::app_starting());
+        settings.cursor(xtd::forms::cursors::app_starting());
         xtd::ustring romfspath = xtd::ustring::format("{}/romfs", exportsPath);
         xtd::ustring exefspath = xtd::ustring::format("{}/exefs", exportsPath);
 
@@ -2003,17 +2003,10 @@ form1::form1() {
         }
         //set moflex files
         {
-            row = 0;
-            for (auto const& file : std::filesystem::directory_iterator{ xtd::ustring::format("{}/movie", romfspath).c_str() }) {
-                std::string extension(file.path().string());
-                if (extension.find_last_of(".") != std::string::npos)
-                    extension.erase(extension.begin(), extension.begin() + extension.find_last_of("."));
-                if (strcmp(extension.c_str(), ".moflex") == 0) {
-                    text_box_array.at(row * columns + 1)->text(file.path().string());
-                    if (row < rows)
-                        ++row;
-                    else break;
-                }
+            for (int i = 0; i < rows; i++) {
+                if (!std::filesystem::exists(xtd::ustring::format("{}/movie/movie_{}.moflex", romfspath, i).c_str()))
+                    continue;
+                text_box_array.at(i * columns + 1)->text(xtd::ustring::format("{}/movie/movie_{}.moflex", romfspath, i));
             }
         }
         ableObjects(true);
