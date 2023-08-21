@@ -133,7 +133,6 @@ namespace VidInjector9002 {
             layer_pixels(output_film, film_overlay, output_4c, film_w, film_h, 4, out_w, out_h, ch, 32, 11);
             free(output_4c);
 
-            customnotif.hide();
             banner.image(pixels_to_image(output_film, film_w, film_h, 4));
             if (error != nullptr) error->show();
 
