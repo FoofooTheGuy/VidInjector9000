@@ -918,6 +918,8 @@ namespace VidInjector9002 {
         //objects
         std::vector<xtd::ustring> argv = xtd::environment::get_command_line_args();
         xtd::ustring ProgramDir = xtd::ustring::format("{}", argv.at(0).substr(0, argv.at(0).find_last_of("\\/")));
+        xtd::ustring tempPath = xtd::ustring::format("{}/{}/temp", ProgramDir, resourcesPath);
+        xtd::ustring exportsPath = xtd::ustring::format("{}/{}/exports", ProgramDir, resourcesPath);
         std::vector<xtd::ustring> LanguageVec;
 
         bool loaded = false;
@@ -1041,7 +1043,6 @@ namespace VidInjector9002 {
         uint8_t* banner_image;
         uint8_t* large_icon;
         uint8_t* small_icon;
-        xtd::ustring tempPath = xtd::ustring::format("{}/{}/temp", ProgramDir, resourcesPath);
-        xtd::ustring exportsPath = xtd::ustring::format("{}/{}/exports", ProgramDir, resourcesPath);
+
     };
 }

@@ -1776,24 +1776,6 @@ form1::form1() {
             if (res != NNC_R_OK)
                 goto end2;
 
-            res = nnc_fill_keypair(&kp, &kset, NULL, &ncch_hdr);
-            if (res != NNC_R_OK)
-                goto end2;
-
-            res = nnc_ncch_section_romfs(&ncch_hdr, NNC_RSP(&ncch), &kp, &rrs);//read romfs
-            if (res != NNC_R_OK)
-                goto end2;
-
-            res = nnc_init_romfs(NNC_RSP(&rrs), &ctx);
-            if (res != NNC_R_OK)
-                goto end2;
-
-            res = nnc_get_info(&ctx, &info, "/");
-            if (res != NNC_R_OK)
-                goto end2;
-
-            extractErr = extract_dir(&ctx, &info, romfspath.c_str(), romfspath.size());
-
             res = nnc_ncch_exefs_full_stream(&ers, &ncch_hdr, NNC_RSP(&ncch), &kp);
             if (res != NNC_R_OK)
                 goto end2;
@@ -1832,6 +1814,24 @@ form1::form1() {
                 fclose(ef);
             }
 
+            res = nnc_fill_keypair(&kp, &kset, NULL, &ncch_hdr);
+            if (res != NNC_R_OK)
+                goto end2;
+
+            res = nnc_ncch_section_romfs(&ncch_hdr, NNC_RSP(&ncch), &kp, &rrs);//read romfs
+            if (res != NNC_R_OK)
+                goto end2;
+
+            res = nnc_init_romfs(NNC_RSP(&rrs), &ctx);
+            if (res != NNC_R_OK)
+                goto end2;
+
+            res = nnc_get_info(&ctx, &info, "/");
+            if (res != NNC_R_OK)
+                goto end2;
+
+            extractErr = extract_dir(&ctx, &info, romfspath.c_str(), romfspath.size());
+
             end2:
                 NNC_RS_CALL0(ncch, close);
             end1:
@@ -1848,13 +1848,7 @@ form1::form1() {
                     return;
                 }
         }
-        //set banner and icon
-        {
-            bannerbox.text("");
-            iconbox.text("");
-            bannerbox.text(xtd::ustring::format("{}/banner.bin", exefspath));
-            iconbox.text(xtd::ustring::format("{}/icon.bin", exefspath));
-        }
+
         //information_buttons.csv
         {
             uint8_t ret;
@@ -1922,6 +1916,13 @@ form1::form1() {
         parse the text files and load the other stuff
         this needs to be here because we doRemoveMedia or doAppendMedia. apparently it can't change that asynchronously
         */
+        //set banner and icon
+        {
+            bannerbox.text("");
+            iconbox.text("");
+            bannerbox.text(xtd::ustring::format("{}/banner.bin", exefspath));
+            iconbox.text(xtd::ustring::format("{}/icon.bin", exefspath));
+        }
         //settingTL.csv
         {
             ret = UTF16fileToUTF8str(xtd::ustring::format("{}/settings/settingsTL.csv", romfspath), &trimmed);
@@ -2346,6 +2347,8 @@ form1::form1() {
     if (autoLoadParams || LoadFromArgv) {
         loadParameters();
     }
+    std::filesystem::remove_all(tempPath.c_str());
+    std::filesystem::remove_all(exportsPath.c_str());
     SetIconPreview();
     loaded = true;
     top_most(false);
