@@ -1776,6 +1776,10 @@ form1::form1() {
             if (res != NNC_R_OK)
                 goto end2;
 
+            res = nnc_fill_keypair(&kp, &kset, NULL, &ncch_hdr);
+            if (res != NNC_R_OK)
+                goto end2;
+
             res = nnc_ncch_exefs_full_stream(&ers, &ncch_hdr, NNC_RSP(&ncch), &kp);
             if (res != NNC_R_OK)
                 goto end2;
@@ -1813,10 +1817,6 @@ form1::form1() {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, pathbuf), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 fclose(ef);
             }
-
-            res = nnc_fill_keypair(&kp, &kset, NULL, &ncch_hdr);
-            if (res != NNC_R_OK)
-                goto end2;
 
             res = nnc_ncch_section_romfs(&ncch_hdr, NNC_RSP(&ncch), &kp, &rrs);//read romfs
             if (res != NNC_R_OK)
