@@ -1907,6 +1907,11 @@ form1::form1() {
     };
 
     extractor.run_worker_completed += [&] {
+        if (!std::filesystem::exists(exportsPath.c_str())) {
+            ableObjects(true);
+            settings.cursor(xtd::forms::cursors::default_cursor());
+            return;
+        }
         xtd::ustring romfspath = xtd::ustring::format("{}/romfs", exportsPath);
         xtd::ustring exefspath = xtd::ustring::format("{}/exefs", exportsPath);
         uint8_t ret;
