@@ -2347,8 +2347,7 @@ form1::form1() {
     if (autoLoadParams || LoadFromArgv) {
         loadParameters();
     }
-    std::filesystem::remove_all(tempPath.c_str());
-    std::filesystem::remove_all(exportsPath.c_str());
+
     SetIconPreview();
     loaded = true;
     top_most(false);

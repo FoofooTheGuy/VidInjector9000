@@ -82,6 +82,8 @@ namespace VidInjector9002 {
                 e.cancel(true);
             }
             else if (res == xtd::forms::dialog_result::yes) {//yes close
+                std::filesystem::remove_all(exportsPath.c_str());
+                std::filesystem::remove_all(tempPath.c_str());
                 &xtd::forms::application::exit_thread;//obliterate the process
             }
         };
