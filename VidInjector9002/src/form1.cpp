@@ -1716,121 +1716,121 @@ form1::form1() {
         extractor.run_worker_async();
     };
 
-    extractor.worker_supports_cancellation(true);
-    extractor.worker_reports_progress(true);
-    extractor.do_work += [&] {
+    {//wut
         static xtd::ustring filepath;
-        filepath = load_file(CiaFiles, filepath);
-        if (filepath.empty())
-            return;
+        static nnc_result res;
+        extractor.do_work += [&] {
+            parampath = xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, DefaultParamFile);
+            filepath = load_file(CiaFiles, filepath);
+            if (filepath.empty())
+                return;
 
-        settings.cursor(xtd::forms::cursors::app_starting());
-        xtd::ustring romfspath = xtd::ustring::format("{}/romfs", exportsPath);
-        xtd::ustring exefspath = xtd::ustring::format("{}/exefs", exportsPath);
+            settings.cursor(xtd::forms::cursors::app_starting());
+            xtd::ustring romfspath = xtd::ustring::format("{}/romfs", exportsPath);
+            xtd::ustring exefspath = xtd::ustring::format("{}/exefs", exportsPath);
 
-        std::filesystem::remove_all(exportsPath.c_str());
-        //extract important files from the romfs and exefs of cia
-        {
-            #define CUREC_SIZE 1024
-
-            std::string extractErr = "";
-
-            //stolen from the NNC cia test code and other places
-            nnc_exefs_file_header headers[NNC_EXEFS_MAX_FILES];
-            nnc_keyset kset = NNC_KEYSET_INIT;
-            nnc_cia_content_reader reader;
-            nnc_cia_content_stream ncch;
-            nnc_ncch_section_stream rrs;
-            nnc_ncch_exefs_stream ers;
-            nnc_ncch_header ncch_hdr;
-            nnc_chunk_record* chunk;
-            nnc_cia_header header;
-            nnc_romfs_info info;
-            nnc_romfs_ctx ctx;
-            nnc_subview sv;
-            nnc_keypair kp;
-            nnc_result res;
-            nnc_file f;
-
-            res = nnc_file_open(&f, filepath.c_str());
-            if (res != NNC_R_OK)
-                goto end;
-
-            res = nnc_read_cia_header(NNC_RSP(&f), &header);
-            if(res != NNC_R_OK)
-                goto end0;
-
-            nnc_keyset_default(&kset, NNC_KEYSET_RETAIL);
-            res = nnc_cia_make_reader(&header, NNC_RSP(&f), &kset, &reader);
-            if (res != NNC_R_OK)
-                goto end1;
-
-            res = nnc_cia_open_content(&reader, 0, &ncch, &chunk);//read main content (index 0)
-            if (res != NNC_R_OK)
-                goto end1;
-
-            //this section is here to test CBC seeking
-            NNC_RS_CALL(ncch, seek_abs, 0);
-            //DSiWare doesn't have an NCCH, lets not make this a fatal error...
-            res = nnc_read_ncch_header(NNC_RSP(&ncch), &ncch_hdr);
-            if (res != NNC_R_OK)
-                goto end2;
-
-            res = nnc_fill_keypair(&kp, &kset, NULL, &ncch_hdr);
-            if (res != NNC_R_OK)
-                goto end2;
-
-            res = nnc_ncch_exefs_full_stream(&ers, &ncch_hdr, NNC_RSP(&ncch), &kp);
-            if (res != NNC_R_OK)
-                goto end2;
-
-            res = nnc_read_exefs_header(NNC_RSP(&ers), headers, NULL);//read exefs
-            if (res != NNC_R_OK)
-                goto end2;
-
-            char pathbuf[2048];
-            for (nnc_u8 i = 0; i < NNC_EXEFS_MAX_FILES && nnc_exefs_file_in_use(&headers[i]); ++i)
+            std::filesystem::remove_all(exportsPath.c_str());
+            //extract important files from the romfs and exefs of cia
             {
-                nnc_exefs_subview(NNC_RSP(&ers), &sv, &headers[i]);
+#define CUREC_SIZE 1024
 
-                const char* fname = NULL;
-                if (strcmp(headers[i].name, "banner") == 0)
-                    fname = "banner.bin";
-                else if (strcmp(headers[i].name, "icon") == 0)
-                    fname = "icon.bin";
-                else
+                std::string extractErr = "";
+
+                //stolen from the NNC cia test code and other places
+                nnc_exefs_file_header headers[NNC_EXEFS_MAX_FILES];
+                nnc_keyset kset = NNC_KEYSET_INIT;
+                nnc_cia_content_reader reader;
+                nnc_cia_content_stream ncch;
+                nnc_ncch_section_stream rrs;
+                nnc_ncch_exefs_stream ers;
+                nnc_ncch_header ncch_hdr;
+                nnc_chunk_record* chunk;
+                nnc_cia_header header;
+                nnc_romfs_info info;
+                nnc_romfs_ctx ctx;
+                nnc_subview sv;
+                nnc_keypair kp;
+                nnc_file f;
+
+                res = nnc_file_open(&f, filepath.c_str());
+                if (res != NNC_R_OK)
+                    goto end;
+
+                res = nnc_read_cia_header(NNC_RSP(&f), &header);
+                if (res != NNC_R_OK)
+                    goto end0;
+
+                nnc_keyset_default(&kset, NNC_KEYSET_RETAIL);
+                res = nnc_cia_make_reader(&header, NNC_RSP(&f), &kset, &reader);
+                if (res != NNC_R_OK)
+                    goto end1;
+
+                res = nnc_cia_open_content(&reader, 0, &ncch, &chunk);//read main content (index 0)
+                if (res != NNC_R_OK)
+                    goto end1;
+
+                //this section is here to test CBC seeking
+                NNC_RS_CALL(ncch, seek_abs, 0);
+                //DSiWare doesn't have an NCCH, lets not make this a fatal error...
+                res = nnc_read_ncch_header(NNC_RSP(&ncch), &ncch_hdr);
+                if (res != NNC_R_OK)
+                    goto end2;
+
+                res = nnc_fill_keypair(&kp, &kset, NULL, &ncch_hdr);
+                if (res != NNC_R_OK)
+                    goto end2;
+
+                res = nnc_ncch_exefs_full_stream(&ers, &ncch_hdr, NNC_RSP(&ncch), &kp);
+                if (res != NNC_R_OK)
+                    goto end2;
+
+                res = nnc_read_exefs_header(NNC_RSP(&ers), headers, NULL);//read exefs
+                if (res != NNC_R_OK)
+                    goto end2;
+
+                char pathbuf[2048];
+                for (nnc_u8 i = 0; i < NNC_EXEFS_MAX_FILES && nnc_exefs_file_in_use(&headers[i]); ++i)
                 {
-                    continue;
+                    nnc_exefs_subview(NNC_RSP(&ers), &sv, &headers[i]);
+
+                    const char* fname = NULL;
+                    if (strcmp(headers[i].name, "banner") == 0)
+                        fname = "banner.bin";
+                    else if (strcmp(headers[i].name, "icon") == 0)
+                        fname = "icon.bin";
+                    else
+                    {
+                        continue;
+                    }
+
+                    nnc_u32 read_size;
+                    nnc_u8* buf = (nnc_u8*)malloc(headers[i].size);
+                    NNC_RS_CALL(sv, seek_abs, 0);
+                    if (NNC_RS_CALL(sv, read, buf, headers[i].size, &read_size) != NNC_R_OK || read_size != headers[i].size) {
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToReadFile, headers[i].name), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        continue;
+                    }
+                    std::filesystem::create_directories(exefspath.c_str());
+                    sprintf(pathbuf, "%s/%s", exefspath.c_str(), fname);
+                    FILE* ef = fopen(pathbuf, "wb");
+                    if (fwrite(buf, headers[i].size, 1, ef) != 1)
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, pathbuf), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    fclose(ef);
                 }
 
-                nnc_u32 read_size;
-                nnc_u8* buf = (nnc_u8*)malloc(headers[i].size);
-                NNC_RS_CALL(sv, seek_abs, 0);
-                if (NNC_RS_CALL(sv, read, buf, headers[i].size, &read_size) != NNC_R_OK || read_size != headers[i].size) {
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToReadFile, headers[i].name), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    continue;
-                }
-                std::filesystem::create_directories(exefspath.c_str());
-                sprintf(pathbuf, "%s/%s", exefspath.c_str(), fname);
-                FILE* ef = fopen(pathbuf, "wb");
-                if (fwrite(buf, headers[i].size, 1, ef) != 1)
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, pathbuf), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                fclose(ef);
-            }
+                res = nnc_ncch_section_romfs(&ncch_hdr, NNC_RSP(&ncch), &kp, &rrs);//read romfs
+                if (res != NNC_R_OK)
+                    goto end2;
 
-            res = nnc_ncch_section_romfs(&ncch_hdr, NNC_RSP(&ncch), &kp, &rrs);//read romfs
-            if (res != NNC_R_OK)
-                goto end2;
+                res = nnc_init_romfs(NNC_RSP(&rrs), &ctx);
+                if (res != NNC_R_OK)
+                    goto end2;
 
-            res = nnc_init_romfs(NNC_RSP(&rrs), &ctx);
-            if (res != NNC_R_OK)
-                goto end2;
+                res = nnc_get_info(&ctx, &info, "/");
+                if (res != NNC_R_OK)
+                    goto end2;
 
-            res = nnc_get_info(&ctx, &info, "/");
-            if (res != NNC_R_OK)
-                goto end2;
-
-            extractErr = extract_dir(&ctx, &info, romfspath.c_str(), romfspath.size());
+                extractErr = extract_dir(&ctx, &info, romfspath.c_str(), romfspath.size());
 
             end2:
                 NNC_RS_CALL0(ncch, close);
@@ -1845,193 +1845,203 @@ form1::form1() {
                 if (res != NNC_R_OK)
                 {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{}", nnc_strerror(res)), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    return;
+                    //return;
                 }
-        }
+            }
 
-        //information_buttons.csv
-        {
+            //information_buttons.csv
+            {
+                uint8_t ret;
+                std::vector<std::string> trimmed;
+                if (std::filesystem::exists(xtd::ustring::format("{}/settings/information_buttons.csv", romfspath).c_str())) {
+                    ret = UTF16fileToUTF8str(xtd::ustring::format("{}/settings/information_buttons.csv", romfspath), &trimmed);
+                    if (ret > 0) {
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{}: \"information_buttons.csv\"", FailedToReadFile), xtd::ustring::format("{} ({})", ErrorText, ret), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    }
+                    else {
+                        mode.selected_index(1);
+                        copycheck.checked((trimmed.size() > 0 && strcmp(trimmed.at(0).c_str(), "Copyright") == 0) ? true : false);
+                    }
+                }
+                else {
+                    mode.selected_index(0);
+                    copycheck.checked(false);
+                }
+                trimmed.clear();
+            }
+            //copyright.txt
+            {
+                if (std::filesystem::exists(xtd::ustring::format("{}/settings/copyright.txt", romfspath).c_str())) {
+                    std::string output = "";
+                    std::string outputUTF8 = "";
+                    std::string Line;
+                    std::ifstream input;
+                    input.open(xtd::ustring::format("{}/settings/copyright.txt", romfspath).c_str(), std::ios_base::in | std::ios_base::binary);
+                    if (!input) {
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{}/settings/copyright.txt", romfspath), xtd::ustring::format("{} {}", ErrorText, FailedToReadFile), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        return;
+                    }
+
+                    char Byte;
+                    //size_t it = 0;
+                    input.read(&Byte, 1);//grab first byte of file
+                    while (input) {//continue until input stream fails
+                        output += Byte;//append byte to string
+                        input.read(&Byte, 1);//grab next byte of file
+                    }
+                    input.close();
+                    if (output[0] == 0xFE && output[1] == 0xFF) {//if little endian (they should be in big endian anyway and i dont want to convert it)
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{}/settings/copyright.txt", romfspath), xtd::ustring::format("{} {}", ErrorText, FailedToReadFile), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        return;
+                    }
+                    output.erase(output.begin(), output.begin() + 2);//delete byte order mask
+                    outputUTF8 = UTF16toUTF8(output);
+                    copybox.text(outputUTF8);
+                    input.close();
+                }
+                else {
+                    copybox.text("");
+                }
+            }
+        };
+
+        extractor.run_worker_completed += [&] {
+            if (!std::filesystem::exists(exportsPath.c_str())) {
+                ableObjects(true);
+                settings.cursor(xtd::forms::cursors::default_cursor());
+                xtd::forms::message_box::show(*this, xtd::ustring::format("\"{}\"", filepath), xtd::ustring::format("{} {}", ErrorText, FailedToReadFile), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                return;
+            }
+            xtd::ustring romfspath = xtd::ustring::format("{}/romfs", exportsPath);
+            xtd::ustring exefspath = xtd::ustring::format("{}/exefs", exportsPath);
             uint8_t ret;
+            uint32_t row = 1;
+            bool good = true;
             std::vector<std::string> trimmed;
-            if (std::filesystem::exists(xtd::ustring::format("{}/settings/information_buttons.csv", romfspath).c_str())) {
-                ret = UTF16fileToUTF8str(xtd::ustring::format("{}/settings/information_buttons.csv", romfspath), &trimmed);
+            /*
+            parse the text files and load the other stuff
+            this needs to be here because we doRemoveMedia or doAppendMedia. apparently it can't change that asynchronously
+            */
+            //set banner and icon
+            {
+                bannerbox.text("");
+                iconbox.text("");
+                bannerbox.text(xtd::ustring::format("{}/banner.bin", exefspath));
+                iconbox.text(xtd::ustring::format("{}/icon.bin", exefspath));
+            }
+            //settingTL.csv
+            {
+                ret = UTF16fileToUTF8str(xtd::ustring::format("{}/settings/settingsTL.csv", romfspath), &trimmed);
                 if (ret > 0) {
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{}: \"information_buttons.csv\"", FailedToReadFile), xtd::ustring::format("{} ({})", ErrorText, ret), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    FFrewind.checked(false);
+                    FadeOpt.checked(false);
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("{}: \"settingsTL.csv\"", FailedToReadFile), xtd::ustring::format("{} ({})", ErrorText, ret), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    good = false;
                 }
                 else {
-                    mode.selected_index(1);
-                    copycheck.checked((trimmed.size() > 0 && strcmp(trimmed.at(0).c_str(), "Copyright") == 0) ? true : false);
-                }
-            }
-            else {
-                mode.selected_index(0);
-                copycheck.checked(false);
-            }
-            trimmed.clear();
-        }
-        //copyright.txt
-        {
-            if (std::filesystem::exists(xtd::ustring::format("{}/settings/copyright.txt", romfspath).c_str())) {
-                std::string output = "";
-                std::string outputUTF8 = "";
-                std::string Line;
-                std::ifstream input;
-                input.open(xtd::ustring::format("{}/settings/copyright.txt", romfspath).c_str(), std::ios_base::in | std::ios_base::binary);
-                if (!input) {
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{}/settings/copyright.txt", romfspath), xtd::ustring::format("{} {}", ErrorText, FailedToReadFile), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    return;
-                }
-
-                char Byte;
-                //size_t it = 0;
-                input.read(&Byte, 1);//grab first byte of file
-                while (input) {//continue until input stream fails
-                    output += Byte;//append byte to string
-                    input.read(&Byte, 1);//grab next byte of file
-                }
-                input.close();
-                if (output[0] == 0xFE && output[1] == 0xFF) {//if little endian (they should be in big endian anyway and i dont want to convert it)
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{}/settings/copyright.txt", romfspath), xtd::ustring::format("{} {}", ErrorText, FailedToReadFile), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    return;
-                }
-                output.erase(output.begin(), output.begin() + 2);//delete byte order mask
-                outputUTF8 = UTF16toUTF8(output);
-                copybox.text(outputUTF8);
-                input.close();
-            }
-        }
-    };
-
-    extractor.progress_changed += [&](object& sender, const xtd::forms::progress_changed_event_args& e) {
-        majorBar.value(e.progress_percentage());
-    };
-
-    extractor.run_worker_completed += [&] {
-        if (!std::filesystem::exists(exportsPath.c_str())) {
-            ableObjects(true);
-            settings.cursor(xtd::forms::cursors::default_cursor());
-            return;
-        }
-        xtd::ustring romfspath = xtd::ustring::format("{}/romfs", exportsPath);
-        xtd::ustring exefspath = xtd::ustring::format("{}/exefs", exportsPath);
-        uint8_t ret;
-        uint32_t row = 1;
-        std::vector<std::string> trimmed;
-        /*
-        parse the text files and load the other stuff
-        this needs to be here because we doRemoveMedia or doAppendMedia. apparently it can't change that asynchronously
-        */
-        //set banner and icon
-        {
-            bannerbox.text("");
-            iconbox.text("");
-            bannerbox.text(xtd::ustring::format("{}/banner.bin", exefspath));
-            iconbox.text(xtd::ustring::format("{}/icon.bin", exefspath));
-        }
-        //settingTL.csv
-        {
-            ret = UTF16fileToUTF8str(xtd::ustring::format("{}/settings/settingsTL.csv", romfspath), &trimmed);
-            if (ret > 0) {
-                xtd::forms::message_box::show(*this, xtd::ustring::format("{}: \"settingsTL.csv\"", FailedToReadFile), xtd::ustring::format("{} ({})", ErrorText, ret), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-            }
-            else {
-                if (trimmed.size() > 29) {
-                    row = 1;
-                    FFrewind.checked((strstr(trimmed.at(29).c_str(), "true") != NULL) ? true : false);
-                    FadeOpt.checked((strstr(trimmed.at(30).c_str(), "true") != NULL) ? true : false);
-                }
-                if (trimmed.size() > 31) {
-                    if (!stoul_s(row, trimmed.at(31), false))
+                    if (trimmed.size() > 29) {
                         row = 1;
+                        FFrewind.checked((strstr(trimmed.at(29).c_str(), "true") != NULL) ? true : false);
+                        FadeOpt.checked((strstr(trimmed.at(30).c_str(), "true") != NULL) ? true : false);
+                    }
+                    if (trimmed.size() > 31) {
+                        if (!stoul_s(row, trimmed.at(31), false))
+                            row = 1;
+                    }
                 }
+                if (row < rows) {
+                    uint32_t oldrows = rows;
+                    for (uint32_t i = 0; i < oldrows - row; i++) {
+                        doRemoveMedia();
+                    }
+                }
+                else if (row > rows) {
+                    uint32_t oldrows = rows;
+                    for (uint32_t i = 0; i < row - oldrows; i++) {
+                        doAppendMedia();
+                    }
+                }
+                trimmed.clear();
             }
-            if (row < rows) {
-                uint32_t oldrows = rows;
-                for (uint32_t i = 0; i < oldrows - row; i++) {
-                    doRemoveMedia();
-                }
-            }
-            else if (row > rows) {
-                uint32_t oldrows = rows;
-                for (uint32_t i = 0; i < row - oldrows; i++) {
-                    doAppendMedia();
-                }
-            }
-            trimmed.clear();
-        }
-        //movie_bnrname.csv
-        {
-            if (std::filesystem::exists(xtd::ustring::format("{}/settings/movie_bnrname.csv", romfspath).c_str())) {
-                ret = UTF16fileToUTF8str(xtd::ustring::format("{}/settings/movie_bnrname.csv", romfspath), &trimmed);
-                if (ret > 0) {
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{}: \"movie_bnrname.csv\"", FailedToReadFile), xtd::ustring::format("{} ({})", ErrorText, ret), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                }
-                else {
-                    mode.selected_index(1);
-                    row = 0;
-                    for (auto& LN : trimmed) {
-                        std::string extension = LN;
-                        if (extension.find_last_of(".") != std::string::npos)
-                            extension.erase(extension.begin(), extension.begin() + extension.find_last_of("."));
-                        while (!extension.empty() && extension.back() != 'g')//remove any extra stuff like a line break (make sure last char is 'g')
-                            extension.pop_back();
-                        if (strcmp(extension.c_str(), ".bimg") == 0) {
-                            while (!LN.empty() && LN.back() != 'g')
-                                LN.pop_back();
-                            text_box_array.at(row * columns + 2)->text(xtd::ustring::format("{}/movie/{}", romfspath, LN.c_str()));
-                            if (row < rows)
-                                ++row;
-                            else break;
+            //movie_bnrname.csv
+            {
+                if (std::filesystem::exists(xtd::ustring::format("{}/settings/movie_bnrname.csv", romfspath).c_str())) {
+                    ret = UTF16fileToUTF8str(xtd::ustring::format("{}/settings/movie_bnrname.csv", romfspath), &trimmed);
+                    if (ret > 0) {
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{}: \"movie_bnrname.csv\"", FailedToReadFile), xtd::ustring::format("{} ({})", ErrorText, ret), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        good = false;
+                    }
+                    else {
+                        mode.selected_index(1);
+                        row = 0;
+                        for (auto& LN : trimmed) {
+                            std::string extension = LN;
+                            if (extension.find_last_of(".") != std::string::npos)
+                                extension.erase(extension.begin(), extension.begin() + extension.find_last_of("."));
+                            while (!extension.empty() && extension.back() != 'g')//remove any extra stuff like a line break (make sure last char is 'g')
+                                extension.pop_back();
+                            if (strcmp(extension.c_str(), ".bimg") == 0) {
+                                while (!LN.empty() && LN.back() != 'g')
+                                    LN.pop_back();
+                                text_box_array.at(row * columns + 2)->text(xtd::ustring::format("{}/movie/{}", romfspath, LN.c_str()));
+                                if (row < rows)
+                                    ++row;
+                                else break;
+                            }
                         }
                     }
+                    setMultiBannerPreview(bannerpreviewindex);
                 }
-                setMultiBannerPreview(bannerpreviewindex);
+                else {//this pretty much means it's a single video
+                    mode.selected_index(0);
+                    text_box_array.at(2)->text("");
+                    setMultiBannerPreview(0);
+                }
+                trimmed.clear();
             }
-            else {//this pretty much means it's a single video
-                mode.selected_index(0);
-                text_box_array.at(2)->text("");
-                setMultiBannerPreview(0);
-            }
-            trimmed.clear();
-        }
-        //movie_title.csv
-        {
-            ret = UTF16fileToUTF8str(xtd::ustring::format("{}/movie/movie_title.csv", romfspath), &trimmed);
-            if (ret > 0) {
-                xtd::forms::message_box::show(*this, xtd::ustring::format("{}: \"movie_title.csv\"", FailedToReadFile), xtd::ustring::format("{} ({})", ErrorText, ret), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-            }
-            else {
-                row = 0;
-                for (auto& LN : trimmed) {
-                    while (LN[0] == ',') {
-                        LN.erase(0, 1);
+            //movie_title.csv
+            {
+                ret = UTF16fileToUTF8str(xtd::ustring::format("{}/movie/movie_title.csv", romfspath), &trimmed);
+                if (ret > 0) {
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("{}: \"movie_title.csv\"", FailedToReadFile), xtd::ustring::format("{} ({})", ErrorText, ret), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    good = false;
+                }
+                else {
+                    row = 0;
+                    for (auto& LN : trimmed) {
+                        while (LN[0] == ',') {
+                            LN.erase(0, 1);
+                        }
+                        if (LN.find(',') < LN.size()) {
+                            LN.erase(LN.find(','), LN.size() - 1);
+                        }
+                        text_box_array.at(row * columns + 0)->text(LN.c_str());
+                        if (row < rows)
+                            ++row;
+                        else break;
                     }
-                    if (LN.find(',') < LN.size()) {
-                        LN.erase(LN.find(','), LN.size() - 1);
+                }
+                trimmed.clear();
+            }
+            //set moflex files
+            {
+                if (std::filesystem::exists(xtd::ustring::format("{}/movie/movie.moflex", romfspath).c_str()))//single video only has this
+                    text_box_array.at(1)->text(xtd::ustring::format("{}/movie/movie.moflex", romfspath));
+                else {
+                    for (int i = 0; i < rows; i++) {
+                        if (!std::filesystem::exists(xtd::ustring::format("{}/movie/movie_{}.moflex", romfspath, i).c_str()))
+                            continue;
+                        text_box_array.at(i * columns + 1)->text(xtd::ustring::format("{}/movie/movie_{}.moflex", romfspath, i));
                     }
-                    text_box_array.at(row * columns + 0)->text(LN.c_str());
-                    if (row < rows)
-                        ++row;
-                    else break;
                 }
             }
-            trimmed.clear();
-        }
-        //set moflex files
-        {
-            if (std::filesystem::exists(xtd::ustring::format("{}/movie/movie.moflex", romfspath).c_str()))//single video only has this
-                text_box_array.at(1)->text(xtd::ustring::format("{}/movie/movie.moflex", romfspath));
-            else {
-                for (int i = 0; i < rows; i++) {
-                    if (!std::filesystem::exists(xtd::ustring::format("{}/movie/movie_{}.moflex", romfspath, i).c_str()))
-                        continue;
-                    text_box_array.at(i * columns + 1)->text(xtd::ustring::format("{}/movie/movie_{}.moflex", romfspath, i));
-                }
-            }
-        }
-        ableObjects(true);
-        settings.cursor(xtd::forms::cursors::default_cursor());
-    };
+            ableObjects(true);
+            settings.cursor(xtd::forms::cursors::default_cursor());
+            if (res != NNC_R_OK)
+                good = false;
+            xtd::forms::message_box::show(*this, xtd::ustring::format(good ? "{} {}{}" : "{} {}.\n{}", good ? SuccessfullyLoaded : FailedToLoad, filepath.substr(filepath.find_last_of("/\\") + 1), good ? "." : ValidStillLoaded), ParametersLoaded, xtd::forms::message_box_buttons::ok, good ? xtd::forms::message_box_icon::information : xtd::forms::message_box_icon::warning);
+        };
+    }
 
     AutoSave.parent(settings);
     AutoSave.auto_size(true);

@@ -252,9 +252,13 @@ namespace VidInjector9002 {
                 if (smdhinput) {
 
                     if (DoText) {
-                        shortname.text(to_UTF8(smdh.titles[0].short_desc, sizeof(smdh.titles[0].short_desc) / 2));
-                        longname.text(to_UTF8(smdh.titles[0].long_desc, sizeof(smdh.titles[0].long_desc) / 2));
-                        publisher.text(to_UTF8(smdh.titles[0].publisher, sizeof(smdh.titles[0].publisher) / 2));
+                        for (int i = 0; i < NNC_SMDH_TITLES; i++) {
+                            shortname.text(to_UTF8(smdh.titles[i].short_desc, sizeof(smdh.titles[i].short_desc) / 2));
+                            longname.text(to_UTF8(smdh.titles[i].long_desc, sizeof(smdh.titles[i].long_desc) / 2));
+                            publisher.text(to_UTF8(smdh.titles[i].publisher, sizeof(smdh.titles[i].publisher) / 2));
+                            if (!shortname.text().empty() && !longname.text().empty() && !publisher.text().empty())
+                                break;
+                        }
                         borderMode = 0;//if we just wanted the image, this would not be wanted
                     }
 
