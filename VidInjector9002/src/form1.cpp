@@ -1849,6 +1849,8 @@ form1::form1() {
                 }
             }
 
+            //ignore this
+            {}
             //information_buttons.csv
             {
                 uint8_t ret;
@@ -2070,6 +2072,20 @@ form1::form1() {
     AutoLoad.checked(autoLoadParams);
     AutoLoad.check_state_changed += [&] {
         autoLoadParams = AutoLoad.checked();
+        saveParametersNow = false;
+        if (loaded) saveSettings();
+        saveParametersNow = true;
+    };
+
+    DeleteTempButt.parent(settings);
+    DeleteTempButt.auto_size(true);
+    DeleteTempButt.appearance(xtd::forms::appearance::button);
+    DeleteTempButt.font({ this->font(), 12 });
+    DeleteTempButt.text(DeleteTempFiles);
+    DeleteTempButt.text_align(xtd::forms::content_alignment::middle_center);
+    DeleteTempButt.checked(deleteTemp);
+    DeleteTempButt.check_state_changed += [&] {
+        deleteTemp = DeleteTempButt.checked();
         saveParametersNow = false;
         if (loaded) saveSettings();
         saveParametersNow = true;
@@ -2342,8 +2358,10 @@ form1::form1() {
         AutoSave.location({ (settings.width() - AutoSave.width()) / 2, loadCIAbutt.location().y() + loadCIAbutt.height() });
         AutoLoad.size({ savebutt.width(), savebutt.height() });
         AutoLoad.location({ (settings.width() - AutoLoad.width()) / 2, AutoSave.location().y() + AutoSave.height() });
+        DeleteTempButt.size({ savebutt.width(), savebutt.height() });
+        DeleteTempButt.location({ (settings.width() - DeleteTempButt.width()) / 2, AutoLoad.location().y() + AutoLoad.height() });
         LightDark.size({ savebutt.width(), savebutt.height()});
-        LightDark.location({ (settings.width() - LightDark.width()) / 2, AutoLoad.location().y() + AutoLoad.height() });
+        LightDark.location({ (settings.width() - LightDark.width()) / 2, DeleteTempButt.location().y() + DeleteTempButt.height() });
         //fontchange.location({ (settings.width() - fontchange.width()) / 2, LightDark.location().y() + LightDark.height() });
         LanguageTitle.location({ (settings.width() - LanguageTitle.width()) / 2, LightDark.location().y() + LightDark.height() });
         LanguageChoiche.location({ (settings.width() - LanguageChoiche.width()) / 2, LanguageTitle.location().y() + LanguageTitle.height() });
