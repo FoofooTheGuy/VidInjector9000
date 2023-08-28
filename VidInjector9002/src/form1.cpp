@@ -521,15 +521,22 @@ form1::form1() {
     }
     copymulti.location({ copycheck.location().x() + copycheck.width() + 3, copycheck.location().y() + ((copycheck.height() - copymulti.height()) / 2) });
     copymulti.cursor(xtd::forms::cursors::help());
-    copymulti.mouse_move += [&](object& sender, const xtd::forms::mouse_event_args& e) {
-        MultiOnly.location({ copymulti.location().x() + e.location().x(), copymulti.location().y() + e.location().y() - MultiOnly.height() });
-        if (MultiOnly.location().x() + MultiOnly.width() > parameters.width())
-            MultiOnly.location({ copymulti.location().x() + e.location().x() - MultiOnly.width(), copymulti.location().y() + e.location().y() - MultiOnly.height() });
-        MultiOnly.show();
-    };
-    copymulti.mouse_leave += [&] {
-        MultiOnly.hide();
-    };
+    {
+        static bool justchanged = false;
+        copymulti.mouse_move += [&](object& sender, const xtd::forms::mouse_event_args& e) {
+            if (justchanged)
+                return;
+            MultiOnly.location({ copymulti.location().x() + e.location().x(), copymulti.location().y() + e.location().y() - MultiOnly.height() });
+            if (MultiOnly.location().x() + MultiOnly.width() > parameters.width())
+                MultiOnly.location({ copymulti.location().x() + e.location().x() - MultiOnly.width(), copymulti.location().y() + e.location().y() - MultiOnly.height() });
+            justchanged = true;
+            MultiOnly.show();
+        };
+        copymulti.mouse_leave += [&] {
+            justchanged = false;
+            MultiOnly.hide();
+        };
+    }
     copycheck.enabled(mode.selected_index());//set enabledness
     copybox.enabled(mode.selected_index());
 
@@ -606,16 +613,22 @@ form1::form1() {
         bannermulti.image(LightDark.checked() ? pixels_to_image(invert_pixels(stbi_load(xtd::ustring::format("{}/{}/language/{}/M.bmp", ProgramDir, resourcesPath, Languagedir).c_str(), &w, &h, &ch, 0), w, h, ch), w, h, ch) : pixels_to_image(stbi_load(xtd::ustring::format("{}/{}/language/{}/M.bmp", ProgramDir, resourcesPath, Languagedir).c_str(), &w, &h, &ch, 0), w, h, ch));
     }
     bannermulti.cursor(xtd::forms::cursors::help());
-    bannermulti.mouse_move += [&](object& sender, const xtd::forms::mouse_event_args& e) {
-        MultiOnly.location({ bannermulti.location().x() + e.location().x(), bannermulti.location().y() + e.location().y() - MultiOnly.height() });
-        if (MultiOnly.location().x() + MultiOnly.width() > parameters.width())
-            MultiOnly.location({ bannermulti.location().x() + e.location().x() - MultiOnly.width(), bannermulti.location().y() + e.location().y() - MultiOnly.height() });
-        MultiOnly.show();
-    };
-    bannermulti.mouse_leave += [&] {
-        MultiOnly.hide();
-    };
-    //bannermulti.location({ menubannertxt.location().x() + menubannertxt.width() + 3, menubannertxt.location().y() + ((menubannertxt.height() - bannermulti.height()) / 2) });
+    {
+        static bool justchanged = false;
+        bannermulti.mouse_move += [&](object& sender, const xtd::forms::mouse_event_args& e) {
+            if (justchanged)
+                return;
+            MultiOnly.location({ bannermulti.location().x() + e.location().x(), bannermulti.location().y() + e.location().y() - MultiOnly.height() });
+            if (MultiOnly.location().x() + MultiOnly.width() > parameters.width())
+                MultiOnly.location({ bannermulti.location().x() + e.location().x() - MultiOnly.width(), bannermulti.location().y() + e.location().y() - MultiOnly.height() });
+            justchanged = true;
+            MultiOnly.show();
+        };
+        bannermulti.mouse_leave += [&] {
+            justchanged = false;
+            MultiOnly.hide();
+        };
+    }
 
     menubannerpreview.parent(parameters);
     menubannerpreview.cursor(mode.selected_index() ? xtd::forms::cursors::hand() : xtd::forms::cursors::no());
