@@ -1999,7 +1999,7 @@ form1::form1() {
                                 while (!LN.empty() && LN.back() != 'g')
                                     LN.pop_back();
                                 text_box_array.at(row * columns + 2)->text(xtd::ustring::format("{}/movie/{}", romfspath, LN.c_str()));
-                                if (row < rows)
+                                if (row < rows - 1)
                                     ++row;
                                 else break;
                             }
@@ -2031,7 +2031,7 @@ form1::form1() {
                             LN.erase(LN.find(','), LN.size() - 1);
                         }
                         text_box_array.at(row * columns + 0)->text(LN.c_str());
-                        if (row < rows)
+                        if (row < rows - 1)
                             ++row;
                         else break;
                     }
