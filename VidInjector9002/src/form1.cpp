@@ -2302,7 +2302,7 @@ form1::form1() {
         appendmedia.location({ removemedia.location().x() + removemedia.width() + 2, removemedia.location().y() });
         rowtxt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - rowtxt.width()) / 2, removemedia.location().y() + removemedia.height() });
 
-        if (parameters.width() > copybox.location().x() + copybox.width() + FFrewind.width() + menubannerpreview.width()) {
+        if (parameters.width() > FFrewind.location().x() + FFrewind.width() + menubannerpreview.width()) {
             menubannerpreview.location({ FFrewind.location().x() + FFrewind.width() + (((parameters.width() - (FFrewind.location().x() + FFrewind.width())) - menubannerpreview.width()) / 2), copycheck.location().y() + ((copycheck.height() + copybox.height() + 3) - (menubannerpreview.height() + bannerpreviewleft.height())) / 2 });
         }
         else {
