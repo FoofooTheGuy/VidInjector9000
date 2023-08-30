@@ -1959,23 +1959,21 @@ form1::form1() {
                         FFrewind.checked((strstr(trimmed.at(29).c_str(), "true") != NULL) ? true : false);
                         FadeOpt.checked((strstr(trimmed.at(30).c_str(), "true") != NULL) ? true : false);
                     }
-                    if (trimmed.size() > 31) {
+                    /*if (trimmed.size() > 31) {
                         if (!stoul_s(row, trimmed.at(31), false))
                             row = 1;
-                    }
+                    }*/
                 }
-                if (row < rows) {
+                /*if (row < rows) {
                     uint32_t oldrows = rows;
-                    for (uint32_t i = 0; i < oldrows - row; i++) {
+                    for (uint32_t i = 0; i < oldrows - row; i++)
                         doRemoveMedia();
-                    }
                 }
                 else if (row > rows) {
                     uint32_t oldrows = rows;
-                    for (uint32_t i = 0; i < row - oldrows; i++) {
+                    for (uint32_t i = 0; i < row - oldrows; i++)
                         doAppendMedia();
-                    }
-                }
+                }*/
                 trimmed.clear();
             }
             //movie_bnrname.csv
@@ -1989,6 +1987,7 @@ form1::form1() {
                     else {
                         mode.selected_index(1);
                         row = 0;
+                        std::vector<xtd::ustring> output;
                         for (auto& LN : trimmed) {
                             std::string extension = LN;
                             if (extension.find_last_of(".") != std::string::npos)
@@ -1998,11 +1997,18 @@ form1::form1() {
                             if (strcmp(extension.c_str(), ".bimg") == 0) {
                                 while (!LN.empty() && LN.back() != 'g')
                                     LN.pop_back();
-                                text_box_array.at(row * columns + 2)->text(xtd::ustring::format("{}/movie/{}", romfspath, LN.c_str()));
-                                if (row < rows - 1)
-                                    ++row;
-                                else break;
+                                output.push_back(xtd::ustring::format("{}/movie/{}", romfspath, LN.c_str()));
+                                ++row;
                             }
+                        }
+                        while (rows < output.size()) {
+                            doAppendMedia();
+                        }
+                        while (rows > output.size()) {
+                            doRemoveMedia();
+                        }
+                        for (int i = 0; i < output.size(); i++) {
+                            text_box_array.at(i * columns + 2)->text(output.at(i));
                         }
                     }
                     setMultiBannerPreview(bannerpreviewindex);
@@ -2023,6 +2029,7 @@ form1::form1() {
                 }
                 else {
                     row = 0;
+                    std::vector<xtd::ustring> output;
                     for (auto& LN : trimmed) {
                         while (LN[0] == ',') {
                             LN.erase(0, 1);
@@ -2030,10 +2037,17 @@ form1::form1() {
                         if (LN.find(',') < LN.size()) {
                             LN.erase(LN.find(','), LN.size() - 1);
                         }
-                        text_box_array.at(row * columns + 0)->text(LN.c_str());
-                        if (row < rows - 1)
-                            ++row;
-                        else break;
+                        output.push_back(LN);
+                        ++row;
+                    }
+                    while (rows < output.size()) {
+                        doAppendMedia();
+                    }
+                    while (rows > output.size()) {
+                        doRemoveMedia();
+                    }
+                    for (int i = 0; i < output.size(); i++) {
+                        text_box_array.at(i * columns + 0)->text(output.at(i));
                     }
                 }
                 trimmed.clear();
