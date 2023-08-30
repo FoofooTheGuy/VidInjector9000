@@ -2025,6 +2025,9 @@ form1::form1() {
                 ret = UTF16fileToUTF8str(xtd::ustring::format("{}/movie/movie_title.csv", romfspath), &trimmed);
                 if (ret > 0) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{}: \"movie_title.csv\"", FailedToReadFile), xtd::ustring::format("{} ({})", ErrorText, ret), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    for (int i = 0; i < rows; i++) {
+                        text_box_array.at(i * columns + 0)->text("");
+                    }
                     good = false;
                 }
                 else {
