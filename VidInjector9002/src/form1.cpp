@@ -2057,8 +2057,13 @@ form1::form1() {
             }
             //set moflex files
             {
-                if (std::filesystem::exists(xtd::ustring::format("{}/movie/movie.moflex", romfspath).c_str()))//single video only has this
+                if (std::filesystem::exists(xtd::ustring::format("{}/movie/movie.moflex", romfspath).c_str())) {//single video only has this
                     text_box_array.at(1)->text(xtd::ustring::format("{}/movie/movie.moflex", romfspath));
+                    if (rows > 1) {
+                        for (uint32_t i = 0; i < rows - 1; i++)
+                            doRemoveMedia();
+                    }
+                }
                 else {
                     for (int i = 0; i < rows; i++) {
                         if (!std::filesystem::exists(xtd::ustring::format("{}/movie/movie_{}.moflex", romfspath, i).c_str()))
