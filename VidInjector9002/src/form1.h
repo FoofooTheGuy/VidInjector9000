@@ -554,7 +554,7 @@ namespace VidInjector9002 {
                 IntMultiParam << "=\"" << std::to_string(mode.selected_index()) << "\"\n" <<
                 StrBannerParam << "=\"" << bannerbox.text() << "\"\n" <<
                 StrIconParam << "=\"" << iconbox.text() << "\"\n" <<
-                IntIconBorderParam << "=\"" << borderMode << "\"\n" <<
+                IntIconBorderParam << "=\"" << std::to_string(borderMode) << "\"\n" <<
                 StrSNameParam << "=\"" << shortname.text() << "\"\n" <<
                 StrLNameParam << "=\"" << longname.text() << "\"\n" <<
                 StrPublisherParam << "=\"" << publisher.text() << "\"\n" <<
