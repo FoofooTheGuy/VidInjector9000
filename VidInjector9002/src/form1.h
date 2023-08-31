@@ -180,7 +180,7 @@ namespace VidInjector9002 {
                             }
                         }
                         uint8_t* output_pixels = (uint8_t*)malloc(w * h * och);
-                        nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(&input_data[0x20]), reinterpret_cast<nnc_u32*>(output_pixels), w, h);
+                        nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(&input_data[0x20]), reinterpret_cast<nnc_u32*>(output_pixels), w & 0xFFFF, h & 0xFFFF);
                         free(input_data);
                         uint8_t* output_cropped = (uint8_t*)malloc(out_w * out_w * och);
                         crop_pixels(output_pixels, w, h, och, output_cropped, 0, 0, out_w, out_h);
@@ -222,7 +222,7 @@ namespace VidInjector9002 {
             else {
                 setDefaultBannerPreview(menubannerpreview, nullptr);
             }
-            bannerpreviewindex = y;
+            bannerpreviewindex = ((y & 0xFF) > 26 ? 26 : (y & 0xFF));//this should never be greater than 26 but whatever
             indextxt.text(xtd::ustring::format("{}/{}", bannerpreviewindex + 1, rows));
         }
 
@@ -626,8 +626,7 @@ namespace VidInjector9002 {
                 if (!stoul_s(outrealint, outstr)) {
                     outrealint = 2;
                 }
-                borderMode = outrealint;
-                if (borderMode > 2) borderMode = 2;
+                borderMode = ((outrealint & 0xFF) > 2 ? 2 : (outrealint & 0xFF));
             }
             else {
                 good = false;
@@ -720,7 +719,7 @@ namespace VidInjector9002 {
                         doAppendMedia();
                     }
                 }
-                rows = outrealint;
+                rows = ((outrealint & 0xFF) > 27 ? 27 : (outrealint & 0xFF));
             }
             else {
                 good = false;
@@ -755,7 +754,7 @@ namespace VidInjector9002 {
                     outrealint = 0;
                     good = false;
                 }
-                bannerpreviewindex = outrealint;
+                bannerpreviewindex = ((outrealint & 0xFF) > 26 ? 26 : (outrealint & 0xFF));
                 setMultiBannerPreview(bannerpreviewindex);
                 bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
                 bannerpreviewright.enabled(mode.selected_index() && bannerpreviewindex != rows - 1);
@@ -951,7 +950,7 @@ namespace VidInjector9002 {
         bool autoSaveParams = false;
         bool autoLoadParams = false;
         bool deleteTemp = true;
-        int borderMode = 2;
+        uint8_t borderMode = 2;
         xtd::forms::font_dialog font_dialog;
         xtd::forms::label MultiOnly;
 
@@ -998,8 +997,8 @@ namespace VidInjector9002 {
         xtd::forms::check_box FadeOpt;
 
         xtd::forms::panel mediabox;
-        int columns = 3;
-        int rows = 1;
+        uint8_t columns = 3;
+        uint8_t rows = 1;
         xtd::forms::label playertitletxt;
         xtd::forms::label moflextxt;
         xtd::forms::label menubannertxt;
@@ -1010,7 +1009,7 @@ namespace VidInjector9002 {
         xtd::forms::button multibannerbrowse;
         xtd::forms::picture_box menubannerpreview;
 
-        int bannerpreviewindex = 0;//to show which row to preview (0-26)
+        uint8_t bannerpreviewindex = 0;//to show which row to preview (0-26)
         xtd::forms::label indextxt;
         xtd::forms::button bannerpreviewleft;
         xtd::forms::button bannerpreviewright;

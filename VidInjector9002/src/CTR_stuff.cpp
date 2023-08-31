@@ -491,7 +491,7 @@ uint32_t Get_Decompressed_size(const uint8_t* in) {
 	in += 4;
 
 	uint8_t type = decompressed_size & 0xFF;
-	if (type != 0x11) return -1;
+	if (type != 0x11) return 0xFFFFFFFF;
 	decompressed_size >>= 8;
 	return decompressed_size;
 }
@@ -502,7 +502,7 @@ uint32_t DecompressLZ11(const uint8_t* in, uint8_t* out) {//https://github.com/c
 	in += 4;
 
 	uint8_t type = decompressed_size & 0xFF;
-	if (type != 0x11) return -1;
+	if (type != 0x11) return 0xFFFFFFFF;
 	decompressed_size >>= 8;
 
 	uint32_t current_out_size = 0;
@@ -792,7 +792,7 @@ std::string extract_dir(nnc_romfs_ctx* ctx, nnc_romfs_info* info, const char* pa
 	nnc_romfs_iterator it = nnc_romfs_mkit(ctx, info);
 	nnc_romfs_info ent;
 	char pathbuf[2048];
-	int len = strlen(path);
+	size_t len = strlen(path);
 	strcpy(pathbuf, path);
 	pathbuf[len++] = '/';
 	while (nnc_romfs_next(&it, &ent))

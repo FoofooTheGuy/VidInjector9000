@@ -256,7 +256,7 @@ form1::form1() {
                 else {
                     int och = sizeof(nnc_u32);
                     uint8_t* output_pixels = (uint8_t*)malloc(w * h * och);
-                    nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(COMMON0), reinterpret_cast<nnc_u32*>(output_pixels), w, h);
+                    nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(COMMON0), reinterpret_cast<nnc_u32*>(output_pixels), w & 0xFFFF, h & 0xFFFF);
                     uint8_t* output_cropped = (uint8_t*)malloc(out_w * out_w * och);
                     crop_pixels(output_pixels, w, h, och, output_cropped, 0, 0, out_w, out_h);
                     free(output_pixels);
@@ -301,7 +301,7 @@ form1::form1() {
                     }
                 }
                 uint8_t* output_pixels = (uint8_t*)malloc(w * h * och);
-                nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(&input_data[0x20]), reinterpret_cast<nnc_u32*>(output_pixels), w, h);
+                nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(&input_data[0x20]), reinterpret_cast<nnc_u32*>(output_pixels), w & 0xFFFF, h & 0xFFFF);
                 free(input_data);
                 uint8_t* output_cropped = (uint8_t*)malloc(out_w * out_w * och);
                 crop_pixels(output_pixels, w, h, och, output_cropped, 0, 0, out_w, out_h);
@@ -807,7 +807,7 @@ form1::form1() {
     titleIDbox.cursor(xtd::forms::cursors::ibeam());
     titleIDbox.text(xtd::ustring::format("{:X5}", RandomTID()));
     titleIDbox.text_changed += [&] {
-        int index = titleIDbox.selection_start();
+        size_t index = titleIDbox.selection_start();
         if (index > 5) index = 5;
         xtd::ustring temp = titleIDbox.text();
         if (temp.size() > 5)
@@ -860,7 +860,7 @@ form1::form1() {
     ApplicationName.cursor(xtd::forms::cursors::ibeam());
     ApplicationName.text("video");
     ApplicationName.text_changed += [&] {
-        int index = ApplicationName.selection_start();
+        size_t index = ApplicationName.selection_start();
         xtd::ustring temp = ApplicationName.text();
         for (auto& c : temp) {
             if (tolowerstr(std::string(1, c)).find_first_of("abcdefghijklmnopqrstuvwxyz") != 0) {//maybe numbers work too but i wont allow it because numbers in process name is ugly ;-;
@@ -903,7 +903,7 @@ form1::form1() {
     ProductCode.cursor(xtd::forms::cursors::ibeam());
     ProductCode.text("VDIJ");
     ProductCode.text_changed += [&] {
-        int index = ProductCode.selection_start();
+        size_t index = ProductCode.selection_start();
         if (index > 4) index = 4;
         xtd::ustring temp = ProductCode.text();
         if (temp.size() > 4)
@@ -936,7 +936,7 @@ form1::form1() {
         static std::mt19937 rng;
         for (int i = 0; i < 4; i++) {
             rng.seed(static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count()));
-            std::uniform_int_distribution<uint32_t> uniform(0, set.size() - 1);
+            std::uniform_int_distribution<uint32_t> uniform(0, (set.size() - 1) & 0xFFFFFFFF);
             outText += set[uniform(rng)];
         }
         ProductCode.text(outText);
@@ -2059,17 +2059,13 @@ form1::form1() {
             {
                 if (std::filesystem::exists(xtd::ustring::format("{}/movie/movie.moflex", romfspath).c_str())) {//single video only has this
                     text_box_array.at(1)->text(xtd::ustring::format("{}/movie/movie.moflex", romfspath));
-                    if (rows > 1) {
-                        for (uint32_t i = 0; i < rows - 1; i++)
+                    if (rows > 1)
+                        for (uint8_t i = 0; i < rows - 1; i++)
                             doRemoveMedia();
-                    }
                 }
                 else {
-                    for (int i = 0; i < rows; i++) {
-                        if (!std::filesystem::exists(xtd::ustring::format("{}/movie/movie_{}.moflex", romfspath, i).c_str()))
-                            continue;
-                        text_box_array.at(i * columns + 1)->text(xtd::ustring::format("{}/movie/movie_{}.moflex", romfspath, i));
-                    }
+                    for (int i = 0; i < rows; i++)
+                        text_box_array.at(i * columns + 1)->text(std::filesystem::exists(xtd::ustring::format("{}/movie/movie_{}.moflex", romfspath, i).c_str()) ? xtd::ustring::format("{}/movie/movie_{}.moflex", romfspath, i) : "");
                 }
             }
             ableObjects(true);
