@@ -1732,11 +1732,15 @@ form1::form1() {
     {//wut
         static xtd::ustring filepath;
         static nnc_result res;
+        static bool cancel;
         extractor.do_work += [&] {
             parampath = xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, DefaultParamFile);
             filepath = load_file(CiaFiles, filepath);
-            if (filepath.empty())
+            if (filepath.empty()) {
+                cancel = true;
                 return;
+            }
+            else cancel = false;
 
             settings.cursor(xtd::forms::cursors::app_starting());
             xtd::ustring romfspath = xtd::ustring::format("{}/romfs", exportsPath);
@@ -1921,6 +1925,11 @@ form1::form1() {
         };
 
         extractor.run_worker_completed += [&] {
+            if (cancel) {
+                ableObjects(true);
+                settings.cursor(xtd::forms::cursors::default_cursor());
+                return;
+            }
             if (!std::filesystem::exists(exportsPath.c_str())) {
                 ableObjects(true);
                 settings.cursor(xtd::forms::cursors::default_cursor());
