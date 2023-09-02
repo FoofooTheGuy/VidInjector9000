@@ -1742,7 +1742,11 @@ form1::form1() {
             }
             else cancel = false;
 
+            parameters.cursor(xtd::forms::cursors::app_starting());
+            finalize.cursor(xtd::forms::cursors::app_starting());
             settings.cursor(xtd::forms::cursors::app_starting());
+
+            loaded = false;
             xtd::ustring romfspath = xtd::ustring::format("{}/romfs", exportsPath);
             xtd::ustring exefspath = xtd::ustring::format("{}/exefs", exportsPath);
 
@@ -1936,6 +1940,11 @@ form1::form1() {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("\"{}\"", filepath), xtd::ustring::format("{} {}", ErrorText, FailedToReadFile), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 return;
             }
+
+            parameters.cursor(xtd::forms::cursors::wait_cursor());
+            finalize.cursor(xtd::forms::cursors::wait_cursor());
+            settings.cursor(xtd::forms::cursors::wait_cursor());
+
             xtd::ustring romfspath = xtd::ustring::format("{}/romfs", exportsPath);
             xtd::ustring exefspath = xtd::ustring::format("{}/exefs", exportsPath);
             uint8_t ret;
@@ -2078,10 +2087,15 @@ form1::form1() {
                 }
             }
             ableObjects(true);
+            parameters.cursor(xtd::forms::cursors::default_cursor());
+            finalize.cursor(xtd::forms::cursors::default_cursor());
             settings.cursor(xtd::forms::cursors::default_cursor());
             if (res != NNC_R_OK)
                 good = false;
             xtd::forms::message_box::show(*this, xtd::ustring::format(good ? "{} {}{}" : "{} {}.\n{}", good ? SuccessfullyLoaded : FailedToLoad, filepath.substr(filepath.find_last_of("/\\") + 1), good ? "." : ValidStillLoaded), ParametersLoaded, xtd::forms::message_box_buttons::ok, good ? xtd::forms::message_box_icon::information : xtd::forms::message_box_icon::warning);
+            loaded = true;
+            SetIconPreview();
+            saveSettings();
         };
     }
 
