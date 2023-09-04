@@ -1742,8 +1742,6 @@ form1::form1() {
             }
             else cancel = false;
 
-            parameters.cursor(xtd::forms::cursors::app_starting());
-            finalize.cursor(xtd::forms::cursors::app_starting());
             settings.cursor(xtd::forms::cursors::app_starting());
 
             loaded = false;
@@ -1941,8 +1939,6 @@ form1::form1() {
                 return;
             }
 
-            parameters.cursor(xtd::forms::cursors::wait_cursor());
-            finalize.cursor(xtd::forms::cursors::wait_cursor());
             settings.cursor(xtd::forms::cursors::wait_cursor());
 
             xtd::ustring romfspath = xtd::ustring::format("{}/romfs", exportsPath);
@@ -2032,6 +2028,9 @@ form1::form1() {
                     setMultiBannerPreview(bannerpreviewindex);
                 }
                 else {//this pretty much means it's a single video
+                    while (rows > 1) {
+                        doRemoveMedia();
+                    }
                     mode.selected_index(0);
                     text_box_array.at(2)->text("");
                     setMultiBannerPreview(0);
@@ -2043,6 +2042,9 @@ form1::form1() {
                 ret = UTF16fileToUTF8str(xtd::ustring::format("{}/movie/movie_title.csv", romfspath), &trimmed);
                 if (ret > 0) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{}: \"movie_title.csv\"", FailedToReadFile), xtd::ustring::format("{} ({})", ErrorText, ret), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    while (rows > 1) {
+                        doRemoveMedia();
+                    }
                     for (int i = 0; i < rows; i++) {
                         text_box_array.at(i * columns + 0)->text("");
                     }
@@ -2087,9 +2089,9 @@ form1::form1() {
                 }
             }
             ableObjects(true);
-            parameters.cursor(xtd::forms::cursors::default_cursor());
-            finalize.cursor(xtd::forms::cursors::default_cursor());
+
             settings.cursor(xtd::forms::cursors::default_cursor());
+
             if (res != NNC_R_OK)
                 good = false;
             xtd::forms::message_box::show(*this, xtd::ustring::format(good ? "{} {}{}" : "{} {}.\n{}", good ? SuccessfullyLoaded : FailedToLoad, filepath.substr(filepath.find_last_of("/\\") + 1), good ? "." : ValidStillLoaded), ParametersLoaded, xtd::forms::message_box_buttons::ok, good ? xtd::forms::message_box_icon::information : xtd::forms::message_box_icon::warning);
