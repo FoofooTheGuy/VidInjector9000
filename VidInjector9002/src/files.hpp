@@ -1,4 +1,5 @@
 #include <vector>
+#include <stdint.h>
 
 extern std::vector<uint8_t> Multivid;
 extern std::vector<uint8_t> Singlevid;
