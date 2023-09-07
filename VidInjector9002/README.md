@@ -5,6 +5,18 @@ A cross platform,* injector for 3DS video CIAs
 
 <sup><sup>*If builds for your operating system are not provided then you will have to compile it yourself, see [building](https://github.com/FoofooTheGuy/VidInjector9000/VidI#building).<sup><sup>
 
+## Screenshots
+<details>
+<summary>Windows 8.1</summary>
+
+### Light Mode
+![image](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/94aeda22-e9ab-4870-ad44-772bd53ebc63)
+
+### Dark Mode
+![image](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/f28dbc0f-acb6-412f-935c-56271ffe96ee)
+
+</details>
+
 Usage
 --
 Download [VidInjector9002.zip](https://github.com/FoofooTheGuy/VidInjector9000/releases/latest/download/VidInjector9002.zip), extract it somewhere, and run VidInjector9002
