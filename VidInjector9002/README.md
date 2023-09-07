@@ -1,7 +1,6 @@
 # \~ THIS README IS A WORK IN PROGRESS ~
-<p align="center">
-  <img src="https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/c6dddd9b-dfa7-4560-a7f6-2b478a97b6be" alt="drawing" width="225"/>
-</p>
+
+<img src="https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/c6dddd9b-dfa7-4560-a7f6-2b478a97b6be" alt="drawing" width="225"/>
 
 # VidInjector9000
 A cross platform* injector for 3DS video CIAs
