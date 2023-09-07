@@ -1,9 +1,9 @@
 # \~ THIS README IS A WORK IN PROGRESS ~
 
 # VidInjector9000
-A cross platform,* injector for 3DS video CIAs
+A cross platform* injector for 3DS video CIAs
 
-<sup><sup>*If builds for your operating system are not provided then you will have to compile it yourself, see [building](https://github.com/FoofooTheGuy/VidInjector9000/VidI#building).<sup><sup>
+<sup><sup>*If builds for your operating system are not provided then you will have to compile it yourself, see [compiling](https://github.com/FoofooTheGuy/VidInjector9000/VidI#compiling).<sup><sup>
 
 ## Screenshots
 <details>
@@ -22,9 +22,9 @@ Download [VidInjector9002.zip](https://github.com/FoofooTheGuy/VidInjector9000/r
 
 ### VidInjector9002 can...
 
-- **Create video injects.** Input moflex videos, images, and text, and the program will package it all into a cia file for you!
+- **Create video injects.** Input .moflex videos, images, and text, and the program will build cia file for you!
 - **Create multi-video injects.** Similar to the above, but there can be multiple videos in one cia!
-- **Unpack a video CIA.** Import parameters from a .cia file for you to edit and rebuild!
+- **Unpack a video CIA.** Load parameters from a .cia file to edit and rebuild!
 - **Save and load parameters.** Save your place and come back later, they can even be saved/loaded automatically!
 - **Be configured for any language.** If you can translate it, you can add it! (See [translation](https://github.com/FoofooTheGuy/VidInjector9000#translation) for details)
 
@@ -33,11 +33,12 @@ Download [VidInjector9002.zip](https://github.com/FoofooTheGuy/VidInjector9000/r
 - Click the icon preview to change border modes!
 - Click the multi video banner preview to choose file!
 - Click the logo in the top left to find to the latest release!
+- If an image doesn't fit in, it will be resized and cropped!
 
 You may ask...
 --
 
-**Q: How do I make moflex files?**
+**Q: How do I make .moflex files?**
 
 A: Use Mobiclip Multicore Encoder. The most straight forward way to get that is on the Nintendo Developer Portal, but there are mirrors online somewhere...
 
@@ -52,7 +53,7 @@ A: This is simple and gives you much control over your video injections. Plus, V
 Known Issues
 --
 #### Unicode file paths are not supported
-At least in my testing, I've found that unicode in the file paths lead to it getting confused but it may work on your OS, I'm not sure..
+At least in my testing, I've found that unicode in the file paths lead to it getting confused but it may or may not work on your OS, I'm not sure..
 
 #### Multi Video injects do not work on the regions China, Taiwan and Korea because there are no language files for those.
 I am unable to add them myself because I don't know those languages so I would appreciate it if someone would translate the files and contribute the following:
@@ -64,20 +65,20 @@ romfs/lang/
 
 To remedy this, you can use [lumalocaleswitcher](https://github.com/Possum/LumaLocaleSwitcher/releases/latest).
 
-Building
+Compiling
 --
 1. Download xtd from [gammasoft71](https://github.com/gammasoft71/xtd) or [my fork](https://github.com/FoofooTheGuy/xtd)
 2. Run the install script that corresponds to your operating system
 3. run the command `xtdc build -r` in the directory of Vidinjector9002's cmakelists.txt
 4. ???
-5. profit
+5. profit!!
 
 Translation
 --
 - Put a translation text file and an m.bmp in Vidinjector9000Resources/language/\<language>
 (the M in the image stands for Multi, so consider that when translating!)
 - The folder name is recommended to be in ASCII format to avoid issues, but it might actually work so... who knows?
-- the `language` string in line 1 of the file should be the name of the language in that language, not the word "English" translated
+- the `language` string value in the file should be the name of the language in such language, not the word "English" translated
 
 **Thank you to the following for the work in translating:**
 
@@ -89,7 +90,7 @@ Translation
 
 "Pixel"
 
-- Please issue a pull request or issue if you want to share your translation of the program.
+- Please create a pull request or issue if you want to share your translation of the program.
 
 Credits and Stuff
 --
