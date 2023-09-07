@@ -14,7 +14,6 @@ A cross platform,* injector for 3DS video CIAs
 
 ### Dark Mode
 ![image](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/f28dbc0f-acb6-412f-935c-56271ffe96ee)
-
 </details>
 
 Usage
@@ -25,9 +24,9 @@ Download [VidInjector9002.zip](https://github.com/FoofooTheGuy/VidInjector9000/r
 
 - **Create video injects.** Input moflex videos, images, and text, and the program will package it all into a cia file for you!
 - **Create multi-video injects.** Similar to the above, but there can be multiple videos in one cia!
-- **Unpack a video CIA.** Import parameters from a .cia file for you to edit and rebuild again!
+- **Unpack a video CIA.** Import parameters from a .cia file for you to edit and rebuild!
 - **Save and load parameters.** Save your place and come back later, they can even be saved/loaded automatically!
-- **Import any language of text you want.** (See [translation](https://github.com/FoofooTheGuy/VidInjector9000#translation) for details)
+- **Be configured for any language.** If you can translate it, you can add it! (See [translation](https://github.com/FoofooTheGuy/VidInjector9000#translation) for details)
 
 **Tips:**
 
