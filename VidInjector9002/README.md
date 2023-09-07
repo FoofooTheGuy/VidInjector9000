@@ -1,5 +1,7 @@
 # \~ THIS README IS A WORK IN PROGRESS ~
 
+<img src="https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/c6dddd9b-dfa7-4560-a7f6-2b478a97b6be" alt="drawing" width="200"/>
+
 # VidInjector9000
 A cross platform* injector for 3DS video CIAs
 
@@ -36,11 +38,8 @@ A cross platform* injector for 3DS video CIAs
 ![Screenshot from 2023-09-07 10-28-46](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/c25c3cc1-1f3d-446e-ae33-58c3898c9d10)
 </details>
 
-Usage
+VidInjector9002 can...
 --
-Download [VidInjector9002.zip](https://github.com/FoofooTheGuy/VidInjector9000/releases/latest/download/VidInjector9002.zip), extract it somewhere, and run VidInjector9002
-
-### VidInjector9002 can...
 
 - **Create video injects.** Input .moflex videos, images, and text, and the program will build cia file for you!
 - **Create multi-video injects.** Similar to the above, but there can be multiple videos in one cia!
