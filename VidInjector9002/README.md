@@ -1,0 +1,93 @@
+# \~ THIS README IS A WORK IN PROGRESS ~
+
+# VidInjector9000
+A cross platform,* injector for 3DS video CIAs
+
+<sup><sup>*If builds for your operating system are not provided then you will have to compile it yourself, see [building](https://github.com/FoofooTheGuy/VidInjector9000/VidI#building).<sup><sup>
+
+Usage
+--
+Download [VidInjector9002.zip](https://github.com/FoofooTheGuy/VidInjector9000/releases/latest/download/VidInjector9002.zip), extract it somewhere, and run VidInjector9002
+
+### VidInjector9002 can...
+
+- **Create video injects.** Input moflex videos, images, and text, and the program will package it all into a cia file for you!
+- **Create multi-video injects.** Similar to the above, but there can be multiple videos in one cia!
+- **Unpack a video CIA.** Import parameters from a .cia file for you to edit and rebuild again!
+- **Save and load parameters.** Save your place and come back later, they can even be saved/loaded automatically!
+- **Import any language of text you want.** (See [translation](https://github.com/FoofooTheGuy/VidInjector9000#translation) for details)
+
+**Tips:**
+
+- Click the icon preview to change border modes!
+- Click the multi video banner preview to choose file!
+- Click the logo in the top left to find to the latest release!
+
+You may ask...
+--
+
+**Q: How do I make moflex files?**
+
+A: Use Mobiclip Multicore Encoder. The most straight forward way to get that is on the Nintendo Developer Portal, but there are mirrors online somewhere...
+
+**Q: Why did you even make this?**
+
+A: I made this so that the process of injecting with 3D banners is more streamlined.
+
+**Q: How is this different from all the other injectors?**
+
+A: This is simple and gives you much control over your video injections. Plus, VidInjector9000 3.0 (aka VidInjector9002) is a GUI and not a CLI!
+
+Known Issues
+--
+#### Unicode file paths are not supported
+At least in my testing, I've found that unicode in the file paths lead to it getting confused but it may work on your OS, I'm not sure..
+
+#### Multi Video injects do not work on the regions China, Taiwan and Korea because there are no language files for those.
+I am unable to add them myself because I don't know those languages so I would appreciate it if someone would translate the files and contribute the following:
+
+romfs/lang/
+- CN_Simp_Chinese/message.msbt
+- KR_Hangeul/message.msbt
+- TW_Trad_Chinese/message.msbt
+
+To remedy this, you can use [lumalocaleswitcher](https://github.com/Possum/LumaLocaleSwitcher/releases/latest).
+
+Building
+--
+1. Download xtd from [gammasoft71](https://github.com/gammasoft71/xtd) or [my fork](https://github.com/FoofooTheGuy/xtd)
+2. Run the install script that corresponds to your operating system
+3. run the command `xtdc build -r` in the directory of Vidinjector9002's cmakelists.txt
+4. ???
+5. profit
+
+Translation
+--
+- Put a translation text file and an m.bmp in Vidinjector9000Resources/language/\<language>
+(the M in the image stands for Multi, so consider that when translating!)
+- The folder name is recommended to be in ASCII format to avoid issues, but it might actually work so... who knows?
+- the `language` string in line 1 of the file should be the name of the language in that language, not the word "English" translated
+
+**Thank you to the following for the work in translating:**
+
+[Deepl](https://www.deepl.com/translator)
+
+[Doogle Translate](https://translate.google.com/)
+
+[Rayz0rum](https://github.com/Spider-Sonic)
+
+"Pixel"
+
+- Please issue a pull request or issue if you want to share your translation of the program.
+
+Credits and Stuff
+--
+[xtd](https://github.com/gammasoft71/xtd): The GUI framework that made this whole thing possible
+
+[nnc](https://github.com/MyPasswordIsWeak/nnc): Converting banner and icon images, packing and unpacking CIA files
+
+[stb image](https://github.com/nothings/stb): Manipulating images
+
+[miniz cpp](https://github.com/tfussell/miniz-cpp): Zip extracion
+
+[3DBrew](https://www.3dbrew.org/): Emotional support
