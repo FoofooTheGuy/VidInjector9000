@@ -16,6 +16,26 @@ A cross platform* injector for 3DS video CIAs
 ![image](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/f28dbc0f-acb6-412f-935c-56271ffe96ee)
 </details>
 
+<details>
+<summary>Windows 10</summary>
+
+### Light Mode
+![light](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/045d4761-8456-4b0e-9de9-7bbe46b5b748)
+
+### Dark Mode
+![dark](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/01373504-f6f4-4c5a-b22b-560c868fa4f7)
+</details>
+
+<details>
+<summary>Ubuntu 20.04.2.0</summary>
+
+### Light Mode
+![Screenshot from 2023-09-07 10-21-19](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/f4d2cead-3798-4a73-a8de-3ddbce46f3f7)
+
+### Dark Mode
+![Screenshot from 2023-09-07 10-28-46](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/c25c3cc1-1f3d-446e-ae33-58c3898c9d10)
+</details>
+
 Usage
 --
 Download [VidInjector9002.zip](https://github.com/FoofooTheGuy/VidInjector9000/releases/latest/download/VidInjector9002.zip), extract it somewhere, and run VidInjector9002
