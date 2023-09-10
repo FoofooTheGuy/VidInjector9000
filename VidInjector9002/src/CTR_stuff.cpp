@@ -769,7 +769,7 @@ uint8_t UTF16fileToUTF8str(const std::string path, std::vector<std::string>* out
 		input.read(&Byte, 1);//grab next byte of file
 	}
 	input.close();
-	if (output[0] == 0xFE && output[1] == 0xFF)//if little endian (they should be in big endian anyway and i dont want to convert it)
+	if ((output[0] & 0xFF) == 0xFE && (output[1] & 0xFF) == 0xFF)//if little endian (they should be in big endian anyway and i dont want to convert it)
 		return 2;
 	output.erase(output.begin(), output.begin() + 2);//delete byte order mask
 	outputUTF8 = UTF16toUTF8(output);
