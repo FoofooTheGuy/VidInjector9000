@@ -1044,7 +1044,7 @@ form1::form1() {
             movie_title.close();
             if (!std::filesystem::exists(xtd::ustring::format("{}/{}/temp/romfs/movie/movie_title.csv", ProgramDir, resourcesPath).c_str())) {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/{}/temp/romfs/movie/movie_title.csv", FailedToCreateFile, ProgramDir, resourcesPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                builder.cancel_async();
+                //builder.cancel_async();
                 return;
             }
         }
@@ -1258,7 +1258,7 @@ form1::form1() {
             settingsTL.close();
             if (!std::filesystem::exists(xtd::ustring::format("{}/romfs/settings/settingsTL.csv", tempPath).c_str())) {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/settings/settingsTL.csv", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                builder.cancel_async();
+                //builder.cancel_async();
                 return;
             }
         }
@@ -1274,7 +1274,7 @@ form1::form1() {
             information_buttons.close();
             if (!std::filesystem::exists(xtd::ustring::format("{}/romfs/settings/information_buttons.csv", tempPath).c_str())) {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/settings/information_buttons.csv", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                builder.cancel_async();
+                //builder.cancel_async();
                 return;
             }
 
@@ -1287,7 +1287,7 @@ form1::form1() {
                 copyrighttxt.close();
                 if (!std::filesystem::exists(xtd::ustring::format("{}/romfs/settings/copyright.txt", tempPath).c_str())) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/settings/copyright.txt", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    builder.cancel_async();
+                    //builder.cancel_async();
                     return;
                 }
             }
@@ -1300,7 +1300,7 @@ form1::form1() {
             for (int i = 0; i < (mode.selected_index() ? rows : 1); i++) {
                 if (!std::filesystem::exists(text_box_array.at(i * columns + 1)->text().c_str())) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}, {} 2\n{} \"{}\"", row, i + 1, column, FailedToFindPath, text_box_array.at(i * columns + 1)->text()), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    builder.cancel_async();
+                    //builder.cancel_async();
                     return;
                 }
                 std::string extension = text_box_array.at(i * columns + 1)->text();
@@ -1311,7 +1311,7 @@ form1::form1() {
                     inmoflex >> Checker[j];//https://stackoverflow.com/a/2974735
                     if (extension != ".moflex" || Checker[j] != moflexMagic[j]) {
                         xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}, {} 2\n\"{}\" {}", row, i + 1, column, text_box_array.at(i * columns + 1)->text(), MoflexError), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                        builder.cancel_async();
+                        //builder.cancel_async();
                         return;
                     }
                 }
@@ -1325,7 +1325,7 @@ form1::form1() {
                     copyfile(text_box_array.at(i * columns + 1)->text().c_str(), xtd::ustring::format("{}/romfs/movie/movie_{}.moflex", tempPath, i).c_str());
                     if (!std::filesystem::exists(xtd::ustring::format("{}/romfs/movie/movie_{}.moflex", tempPath, i).c_str())) {//this probably only happens if there's no disk space
                         xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/movie/movie_{}.moflex", FailedToCreateFile, tempPath, i), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                        builder.cancel_async();
+                        //builder.cancel_async();
                         return;
                     }
                 }
@@ -1336,7 +1336,7 @@ form1::form1() {
                     copyfile(text_box_array.at(i * columns + 1)->text().c_str(), xtd::ustring::format("{}/romfs/movie/movie.moflex", tempPath).c_str());
                     if (!std::filesystem::exists(xtd::ustring::format("{}/romfs/movie/movie.moflex", tempPath).c_str())) {//this probably only happens if there's no disk space
                         xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/movie/movie.moflex", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                        builder.cancel_async();
+                        //builder.cancel_async();
                         return;
                     }
                 }
@@ -1348,9 +1348,9 @@ form1::form1() {
         if (mode.selected_index()) {
             for (int i = 0; i < rows; i++) {
                 uint8_t bimg[256 * 128 * sizeof(nnc_u16) + 0x20];
-                /*if (!std::filesystem::exists(text_box_array.at(i * columns + 2)->text().c_str())) {
+                /*if (!std::filesystem::exists(text_box_array.at(i * columns + 2)->text().c_str())) {//comment out because we want blank image if it failed
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}, {} 3\n{} \"{}\"", row, i + 1, column, FailedToFindPath, text_box_array.at(i * columns + 2)->text()), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    builder.cancel_async();
+                    //builder.cancel_async();
                     return;
                 }*/
 
@@ -1360,7 +1360,7 @@ form1::form1() {
                 uint8_t ret = convertToBimg(text_box_array.at(i * columns + 2)->text(), bimg, true);
                 if (ret > 0) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/movie/movie_{}.bimg\n({})", FailedToCreateFile, tempPath, i, ret), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    builder.cancel_async();
+                    //builder.cancel_async();
                     return;
                 }
                 std::filesystem::create_directories(xtd::ustring::format("{}/romfs/movie", tempPath).c_str());
@@ -1378,7 +1378,7 @@ form1::form1() {
             movie_bnrname.close();
             if (!std::filesystem::exists(xtd::ustring::format("{}/romfs/settings/movie_bnrname.csv", tempPath).c_str())) {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/settings/movie_bnrname.csv", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                builder.cancel_async();
+                //builder.cancel_async();
                 return;
             }
         }
@@ -1397,7 +1397,7 @@ form1::form1() {
             ret = convertToIcon(iconbox.text(), xtd::ustring::format("{}/exefs/icon", tempPath).c_str(), UTF8toUTF16(shortname.text()), UTF8toUTF16(longname.text()), UTF8toUTF16(publisher.text()), borderMode);
             if (ret > 0) {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/exefs/icon", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                builder.cancel_async();
+                //builder.cancel_async();
                 return;
             }
             if (mode.selected_index()) {//multi vid needs an icon here so that it can make ext data or something (the game crashes if it isnt here)
@@ -1410,7 +1410,7 @@ form1::form1() {
                 copyfile(xtd::ustring::format("{}/exefs/icon", tempPath).c_str(), xtd::ustring::format("{}/romfs/icon.icn", tempPath).c_str());
                 if (!std::filesystem::exists(xtd::ustring::format("{}/{}/temp/romfs/icon.icn", ProgramDir, resourcesPath).c_str())) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/icon.icn", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    builder.cancel_async();
+                    //builder.cancel_async();
                     return;
                 }
                 majorBarTxt.text(xtd::ustring::format("{} exefs", CreatingFile));
@@ -1444,7 +1444,7 @@ form1::form1() {
                 ret = convertToBimg(bannerbox.text(), buffer, false);
                 if (ret > 0) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"\n({})", FailedToConvertImage, bannerbox.text(), ret), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    builder.cancel_async();
+                    //builder.cancel_async();
                     return;
                 }
 
@@ -1475,7 +1475,7 @@ form1::form1() {
             }
             if (!std::filesystem::exists(xtd::ustring::format("{}/exefs/banner", tempPath).c_str())) {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/exefs/banner", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                builder.cancel_async();
+                //builder.cancel_async();
                 return;
             }
         }
