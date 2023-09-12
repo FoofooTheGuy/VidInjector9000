@@ -952,9 +952,9 @@ form1::form1() {
 
     minorBar.parent(finalize);
     minorBar.height(45);
-    minorBar.maximum(0);
+    minorBar.maximum(69);
     minorBar.minimum(0);
-    minorBar.style(xtd::forms::progress_bar_style::marquee);
+    minorBar.style(xtd::forms::progress_bar_style::continuous);
 
     //major bar
     majorBarTxt.parent(finalize);
@@ -989,8 +989,9 @@ form1::form1() {
     builder.worker_reports_progress(true);
     builder.do_work += [&] {
         cancelBuildButt.enabled(true);
-        minorBar.maximum(69);
-        minorBar.minimum(0);
+        minorBar.style(xtd::forms::progress_bar_style::marquee);
+        //minorBar.maximum(69);
+        //minorBar.minimum(0);
 
         xtd::ustring outfile = save_file(CiaFiles, xtd::ustring::format("{} [000400000{}00]", removeInvalids(longname.text()), titleIDbox.text()));
         {
@@ -1662,8 +1663,7 @@ form1::form1() {
         minorBarTxt.hide();
         majorBarTxt.hide();
         majorBar.value(0);
-        minorBar.maximum(0);
-        minorBar.minimum(0);
+        minorBar.style(xtd::forms::progress_bar_style::continuous);
         cancelBuildButt.enabled(false);
         ableObjects(true);
         finalize.cursor(xtd::forms::cursors::default_cursor());
