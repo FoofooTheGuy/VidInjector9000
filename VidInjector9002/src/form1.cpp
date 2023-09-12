@@ -973,6 +973,7 @@ form1::form1() {
     buildButt.size({ buildButt.width() * 2, buildButt.height() * 2 });
     buildButt.click += [&] {
         ableObjects(false);
+        minorBar.style(xtd::forms::progress_bar_style::marquee);
         builder.run_worker_async();
     };
 
@@ -989,7 +990,6 @@ form1::form1() {
     builder.worker_reports_progress(true);
     builder.do_work += [&] {
         cancelBuildButt.enabled(true);
-        minorBar.style(xtd::forms::progress_bar_style::marquee);
         //minorBar.maximum(69);
         //minorBar.minimum(0);
 
