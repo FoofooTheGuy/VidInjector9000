@@ -36,6 +36,16 @@ A cross platform* injector for 3DS video CIAs
 ![Screenshot from 2023-09-07 10-28-46](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/c25c3cc1-1f3d-446e-ae33-58c3898c9d10)
 </details>
 
+<details>
+<summary>Wine (Manjaro gnome 23.0-230903)</summary>
+
+### Light Mode
+![Screenshot from 2023-09-13 18-28-06](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/23b56821-4182-4330-8bcd-2bc30c762cd4)
+
+### Dark Mode
+![Screenshot from 2023-09-13 17-57-23](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/589dd545-c837-4181-a791-a6f0e43df325)
+</details>
+
 VidInjector9002 can...
 --
 
