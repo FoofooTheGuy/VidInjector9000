@@ -101,6 +101,30 @@ Compiling
 4. ???
 5. profit!!
 
+Tested compatibility
+--
+**Windows 8.1:**
+
+![](https://img.shields.io/badge/xtd_0.1.1--beta-008000)
+
+![](https://img.shields.io/badge/xtd_nightly-B22222)
+
+**Windows 10**
+
+![](https://img.shields.io/badge/xtd_0.1.1--beta-008000)
+
+![](https://img.shields.io/badge/xtd_nightly-008000)
+
+**Ubuntu 20.04.2.0**
+
+![](https://img.shields.io/badge/xtd_0.1.1--beta-FFA500)
+
+![](https://img.shields.io/badge/xtd_nightly-008000)
+
+**Wine (manjaro)**
+
+![](https://img.shields.io/badge/xtd_0.1.1--beta-FFA500)
+
 Translation
 --
 - Put a translation text file and an m.bmp in Vidinjector9000Resources/language/\<language>
