@@ -2438,6 +2438,11 @@ form1::form1() {
         moflextxt.location({ mediabox.location().x() + text_box_array.at(1)->location().x() + (text_box_array.at(1)->width() - moflextxt.width()) / 2, copybox.location().y() + copybox.height() });
         menubannertxt.location({ mediabox.location().x() + text_box_array.at(2)->location().x() + (text_box_array.at(2)->width() - (menubannertxt.width() + bannermulti.width() + 3)) / 2, copybox.location().y() + copybox.height() });
         bannermulti.location({ menubannertxt.location().x() + menubannertxt.width() + 3, menubannertxt.location().y() + ((menubannertxt.height() - bannermulti.height()) / 2) });
+        playertitletxt.refresh();
+        moflextxt.refresh();
+        menubannertxt.refresh();
+        bannermulti.refresh();
+
     };
 
     if (autoLoadParams || LoadFromArgv) {
