@@ -2442,7 +2442,6 @@ form1::form1() {
         moflextxt.refresh();
         menubannertxt.refresh();
         bannermulti.refresh();
-
     };
 
     if (autoLoadParams || LoadFromArgv) {
