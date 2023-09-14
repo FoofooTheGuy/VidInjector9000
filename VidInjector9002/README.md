@@ -119,11 +119,15 @@ Tested compatibility
 
 ![](https://img.shields.io/badge/xtd_0.1.1--beta-FFA500)
 
+Notes: Everything works except async (building and extracting CIA)
+
 ![](https://img.shields.io/badge/xtd_nightly-008000)
 
 **Wine (manjaro)**
 
 ![](https://img.shields.io/badge/xtd_0.1.1--beta-FFA500)
+
+Notes: Clicking on `choice` objects and resizing the parameters window causes the program to stop responding. Your mileage may vary.
 
 Translation
 --
@@ -136,7 +140,7 @@ Translation
 
 [Deepl](https://www.deepl.com/translator)
 
-[Doogle Translate](https://translate.google.com/)
+[Google Translate](https://translate.google.com/)
 
 [Rayz0rum](https://github.com/Spider-Sonic)
 
