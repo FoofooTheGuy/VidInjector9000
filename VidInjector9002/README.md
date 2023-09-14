@@ -103,6 +103,12 @@ Compiling
 
 Tested compatibility
 --
+![](https://img.shields.io/badge/Fully%20works%20as%20expected-008000)
+
+![](https://img.shields.io/badge/Some%20functionality%20is%20broken-FFA500)
+
+![](https://img.shields.io/badge/Does%20not%20work-B22222)
+
 **Windows 8.1:**
 
 ![](https://img.shields.io/badge/xtd_0.1.1--beta-008000)
