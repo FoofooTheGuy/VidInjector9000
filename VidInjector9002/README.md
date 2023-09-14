@@ -3,7 +3,7 @@
 # VidInjector9000
 A cross platform* injector for 3DS video CIAs
 
-<sup><sup>*If builds for your operating system are not provided then you will have to compile it yourself, see [compiling](https://github.com/FoofooTheGuy/VidInjector9000/VidI#compiling).<sup><sup>
+<sup><sup>*If builds for your operating system are not provided then you will have to compile it yourself, see [compiling](https://github.com/FoofooTheGuy/VidInjector9000#compiling).<sup><sup>
 
 ## Screenshots
 <details>
