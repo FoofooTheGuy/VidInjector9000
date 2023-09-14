@@ -15,7 +15,6 @@ A cross platform* injector for 3DS video CIAs
 ### Dark Mode
 ![image](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/f28dbc0f-acb6-412f-935c-56271ffe96ee)
 </details>
-
 <details>
 <summary>Windows 10</summary>
 
@@ -25,7 +24,6 @@ A cross platform* injector for 3DS video CIAs
 ### Dark Mode
 ![dark](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/01373504-f6f4-4c5a-b22b-560c868fa4f7)
 </details>
-
 <details>
 <summary>Ubuntu 20.04.2.0</summary>
 
@@ -35,7 +33,6 @@ A cross platform* injector for 3DS video CIAs
 ### Dark Mode
 ![Screenshot from 2023-09-07 10-28-46](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/c25c3cc1-1f3d-446e-ae33-58c3898c9d10)
 </details>
-
 <details>
 <summary>Wine (Manjaro gnome 23.0-230903)</summary>
 
@@ -109,21 +106,25 @@ Tested compatibility
 
 ![](https://img.shields.io/badge/Does%20not%20work-B22222)
 
-**Windows 8.1:**
+<details>
+<summary>Windows 8.1</summary>
 
 ![](https://img.shields.io/badge/xtd_0.1.1--beta-008000)
 
 ![](https://img.shields.io/badge/xtd_nightly-B22222)
 
 Notes: The window is unstable.
-
-**Windows 10**
+</details>
+<details>
+<summary>Windows 10</summary>
 
 ![](https://img.shields.io/badge/xtd_0.1.1--beta-008000)
 
 ![](https://img.shields.io/badge/xtd_nightly-008000)
 
-**Ubuntu 20.04.2.0**
+</details>
+<details>
+<summary>Ubuntu 20.04.2.0</summary>
 
 ![](https://img.shields.io/badge/xtd_0.1.1--beta-FFA500)
 
@@ -131,11 +132,14 @@ Notes: Everything works except async (building and extracting CIA)
 
 ![](https://img.shields.io/badge/xtd_nightly-008000)
 
-**Wine (manjaro)**
+</details>
+<details>
+<summary>Wine (manjaro)</summary>
 
 ![](https://img.shields.io/badge/xtd_0.1.1--beta-FFA500)
 
 Notes: Clicking on `choice` objects and resizing the parameters window causes the program to stop responding. Your mileage may vary.
+</details>
 
 Translation
 --
