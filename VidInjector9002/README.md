@@ -109,6 +109,8 @@ Tested compatibility
 
 ![](https://img.shields.io/badge/xtd_nightly-B22222)
 
+Notes: The window is unstable.
+
 **Windows 10**
 
 ![](https://img.shields.io/badge/xtd_0.1.1--beta-008000)
