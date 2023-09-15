@@ -138,7 +138,7 @@ Notes: Everything works except async (building and extracting CIA)
 
 ![](https://img.shields.io/badge/xtd_0.1.1--beta-FFA500)
 
-Notes: Clicking on `choice` objects and resizing the parameters window causes the program to stop responding. Your mileage may vary.
+Notes: Clicking on `choice` objects and resizing the parameters window causes the program to stop responding. However, you can use the scroll wheel to change `choice` values and resize the window while in the other menus to work around these.
 </details>
 
 Translation
