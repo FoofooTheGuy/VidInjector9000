@@ -654,7 +654,7 @@ form1::form1() {
 
     bannerpreviewleft.parent(parameters);
     bannerpreviewleft.auto_size(true);
-    bannerpreviewleft.image(LightDark.checked() ? pixels_to_image(invert_pixels(arrow_left, 6, 6, 2), 6, 6, 2) : pixels_to_image(arrow_left, 6, 6, 2));
+    bannerpreviewleft.image(pixels_to_image(arrow_left, 6, 6, 2));
     bannerpreviewleft.click += [&] {
         if (bannerpreviewindex != 0)
             bannerpreviewindex--;
@@ -668,7 +668,7 @@ form1::form1() {
 
     bannerpreviewright.parent(parameters);
     bannerpreviewright.auto_size(true);
-    bannerpreviewright.image(LightDark.checked() ? pixels_to_image(invert_pixels(arrow_right, 6, 6, 2), 6, 6, 2) : pixels_to_image(arrow_right, 6, 6, 2));
+    bannerpreviewright.image(pixels_to_image(arrow_right, 6, 6, 2));
     bannerpreviewright.click += [&] {
         if (bannerpreviewindex != rows - 1)
             bannerpreviewindex++;
@@ -691,40 +691,6 @@ form1::form1() {
             text_box_array.at(y * columns + x)->text_changed += [&] {
                 if (autoSaveParams && loaded) saveSettings();
             };
-            /*{
-                static bool justchanged = false;
-                text_box_array.at(y * columns + x)->mouse_move += [&](object& sender, const xtd::forms::mouse_event_args& e) {
-                    if (e.button() == xtd::forms::mouse_buttons::right) {
-                        text_box_array.at(x * columns + y)->cursor(xtd::forms::cursors::closed_hand());
-                        for (uint8_t y = 0; y < rows; y++)
-                            for (uint8_t x = 0; x < columns; x++) {
-                                if (text_box_array.at(y * columns + x)->get_hash_code() == sender.get_hash_code()) {
-                                    static int32_t inity = 0;
-                                    if (!justchanged)
-                                        inity = e.location().y();
-                                    justchanged = true;
-                                    debugs.text(xtd::ustring::format("from: row={}, column={}, mouse_move={{button={}, clicks={}, delta={}, location=[{}], modifier_keys=[{}]}}", y, x, e.button(), e.clicks(), e.delta(), e.location(), modifier_keys()));
-                                    for (int i = 0; i < columns; i++) {
-                                        text_box_array.at(y * columns + i)->location({ text_box_array.at(y * columns + i)->location().x(), text_box_array.at(y * columns + i)->location().y() + e.location().y() - inity });
-                                    }
-                                    return;
-                                }
-                            }
-                    }
-                };
-                text_box_array.at(y * columns + x)->mouse_up += [&](object& sender, const xtd::forms::mouse_event_args& e) {
-                    justchanged = false;
-                    text_box_array.at(0)->location({ 0, 0 });
-                    for (uint8_t y = 0; y < rows; y++)
-                        for (uint8_t x = 0; x < columns; x++) {
-                            if (text_box_array.at(y * columns + x)->get_hash_code() == sender.get_hash_code()) {
-                                if (text_box_array.at(y * columns + x)->cursor() != xtd::forms::cursors::ibeam())
-                                    text_box_array.at(y * columns + x)->cursor(xtd::forms::cursors::ibeam());
-                            }
-                            text_box_array.at(y * columns + x)->location({ text_box_array.at(0)->location().x() + (x * text_box_array.at(y * columns + x)->width()), text_box_array.at(0)->location().y() + (y * text_box_array.at(y * columns + x)->height()) });
-                        }
-                };
-            }*/
             if(y * columns + x > 1)
                 text_box_array.at(y * columns + x)->enabled(mode.selected_index());
         }
@@ -738,7 +704,7 @@ form1::form1() {
             butt_array.at(y * 2 + i)->cursor(xtd::forms::cursors::hand());
             butt_array.at(y * 2 + i)->size({ text_box_array.at(0)->height() / 2, text_box_array.at(0)->height() / 2 });
             if (i == 0) {//if even (up button)
-                butt_array.at(y * 2)->image(LightDark.checked() ? pixels_to_image(invert_pixels(arrow_up, 6, 6, 2), 6, 6, 2) : pixels_to_image(arrow_up, 6, 6, 2));
+                butt_array.at(y * 2)->image(pixels_to_image(arrow_up, 6, 6, 2));
                 butt_array.at(y * 2)->mouse_click += [&](object& sender, const xtd::forms::mouse_event_args& e) {
                     for (uint8_t r = 0; r < rows * 2; r += 2) {
                         if (butt_array.at(r)->get_hash_code() == sender.get_hash_code()) {
@@ -757,7 +723,7 @@ form1::form1() {
                 };
             }
             else if (i == 1) {//if odd (down button)
-                butt_array.at(y * 2 + 1)->image(LightDark.checked() ? pixels_to_image(invert_pixels(arrow_down, 6, 6, 2), 6, 6, 2) : pixels_to_image(arrow_down, 6, 6, 2));
+                butt_array.at(y * 2 + 1)->image(pixels_to_image(arrow_down, 6, 6, 2));
                 butt_array.at(y * 2 + 1)->mouse_click += [&](object& sender, const xtd::forms::mouse_event_args& e) {
                     for (uint8_t r = 1; r < rows * 2; r += 2) {
                         if (butt_array.at(r)->get_hash_code() == sender.get_hash_code()) {
@@ -830,7 +796,7 @@ form1::form1() {
         }*/
         xtd::ustring filepath = load_file(xtd::ustring::format("{} {}", SupportedImage200x120, SupportedImageListBanner), text_box_array.at((rows - 1) * columns + 2)->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
         if (filepath.empty()) return;
-        int emptyRow;
+        uint8_t emptyRow;
         for (emptyRow = 0; emptyRow < rows - 1; emptyRow++) {
             if (text_box_array[emptyRow * columns + 2]->text().empty()) {
                 break;
@@ -929,7 +895,7 @@ form1::form1() {
 
     randomizeTitleID.parent(finalize);
     randomizeTitleID.size({ 38, 38 });
-    randomizeTitleID.image(LightDark.checked() ? pixels_to_image(invert_pixels(randomize_array, 30, 27, 2), 30, 27, 2) : pixels_to_image(randomize_array, 30, 27, 2));//put shuffle icon here
+    randomizeTitleID.image(pixels_to_image(randomize_array, 30, 27, 2));
     randomizeTitleID.click += [&] {
         titleIDbox.text(xtd::ustring::format("{:X5}", RandomTID()));
         titleIDbox.select(titleIDbox.text().size(), 0);//put beam at the end
@@ -1016,7 +982,7 @@ form1::form1() {
 
     randomizeProductCode.parent(finalize);
     randomizeProductCode.size({ 38, 38 });
-    randomizeProductCode.image(pixels_to_image(randomize_array, 30, 27, 2));//since invert image permanantly changed the picture, we can just do this now
+    randomizeProductCode.image(pixels_to_image(randomize_array, 30, 27, 2));
     randomizeProductCode.click += [&] {
         std::string set = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         std::string outText = "";
@@ -2394,28 +2360,36 @@ form1::form1() {
             int WideMediaText = getLargestNumber(wideVec);
 
             mediabox.size({ parameters.width() - copybox.location().x() * 2, parameters.height() - (copybox.location().y() + copybox.height() + playertitletxt.height()) - copybox.location().x() });
-            if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + rowtxt.height() + 5) {//if scroll is there (add 5 for good measure. we don't want the horizontal scroll showing up)
+            if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + rowtxt.height()) {//if scroll is there
                 if (mediabox.width() - text_box_array.at(0)->height() / 2 < WideMediaText * columns) {
                     for (int y = 0; y < rows; y++)
-                        for (int x = 0; x < columns; x++)
-                            text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
+                        for (int x = 0; x < columns; x++) {
+                            if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
+                            else text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
+                        }
                 }
                 else {
                     for (int y = 0; y < rows; y++)
-                        for (int x = 0; x < columns; x++)
-                            text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns) - 20) / columns);
+                        for (int x = 0; x < columns; x++) {
+                            if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns) - 20) / columns);
+                            else text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns) - 20) / columns);
+                        }
                 }
             }
             else {
                 if (mediabox.width() - text_box_array.at(0)->height() / 2 < WideMediaText * columns) {
                     for (int y = 0; y < rows; y++)
-                        for (int x = 0; x < columns; x++)
-                            text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
+                        for (int x = 0; x < columns; x++) {
+                            if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
+                            else text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
+                        }
                 }
                 else {
                     for (int y = 0; y < rows; y++)
-                        for (int x = 0; x < columns; x++)
-                            text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns)) / columns);
+                        for (int x = 0; x < columns; x++) {
+                            if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns)) / columns);
+                            else text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns)) / columns);
+                        }
                 }
             }
         }

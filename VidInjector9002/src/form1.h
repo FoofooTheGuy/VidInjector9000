@@ -393,7 +393,7 @@ namespace VidInjector9002 {
                         butt_array.at(y * 2 + i)->cursor(xtd::forms::cursors::hand());
                         butt_array.at(y * 2 + i)->size({ text_box_array.at(0)->height() / 2, text_box_array.at(0)->height() / 2 });
                         if (i == 0) {//if even (up button)
-                            butt_array.at(y * 2)->image(LightDark.checked() ? pixels_to_image(invert_pixels(arrow_up, 6, 6, 2), 6, 6, 2) : pixels_to_image(arrow_up, 6, 6, 2));
+                            butt_array.at(y * 2)->image(pixels_to_image(arrow_up, 6, 6, 2));
                             butt_array.at(y * 2)->mouse_click += [&](object& sender, const xtd::forms::mouse_event_args& e) {
                                 for (uint8_t r = 0; r < rows * 2; r += 2) {
                                     if (butt_array.at(r)->get_hash_code() == sender.get_hash_code()) {
@@ -412,7 +412,7 @@ namespace VidInjector9002 {
                             };
                         }
                         else if (i == 1) {//if odd (down button)
-                            butt_array.at(y * 2 + 1)->image(LightDark.checked() ? pixels_to_image(invert_pixels(arrow_down, 6, 6, 2), 6, 6, 2) : pixels_to_image(arrow_down, 6, 6, 2));
+                            butt_array.at(y * 2 + 1)->image(pixels_to_image(arrow_down, 6, 6, 2));
                             butt_array.at(y * 2 + 1)->mouse_click += [&](object& sender, const xtd::forms::mouse_event_args& e) {
                                 for (uint8_t r = 1; r < rows * 2; r += 2) {
                                     if (butt_array.at(r)->get_hash_code() == sender.get_hash_code()) {
@@ -449,7 +449,7 @@ namespace VidInjector9002 {
                 int WideMediaText = getLargestNumber(wideVec);
 
                 //mediabox.size({ parameters.width() - copybox.location().x() * 2, parameters.height() - (copybox.location().y() + copybox.height() + playertitletxt.height()) - copybox.location().x() });
-                if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + rowtxt.height() + 5) {//if scroll is there (add 5 for good measure. we don't want the horizontal scroll showing up)
+                if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + rowtxt.height()) {//if scroll is there
                     if (mediabox.width() - text_box_array.at(0)->height() / 2 < WideMediaText * columns) {
                         for (uint8_t y = 0; y < rows; y++)
                             for (uint8_t x = 0; x < columns; x++)
@@ -523,33 +523,41 @@ namespace VidInjector9002 {
             indextxt.text(xtd::ustring::format("{}/{}", bannerpreviewindex + 1, rows));
             removemedia.enabled(rows > 1);
             appendmedia.enabled(true);
-            {//put this stuff in it's own scope for less variable clutter (???)
+            {
                 std::vector<int> wideVec = { moflextxt.width(), playertitletxt.width(), menubannertxt.width() + bannermulti.width() + 3 };
                 int WideMediaText = getLargestNumber(wideVec);
 
-                //mediabox.size({ parameters.width() - copybox.location().x() * 2, parameters.height() - (copybox.location().y() + copybox.height() + playertitletxt.height()) - copybox.location().x() });
-                if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + rowtxt.height() + 5) {//if scroll is there (add 5 for good measure. we don't want the horizontal scroll showing up)
+                mediabox.size({ parameters.width() - copybox.location().x() * 2, parameters.height() - (copybox.location().y() + copybox.height() + playertitletxt.height()) - copybox.location().x() });
+                if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + rowtxt.height()) {//if scroll is there
                     if (mediabox.width() - text_box_array.at(0)->height() / 2 < WideMediaText * columns) {
-                        for (uint8_t y = 0; y < rows; y++)
-                            for (uint8_t x = 0; x < columns; x++)
-                                text_box_array.at(y * columns + x)->width(WideMediaText);
+                        for (int y = 0; y < rows; y++)
+                            for (int x = 0; x < columns; x++) {
+                                if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
+                                else text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
+                            }
                     }
                     else {
-                        for (uint8_t y = 0; y < rows; y++)
-                            for (uint8_t x = 0; x < columns; x++)
-                                text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns) - 20) / columns);
+                        for (int y = 0; y < rows; y++)
+                            for (int x = 0; x < columns; x++) {
+                                if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns) - 20) / columns);
+                                else text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns) - 20) / columns);
+                            }
                     }
                 }
                 else {
                     if (mediabox.width() - text_box_array.at(0)->height() / 2 < WideMediaText * columns) {
-                        for (uint8_t y = 0; y < rows; y++)
-                            for (uint8_t x = 0; x < columns; x++)
-                                text_box_array.at(y * columns + x)->width(WideMediaText);
+                        for (int y = 0; y < rows; y++)
+                            for (int x = 0; x < columns; x++) {
+                                if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
+                                else text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
+                            }
                     }
                     else {
-                        for (uint8_t y = 0; y < rows; y++)
-                            for (uint8_t x = 0; x < columns; x++)
-                                text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns)) / columns);
+                        for (int y = 0; y < rows; y++)
+                            for (int x = 0; x < columns; x++) {
+                                if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns)) / columns);
+                                else text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns)) / columns);
+                            }
                     }
                 }
             }
@@ -968,6 +976,13 @@ namespace VidInjector9002 {
                 //make all the containers black or white
                 this->fore_color(LightDark.checked() ? xtd::drawing::color::white : xtd::drawing::color::black);
                 this->back_color(LightDark.checked() ? xtd::drawing::color::black : xtd::drawing::color::white);
+                if (LightDark.checked()) {//if dark mode
+                    invert_pixels(randomize_array, 30, 27, 2);
+                    invert_pixels(arrow_up, 6, 6, 2);
+                    invert_pixels(arrow_down, 6, 6, 2);
+                    invert_pixels(arrow_left, 6, 6, 2);
+                    invert_pixels(arrow_right, 6, 6, 2);
+                }
                 //tab_control.fore_color(fore_color());
                 //tab_control.back_color(back_color());//these dont work idk why
                 parameters.fore_color(fore_color());
