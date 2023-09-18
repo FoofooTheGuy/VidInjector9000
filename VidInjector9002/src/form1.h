@@ -390,6 +390,7 @@ namespace VidInjector9002 {
                         butt_array.push_back(button_new);
                         butt_array.at(y * 2 + i)->parent(mediabox);
                         butt_array.at(y * 2 + i)->border_style(xtd::forms::border_style::fixed_3d);
+                        butt_array.at(y * 2 + i)->cursor(xtd::forms::cursors::hand());
                         butt_array.at(y * 2 + i)->size({ text_box_array.at(0)->height() / 2, text_box_array.at(0)->height() / 2 });
                         if (i == 0) {//if even (up button)
                             butt_array.at(y * 2)->image(LightDark.checked() ? pixels_to_image(invert_pixels(arrow_up, 6, 6, 2), 6, 6, 2) : pixels_to_image(arrow_up, 6, 6, 2));
