@@ -6,7 +6,7 @@
 #include <chrono>
 #include <random>
 
-#include "images.h"
+#include "images.hpp"
 #include "arrays.h"
 #include "files.hpp"
 #include "formatting.hpp"
