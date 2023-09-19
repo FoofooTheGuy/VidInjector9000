@@ -2368,7 +2368,7 @@ form1::form1() {
 
             mediabox.size({ parameters.width() - copybox.location().x() * 2, parameters.height() - (copybox.location().y() + copybox.height() + playertitletxt.height()) - copybox.location().x() });
             if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + rowtxt.height()) {//if scroll is there
-                if (mediabox.width() - text_box_array.at(0)->height() / 2 < WideMediaText * columns) {
+                if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
                     for (int y = 0; y < rows; y++)
                         for (int x = 0; x < columns; x++) {
                             if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
@@ -2384,7 +2384,7 @@ form1::form1() {
                 }
             }
             else {
-                if (mediabox.width() - text_box_array.at(0)->height() / 2 < WideMediaText * columns) {
+                if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
                     for (int y = 0; y < rows; y++)
                         for (int x = 0; x < columns; x++) {
                             if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);

@@ -447,29 +447,37 @@ namespace VidInjector9002 {
                 std::vector<int> wideVec = { moflextxt.width(), playertitletxt.width(), menubannertxt.width() + bannermulti.width() + 3 };
                 int WideMediaText = getLargestNumber(wideVec);
 
-                //mediabox.size({ parameters.width() - copybox.location().x() * 2, parameters.height() - (copybox.location().y() + copybox.height() + playertitletxt.height()) - copybox.location().x() });
+                mediabox.size({ parameters.width() - copybox.location().x() * 2, parameters.height() - (copybox.location().y() + copybox.height() + playertitletxt.height()) - copybox.location().x() });
                 if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + rowtxt.height()) {//if scroll is there
-                    if (mediabox.width() - text_box_array.at(0)->height() / 2 < WideMediaText * columns) {
-                        for (uint8_t y = 0; y < rows; y++)
-                            for (uint8_t x = 0; x < columns; x++)
-                                text_box_array.at(y * columns + x)->width(WideMediaText);
+                    if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
+                        for (int y = 0; y < rows; y++)
+                            for (int x = 0; x < columns; x++) {
+                                if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
+                                else text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
+                            }
                     }
                     else {
-                        for (uint8_t y = 0; y < rows; y++)
-                            for (uint8_t x = 0; x < columns; x++)
-                                text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns) - 20) / columns);
+                        for (int y = 0; y < rows; y++)
+                            for (int x = 0; x < columns; x++) {
+                                if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns) - 20) / columns);
+                                else text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns) - 20) / columns);
+                            }
                     }
                 }
                 else {
-                    if (mediabox.width() - text_box_array.at(0)->height() / 2 < WideMediaText * columns) {
-                        for (uint8_t y = 0; y < rows; y++)
-                            for (uint8_t x = 0; x < columns; x++)
-                                text_box_array.at(y * columns + x)->width(WideMediaText);
+                    if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
+                        for (int y = 0; y < rows; y++)
+                            for (int x = 0; x < columns; x++) {
+                                if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
+                                else text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
+                            }
                     }
                     else {
-                        for (uint8_t y = 0; y < rows; y++)
-                            for (uint8_t x = 0; x < columns; x++)
-                                text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns)) / columns);
+                        for (int y = 0; y < rows; y++)
+                            for (int x = 0; x < columns; x++) {
+                                if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns)) / columns);
+                                else text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns)) / columns);
+                            }
                     }
                 }
             }
@@ -527,7 +535,7 @@ namespace VidInjector9002 {
 
                 mediabox.size({ parameters.width() - copybox.location().x() * 2, parameters.height() - (copybox.location().y() + copybox.height() + playertitletxt.height()) - copybox.location().x() });
                 if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + rowtxt.height()) {//if scroll is there
-                    if (mediabox.width() - text_box_array.at(0)->height() / 2 < WideMediaText * columns) {
+                    if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
                         for (int y = 0; y < rows; y++)
                             for (int x = 0; x < columns; x++) {
                                 if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
@@ -543,7 +551,7 @@ namespace VidInjector9002 {
                     }
                 }
                 else {
-                    if (mediabox.width() - text_box_array.at(0)->height() / 2 < WideMediaText * columns) {
+                    if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
                         for (int y = 0; y < rows; y++)
                             for (int x = 0; x < columns; x++) {
                                 if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
