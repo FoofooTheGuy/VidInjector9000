@@ -452,15 +452,13 @@ namespace VidInjector9002 {
                     if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
                         for (int y = 0; y < rows; y++)
                             for (int x = 0; x < columns; x++) {
-                                if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
-                                else text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
+                                text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
                             }
                     }
                     else {
                         for (int y = 0; y < rows; y++)
                             for (int x = 0; x < columns; x++) {
-                                if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns) - 20) / columns);
-                                else text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns) - 20) / columns);
+                                text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns) - 20) / columns);
                             }
                     }
                 }
@@ -468,15 +466,13 @@ namespace VidInjector9002 {
                     if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
                         for (int y = 0; y < rows; y++)
                             for (int x = 0; x < columns; x++) {
-                                if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
-                                else text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
+                                text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
                             }
                     }
                     else {
                         for (int y = 0; y < rows; y++)
                             for (int x = 0; x < columns; x++) {
-                                if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns)) / columns);
-                                else text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns)) / columns);
+                                text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns)) / columns);
                             }
                     }
                 }
