@@ -1771,6 +1771,7 @@ form1::form1() {
         parampath = filepath;
         loadParameters();
         loaded = true;//re-enable this after the previous function disabled it (it's okay because if you clicked this, we're loaded)
+        SetIconPreview();
     };
 
     loadCIAbutt.parent(settings);
@@ -2228,7 +2229,8 @@ form1::form1() {
             xtd::ustring outstr = "";
             removeQuotes(entrystr);
             if (std::filesystem::is_directory(entry)) {
-                if (fileParse(outstr, xtd::ustring::format("{}/Language.txt", entrystr).c_str(), inLangLanguage)) {
+                std::vector<xtd::ustring> filelines = fileRead(xtd::ustring::format("{}/Language.txt", entrystr));
+                if (parseLines(outstr, filelines, inLangLanguage)) {
                     LanguageChoiche.items().push_back(outstr);
                     LanguageVec.push_back(entrystr.substr(entrystr.find_last_of("/\\") + 1));
                 }

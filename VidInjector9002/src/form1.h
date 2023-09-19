@@ -604,12 +604,28 @@ namespace VidInjector9002 {
 
         /*do this to your file data
         out: pointer to output data
-        inpath: path of parameters file
-        query: variable to take from inpath e.g. STRING:VER
+        filelines: vector of lines
+        query: variable to take from lines e.g. STRING:VER
         return: true if it's success, false if it's not found*/
-        bool fileParse(xtd::ustring& out, xtd::ustring inpath, std::string query) {
-            if (!std::filesystem::exists(inpath.c_str())) return false;
+        bool parseLines(xtd::ustring& out, std::vector<xtd::ustring> filelines, std::string query) {
+            xtd::ustring line = "";
+            for (auto& str : filelines) {
+                if (str.substr(0, str.find_first_of("=")) == query) {
+                    size_t first = 0;
+                    size_t second = 0;
+                    first = str.find_first_of("\"") + 1;
+                    if (first > str.size()) first = 0;
+                    if (first) second = str.substr(first).find_last_of("\"");
+                    out = str.substr(first).substr(0, second);
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        std::vector<xtd::ustring> fileRead(xtd::ustring inpath) {
             std::vector<xtd::ustring> filelines;
+            if (!std::filesystem::exists(inpath.c_str())) return filelines;
             std::ifstream infile(inpath, std::ios_base::in | std::ios_base::binary);
             char Byte;
             xtd::ustring line = "";
@@ -629,18 +645,7 @@ namespace VidInjector9002 {
                 //printf("%1X\n", Byte);
                 infile.read(&Byte, 1);//grab next byte of file
             }
-            for (auto& str : filelines) {
-                if (str.substr(0, str.find_first_of("=")) == query) {
-                    size_t first = 0;
-                    size_t second = 0;
-                    first = str.find_first_of("\"") + 1;
-                    if (first > str.size()) first = 0;
-                    if (first) second = str.substr(first).find_last_of("\"");
-                    out = str.substr(first).substr(0, second);
-                    return true;
-                }
-            }
-            return false;
+            return filelines;
         }
 
         void saveParameters() {
@@ -681,7 +686,10 @@ namespace VidInjector9002 {
                 //xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({}) {}", TheFile, parampath, DoesntExist), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 return false;
             }
-            if (fileParse(outstr, parampath, StrVerParam)) {
+            std::vector<xtd::ustring> filelines = fileRead(parampath);
+            if (filelines.size() == 0)
+                return false;
+            if (parseLines(outstr, filelines, StrVerParam)) {
                 if (outstr != VI9PVER) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({})\n{} {}", BadVersion, outstr, SupportedVersion, VI9PVER), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     return false;
@@ -693,7 +701,7 @@ namespace VidInjector9002 {
                 return false;
             }
             settings.cursor(xtd::forms::cursors::wait_cursor());
-            if (fileParse(outstr, parampath, IntMultiParam)) {
+            if (parseLines(outstr, filelines, IntMultiParam)) {
                 if (!stoul_s(outrealint, outstr)) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({})\n{} {}", BadValue, outstr, IntMultiParam, BeANumber), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     outrealint = 0;
@@ -705,21 +713,21 @@ namespace VidInjector9002 {
                 good = false;
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, IntMultiParam, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
             }
-            if (fileParse(outstr, parampath, StrBannerParam)) {
+            if (parseLines(outstr, filelines, StrBannerParam)) {
                 bannerbox.text(outstr);
             }
             else {
                 good = false;
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, StrBannerParam, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
             }
-            if (fileParse(outstr, parampath, StrIconParam)) {
+            if (parseLines(outstr, filelines, StrIconParam)) {
                 iconbox.text(outstr);
             }
             else {
                 good = false;
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, StrIconParam, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
             }
-            if (fileParse(outstr, parampath, IntIconBorderParam)) {
+            if (parseLines(outstr, filelines, IntIconBorderParam)) {
                 if (!stoul_s(outrealint, outstr)) {
                     outrealint = 2;
                 }
@@ -729,28 +737,28 @@ namespace VidInjector9002 {
                 good = false;
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, IntIconBorderParam, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
             }
-            if (fileParse(outstr, parampath, StrSNameParam)) {
+            if (parseLines(outstr, filelines, StrSNameParam)) {
                 shortname.text(outstr);
             }
             else {
                 good = false;
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, StrSNameParam, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
             }
-            if (fileParse(outstr, parampath, StrLNameParam)) {
+            if (parseLines(outstr, filelines, StrLNameParam)) {
                 longname.text(outstr);
             }
             else {
                 good = false;
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, StrLNameParam, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
             }
-            if (fileParse(outstr, parampath, StrPublisherParam)) {
+            if (parseLines(outstr, filelines, StrPublisherParam)) {
                 publisher.text(outstr);
             }
             else {
                 good = false;
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, StrPublisherParam, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
             }
-            if (fileParse(outstr, parampath, IntCopycheckParam)) {
+            if (parseLines(outstr, filelines, IntCopycheckParam)) {
                 if (!stoul_s(outrealint, outstr)) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({})\n{} {}", BadValue, outstr, IntCopycheckParam, BeANumber), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     outrealint = 0;
@@ -762,14 +770,14 @@ namespace VidInjector9002 {
                 good = false;
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, IntCopycheckParam, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
             }
-            if (fileParse(outstr, parampath, StrCopyrightParam)) {
+            if (parseLines(outstr, filelines, StrCopyrightParam)) {
                 copybox.text(outstr);
             }
             else {
                 good = false;
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, StrCopyrightParam, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
             }
-            if (fileParse(outstr, parampath, IntFFrewindParam)) {
+            if (parseLines(outstr, filelines, IntFFrewindParam)) {
                 if (!stoul_s(outrealint, outstr)) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({})\n{} {}", BadValue, outstr, IntFFrewindParam, BeANumber), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     outrealint = 0;
@@ -781,7 +789,7 @@ namespace VidInjector9002 {
                 good = false;
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, IntFFrewindParam, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
             }
-            if (fileParse(outstr, parampath, IntFadeOptParam)) {
+            if (parseLines(outstr, filelines, IntFadeOptParam)) {
                 if (!stoul_s(outrealint, outstr)) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({})\n{} {}", BadValue, outstr, IntFadeOptParam, BeANumber), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     outrealint = 0;
@@ -793,7 +801,7 @@ namespace VidInjector9002 {
                 good = false;
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, IntFadeOptParam, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
             }
-            if (fileParse(outstr, parampath, IntRowsParam)) {
+            if (parseLines(outstr, filelines, IntRowsParam)) {
                 if (!stoul_s(outrealint, outstr)) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({})\n{} {}", BadValue, outstr, IntRowsParam, BeANumber), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     outrealint = 0;
@@ -823,21 +831,21 @@ namespace VidInjector9002 {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, IntRowsParam, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
             }
             for (int y = 0; y < rows; y++) {
-                if (fileParse(outstr, parampath, xtd::ustring::format("{}({})", StrPTitleParam, y))) {
+                if (parseLines(outstr, filelines, xtd::ustring::format("{}({})", StrPTitleParam, y))) {
                     text_box_array.at(y * columns + 0)->text(outstr);
                 }
                 else {
                     good = false;
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}({})\n{}.", FailedToFindVar, StrPTitleParam, y, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 }
-                if (fileParse(outstr, parampath, xtd::ustring::format("{}({})", StrMoflexParam, y))) {
+                if (parseLines(outstr, filelines, xtd::ustring::format("{}({})", StrMoflexParam, y))) {
                     text_box_array.at(y * columns + 1)->text(outstr);
                 }
                 else {
                     good = false;
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}({})\n{}.", FailedToFindVar, StrMoflexParam, y, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 }
-                if (fileParse(outstr, parampath, xtd::ustring::format("{}({})", StrMBannerParam, y))) {
+                if (parseLines(outstr, filelines, xtd::ustring::format("{}({})", StrMBannerParam, y))) {
                     text_box_array.at(y * columns + 2)->text(outstr);
                 }
                 else {
@@ -845,7 +853,7 @@ namespace VidInjector9002 {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}({})\n{}.", FailedToFindVar, StrMBannerParam, y, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 }
             }
-            if (fileParse(outstr, parampath, IntPreIndexParam)) {
+            if (parseLines(outstr, filelines, IntPreIndexParam)) {
                 if (!stoul_s(outrealint, outstr)) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({})\n{} {}", BadValue, outstr, IntPreIndexParam, BeANumber), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     outrealint = 0;
@@ -875,10 +883,13 @@ namespace VidInjector9002 {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToFindPath, xtd::ustring::format("{}/{}/language/{}/Language.txt", ProgramDir, resourcesPath, Lang)), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 return false;
             }
+            std::vector<xtd::ustring> filelines = fileRead(xtd::ustring::format("{}/{}/language/{}/Language.txt", ProgramDir, resourcesPath, Lang));
+            if (filelines.size() == 0)
+                return false;
             std::vector<xtd::ustring*> inLangVec = { &inLangLanguage, &inLangFormText, &inLangByMeText, &inLangParametersText, &inLangFinalizeText, &inLangOptionsText, &inLangModeText, &inLangSingleVideo, &inLangMultiVideo, &inLangBannerText, &inLangBrowse, &inLangSupportedImage48x48, &inLangSupportedImage200x120, &inLangSupportedImageListBanner, &inLangSupportedImageList, &inLangCGFXList, &inLangSMDHList, &inLangAllFilesList, &inLangMoflexFilesList, &inLangParamFilesList, &inLangErrorText, &inLangImageInfoError, &inLangBannerPreviewText, &inLangCustomNotifText, &inLangIconText, &inLangShortNameText, &inLangLongNameText, &inLangPublisherText, &inLangTextTooLongError, &inLangMultiOnlyText, &inLangCopyrightCheckText, &inLangFFrewindText, &inLangFadeOptText, &inLangPlayerTitleText, &inLangMoflexFileText, &inLangMenuBannerText, &inLangSaveButtText, &inLangLoadButtText, &inLangLoadCIAButtText, &inLangAutoSaveText, &inLangAutoLoadText, &inLangDeleteTempFiles, &inLangLightModeText, &inLangDarkModeText, &inLangLanguageText, &inLangRestartText, &inLangConfirmClose, &inLangLosedata, &inLangConfirmSave, &inLangAlreadyExists, &inLangReplaceIt, &inLangBadValue, &inLangBadVersion, &inLangSupportedVersion, &inLangBeANumber, &inLangMissingVariableError, &inLangFailedToFindVar, &inLangFailedToFindPath, &inLangFailedToFindFile, &inLangFailedToReadFile, &inLangFailedToCreateFile, &inLangFailedToConvertImage, &inLangValueNoChange, &inLangnoMoreThan27, &inLangParametersLoaded, &inLangSuccessfullyLoaded, &inLangFailedToLoad, &inLangValidStillLoaded, &inLangTheFile, &inLangDoesntExist, &inLangLanguageChanged, &inLangRestartProgram, &inLangWasEnabled, &inLangTitleIDText, &inLangAppNameText, &inLangProductCodetext, &inLangBuildCIAText, &inLangCancel, &inLangMoflexError, &inLangrow, &inLangcolumn, &inLangCreatingFile, &inLangCopyingMoflex, &inLangCiaFiles, &inLangCiaBuilt, };
             std::vector<xtd::ustring*> LangVec = { &Language, &FormText, &ByMeText, &ParametersText, &FinalizeText, &OptionsText, &ModeText, &SingleVideo, &MultiVideo, &BannerText, &Browse, &SupportedImage48x48, &SupportedImage200x120, &SupportedImageListBanner, &SupportedImageList, &CGFXList, &SMDHList, &AllFilesList, &MoflexFilesList, &ParamFilesList, &ErrorText, &ImageInfoError, &BannerPreviewText, &CustomNotifText, &IconText, &ShortNameText, &LongNameText, &PublisherText, &TextTooLongError, &MultiOnlyText, &CopyrightCheckText, &FFrewindText, &FadeOptText, &PlayerTitleText, &MoflexFileText, &MenuBannerText, &SaveButtText, &LoadButtText, &LoadCIAButtText, &AutoSaveText, &AutoLoadText, &DeleteTempFiles, &LightModeText, &DarkModeText, &LanguageText, &RestartText, &ConfirmClose, &Losedata, &ConfirmSave, &AlreadyExists, &ReplaceIt, &BadValue, &BadVersion, &SupportedVersion, &BeANumber, &MissingVariableError, &FailedToFindVar, &FailedToFindPath, &FailedToFindFile, &FailedToReadFile, &FailedToCreateFile, &FailedToConvertImage, &ValueNoChange, &noMoreThan27, &ParametersLoaded, &SuccessfullyLoaded, &FailedToLoad, &ValidStillLoaded, &TheFile, &DoesntExist, &LanguageChanged, &RestartProgram, &WasEnabled, &TitleIDText, &AppNameText, &ProductCodetext, &BuildCIAText, &Cancel, &MoflexError, &row, &column, &CreatingFile, &CopyingMoflex, &CiaFiles, &CiaBuilt, };
             for (size_t i = 0; i < inLangVec.size(); i++) {
-                if (fileParse(outstr, xtd::ustring::format("{}/{}/language/{}/Language.txt", ProgramDir, resourcesPath, Lang), *inLangVec[i])) {
+                if (parseLines(outstr, filelines, *inLangVec[i])) {
                     *LangVec[i] = outstr;
                 }
                 else {
@@ -921,7 +932,10 @@ namespace VidInjector9002 {
                     StrParamsPath << "=\"\"\n";
                 settingsfile.close();
             }
-            if (fileParse(outstr, xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, settingsPath).c_str(), StrDefaultLanguage)) {
+            std::vector<xtd::ustring> filelines = fileRead(xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, settingsPath));
+            if (filelines.size() == 0)
+                return false;
+            if (parseLines(outstr, filelines, StrDefaultLanguage)) {
                 if (!loadLanguage(outstr)) {
                     loadLanguage("English");
                     good = false;
@@ -931,7 +945,7 @@ namespace VidInjector9002 {
                 good = false;
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, StrDefaultLanguage, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
             }
-            if (fileParse(outstr, xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, settingsPath).c_str(), IntAutoSaveParams)) {
+            if (parseLines(outstr, filelines, IntAutoSaveParams)) {
                 if (!stoul_s(outrealint, outstr)) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({})\n{} {}", BadValue, outstr, IntAutoSaveParams, BeANumber), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     outrealint = 0;
@@ -943,7 +957,7 @@ namespace VidInjector9002 {
                 good = false;
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, IntAutoSaveParams, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
             }
-            if (fileParse(outstr, xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, settingsPath).c_str(), IntAutoLoadParams)) {
+            if (parseLines(outstr, filelines, IntAutoLoadParams)) {
                 if (!stoul_s(outrealint, outstr)) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({})\n{} {}", BadValue, outstr, IntAutoLoadParams, BeANumber), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     outrealint = 0;
@@ -955,7 +969,7 @@ namespace VidInjector9002 {
                 good = false;
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, IntAutoLoadParams, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
             }
-            if (fileParse(outstr, xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, settingsPath).c_str(), IntDeleteTempFiles)) {
+            if (parseLines(outstr, filelines, IntDeleteTempFiles)) {
                 if (!stoul_s(outrealint, outstr)) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({})\n{} {}", BadValue, outstr, IntDeleteTempFiles, BeANumber), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     outrealint = 0;
@@ -967,7 +981,7 @@ namespace VidInjector9002 {
                 good = false;
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, IntDeleteTempFiles, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
             }
-            if (fileParse(outstr, xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, settingsPath).c_str(), IntDarkMode)) {
+            if (parseLines(outstr, filelines, IntDarkMode)) {
                 if (!stoul_s(outrealint, outstr)) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({})\n{} {}", BadValue, outstr, IntDarkMode, BeANumber), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     outrealint = 0;
@@ -997,7 +1011,7 @@ namespace VidInjector9002 {
                 good = false;
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, IntDarkMode, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
             }
-            if (fileParse(outstr, xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, settingsPath).c_str(), StrParamsPath)) {
+            if (parseLines(outstr, filelines, StrParamsPath)) {
                 parampath = outstr;
             }
             else {
