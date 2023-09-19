@@ -694,8 +694,6 @@ form1::form1() {
             if(y * columns + x > 1)
                 text_box_array.at(y * columns + x)->enabled(mode.selected_index());
         }
-    }
-    for (uint8_t y = 0; y < rows; y++) {
         for (uint8_t i = 0; i < 2; i++) {
             xtd::forms::picture_box* button_new = new xtd::forms::picture_box();
             butt_array.push_back(button_new);
@@ -745,6 +743,9 @@ form1::form1() {
             }
         }
     }
+    /*for (uint8_t y = 0; y < rows; y++) {
+        
+    }*/
     butt_array.at(0)->hide();
     butt_array.at(butt_array.size() - 1)->hide();
     setMultiBannerPreview(rows - 1);
@@ -769,10 +770,12 @@ form1::form1() {
         else {*/
         xtd::ustring filepath = load_file(MoflexFilesList, text_box_array[(rows - 1) * columns + 1]->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_videos));
         if (filepath.empty()) return;//big brain time
-        int emptyRow;
-        for (emptyRow = 0; emptyRow < rows - 1; emptyRow++) {
-            if (text_box_array[emptyRow * columns + 1]->text().empty()) {
-                break;
+        int emptyRow = 0;
+        if (mode.selected_index() == 1) {
+            for (emptyRow = 0; emptyRow < rows - 1; emptyRow++) {
+                if (text_box_array[emptyRow * columns + 1]->text().empty()) {
+                    break;
+                }
             }
         }
         text_box_array[emptyRow * columns + 1]->text(filepath);
@@ -2296,15 +2299,17 @@ form1::form1() {
         copycheck.enabled(mode.selected_index());
         copybox.enabled(mode.selected_index() && copycheck.checked());
         menubannertxt.enabled(mode.selected_index());
-        for (int i = 2; i <= rows * columns - 1; i++)
-            text_box_array.at(i)->enabled(mode.selected_index());
+        for (uint8_t i = 0; i < rows * columns; i++) {
+            if(i > 1)
+                text_box_array.at(i)->enabled(mode.selected_index());
+        }
         if (mode.selected_index()) menubannerpreview.cursor(xtd::forms::cursors::hand());
         else menubannerpreview.cursor(xtd::forms::cursors::no());
         bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
         bannerpreviewright.enabled(mode.selected_index() && bannerpreviewindex != rows - 1);
         multibannerbrowse.enabled(mode.selected_index());
         appendmedia.enabled(mode.selected_index() && rows < 27);
-        removemedia.enabled(mode.selected_index() && rows > 1);
+        //removemedia.enabled(rows > 1);
         if (mode.selected_index()) indextxt.show();
         else indextxt.hide();
         if (mode.selected_index()) rowtxt.show();
@@ -2523,7 +2528,7 @@ form1::form1() {
     }
 
     appendmedia.enabled(mode.selected_index() && rows < 27);
-    removemedia.enabled(mode.selected_index() && rows > 1);
+    removemedia.enabled(rows > 1);
     SetIconPreview();
     loaded = true;
     top_most(false);

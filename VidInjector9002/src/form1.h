@@ -438,7 +438,6 @@ namespace VidInjector9002 {
                 rows++;
             }
             rowtxt.text(xtd::ustring::format("{}/27", rows));
-            removemedia.enabled(mode.selected_index());
             bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
             bannerpreviewright.enabled(mode.selected_index() && bannerpreviewindex != rows - 1);
             indextxt.text(xtd::ustring::format("{}/{}", bannerpreviewindex + 1, rows));
@@ -515,14 +514,13 @@ namespace VidInjector9002 {
             for (uint8_t i = columns; i <= rows * columns - 1; i++)
                 text_box_array.at(i)->enabled(mode.selected_index());
             rowtxt.text(xtd::ustring::format("{}/27", rows));
-            appendmedia.enabled(mode.selected_index());
             if (bannerpreviewindex == rows)//if you were previewing the removed one, change the selected index
                 setMultiBannerPreview(rows - 1);
             bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
             bannerpreviewright.enabled(mode.selected_index() && bannerpreviewindex != rows - 1);
             indextxt.text(xtd::ustring::format("{}/{}", bannerpreviewindex + 1, rows));
             removemedia.enabled(rows > 1);
-            appendmedia.enabled(true);
+            appendmedia.enabled(mode.selected_index());
             {
                 std::vector<int> wideVec = { moflextxt.width(), playertitletxt.width(), menubannertxt.width() + bannermulti.width() + 3 };
                 int WideMediaText = getLargestNumber(wideVec);
