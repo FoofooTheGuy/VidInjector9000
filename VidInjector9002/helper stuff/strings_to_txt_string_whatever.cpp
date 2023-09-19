@@ -61,6 +61,12 @@ int main(int argc, char* argv[]) {
 						"\n"
 						"	}"
 						"\n"
+						"std::vector<xtd::ustring> filelines = fileRead(xtd::ustring::format(\"{}/{}/language/{}/Language.txt\", ProgramDir, resourcesPath, Lang));"
+						"\n"
+						"if (filelines.size() == 0)"
+						"\n"
+						"return false;"
+						"\n"
 						"	std::vector<xtd::ustring*> inLangVec = { ";
 	for(auto lines : filelines) {
 		std::string inLangtxt = lines;
@@ -81,7 +87,7 @@ int main(int argc, char* argv[]) {
 						"\n"
 						"	for (size_t i = 0; i < inLangVec.size(); i++) {"
 						"\n"
-						"		if (fileParse(outstr, xtd::ustring::format(\"{}/{}/language/{}/Language.txt\", ProgramDir, resourcesPath, Lang), *inLangVec[i])) {"
+						"		if (parseLines(outstr, filelines, *inLangVec[i])) {"
 						"\n"
 						"			*LangVec[i] = outstr;"
 						"\n"
