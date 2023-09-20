@@ -1987,12 +1987,14 @@ form1::form1() {
             if (cancel) {
                 ableObjects(true);
                 settings.cursor(xtd::forms::cursors::default_cursor());
+                loaded = true;
                 return;
             }
             if (!std::filesystem::exists(exportsPath.c_str())) {
                 ableObjects(true);
                 settings.cursor(xtd::forms::cursors::default_cursor());
                 xtd::forms::message_box::show(*this, xtd::ustring::format("\"{}\"", filepath), xtd::ustring::format("{} {}", ErrorText, FailedToReadFile), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                loaded = true;
                 return;
             }
 
