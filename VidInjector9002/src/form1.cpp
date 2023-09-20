@@ -2305,8 +2305,9 @@ form1::form1() {
             if(i > 1)
                 text_box_array.at(i)->enabled(mode.selected_index());
         }
-        if (mode.selected_index()) menubannerpreview.cursor(xtd::forms::cursors::hand());
-        else menubannerpreview.cursor(xtd::forms::cursors::no());
+        menubannerpreview.cursor(mode.selected_index() ? xtd::forms::cursors::hand() : xtd::forms::cursors::no());
+        if (mode.selected_index()) setMultiBannerPreview(bannerpreviewindex);
+        else setDefaultBannerPreview(menubannerpreview, nullptr);
         bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
         bannerpreviewright.enabled(mode.selected_index() && bannerpreviewindex != rows - 1);
         multibannerbrowse.enabled(mode.selected_index());
