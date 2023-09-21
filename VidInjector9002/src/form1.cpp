@@ -188,21 +188,12 @@ form1::form1() {
             uint32_t formatID0;
             uint32_t size0;
             ret = getCGFXtextureInfo(CGFXdecomp, "COMMON0", dataOffset0, height0, width0, mipmap0, formatID0, size0);
-            if (ret > 0) {
+            if (ret > 0 || height0 != 0x80 || width0 != 0x100 || formatID0 != 0x3) {
                 bannerpreview.image(empty(0, 0));
                 customnotif.show();
                 free(CGFXdecomp);
                 return;
             }
-            uint8_t* COMMON0 = (uint8_t*)malloc(size0);
-            if (COMMON0 == NULL) {
-                bannerpreview.image(empty(0, 0));
-                customnotif.show();
-                free(CGFXdecomp);
-                free(COMMON0);
-                return;
-            }
-            memcpy(COMMON0, &CGFXdecomp[dataOffset0], size0);
 
             uint32_t dataOffset1;
             uint32_t height1;
@@ -211,50 +202,35 @@ form1::form1() {
             uint32_t formatID1;
             uint32_t size1;
             ret = getCGFXtextureInfo(CGFXdecomp, "COMMON1", dataOffset1, height1, width1, mipmap1, formatID1, size1);
-            if (ret > 0) {
+            if (ret > 0 || height1 != 0x80 || width1 != 0x100 || formatID1 != 0xC) {
                 bannerpreview.image(empty(0, 0));
                 customnotif.show();
                 free(CGFXdecomp);
-                free(COMMON0);
                 return;
             }
-            uint8_t* COMMON1 = (uint8_t*)malloc(size1);
-            if (COMMON1 == NULL) {
-                bannerpreview.image(empty(0, 0));
-                customnotif.show();
-                free(CGFXdecomp);
-                free(COMMON0);
-                free(COMMON1);
-                return;
-            }
-            memcpy(COMMON1, &CGFXdecomp[dataOffset1], size1);
-            free(CGFXdecomp);
 
-            if (COMMON0 != NULL && COMMON1 != NULL) {
-                uint32_t hash = CRC32(COMMON1, size1);
-                if (hash != 0x2DB769E8) {
-                    bannerpreview.image(empty(0, 0));
-                    customnotif.show();
-                    free(COMMON0);
-                    free(COMMON1);
-                    return;
-                }
-                free(COMMON1);
-                int och = sizeof(nnc_u32);
-                uint8_t* output_pixels = (uint8_t*)malloc(w * h * och);
-                nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(COMMON0), reinterpret_cast<nnc_u32*>(output_pixels), w & 0xFFFF, h & 0xFFFF);
-                free(COMMON0);
-                uint8_t* output_cropped = (uint8_t*)malloc(out_w * out_w * och);
-                crop_pixels(output_pixels, w, h, och, output_cropped, 0, 0, out_w, out_h);
-                free(output_pixels);
-                uint8_t* output_film = (uint8_t*)malloc(film_w * film_h * 4);
-                layer_pixels(output_film, film_overlay, output_cropped, film_w, film_h, 2, out_w, out_h, 4, 32, 11);
-                free(output_cropped);
-                bannerpreview.image(pixels_to_image(output_film, film_w, film_h, 4));
-                free(output_film);
-                bannererror.hide();
-                customnotif.hide();
+            uint32_t hash = CRC32(&CGFXdecomp[dataOffset1], size1);//get COMMON1 hash
+            if (hash != 0x2DB769E8) {
+                bannerpreview.image(empty(0, 0));
+                customnotif.show();
+                free(CGFXdecomp);
+                return;
             }
+            int och = sizeof(nnc_u32);
+            uint8_t* output_pixels = (uint8_t*)malloc(w * h * och);
+            nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(&CGFXdecomp[dataOffset0]), reinterpret_cast<nnc_u32*>(output_pixels), w & 0xFFFF, h & 0xFFFF);
+            free(CGFXdecomp);
+            uint8_t* output_cropped = (uint8_t*)malloc(out_w * out_w * och);
+            crop_pixels(output_pixels, w, h, och, output_cropped, 0, 0, out_w, out_h);
+            free(output_pixels);
+            uint8_t* output_film = (uint8_t*)malloc(film_w * film_h * 4);
+            layer_pixels(output_film, film_overlay, output_cropped, film_w, film_h, 2, out_w, out_h, 4, 32, 11);
+            free(output_cropped);
+            bannerpreview.image(pixels_to_image(output_film, film_w, film_h, 4));
+            free(output_film);
+            bannererror.hide();
+            customnotif.hide();
+            return;
         }
         std::string extension = bannerbox.text();
         if(extension.find_last_of(".") != std::string::npos)
