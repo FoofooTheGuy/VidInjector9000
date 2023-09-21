@@ -194,27 +194,6 @@ form1::form1() {
                 customnotif.show();
                 return;
             }
-            delete[] CGFXdecomp;
-
-            {
-                uint32_t decompressedSize = 0;
-                uint32_t compressedSize = 0;
-                uint32_t CGFXoffset = 0;
-                ret = getCGFXInfo(bannerbox.text(), &compressedSize, &decompressedSize, &CGFXoffset);
-                if (ret > 0) {
-                    bannerpreview.image(empty(0, 0));
-                    customnotif.show();
-                    return;
-                }
-                CGFXdecomp = new uint8_t[decompressedSize];
-                ret = CBMDgetCommonCGFX(bannerbox.text(), compressedSize, decompressedSize, CGFXoffset, CGFXdecomp);
-                if (ret > 0) {
-                    delete[] CGFXdecomp;
-                    bannerpreview.image(empty(0, 0));
-                    customnotif.show();
-                    return;
-                }
-            }
 
             uint32_t* dataOffset1;
             uint32_t* height1;

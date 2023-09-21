@@ -619,26 +619,26 @@ uint8_t getCGFXtextureInfo(uint8_t* CGFX, const std::string symbol, uint32_t** d
 
 	uint16_t* CGFXheaderSize = reinterpret_cast<uint16_t*>(&CGFX[0x6]);
 	for (uint32_t N = 0; N < *reinterpret_cast<uint32_t*>(&CGFX[0x10]); N++) {//loop through Number of Dicts
-		uint32_t* DICToffset = reinterpret_cast<uint32_t*>(&CGFX[*CGFXheaderSize + 0xC + (N * 8)]);
-		*DICToffset += (*CGFXheaderSize + 0xC + (N * 8));//since it's self-relative, do this
-		for (uint32_t i = 0; i < *reinterpret_cast<uint32_t*>(&CGFX[*DICToffset + 0x8]); i++) {//loop through entries in DICT N
-			uint32_t* symbolOffset = reinterpret_cast<uint32_t*>(&CGFX[*DICToffset + 0x1C + (0x10 * i) + 0x8]);
-			*symbolOffset += (*DICToffset + 0x1C + (0x10 * i) + 0x8);//self-relative
-			uint32_t* objectOffset = reinterpret_cast<uint32_t*>(&CGFX[*DICToffset + 0x1C + (0x10 * i) + 0xC]);
-			*objectOffset += (*DICToffset + 0x1C + (0x10 * i) + 0xC);//self-relative
+		uint32_t DICToffset = *reinterpret_cast<uint32_t*>(&CGFX[*CGFXheaderSize + 0xC + (N * 8)]);
+		DICToffset += (*CGFXheaderSize + 0xC + (N * 8));//since it's self-relative, do this
+		for (uint32_t i = 0; i < *reinterpret_cast<uint32_t*>(&CGFX[DICToffset + 0x8]); i++) {//loop through entries in DICT N
+			uint32_t symbolOffset = *reinterpret_cast<uint32_t*>(&CGFX[DICToffset + 0x1C + (0x10 * i) + 0x8]);
+			symbolOffset += (DICToffset + 0x1C + (0x10 * i) + 0x8);//self-relative
+			uint32_t objectOffset = *reinterpret_cast<uint32_t*>(&CGFX[DICToffset + 0x1C + (0x10 * i) + 0xC]);
+			objectOffset += (DICToffset + 0x1C + (0x10 * i) + 0xC);//self-relative
 			std::string isymbol = "";
-			const auto* ch = &CGFX[*symbolOffset];
+			const auto* ch = &CGFX[symbolOffset];
 			while (*ch)
 				isymbol += *ch++;
 			if (strcmp(isymbol.c_str(), symbol.c_str()) == 0) {
-				*height = reinterpret_cast<uint32_t*>(&CGFX[*objectOffset + 0x18]);
-				*width = reinterpret_cast<uint32_t*>(&CGFX[*objectOffset + 0x1C]);
-				*mipmap = reinterpret_cast<uint32_t*>(&CGFX[*objectOffset + 0x28]);
-				*formatID = reinterpret_cast<uint32_t*>(&CGFX[*objectOffset + 0x34]);
-				*size = reinterpret_cast<uint32_t*>(&CGFX[*objectOffset + 0x44]);
-				uint32_t* dataOffsetStandin = reinterpret_cast<uint32_t*>(&CGFX[*objectOffset + 0x48]);
-				*dataOffsetStandin += (*objectOffset + 0x48);//self-relative
-				*dataOffset = dataOffsetStandin;
+				*height = reinterpret_cast<uint32_t*>(&CGFX[objectOffset + 0x18]);
+				*width = reinterpret_cast<uint32_t*>(&CGFX[objectOffset + 0x1C]);
+				*mipmap = reinterpret_cast<uint32_t*>(&CGFX[objectOffset + 0x28]);
+				*formatID = reinterpret_cast<uint32_t*>(&CGFX[objectOffset + 0x34]);
+				*size = reinterpret_cast<uint32_t*>(&CGFX[objectOffset + 0x44]);
+				uint32_t dataOffsetStandin = *reinterpret_cast<uint32_t*>(&CGFX[objectOffset + 0x48]);
+				dataOffsetStandin += (objectOffset + 0x48);//self-relative
+				*dataOffset = &dataOffsetStandin;
 				return 0;
 			}
 		}
