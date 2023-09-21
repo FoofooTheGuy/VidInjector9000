@@ -167,7 +167,7 @@ namespace VidInjector9002 {
                         input.close();
                         for (int i = 0; i < 0x1C; i++) {
                             if (input_data[i] != bimgheader[i]) {
-                                //free(input_data);
+                                free(input_data);
                                 setDefaultBannerPreview(menubannerpreview, nullptr);
                                 return;
                             }
