@@ -163,18 +163,11 @@ namespace VidInjector9002 {
                         std::ifstream input;
                         input.open(text_box_array.at(y * columns + 2)->text().c_str(), std::ios_base::in | std::ios_base::binary);
                         uint8_t* input_data = (uint8_t*)malloc((w * h * ich) + 0x20);
-                        char Byte;
-                        int it = 0;
-                        input.read(&Byte, 1);//grab first byte of data
-                        while (input) {//continue until input stream fails
-                            input_data[it] = Byte;
-                            input.read(&Byte, 1);//grab next byte of file
-                            it++;
-                        }
+                        input.read(reinterpret_cast<char*>(input_data), (w * h * ich) + 0x20);
                         input.close();
                         for (int i = 0; i < 0x1C; i++) {
                             if (input_data[i] != bimgheader[i]) {
-                                free(input_data);
+                                //free(input_data);
                                 setDefaultBannerPreview(menubannerpreview, nullptr);
                                 return;
                             }

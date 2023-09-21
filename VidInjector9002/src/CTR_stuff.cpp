@@ -113,14 +113,7 @@ uint8_t convertToBimg(std::string input, uint8_t* outBuffer, bool writeHeader)//
 					free(input_data);
 					return 1;
 				}
-				char Byte;
-				int it = 0;
-				infile.read(&Byte, 1);//grab first byte of data
-				while (infile) {//continue until input stream fails
-					input_data[it] = Byte;
-					infile.read(&Byte, 1);//grab next byte of file
-					it++;
-				}
+				infile.read(reinterpret_cast<char*>(input_data), (w * h * ich) + 0x20);
 				infile.close();
 				for (int i = 0; i < 0x1C; i++) {
 					if (input_data[i] != bimgheader[i]) {
@@ -665,14 +658,7 @@ uint8_t getCBMDInfo(const std::string inpath, uint32_t* compressedSize, uint32_t
 	uint8_t* CGFX = new uint8_t[BCWAVoffset - _CGFXoffset];
 	//get stuff and decompress that stuff
 	CBMD.seekg(_CGFXoffset);
-	char Byte;
-	size_t it = 0;
-	CBMD.read(&Byte, 1);//grab first byte of CGFXoffset
-	while (it < BCWAVoffset - _CGFXoffset) {
-		CGFX[it] = Byte;//append byte to array
-		CBMD.read(&Byte, 1);//grab next byte of file
-		it++;
-	}
+	CBMD.read(reinterpret_cast<char*>(CGFX), BCWAVoffset - _CGFXoffset);
 
 	uint32_t decompressedSize_ = Get_Decompressed_size(CGFX);
 	if (decompressedSize_ > 0x80000) {
@@ -698,14 +684,7 @@ uint8_t CBMDgetCommonCGFX(const std::string inpath, const uint32_t compressedSiz
 	uint8_t* CGFX = new uint8_t[compressedSize];
 	//get stuff and decompress that stuff
 	CBMD.seekg(CGFXoffset);
-	char Byte;
-	size_t it = 0;
-	CBMD.read(&Byte, 1);//grab first byte of CGFXoffset
-	while (it < compressedSize) {
-		CGFX[it] = Byte;//append byte to array
-		CBMD.read(&Byte, 1);//grab next byte of file
-		it++;
-	}
+	CBMD.read(reinterpret_cast<char*>(CGFX), compressedSize);
 
 	if (DecompressLZ11(CGFX, outbuff) == NULL) {
 		delete[] CGFX;
