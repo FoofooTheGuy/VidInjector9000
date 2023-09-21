@@ -611,7 +611,7 @@ void* cbmd_build_data(uint32_t* size, CBMD cbmd) {//this is here because it has 
 	return output;
 }
 
-uint8_t getCGFXtextureInfo(uint8_t* CGFX, const std::string symbol, uint32_t** dataOffset, uint32_t** height, uint32_t** width, uint32_t** mipmap, uint32_t** formatID, uint32_t** size) {
+uint8_t getCGFXtextureInfo(uint8_t* CGFX, const std::string symbol, uint32_t& dataOffset, uint32_t& height, uint32_t& width, uint32_t& mipmap, uint32_t& formatID, uint32_t& size) {
 	uint32_t* CGFXmagic = reinterpret_cast<uint32_t*>(&CGFX[0]);
 	if (*CGFXmagic != 0x58464743) {//CGFX
 		return 1;
@@ -631,14 +631,13 @@ uint8_t getCGFXtextureInfo(uint8_t* CGFX, const std::string symbol, uint32_t** d
 			while (*ch)
 				isymbol += *ch++;
 			if (strcmp(isymbol.c_str(), symbol.c_str()) == 0) {
-				*height = reinterpret_cast<uint32_t*>(&CGFX[objectOffset + 0x18]);
-				*width = reinterpret_cast<uint32_t*>(&CGFX[objectOffset + 0x1C]);
-				*mipmap = reinterpret_cast<uint32_t*>(&CGFX[objectOffset + 0x28]);
-				*formatID = reinterpret_cast<uint32_t*>(&CGFX[objectOffset + 0x34]);
-				*size = reinterpret_cast<uint32_t*>(&CGFX[objectOffset + 0x44]);
-				uint32_t dataOffsetStandin = *reinterpret_cast<uint32_t*>(&CGFX[objectOffset + 0x48]);
-				dataOffsetStandin += (objectOffset + 0x48);//self-relative
-				*dataOffset = &dataOffsetStandin;
+				height = *reinterpret_cast<uint32_t*>(&CGFX[objectOffset + 0x18]);
+				width = *reinterpret_cast<uint32_t*>(&CGFX[objectOffset + 0x1C]);
+				mipmap = *reinterpret_cast<uint32_t*>(&CGFX[objectOffset + 0x28]);
+				formatID = *reinterpret_cast<uint32_t*>(&CGFX[objectOffset + 0x34]);
+				size = *reinterpret_cast<uint32_t*>(&CGFX[objectOffset + 0x44]);
+				dataOffset = *reinterpret_cast<uint32_t*>(&CGFX[objectOffset + 0x48]);
+				dataOffset += (objectOffset + 0x48);//self-relative
 				return 0;
 			}
 		}
@@ -646,7 +645,7 @@ uint8_t getCGFXtextureInfo(uint8_t* CGFX, const std::string symbol, uint32_t** d
 	return 2;
 }
 
-uint8_t getCGFXInfo(const std::string inpath, uint32_t* compressedSize, uint32_t* decompressedSize, uint32_t* CGFXoffset) {
+uint8_t getCBMDInfo(const std::string inpath, uint32_t* compressedSize, uint32_t* decompressedSize, uint32_t* CGFXoffset) {
 	std::ifstream CBMD;
 	CBMD.open(inpath, std::ios_base::in | std::ios_base::binary);
 	uint32_t CBMDmagic = 0;
@@ -725,7 +724,7 @@ uint8_t getCBMDTexture(const std::string inpath, const std::string symbol, uint8
 	uint32_t decompressedSize = 0;
 	uint32_t compressedSize = 0;
 	uint32_t CGFXoffset = 0;
-	uint8_t ret = getCGFXInfo(inpath, &compressedSize, &decompressedSize, &CGFXoffset);
+	uint8_t ret = getCBMDInfo(inpath, &compressedSize, &decompressedSize, &CGFXoffset);
 	if (ret > 0) {
 		return ret;
 	}
@@ -736,15 +735,15 @@ uint8_t getCBMDTexture(const std::string inpath, const std::string symbol, uint8
 		return ret;
 	}
 
-	uint32_t* dataOffset;
-	uint32_t* height;
-	uint32_t* width;
-	uint32_t* mipmap;
-	uint32_t* formatID;
-	uint32_t* size;
-	ret = getCGFXtextureInfo(CGFXdecomp, symbol, &dataOffset, &height, &width, &mipmap, &formatID, &size);
+	uint32_t dataOffset;
+	uint32_t height;
+	uint32_t width;
+	uint32_t mipmap;
+	uint32_t formatID;
+	uint32_t size;
+	ret = getCGFXtextureInfo(CGFXdecomp, symbol, dataOffset, height, width, mipmap, formatID, size);
 	if (ret == 0) {
-		memcpy(outbuff, &CGFXdecomp[*dataOffset], *size);
+		memcpy(outbuff, &CGFXdecomp[dataOffset], size);
 		delete[] CGFXdecomp;
 		return ret;
 	}
