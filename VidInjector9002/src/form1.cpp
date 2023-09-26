@@ -721,8 +721,6 @@ form1::form1() {
             }
         }
         else {*/
-        xtd::ustring filepath = load_file(MoflexFilesList, text_box_array[(rows - 1) * columns + 1]->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_videos));
-        if (filepath.empty()) return;//big brain time
         int emptyRow = 0;
         if (mode.selected_index() == 1) {
             for (emptyRow = 0; emptyRow < rows - 1; emptyRow++) {
@@ -731,6 +729,12 @@ form1::form1() {
                 }
             }
         }
+        xtd::ustring filepath = "";
+        if(!text_box_array[(emptyRow - 1 < 0 ? 0 : emptyRow - 1) * columns + 1]->text().empty())
+            filepath = load_file(MoflexFilesList, text_box_array[(emptyRow - 1) * columns + 1]->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_videos));
+        else filepath = load_file(MoflexFilesList, text_box_array[(rows - 1) * columns + 1]->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_videos));
+        if (filepath.empty()) return;//big brain time
+
         text_box_array[emptyRow * columns + 1]->text(filepath);
         //}//unmark this if you ever find a fix for it lol
     };
@@ -750,14 +754,19 @@ form1::form1() {
                 if (!files.at(i).empty()) text_box_array[i * columns + 2]->text(files.at(i));
             }
         }*/
-        xtd::ustring filepath = load_file(xtd::ustring::format("{} {}", SupportedImage200x120, SupportedImageListBanner), text_box_array.at((rows - 1) * columns + 2)->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
-        if (filepath.empty()) return;
         uint8_t emptyRow;
         for (emptyRow = 0; emptyRow < rows - 1; emptyRow++) {
             if (text_box_array[emptyRow * columns + 2]->text().empty()) {
                 break;
             }
         }
+        xtd::ustring filepath = "";
+        //xtd::ustring filepath = load_file(xtd::ustring::format("{} {}", SupportedImage200x120, SupportedImageListBanner), text_box_array.at((rows - 1) * columns + 2)->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
+        if (!text_box_array[(emptyRow - 1 < 0 ? 0 : emptyRow - 1) * columns + 2]->text().empty())
+            filepath = load_file(xtd::ustring::format("{} {}", SupportedImage200x120, SupportedImageListBanner), text_box_array[(emptyRow - 1) * columns + 2]->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
+        else filepath = load_file(xtd::ustring::format("{} {}", SupportedImage200x120, SupportedImageListBanner), text_box_array[(rows - 1) * columns + 2]->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
+        if (filepath.empty()) return;
+
         text_box_array.at(emptyRow * columns + 2)->text(filepath);
         setMultiBannerPreview(emptyRow);
         bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
