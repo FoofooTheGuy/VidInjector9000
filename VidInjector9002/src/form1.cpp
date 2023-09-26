@@ -2365,7 +2365,7 @@ form1::form1() {
                     butt_array.at(y * 2 + i)->location({ text_box_array.at(y * columns + (columns - 1))->location().x() + text_box_array.at(y * columns + (columns - 1))->width(), text_box_array.at(y * columns)->location().y() });
                 }
                 else if (i == 1) {//if odd
-                    butt_array.at(y * 2 + i)->location({ text_box_array.at(y * columns + (columns - 1))->location().x() + text_box_array.at(y * columns + (columns - 1))->width(), text_box_array.at(y * columns)->location().y() + butt_array.at(y * 2 + i)->height() });
+                    butt_array.at(y * 2 + i)->location({ text_box_array.at(y * columns + (columns - 1))->location().x() + text_box_array.at(y * columns + (columns - 1))->width(), text_box_array.at(y * columns)->location().y() + text_box_array.at(y * columns)->height() - butt_array.at(y * 2 + i)->height() });
                 }
             }
         }
