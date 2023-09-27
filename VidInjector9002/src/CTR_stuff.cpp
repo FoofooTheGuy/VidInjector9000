@@ -85,7 +85,7 @@ void resize_crop(const uint8_t* input_pixels, int input_w, int input_h, uint8_t*
 }
 
 //based on https://raw.githubusercontent.com/nothings/stb/master/tests/resample_test.cpp
-uint8_t convertToBimg(std::string input, uint8_t* outBuffer, bool writeHeader)// true for write header, false for dont write header
+uint8_t convertToBimg(const std::string input, uint8_t* outBuffer, bool writeHeader)// true for write header, false for dont write header
 {
 	uint8_t* input_pixels;
 	uint8_t* output_pixels;
@@ -107,7 +107,7 @@ uint8_t convertToBimg(std::string input, uint8_t* outBuffer, bool writeHeader)//
 				h = 128;
 				int ich = sizeof(nnc_u16);
 				std::ifstream infile;
-				infile.open(input, std::ios_base::in | std::ios_base::binary);//input file
+				infile.open(std::filesystem::u8path(input), std::ios_base::in | std::ios_base::binary);//input file
 				uint8_t* input_data = (uint8_t*)malloc((w * h * ich) + 0x20);
 				if (!input_data) {
 					free(input_data);
@@ -208,7 +208,7 @@ uint8_t convertToBimg(std::string input, uint8_t* outBuffer, bool writeHeader)//
 	return 0;
 }
 
-uint8_t convertToIcon(std::string input, std::string output, std::string shortname, std::string longname, std::string publisher, int borderMode) {//bare bones SMDH creation. thanks 3dbrew
+uint8_t convertToIcon(const std::string input, std::string output, std::string shortname, std::string longname, std::string publisher, int borderMode) {//bare bones SMDH creation. thanks 3dbrew
 	uint8_t* input_pixels;
 	uint8_t* output_pixels;
 	uint8_t* large_4c;
@@ -318,7 +318,7 @@ uint8_t convertToIcon(std::string input, std::string output, std::string shortna
 		free(large_4c);
 		return 3;
 	}
-	std::ofstream smdhOut(output, std::ios_base::out | std::ios_base::binary);
+	std::ofstream smdhOut(std::filesystem::u8path(output), std::ios_base::out | std::ios_base::binary);
 	smdhOut << "SMDH";//make smdh!
 	for (int i = 0; i < 4; i++)
 		smdhOut << '\0';
@@ -640,7 +640,7 @@ uint8_t getCGFXtextureInfo(uint8_t* CGFX, const std::string symbol, uint32_t& da
 
 uint8_t getCBMDInfo(const std::string inpath, uint32_t* compressedSize, uint32_t* decompressedSize, uint32_t* CGFXoffset) {
 	std::ifstream CBMD;
-	CBMD.open(inpath, std::ios_base::in | std::ios_base::binary);
+	CBMD.open(std::filesystem::u8path(inpath), std::ios_base::in | std::ios_base::binary);
 	uint32_t CBMDmagic = 0;
 	CBMD.seekg(0);
 	CBMD.read(reinterpret_cast<char*>(&CBMDmagic), 0x4);
@@ -674,7 +674,7 @@ uint8_t getCBMDInfo(const std::string inpath, uint32_t* compressedSize, uint32_t
 
 uint8_t CBMDgetCommonCGFX(const std::string inpath, const uint32_t compressedSize, const uint32_t decompressedSize, const uint32_t CGFXoffset, uint8_t* outbuff) {
 	std::ifstream CBMD;
-	CBMD.open(inpath, std::ios_base::in | std::ios_base::binary);
+	CBMD.open(std::filesystem::u8path(inpath), std::ios_base::in | std::ios_base::binary);
 	uint32_t CBMDmagic = 0;
 	CBMD.seekg(0);
 	CBMD.read(reinterpret_cast<char*>(&CBMDmagic), 0x4);
@@ -735,7 +735,7 @@ uint8_t UTF16fileToUTF8str(const std::string path, std::vector<std::string>* out
 	std::string outputUTF8 = "";
 	std::string Line;
 	std::ifstream input;
-	input.open(path.c_str(), std::ios_base::in | std::ios_base::binary);
+	input.open(std::filesystem::u8path(path), std::ios_base::in | std::ios_base::binary);
 	if (!input)
 		return 1;
 

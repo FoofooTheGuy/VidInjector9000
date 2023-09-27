@@ -161,7 +161,7 @@ namespace VidInjector9002 {
                         int ich = sizeof(nnc_u16);
                         int och = sizeof(nnc_u32);
                         std::ifstream input;
-                        input.open(text_box_array.at(y * columns + 2)->text().c_str(), std::ios_base::in | std::ios_base::binary);
+                        input.open(std::filesystem::u8path(text_box_array.at(y * columns + 2)->text().c_str()), std::ios_base::in | std::ios_base::binary);
                         uint8_t* input_data = (uint8_t*)malloc((w * h * ich) + 0x20);
                         input.read(reinterpret_cast<char*>(input_data), (w * h * ich) + 0x20);
                         input.close();
@@ -621,7 +621,7 @@ namespace VidInjector9002 {
         std::vector<xtd::ustring> fileRead(xtd::ustring inpath) {
             std::vector<xtd::ustring> filelines;
             if (!std::filesystem::exists(inpath.c_str())) return filelines;
-            std::ifstream infile(inpath, std::ios_base::in | std::ios_base::binary);
+            std::ifstream infile(std::filesystem::u8path(inpath.c_str()), std::ios_base::in | std::ios_base::binary);
             char Byte;
             xtd::ustring line = "";
             //split file into the vector
@@ -644,7 +644,7 @@ namespace VidInjector9002 {
         }
 
         void saveParameters() {
-            std::ofstream outparams(parampath, std::ios_base::out | std::ios_base::binary);
+            std::ofstream outparams(std::filesystem::u8path(parampath.c_str()), std::ios_base::out | std::ios_base::binary);
             outparams <<
                 StrVerParam << "=\"" << VI9PVER << "\"\n" <<
                 IntMultiParam << "=\"" << std::to_string(mode.selected_index()) << "\"\n" <<
@@ -841,12 +841,14 @@ namespace VidInjector9002 {
                     good = false;
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}({})\n{}.", FailedToFindVar, StrMoflexParam, y, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 }
-                if (parseLines(outstr, filelines, xtd::ustring::format("{}({})", StrMBannerParam, y))) {
-                    text_box_array.at(y * columns + 2)->text(outstr);
-                }
-                else {
-                    good = false;
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}({})\n{}.", FailedToFindVar, StrMBannerParam, y, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                if (mode.selected_index()) {
+                    if (parseLines(outstr, filelines, xtd::ustring::format("{}({})", StrMBannerParam, y))) {
+                        text_box_array.at(y * columns + 2)->text(outstr);
+                    }
+                    else {
+                        good = false;
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}({})\n{}.", FailedToFindVar, StrMBannerParam, y, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    }
                 }
             }
             if (parseLines(outstr, filelines, IntPreIndexParam)) {
@@ -856,7 +858,7 @@ namespace VidInjector9002 {
                     good = false;
                 }
                 bannerpreviewindex = ((outrealint & 0xFF) > 26 ? 26 : (outrealint & 0xFF));
-                setMultiBannerPreview(bannerpreviewindex);
+                if (mode.selected_index()) setMultiBannerPreview(bannerpreviewindex);
                 bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
                 bannerpreviewright.enabled(mode.selected_index() && bannerpreviewindex != rows - 1);
             }
@@ -873,7 +875,7 @@ namespace VidInjector9002 {
             xtd::ustring outstr = "";
             if (!std::filesystem::exists(xtd::ustring::format("{}/{}/language/{}/Language.txt", ProgramDir, resourcesPath, Lang).c_str())) {
                 std::filesystem::create_directories(xtd::ustring::format("{}/{}/language/English", ProgramDir, resourcesPath).c_str());
-                std::ofstream M_file(xtd::ustring::format("{}/{}/language/English/M.bmp", ProgramDir, resourcesPath).c_str(), std::ios_base::out | std::ios_base::binary);
+                std::ofstream M_file(std::filesystem::u8path(xtd::ustring::format("{}/{}/language/English/M.bmp", ProgramDir, resourcesPath).c_str()), std::ios_base::out | std::ios_base::binary);
                 M_file.write(reinterpret_cast<const char*>(M_bmp), sizeof(M_bmp));
                 M_file.close();
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToFindPath, xtd::ustring::format("{}/{}/language/{}/Language.txt", ProgramDir, resourcesPath, Lang)), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
@@ -901,7 +903,7 @@ namespace VidInjector9002 {
                 if (!std::filesystem::exists(parampath.c_str())) parampath = xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, DefaultParamFile);
                 saveParameters();
             }
-            std::ofstream settingsfile(xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, settingsPath).c_str(), std::ios_base::out | std::ios_base::binary);
+            std::ofstream settingsfile(std::filesystem::u8path(xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, settingsPath).c_str()), std::ios_base::out | std::ios_base::binary);
             settingsfile <<
                 StrDefaultLanguage << "=\"" << Languagedir << "\"\n" <<
                 IntAutoSaveParams << "=\"" << autoSaveParams << "\"\n" <<
@@ -918,7 +920,7 @@ namespace VidInjector9002 {
             bool good = true;
             if (!std::filesystem::exists(xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, settingsPath).c_str())) {
                 std::filesystem::create_directories(xtd::ustring::format("{}/{}", ProgramDir, resourcesPath).c_str());
-                std::ofstream settingsfile(xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, settingsPath).c_str(), std::ios_base::out | std::ios_base::binary);
+                std::ofstream settingsfile(std::filesystem::u8path(xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, settingsPath).c_str()), std::ios_base::out | std::ios_base::binary);
                 settingsfile <<
                     StrDefaultLanguage << "=\"English\"\n" <<
                     IntAutoSaveParams << "=\"0\"\n" <<

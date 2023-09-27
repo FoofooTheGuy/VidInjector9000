@@ -35,13 +35,13 @@ uint32_t RandomTID();
 void resize_crop(const uint8_t* input_pixels, int input_w, int input_h, uint8_t* output_pixels, int output_w, int output_h, int num_channels);
 
 //return 0 if it completed otherwise return some greater number
-uint8_t convertToBimg(std::string input, uint8_t* outBuffer, bool writeHeader);
+uint8_t convertToBimg(const std::string input, uint8_t* outBuffer, bool writeHeader);
 /*note: text has to be utf16
 input: path to input image (size doesnt really matter)
 output: icon.bin out
 borderMode: 0 for no border, 1 for overlap, 2 for fit within it
 */
-uint8_t convertToIcon(std::string input, std::string output, std::string shortname, std::string longname, std::string publisher, int borderMode);
+uint8_t convertToIcon(const std::string input, std::string output, std::string shortname, std::string longname, std::string publisher, int borderMode);
 
 //these are from bannertool with slight edits
 #define CBMD_NUM_CGFXS 14

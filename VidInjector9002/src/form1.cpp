@@ -137,7 +137,7 @@ form1::form1() {
         uint8_t Checker[4];
         bool banner = false;
         int ich = sizeof(nnc_u16);
-        std::ifstream inbanner(bannerbox.text(), std::ios::binary);
+        std::ifstream inbanner(std::filesystem::u8path(bannerbox.text().c_str()), std::ios::binary);
         if (!std::filesystem::exists(bannerbox.text().c_str())) {
             setDefaultBannerPreview(bannerpreview, &bannererror);
             return;
@@ -241,7 +241,7 @@ form1::form1() {
                 h = 128;
                 int och = sizeof(nnc_u32);
                 std::ifstream input;
-                input.open(bannerbox.text().c_str(), std::ios_base::in | std::ios_base::binary);//input file
+                input.open(std::filesystem::u8path(bannerbox.text().c_str()), std::ios_base::in | std::ios_base::binary);//input file
                 uint8_t* input_data = (uint8_t*)malloc((w * h * ich) + 0x20);
                 input.read(reinterpret_cast<char*>(input_data), (w * h * ich) + 0x20);
                 input.close();
@@ -272,8 +272,8 @@ form1::form1() {
             }
         }
         else if (!banner) {
-            if (stbi_info(bannerbox.text().c_str(), &w, &h, &ch)) {
-                uint8_t* input_pixels = stbi_load(bannerbox.text().c_str(), &w, &h, &ch, 0);
+            if (stbi_info(std::filesystem::u8path(bannerbox.text().c_str()).string().c_str(), &w, &h, &ch)) {
+                uint8_t* input_pixels = stbi_load(std::filesystem::u8path(bannerbox.text().c_str()).string().c_str(), &w, &h, &ch, 0);
                 uint8_t* output_pixels = (uint8_t*)malloc(out_w * out_h * ch);
 
                 if (w == out_w && h == out_h) memcpy(output_pixels, input_pixels, w * h * ch);
@@ -1324,7 +1324,7 @@ form1::form1() {
                 std::string extension = text_box_array.at(i * columns + 1)->text();
                 if (extension.find_last_of(".") != std::string::npos)
                     extension.erase(extension.begin(), extension.begin() + extension.find_last_of("."));
-                std::ifstream inmoflex(text_box_array.at(i * columns + 1)->text().c_str(), std::ios_base::in | std::ios::binary);
+                std::ifstream inmoflex(std::filesystem::u8path(text_box_array.at(i * columns + 1)->text().c_str()), std::ios_base::in | std::ios::binary);
                 for (int j = 0; j < 4; j++) {
                     inmoflex >> Checker[j];//https://stackoverflow.com/a/2974735
                     if (extension != ".moflex" || Checker[j] != moflexMagic[j]) {
@@ -1441,7 +1441,7 @@ form1::form1() {
 
             uint8_t Checker[4];
             bool banner = false;
-            std::ifstream inbanner(bannerbox.text(), std::ios::binary);
+            std::ifstream inbanner(std::filesystem::u8path(bannerbox.text().c_str()), std::ios::binary);
             if (std::filesystem::exists(bannerbox.text().c_str())) {
                 for (int i = 0; i < 4; i++) {
                     inbanner >> Checker[i];//https://stackoverflow.com/a/2974735
@@ -1916,7 +1916,7 @@ form1::form1() {
                     std::string outputUTF8 = "";
                     std::string Line;
                     std::ifstream input;
-                    input.open(xtd::ustring::format("{}/settings/copyright.txt", romfspath).c_str(), std::ios_base::in | std::ios_base::binary);
+                    input.open(std::filesystem::u8path(xtd::ustring::format("{}/settings/copyright.txt", romfspath).c_str()), std::ios_base::in | std::ios_base::binary);
                     if (!input) {
                         xtd::forms::message_box::show(*this, xtd::ustring::format("{}/settings/copyright.txt", romfspath), xtd::ustring::format("{} {}", ErrorText, FailedToReadFile), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                         return;
