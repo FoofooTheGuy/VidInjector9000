@@ -77,8 +77,8 @@ A: This is simple and gives you much control over your video injections. Plus, V
 
 Known Issues
 --
-#### Unicode file paths are not supported
-At least in my testing, I've found that unicode in the file paths lead to it getting confused but it may or may not work on your OS, I'm not sure..
+#### Sometimes UTF-8 file paths are not supported on Windows
+Most things work with UTF-8 file paths but certain things don't. (the location of the program, SMDH reading, CIA reading, CIA writing) These should work on other platforms though but I haven't tested it yet
 
 #### Multi Video injects do not work on the regions China, Taiwan and Korea because there are no language files for those.
 I am unable to add them myself because I don't know those languages so I would appreciate it if someone would translate the files and contribute the following:
