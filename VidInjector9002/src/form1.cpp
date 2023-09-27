@@ -138,7 +138,7 @@ form1::form1() {
         bool banner = false;
         int ich = sizeof(nnc_u16);
         std::ifstream inbanner(std::filesystem::u8path(bannerbox.text().c_str()), std::ios::binary);
-        if (!std::filesystem::exists(bannerbox.text().c_str())) {
+        if (!std::filesystem::exists(std::filesystem::u8path(bannerbox.text().c_str()))) {
             setDefaultBannerPreview(bannerpreview, &bannererror);
             return;
         }
@@ -236,7 +236,7 @@ form1::form1() {
         if(extension.find_last_of(".") != std::string::npos)
             extension.erase(extension.begin(), extension.begin() + extension.find_last_of("."));
         if (extension == ".bimg") {
-            if (std::filesystem::file_size(bannerbox.text().c_str()) == 0x10020) {
+            if (std::filesystem::file_size(std::filesystem::u8path(bannerbox.text().c_str())) == 0x10020) {
                 w = 256;
                 h = 128;
                 int och = sizeof(nnc_u32);
@@ -272,8 +272,8 @@ form1::form1() {
             }
         }
         else if (!banner) {
-            if (stbi_info(std::filesystem::u8path(bannerbox.text().c_str()).string().c_str(), &w, &h, &ch)) {
-                uint8_t* input_pixels = stbi_load(std::filesystem::u8path(bannerbox.text().c_str()).string().c_str(), &w, &h, &ch, 0);
+            if (stbi_info(bannerbox.text().c_str(), &w, &h, &ch)) {
+                uint8_t* input_pixels = stbi_load(bannerbox.text().c_str(), &w, &h, &ch, 0);
                 uint8_t* output_pixels = (uint8_t*)malloc(out_w * out_h * ch);
 
                 if (w == out_w && h == out_h) memcpy(output_pixels, input_pixels, w * h * ch);
@@ -1014,7 +1014,7 @@ form1::form1() {
         xtd::ustring outfile = save_file(CiaFiles, xtd::ustring::format("{} [000400000{}00]", removeInvalids(longname.text()), titleIDbox.text()));
         {
             xtd::forms::dialog_result res = xtd::forms::dialog_result::yes;
-            if (std::filesystem::exists(outfile.c_str()))
+            if (std::filesystem::exists(std::filesystem::u8path(outfile.c_str())))
                 res = xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}", outfile.substr(outfile.find_last_of("/\\") + 1), AlreadyExists, ReplaceIt), ConfirmSave, xtd::forms::message_box_buttons::yes_no, xtd::forms::message_box_icon::question);
             if (res == xtd::forms::dialog_result::no || res == xtd::forms::dialog_result::none)
                 return;
@@ -1024,7 +1024,7 @@ form1::form1() {
         finalize.cursor(xtd::forms::cursors::app_starting());
 
         //extract base
-        std::filesystem::remove_all(tempPath.c_str());
+        std::filesystem::remove_all(std::filesystem::u8path(tempPath.c_str()));
         Generate_Files(tempPath.c_str(), mode.selected_index());
 
         majorBarTxt.text(xtd::ustring::format("{} romfs", CreatingFile));
@@ -1037,7 +1037,7 @@ form1::form1() {
             minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
             minorBarTxt.show();
 
-            std::filesystem::create_directories(xtd::ustring::format("{}/{}/temp/romfs/movie", ProgramDir, resourcesPath).c_str());
+            std::filesystem::create_directories(std::filesystem::u8path(xtd::ustring::format("{}/{}/temp/romfs/movie", ProgramDir, resourcesPath).c_str()));
             std::ofstream movie_title(xtd::ustring::format("{}/{}/temp/romfs/movie/movie_title.csv", ProgramDir, resourcesPath).c_str(), std::ios_base::out | std::ios_base::binary);
 
             movie_title << "\xFF\xFE" + UTF8toUTF16("#JP,#EN,#FR,#GE,#IT,#SP,#CH,#KO,#DU,#PO,#RU,#TW\x0D\x0A");
@@ -1060,7 +1060,7 @@ form1::form1() {
                 movie_title << UTF8toUTF16(outstr + "\x0D\x0A");//put the last stuff
             }
             movie_title.close();
-            if (!std::filesystem::exists(xtd::ustring::format("{}/{}/temp/romfs/movie/movie_title.csv", ProgramDir, resourcesPath).c_str())) {
+            if (!std::filesystem::exists(std::filesystem::u8path(xtd::ustring::format("{}/{}/temp/romfs/movie/movie_title.csv", ProgramDir, resourcesPath).c_str()))) {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/{}/temp/romfs/movie/movie_title.csv", FailedToCreateFile, ProgramDir, resourcesPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 //builder.cancel_async();
                 return;
@@ -1072,7 +1072,7 @@ form1::form1() {
             minorBarTxt.text(xtd::ustring::format("{} romfs/settings/settingsTL.csv", CreatingFile));
             minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
 
-            std::filesystem::create_directories(xtd::ustring::format("{}/romfs/settings", tempPath).c_str());
+            std::filesystem::create_directories(std::filesystem::u8path(xtd::ustring::format("{}/romfs/settings", tempPath).c_str()));
             std::ofstream settingsTL(xtd::ustring::format("{}/romfs/settings/settingsTL.csv", tempPath).c_str(), std::ios_base::out | std::ios_base::binary);
 
             std::string outlongname = longname.text();
@@ -1274,7 +1274,7 @@ form1::form1() {
                     "# TW:");
             }
             settingsTL.close();
-            if (!std::filesystem::exists(xtd::ustring::format("{}/romfs/settings/settingsTL.csv", tempPath).c_str())) {
+            if (!std::filesystem::exists(std::filesystem::u8path(xtd::ustring::format("{}/romfs/settings/settingsTL.csv", tempPath).c_str()))) {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/settings/settingsTL.csv", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 //builder.cancel_async();
                 return;
@@ -1316,7 +1316,7 @@ form1::form1() {
         {
             uint8_t Checker[4];
             for (int i = 0; i < (mode.selected_index() ? rows : 1); i++) {
-                if (!std::filesystem::exists(text_box_array.at(i * columns + 1)->text().c_str())) {
+                if (!std::filesystem::exists(std::filesystem::u8path(text_box_array.at(i * columns + 1)->text().c_str()))) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}, {} 2\n{} \"{}\"", row, i + 1, column, FailedToFindPath, text_box_array.at(i * columns + 1)->text()), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     //builder.cancel_async();
                     return;
@@ -1333,7 +1333,7 @@ form1::form1() {
                         return;
                     }
                 }
-                std::filesystem::create_directories(xtd::ustring::format("{}/romfs/movie", tempPath).c_str());
+                std::filesystem::create_directories(std::filesystem::u8path(xtd::ustring::format("{}/romfs/movie", tempPath).c_str()));
                 if (mode.selected_index()) {
 
                     if (builder.cancellation_pending()) return;
@@ -1341,7 +1341,7 @@ form1::form1() {
                     minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
 
                     copyfile(text_box_array.at(i * columns + 1)->text().c_str(), xtd::ustring::format("{}/romfs/movie/movie_{}.moflex", tempPath, i).c_str());
-                    if (!std::filesystem::exists(xtd::ustring::format("{}/romfs/movie/movie_{}.moflex", tempPath, i).c_str())) {//this probably only happens if there's no disk space
+                    if (!std::filesystem::exists(std::filesystem::u8path(xtd::ustring::format("{}/romfs/movie/movie_{}.moflex", tempPath, i).c_str()))) {//this probably only happens if there's no disk space
                         xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/movie/movie_{}.moflex", FailedToCreateFile, tempPath, i), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                         //builder.cancel_async();
                         return;
@@ -1352,7 +1352,7 @@ form1::form1() {
                     minorBarTxt.text(xtd::ustring::format("{} 1/1", CopyingMoflex));
                     minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
                     copyfile(text_box_array.at(i * columns + 1)->text().c_str(), xtd::ustring::format("{}/romfs/movie/movie.moflex", tempPath).c_str());
-                    if (!std::filesystem::exists(xtd::ustring::format("{}/romfs/movie/movie.moflex", tempPath).c_str())) {//this probably only happens if there's no disk space
+                    if (!std::filesystem::exists(std::filesystem::u8path(xtd::ustring::format("{}/romfs/movie/movie.moflex", tempPath).c_str()))) {//this probably only happens if there's no disk space
                         xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/movie/movie.moflex", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                         //builder.cancel_async();
                         return;
@@ -1381,20 +1381,20 @@ form1::form1() {
                     //builder.cancel_async();
                     return;
                 }
-                std::filesystem::create_directories(xtd::ustring::format("{}/romfs/movie", tempPath).c_str());
+                std::filesystem::create_directories(std::filesystem::u8path(xtd::ustring::format("{}/romfs/movie", tempPath).c_str()));
                 std::ofstream bimgfile(xtd::ustring::format("{}/romfs/movie/movie_{}.bimg", tempPath, i).c_str(), std::ios_base::out | std::ios_base::binary);
                 bimgfile.write(reinterpret_cast<const char*>(bimg), sizeof(bimg));
                 bimgfile.close();
             }
             //make movie_bnrname.csv
-            std::filesystem::create_directories(xtd::ustring::format("{}/romfs/settings", tempPath).c_str());
+            std::filesystem::create_directories(std::filesystem::u8path(xtd::ustring::format("{}/romfs/settings", tempPath).c_str()));
             std::ofstream movie_bnrname(xtd::ustring::format("{}/romfs/settings/movie_bnrname.csv", tempPath).c_str(), std::ios_base::out | std::ios_base::binary);
             movie_bnrname << "\xFF\xFE" + UTF8toUTF16(std::to_string(rows) + "\x0D\x0A");
             for (int i = 0; i < rows; i++) {
                 movie_bnrname << UTF8toUTF16("movie_" + std::to_string(i) + ".bimg\x0D\x0A");
             }
             movie_bnrname.close();
-            if (!std::filesystem::exists(xtd::ustring::format("{}/romfs/settings/movie_bnrname.csv", tempPath).c_str())) {
+            if (!std::filesystem::exists(std::filesystem::u8path(xtd::ustring::format("{}/romfs/settings/movie_bnrname.csv", tempPath).c_str()))) {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/settings/movie_bnrname.csv", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 //builder.cancel_async();
                 return;
@@ -1426,7 +1426,7 @@ form1::form1() {
                 minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
 
                 copyfile(xtd::ustring::format("{}/exefs/icon", tempPath).c_str(), xtd::ustring::format("{}/romfs/icon.icn", tempPath).c_str());
-                if (!std::filesystem::exists(xtd::ustring::format("{}/{}/temp/romfs/icon.icn", ProgramDir, resourcesPath).c_str())) {
+                if (!std::filesystem::exists(std::filesystem::u8path(xtd::ustring::format("{}/{}/temp/romfs/icon.icn", ProgramDir, resourcesPath).c_str()))) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/icon.icn", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     //builder.cancel_async();
                     return;
@@ -1442,7 +1442,7 @@ form1::form1() {
             uint8_t Checker[4];
             bool banner = false;
             std::ifstream inbanner(std::filesystem::u8path(bannerbox.text().c_str()), std::ios::binary);
-            if (std::filesystem::exists(bannerbox.text().c_str())) {
+            if (std::filesystem::exists(std::filesystem::u8path(bannerbox.text().c_str()))) {
                 for (int i = 0; i < 4; i++) {
                     inbanner >> Checker[i];//https://stackoverflow.com/a/2974735
                     if (Checker[i] == bannerMagic[i]) {
@@ -1491,7 +1491,7 @@ form1::form1() {
                 bnrfile.write(reinterpret_cast<const char*>(bnr), bnrSize);
                 bnrfile.close();
             }
-            if (!std::filesystem::exists(xtd::ustring::format("{}/exefs/banner", tempPath).c_str())) {
+            if (!std::filesystem::exists(std::filesystem::u8path(xtd::ustring::format("{}/exefs/banner", tempPath).c_str()))) {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/exefs/banner", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 //builder.cancel_async();
                 return;
@@ -1677,7 +1677,7 @@ form1::form1() {
     };
 
     builder.run_worker_completed += [&] {
-        std::filesystem::remove_all(tempPath.c_str());
+        std::filesystem::remove_all(std::filesystem::u8path(tempPath.c_str()));
         minorBarTxt.hide();
         majorBarTxt.hide();
         majorBar.value(0);
@@ -1715,7 +1715,7 @@ form1::form1() {
             return;
         parampath = filepath;
         xtd::forms::dialog_result res = xtd::forms::dialog_result::yes;
-        if (std::filesystem::exists(parampath.c_str()))
+        if (std::filesystem::exists(std::filesystem::u8path(parampath.c_str())))
             res = xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}", parampath.substr(parampath.find_last_of("/\\") + 1), AlreadyExists, ReplaceIt), ConfirmSave, xtd::forms::message_box_buttons::yes_no, xtd::forms::message_box_icon::question);
         if (res == xtd::forms::dialog_result::no || res == xtd::forms::dialog_result::none)
             return;
@@ -1767,7 +1767,7 @@ form1::form1() {
             xtd::ustring romfspath = xtd::ustring::format("{}/romfs", exportsPath);
             xtd::ustring exefspath = xtd::ustring::format("{}/exefs", exportsPath);
 
-            std::filesystem::remove_all(exportsPath.c_str());
+            std::filesystem::remove_all(std::filesystem::u8path(exportsPath.c_str()));
             //extract important files from the romfs and exefs of cia
             {
 #define CUREC_SIZE 1024
@@ -1848,7 +1848,7 @@ form1::form1() {
                         xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToReadFile, headers[i].name), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                         continue;
                     }
-                    std::filesystem::create_directories(exefspath.c_str());
+                    std::filesystem::create_directories(std::filesystem::u8path(exefspath.c_str()));
                     sprintf(pathbuf, "%s/%s", exefspath.c_str(), fname);
                     FILE* ef = fopen(pathbuf, "wb");
                     if (fwrite(buf, headers[i].size, 1, ef) != 1)
@@ -1893,7 +1893,7 @@ form1::form1() {
             {
                 uint8_t ret;
                 std::vector<std::string> trimmed;
-                if (std::filesystem::exists(xtd::ustring::format("{}/settings/information_buttons.csv", romfspath).c_str())) {
+                if (std::filesystem::exists(std::filesystem::u8path(xtd::ustring::format("{}/settings/information_buttons.csv", romfspath).c_str()))) {
                     ret = UTF16fileToUTF8str(xtd::ustring::format("{}/settings/information_buttons.csv", romfspath), &trimmed);
                     if (ret > 0) {
                         xtd::forms::message_box::show(*this, xtd::ustring::format("{}: \"information_buttons.csv\"", FailedToReadFile), xtd::ustring::format("{} ({})", ErrorText, ret), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
@@ -1911,7 +1911,7 @@ form1::form1() {
             }
             //copyright.txt
             {
-                if (std::filesystem::exists(xtd::ustring::format("{}/settings/copyright.txt", romfspath).c_str())) {
+                if (std::filesystem::exists(std::filesystem::u8path(xtd::ustring::format("{}/settings/copyright.txt", romfspath).c_str()))) {
                     std::string output = "";
                     std::string outputUTF8 = "";
                     std::string Line;
@@ -1952,7 +1952,7 @@ form1::form1() {
                 loaded = true;
                 return;
             }
-            if (!std::filesystem::exists(exportsPath.c_str())) {
+            if (!std::filesystem::exists(std::filesystem::u8path(exportsPath.c_str()))) {
                 ableObjects(true);
                 settings.cursor(xtd::forms::cursors::default_cursor());
                 xtd::forms::message_box::show(*this, xtd::ustring::format("\"{}\"", filepath), xtd::ustring::format("{} {}", ErrorText, FailedToReadFile), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
@@ -2013,7 +2013,7 @@ form1::form1() {
             }
             //movie_bnrname.csv
             {
-                if (std::filesystem::exists(xtd::ustring::format("{}/settings/movie_bnrname.csv", romfspath).c_str())) {
+                if (std::filesystem::exists(std::filesystem::u8path(xtd::ustring::format("{}/settings/movie_bnrname.csv", romfspath).c_str()))) {
                     ret = UTF16fileToUTF8str(xtd::ustring::format("{}/settings/movie_bnrname.csv", romfspath), &trimmed);
                     if (ret > 0) {
                         xtd::forms::message_box::show(*this, xtd::ustring::format("{}: \"movie_bnrname.csv\"", FailedToReadFile), xtd::ustring::format("{} ({})", ErrorText, ret), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
@@ -2098,7 +2098,7 @@ form1::form1() {
             }
             //set moflex files
             {
-                if (std::filesystem::exists(xtd::ustring::format("{}/movie/movie.moflex", romfspath).c_str())) {//single video only has this
+                if (std::filesystem::exists(std::filesystem::u8path(xtd::ustring::format("{}/movie/movie.moflex", romfspath).c_str()))) {//single video only has this
                     text_box_array.at(1)->text(xtd::ustring::format("{}/movie/movie.moflex", romfspath));
                     if (rows > 1)
                         for (uint8_t i = 0; i < rows - 1; i++)
@@ -2106,7 +2106,7 @@ form1::form1() {
                 }
                 else {
                     for (int i = 0; i < rows; i++)
-                        text_box_array.at(i * columns + 1)->text(std::filesystem::exists(xtd::ustring::format("{}/movie/movie_{}.moflex", romfspath, i).c_str()) ? xtd::ustring::format("{}/movie/movie_{}.moflex", romfspath, i) : "");
+                        text_box_array.at(i * columns + 1)->text(std::filesystem::exists(std::filesystem::u8path(xtd::ustring::format("{}/movie/movie_{}.moflex", romfspath, i).c_str())) ? xtd::ustring::format("{}/movie/movie_{}.moflex", romfspath, i) : "");
                 }
             }
             ableObjects(true);
@@ -2190,7 +2190,7 @@ form1::form1() {
     LanguageChoiche.auto_size(true);
     LanguageChoiche.font(this->font());
     //https://stackoverflow.com/a/612176
-    for (const auto& entry : std::filesystem::directory_iterator(xtd::ustring::format("{}/{}/language", ProgramDir, resourcesPath).c_str())) {
+    for (const auto& entry : std::filesystem::directory_iterator(std::filesystem::u8path(xtd::ustring::format("{}/{}/language", ProgramDir, resourcesPath).c_str()))) {
         if (std::filesystem::exists(entry)) {
             xtd::ustring entrystr = entry.path().string();//https://stackoverflow.com/q/45401822
             xtd::ustring outstr = "";

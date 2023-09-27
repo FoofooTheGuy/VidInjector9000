@@ -1,13 +1,13 @@
 #include "CTR_stuff.hpp"
 
 void Generate_Files(std::string dir, bool Multi) {
-	if (!std::filesystem::exists(dir)) std::filesystem::create_directories(dir);
+	if (!std::filesystem::exists(std::filesystem::u8path(dir))) std::filesystem::create_directories(std::filesystem::u8path(dir));
 	miniz_cpp::zip_file file;
 	file.load(Multi ? Multivid : Singlevid);
 	std::vector<std::string> list = file.namelist();
 	for (auto& member : list) {//plant seeds
 		if (member.find_last_of("/") == member.size() - 1)
-			std::filesystem::create_directory(dir + "/" + member);
+			std::filesystem::create_directory(std::filesystem::u8path(dir + "/" + member));
 	}
 	file.extractall(dir, list);//grow fruit (don't you mean grow tree?)
 }
@@ -98,11 +98,11 @@ uint8_t convertToBimg(const std::string input, uint8_t* outBuffer, bool writeHea
 	const int out_w = 200;
 	const int out_h = 120;
 	const uint8_t FF = 0xFF;
-	if (std::filesystem::exists(input)) {
+	if (std::filesystem::exists(std::filesystem::u8path(input))) {
 		std::string extension = input;
 		extension.erase(extension.begin(), extension.end() - 5);
 		if (extension == ".bimg") {
-			if (std::filesystem::file_size(input) == 0x10020) {
+			if (std::filesystem::file_size(std::filesystem::u8path(input)) == 0x10020) {
 				w = 256;
 				h = 128;
 				int ich = sizeof(nnc_u16);
@@ -764,7 +764,7 @@ uint8_t UTF16fileToUTF8str(const std::string path, std::vector<std::string>* out
 
 //stolen from NNC romfs test
 std::string extract_dir(nnc_romfs_ctx* ctx, nnc_romfs_info* info, const char* path, int baselen) {
-	std::filesystem::create_directories(path);
+	std::filesystem::create_directories(std::filesystem::u8path(path));
 
 	nnc_result res = NNC_R_OK;
 	nnc_romfs_iterator it = nnc_romfs_mkit(ctx, info);
