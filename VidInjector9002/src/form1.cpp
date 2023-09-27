@@ -38,27 +38,17 @@ form1::form1() {
     debugs.text(xtd::ustring::format("M{}, {}", finalize.width(), finalize.height()));
     debugs.location({ 0, 0 });*/
 
-    //logo button
-    Logo.parent(parameters);
-    Logo.cursor(xtd::forms::cursors::hand());
-    Logo.image(pixels_to_image(logo90, 90, 90, 4));
-    Logo.bounds({ 6, 6, 90, 90 });
-    Logo.size_mode(xtd::forms::picture_box_size_mode::center_image);
-    Logo.click += [&] {
-        xtd::diagnostics::process::start("https://github.com/FoofooTheGuy/VidInjector9000/releases/latest");
-    };
-
     //mode stuff
     modetxt.parent(parameters);
     modetxt.auto_size(true);
     modetxt.font({ this->font(), 15 });
-    modetxt.location({ 105, 30 });
+    modetxt.location({ 20, 20 });
     modetxt.text(ModeText);
 
     mode.parent(parameters);
     mode.auto_size(true);
     mode.font(this->font());
-    mode.location({ 105, modetxt.location().y() + modetxt.height() });//tether to modetxt
+    mode.location({ modetxt.location().x(), modetxt.location().y() + modetxt.height() });//tether to modetxt
     mode.items().push_back_range({ SingleVideo, MultiVideo });
     mode.selected_index(0);
 
@@ -66,7 +56,7 @@ form1::form1() {
     bannertxt.parent(parameters);
     bannertxt.auto_size(true);
     bannertxt.font({ this->font(), 15 });
-    bannertxt.location({ 20, 100 });
+    bannertxt.location({ mode.location().x(), 100});
     bannertxt.text(BannerText);
 
     bannerbox.parent(parameters);
@@ -1691,6 +1681,16 @@ form1::form1() {
     settings.parent(tab_control);
     settings.text(OptionsText);
 
+    //logo button
+    Logo.parent(settings);
+    Logo.cursor(xtd::forms::cursors::hand());
+    Logo.image(pixels_to_image(logo90, 90, 90, 4));
+    Logo.bounds({ 6, 6, 90, 90 });
+    Logo.size_mode(xtd::forms::picture_box_size_mode::center_image);
+    Logo.click += [&] {
+        xtd::diagnostics::process::start("https://github.com/FoofooTheGuy/VidInjector9000/releases/latest");
+    };
+
     maintitle.parent(settings);
     maintitle.auto_size(true);
     maintitle.font({ this->font(), 15 });
@@ -2440,11 +2440,12 @@ form1::form1() {
         ProductCodeError.location({ ProductCodetxt.location().x() + ((ProductCodetxt.width() + ProductCode.width() + randomizeProductCode.width()) - ProductCodeError.width()) / 2, ProductCodetxt.location().y() + ProductCodetxt.height() });
 
 
-        maintitle.location({ (settings.width() - maintitle.width()) / 2, 3 });
+        Logo.location({ (settings.width() - Logo.width()) / 2, 5 });
+        maintitle.location({ (settings.width() - maintitle.width()) / 2, Logo.height() + Logo.location().y() });
         subtitle.location({ (settings.width() - subtitle.width()) / 2, maintitle.height() + maintitle.location().y() });
         savebutt.size({ settings.width() - 10, 35 });
-        if (settings.height() < 335) {
-            savebutt.location({ (settings.width() - savebutt.width()) / 2, (335 / 4) - savebutt.height() });
+        if ((settings.height() / 4) - savebutt.height() - (subtitle.location().y() + subtitle.height()) <= 0) {
+            savebutt.location({ (settings.width() - savebutt.width()) / 2, subtitle.location().y() + subtitle.height()});
         }
         else {
             savebutt.location({ (settings.width() - savebutt.width()) / 2, (settings.height() / 4) - savebutt.height() });
