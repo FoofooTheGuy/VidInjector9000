@@ -479,7 +479,7 @@ namespace VidInjector9002 {
                         butt_array.at(y * 2 + i)->location({ text_box_array.at(y * columns + (columns - 1))->location().x() + text_box_array.at(y * columns + (columns - 1))->width(), text_box_array.at(y * columns)->location().y() });
                     }
                     else if (i == 1) {//if odd
-                        butt_array.at(y * 2 + i)->location({ text_box_array.at(y * columns + (columns - 1))->location().x() + text_box_array.at(y * columns + (columns - 1))->width(), text_box_array.at(y * columns)->location().y() + text_box_array.at(y * columns)->height() - butt_array.at(y * 2 + i)->height()});
+                        butt_array.at(y * 2 + i)->location({ text_box_array.at(y * columns + (columns - 1))->location().x() + text_box_array.at(y * columns + (columns - 1))->width(), text_box_array.at(y * columns)->location().y() + text_box_array.at(y * columns)->height() - butt_array.at(y * 2 + i)->height() });
                     }
                 }
             }
@@ -724,6 +724,7 @@ namespace VidInjector9002 {
             }
             if (parseLines(outstr, filelines, IntIconBorderParam)) {
                 if (!stoul_s(outrealint, outstr)) {
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({})\n{} {}", BadValue, outstr, IntIconBorderParam, BeANumber), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     outrealint = 2;
                 }
                 borderMode = ((outrealint & 0xFF) > 2 ? 2 : (outrealint & 0xFF));
@@ -775,7 +776,7 @@ namespace VidInjector9002 {
             if (parseLines(outstr, filelines, IntFFrewindParam)) {
                 if (!stoul_s(outrealint, outstr)) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({})\n{} {}", BadValue, outstr, IntFFrewindParam, BeANumber), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    outrealint = 0;
+                    outrealint = 1;
                     good = false;
                 }
                 FFrewind.checked(outrealint);
@@ -787,7 +788,7 @@ namespace VidInjector9002 {
             if (parseLines(outstr, filelines, IntFadeOptParam)) {
                 if (!stoul_s(outrealint, outstr)) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({})\n{} {}", BadValue, outstr, IntFadeOptParam, BeANumber), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    outrealint = 0;
+                    outrealint = 1;
                     good = false;
                 }
                 FadeOpt.checked(outrealint);
@@ -799,7 +800,7 @@ namespace VidInjector9002 {
             if (parseLines(outstr, filelines, IntRowsParam)) {
                 if (!stoul_s(outrealint, outstr)) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({})\n{} {}", BadValue, outstr, IntRowsParam, BeANumber), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    outrealint = 0;
+                    outrealint = 1;
                     good = false;
                 }
                 if (outrealint > 27) {
