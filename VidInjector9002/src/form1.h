@@ -1051,6 +1051,8 @@ namespace VidInjector9002 {
             buildButt.enabled(able);
             loadbutt.enabled(able);
             loadCIAbutt.enabled(able);
+            for (int i = 0; i < rows * 2; i++)
+                butt_array.at(i)->enabled(able);
         }
 
         //objects
@@ -1076,8 +1078,6 @@ namespace VidInjector9002 {
         xtd::forms::tab_page parameters;
         xtd::forms::tab_page finalize;
         xtd::forms::tab_page settings;
-
-        xtd::forms::picture_box Logo;
 
         xtd::forms::label modetxt;
         xtd::forms::choice mode;
@@ -1162,11 +1162,12 @@ namespace VidInjector9002 {
         xtd::forms::button cancelBuildButt;
 
         xtd::forms::background_worker builder;
-        xtd::forms::background_worker extractor;
 
         //settings
+        xtd::forms::picture_box Logo;
         xtd::forms::label maintitle;
         xtd::forms::label subtitle;
+
         xtd::forms::button savebutt;
         xtd::forms::button loadbutt;
         xtd::forms::button loadCIAbutt;
@@ -1178,8 +1179,11 @@ namespace VidInjector9002 {
         xtd::forms::label LanguageTitle;
         xtd::forms::choice LanguageChoiche;
         xtd::forms::button restartbutt;
+
         xtd::forms::label version;
-        xtd::forms::settings Settings;
+        //xtd::forms::settings Settings;
+
+        xtd::forms::background_worker extractor;
 
         uint8_t* banner_image;
         uint8_t* large_icon;

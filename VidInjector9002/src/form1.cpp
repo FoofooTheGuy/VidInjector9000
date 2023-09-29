@@ -721,7 +721,7 @@ form1::form1() {
         }
         xtd::ustring filepath = "";
         if(!text_box_array[(emptyRow - 1 < 0 ? 0 : emptyRow - 1) * columns + 1]->text().empty())
-            filepath = load_file(MoflexFilesList, text_box_array[(emptyRow - 1) * columns + 1]->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_videos));
+            filepath = load_file(MoflexFilesList, text_box_array[(emptyRow - 1 < 0 ? 0 : emptyRow - 1) * columns + 1]->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_videos));
         else filepath = load_file(MoflexFilesList, text_box_array[(rows - 1) * columns + 1]->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_videos));
         if (filepath.empty()) return;//big brain time
 
@@ -753,7 +753,7 @@ form1::form1() {
         xtd::ustring filepath = "";
         //xtd::ustring filepath = load_file(xtd::ustring::format("{} {}", SupportedImage200x120, SupportedImageListBanner), text_box_array.at((rows - 1) * columns + 2)->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
         if (!text_box_array[(emptyRow - 1 < 0 ? 0 : emptyRow - 1) * columns + 2]->text().empty())
-            filepath = load_file(xtd::ustring::format("{} {}", SupportedImage200x120, SupportedImageListBanner), text_box_array[(emptyRow - 1) * columns + 2]->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
+            filepath = load_file(xtd::ustring::format("{} {}", SupportedImage200x120, SupportedImageListBanner), text_box_array[(emptyRow - 1 < 0 ? 0 : emptyRow - 1) * columns + 2]->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
         else filepath = load_file(xtd::ustring::format("{} {}", SupportedImage200x120, SupportedImageListBanner), text_box_array[(rows - 1) * columns + 2]->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
         if (filepath.empty()) return;
 
@@ -1522,7 +1522,7 @@ form1::form1() {
             minorBarTxt.text(xtd::ustring::format("{} {}", CreatingFile, outfile.substr(outfile.find_last_of("/\\") + 1)));
             minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
             builder.report_progress(0);
-            std::ofstream baseCIA(xtd::ustring::format("{}/base.cia", tempPath).c_str(), std::ios_base::out | std::ios_base::binary);
+            std::ofstream baseCIA(std::filesystem::u8path(xtd::ustring::format("{}/base.cia", tempPath).c_str()), std::ios_base::out | std::ios_base::binary);
             baseCIA.write(reinterpret_cast<const char*>(base_cia), sizeof(base_cia));
             baseCIA.close();
 
