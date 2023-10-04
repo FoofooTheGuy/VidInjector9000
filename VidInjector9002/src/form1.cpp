@@ -963,6 +963,7 @@ form1::form1() {
     minorBar.maximum(69);
     minorBar.minimum(0);
     minorBar.style(xtd::forms::progress_bar_style::continuous);
+    minorBar.double_buffered(true);
 
     //major bar
     majorBarTxt.parent(finalize);
@@ -973,6 +974,7 @@ form1::form1() {
 
     majorBar.parent(finalize);
     majorBar.size({ finalize.width() - 23, 50 });
+    majorBar.double_buffered(true);
 
     buildButt.parent(finalize);
     buildButt.auto_size(true);
