@@ -83,8 +83,8 @@ namespace VidInjector9002 {
             }
             else if (res == xtd::forms::dialog_result::yes) {//yes close
                 if (deleteTemp) {
-                    std::filesystem::remove_all(std::filesystem::u8path(exportsPath.c_str()));
-                    std::filesystem::remove_all(std::filesystem::u8path(tempPath.c_str()));
+                    std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*exportsPath.c_str()));
+                    std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*tempPath.c_str()));
                 }
                 xtd::forms::application::exit_thread();//obliterate the process
             }
@@ -150,18 +150,18 @@ namespace VidInjector9002 {
             int out_h = 120;
             int film_w = 264;
             int film_h = 154;
-            if (std::filesystem::exists(std::filesystem::u8path(text_box_array.at(y * columns + 2)->text().c_str()))) {
+            if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*text_box_array.at(y * columns + 2)->text().c_str()))) {
                 std::string extension = text_box_array.at(y * columns + 2)->text().c_str();
                 if (extension.find_last_of(".") != std::string::npos)
                     extension.erase(extension.begin(), extension.begin() + extension.find_last_of("."));
                 if (extension == ".bimg") {
-                    if (std::filesystem::file_size(std::filesystem::u8path(text_box_array.at(y * columns + 2)->text().c_str())) == 0x10020) {
+                    if (std::filesystem::file_size(std::filesystem::path((const char8_t*)&*text_box_array.at(y * columns + 2)->text().c_str())) == 0x10020) {
                         w = 256;
                         h = 128;
                         int ich = sizeof(nnc_u16);
                         int och = sizeof(nnc_u32);
                         std::ifstream input;
-                        input.open(std::filesystem::u8path(text_box_array.at(y * columns + 2)->text().c_str()), std::ios_base::in | std::ios_base::binary);
+                        input.open(std::filesystem::path((const char8_t*)&*text_box_array.at(y * columns + 2)->text().c_str()), std::ios_base::in | std::ios_base::binary);
                         uint8_t* input_data = (uint8_t*)malloc((w * h * ich) + 0x20);
                         input.read(reinterpret_cast<char*>(input_data), (w * h * ich) + 0x20);
                         input.close();
@@ -353,7 +353,7 @@ namespace VidInjector9002 {
             iconerror.hide();
 
 
-            if ((!std::filesystem::exists(std::filesystem::u8path(iconbox.text().c_str())) || (!stbi_info(iconbox.text().c_str(), &w, &h, &ch) && !smdhinput)) && !iconbox.text().empty()) {
+            if ((!std::filesystem::exists(std::filesystem::path((const char8_t*)&*iconbox.text().c_str())) || (!stbi_info(iconbox.text().c_str(), &w, &h, &ch) && !smdhinput)) && !iconbox.text().empty()) {
                 iconerror.show();
             }
         }
@@ -620,8 +620,8 @@ namespace VidInjector9002 {
         
         std::vector<xtd::ustring> fileRead(xtd::ustring inpath) {
             std::vector<xtd::ustring> filelines;
-            if (!std::filesystem::exists(std::filesystem::u8path(inpath.c_str()))) return filelines;
-            std::ifstream infile(std::filesystem::u8path(inpath.c_str()), std::ios_base::in | std::ios_base::binary);
+            if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*inpath.c_str()))) return filelines;
+            std::ifstream infile(std::filesystem::path((const char8_t*)&*inpath.c_str()), std::ios_base::in | std::ios_base::binary);
             char Byte;
             xtd::ustring line = "";
             //split file into the vector
@@ -644,7 +644,7 @@ namespace VidInjector9002 {
         }
 
         void saveParameters() {
-            std::ofstream outparams(std::filesystem::u8path(parampath.c_str()), std::ios_base::out | std::ios_base::binary);
+            std::ofstream outparams(std::filesystem::path((const char8_t*)&*parampath.c_str()), std::ios_base::out | std::ios_base::binary);
             outparams <<
                 StrVerParam << "=\"" << VI9PVER << "\"\n" <<
                 IntMultiParam << "=\"" << std::to_string(mode.selected_index()) << "\"\n" <<
@@ -873,9 +873,9 @@ namespace VidInjector9002 {
 
         bool loadLanguage(xtd::ustring Lang) {
             xtd::ustring outstr = "";
-            if (!std::filesystem::exists(std::filesystem::u8path(xtd::ustring::format("{}/{}/language/{}/Language.txt", ProgramDir, resourcesPath, Lang).c_str()))) {
-                std::filesystem::create_directories(std::filesystem::u8path(xtd::ustring::format("{}/{}/language/English", ProgramDir, resourcesPath).c_str()));
-                std::ofstream M_file(std::filesystem::u8path(xtd::ustring::format("{}/{}/language/English/M.bmp", ProgramDir, resourcesPath).c_str()), std::ios_base::out | std::ios_base::binary);
+            if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/{}/language/{}/Language.txt", ProgramDir, resourcesPath, Lang).c_str()))) {
+                std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/{}/language/English", ProgramDir, resourcesPath).c_str()));
+                std::ofstream M_file(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/{}/language/English/M.bmp", ProgramDir, resourcesPath).c_str()), std::ios_base::out | std::ios_base::binary);
                 M_file.write(reinterpret_cast<const char*>(M_bmp), sizeof(M_bmp));
                 M_file.close();
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToFindPath, xtd::ustring::format("{}/{}/language/{}/Language.txt", ProgramDir, resourcesPath, Lang)), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
@@ -900,10 +900,10 @@ namespace VidInjector9002 {
 
         void saveSettings() {
             if (autoSaveParams && saveParametersNow) {
-                if (!std::filesystem::exists(std::filesystem::u8path(parampath.c_str()))) parampath = xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, DefaultParamFile);
+                if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*parampath.c_str()))) parampath = xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, DefaultParamFile);
                 saveParameters();
             }
-            std::ofstream settingsfile(std::filesystem::u8path(xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, settingsPath).c_str()), std::ios_base::out | std::ios_base::binary);
+            std::ofstream settingsfile(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, settingsPath).c_str()), std::ios_base::out | std::ios_base::binary);
             settingsfile <<
                 StrDefaultLanguage << "=\"" << Languagedir << "\"\n" <<
                 IntAutoSaveParams << "=\"" << autoSaveParams << "\"\n" <<
@@ -918,9 +918,9 @@ namespace VidInjector9002 {
             xtd::ustring outstr = "";
             uint32_t outrealint = 0;
             bool good = true;
-            if (!std::filesystem::exists(std::filesystem::u8path(xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, settingsPath).c_str()))) {
-                std::filesystem::create_directories(std::filesystem::u8path(xtd::ustring::format("{}/{}", ProgramDir, resourcesPath).c_str()));
-                std::ofstream settingsfile(std::filesystem::u8path(xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, settingsPath).c_str()), std::ios_base::out | std::ios_base::binary);
+            if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, settingsPath).c_str()))) {
+                std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/{}", ProgramDir, resourcesPath).c_str()));
+                std::ofstream settingsfile(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, settingsPath).c_str()), std::ios_base::out | std::ios_base::binary);
                 settingsfile <<
                     StrDefaultLanguage << "=\"English\"\n" <<
                     IntAutoSaveParams << "=\"0\"\n" <<

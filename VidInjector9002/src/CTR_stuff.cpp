@@ -1,13 +1,13 @@
 #include "CTR_stuff.hpp"
 
 void Generate_Files(std::string dir, bool Multi) {
-	if (!std::filesystem::exists(std::filesystem::u8path(dir))) std::filesystem::create_directories(std::filesystem::u8path(dir));
+	if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*dir.c_str()))) std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*dir.c_str()));
 	miniz_cpp::zip_file file;
 	file.load(Multi ? Multivid : Singlevid);
 	std::vector<std::string> list = file.namelist();
 	for (auto& member : list) {//plant seeds
 		if (member.find_last_of("/") == member.size() - 1)
-			std::filesystem::create_directory(std::filesystem::u8path(dir + "/" + member));
+			std::filesystem::create_directory(std::filesystem::path((const char8_t*)&*std::string(dir + "/" + member).c_str()));
 	}
 	file.extractall(dir, list);//grow fruit (don't you mean grow tree?)
 }
@@ -98,16 +98,16 @@ uint8_t convertToBimg(const std::string input, uint8_t* outBuffer, bool writeHea
 	const int out_w = 200;
 	const int out_h = 120;
 	const uint8_t FF = 0xFF;
-	if (std::filesystem::exists(std::filesystem::u8path(input))) {
+	if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*input.c_str()))) {
 		std::string extension = input;
 		extension.erase(extension.begin(), extension.end() - 5);
 		if (extension == ".bimg") {
-			if (std::filesystem::file_size(std::filesystem::u8path(input)) == 0x10020) {
+			if (std::filesystem::file_size(std::filesystem::path((const char8_t*)&*input.c_str())) == 0x10020) {
 				w = 256;
 				h = 128;
 				int ich = sizeof(nnc_u16);
 				std::ifstream infile;
-				infile.open(std::filesystem::u8path(input), std::ios_base::in | std::ios_base::binary);//input file
+				infile.open(std::filesystem::path((const char8_t*)&*input.c_str()), std::ios_base::in | std::ios_base::binary);//input file
 				uint8_t* input_data = (uint8_t*)malloc((w * h * ich) + 0x20);
 				if (!input_data) {
 					free(input_data);
@@ -318,7 +318,7 @@ uint8_t convertToIcon(const std::string input, std::string output, std::string s
 		free(large_4c);
 		return 3;
 	}
-	std::ofstream smdhOut(std::filesystem::u8path(output), std::ios_base::out | std::ios_base::binary);
+	std::ofstream smdhOut(std::filesystem::path((const char8_t*)&*output.c_str()), std::ios_base::out | std::ios_base::binary);
 	smdhOut << "SMDH";//make smdh!
 	for (int i = 0; i < 4; i++)
 		smdhOut << '\0';
@@ -640,7 +640,7 @@ uint8_t getCGFXtextureInfo(uint8_t* CGFX, const std::string symbol, uint32_t& da
 
 uint8_t getCBMDInfo(const std::string inpath, uint32_t* compressedSize, uint32_t* decompressedSize, uint32_t* CGFXoffset) {
 	std::ifstream CBMD;
-	CBMD.open(std::filesystem::u8path(inpath), std::ios_base::in | std::ios_base::binary);
+	CBMD.open(std::filesystem::path((const char8_t*)&*inpath.c_str()), std::ios_base::in | std::ios_base::binary);
 	uint32_t CBMDmagic = 0;
 	CBMD.seekg(0);
 	CBMD.read(reinterpret_cast<char*>(&CBMDmagic), 0x4);
@@ -674,7 +674,7 @@ uint8_t getCBMDInfo(const std::string inpath, uint32_t* compressedSize, uint32_t
 
 uint8_t CBMDgetCommonCGFX(const std::string inpath, const uint32_t compressedSize, const uint32_t decompressedSize, const uint32_t CGFXoffset, uint8_t* outbuff) {
 	std::ifstream CBMD;
-	CBMD.open(std::filesystem::u8path(inpath), std::ios_base::in | std::ios_base::binary);
+	CBMD.open(std::filesystem::path((const char8_t*)&*inpath.c_str()), std::ios_base::in | std::ios_base::binary);
 	uint32_t CBMDmagic = 0;
 	CBMD.seekg(0);
 	CBMD.read(reinterpret_cast<char*>(&CBMDmagic), 0x4);
@@ -735,7 +735,7 @@ uint8_t UTF16fileToUTF8str(const std::string path, std::vector<std::string>* out
 	std::string outputUTF8 = "";
 	std::string Line;
 	std::ifstream input;
-	input.open(std::filesystem::u8path(path), std::ios_base::in | std::ios_base::binary);
+	input.open(std::filesystem::path((const char8_t*)&*path.c_str()), std::ios_base::in | std::ios_base::binary);
 	if (!input)
 		return 1;
 
@@ -764,7 +764,7 @@ uint8_t UTF16fileToUTF8str(const std::string path, std::vector<std::string>* out
 
 //stolen from NNC romfs test
 std::string extract_dir(nnc_romfs_ctx* ctx, nnc_romfs_info* info, const char* path, int baselen) {
-	std::filesystem::create_directories(std::filesystem::u8path(path));
+	std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*path));
 
 	nnc_result res = NNC_R_OK;
 	nnc_romfs_iterator it = nnc_romfs_mkit(ctx, info);
