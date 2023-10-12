@@ -1652,15 +1652,18 @@ form1::form1() {
             out1:
                 if (res != NNC_R_OK)
                 {
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("failed: {}", nnc_strerror(res)), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("failed: {}", nnc_strerror(res)), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     return;
                 }
         }
         if (std::filesystem::exists(outfile.c_str())) {
             xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", CiaBuilt, outfile), xtd::ustring::format("NNC"), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::information);
+            if (std::filesystem::file_size(outfile.c_str()) > 4294967295) {
+                xtd::forms::message_box::show(*this, CiaBig, xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+            }
         }
         else {
-            xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, outfile), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+            xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, outfile), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
         }
     };
 
