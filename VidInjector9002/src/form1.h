@@ -873,9 +873,9 @@ namespace VidInjector9002 {
 
         bool loadLanguage(xtd::ustring Lang) {
             xtd::ustring outstr = "";
-            if (!std::filesystem::exists(xtd::ustring::format("{}/{}/language/{}/Language.txt", ProgramDir, resourcesPath, Lang).c_str())) {
-                std::filesystem::create_directories(xtd::ustring::format("{}/{}/language/English", ProgramDir, resourcesPath).c_str());
-                std::ofstream M_file(xtd::ustring::format("{}/{}/language/English/M.bmp", ProgramDir, resourcesPath).c_str(), std::ios_base::out | std::ios_base::binary);
+            if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/{}/language/{}/Language.txt", ProgramDir, resourcesPath, Lang).c_str()))) {
+                std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/{}/language/English", ProgramDir, resourcesPath).c_str()));
+                std::ofstream M_file(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/{}/language/English/M.bmp", ProgramDir, resourcesPath).c_str()), std::ios_base::out | std::ios_base::binary);
                 M_file.write(reinterpret_cast<const char*>(M_bmp), sizeof(M_bmp));
                 M_file.close();
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToFindPath, xtd::ustring::format("{}/{}/language/{}/Language.txt", ProgramDir, resourcesPath, Lang)), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
