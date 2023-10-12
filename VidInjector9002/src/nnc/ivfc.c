@@ -24,10 +24,11 @@ nnc_result nnc_read_ivfc_header(nnc_rstream *rs, nnc_ivfc *ivfc, nnc_u32 expecte
 {
 	if(expected_levels > NNC_IVFC_MAX_LEVELS)
 		return NNC_R_INVAL;
+	u32 max_levels = MIN(expected_levels == 0 ? NNC_IVFC_MAX_LEVELS : expected_levels + 1, NNC_IVFC_MAX_LEVELS);
 
 	u8 data[IVFC_MAX_HEADER_SIZE_CONST];
 	result ret;
-	TRY(read_at_exact(rs, 0, data, 0x14 + expected_levels * 0x18));
+	TRY(read_at_exact(rs, 0, data, 0x14 + max_levels * 0x18));
 
 	if(memcmp(data, "IVFC", 4) != 0)
 		return NNC_R_CORRUPT;
@@ -36,10 +37,9 @@ nnc_result nnc_read_ivfc_header(nnc_rstream *rs, nnc_ivfc *ivfc, nnc_u32 expecte
 	ivfc->l0_size = LE32P(&data[0x08]);
 
 	u32 i;
-	for(i = 0; i < NNC_IVFC_MAX_LEVELS; ++i)
+	for(i = 0; i < max_levels; ++i)
 		if(nnc_ivfc_read_level_descriptor(&data[0x0C + 0x18 * i], &ivfc->level[i]))
 			break;
-
 	ivfc->number_levels = i;
 
 	/* zero levels means there's not even application data.... that sounds like corruption */
@@ -149,13 +149,14 @@ static result nnc_ivfc_wclose(nnc_ivfc_writer *self)
 {
 	/* -1 since the final level doesn't need it's own hash buffer */
 	nnc_sha256_hash *hash_buffers[NNC_IVFC_MAX_LEVELS - 1] = {0};
-	hash_buffers[self->levels - 2] = self->block_hashes;
-	nnc_sha256_hash *master_hashes = NULL;
 
 	result ret = NNC_R_OK;
 	u64 pad_bytes = ALIGN(self->final_lv_size, self->block_size) - self->final_lv_size;
 	/* We may still need to finish the last hash if it wasn't complete yet, let's just do that right now quickly by padding */
 	TRYLBL(nnc_write_padding(NNC_WSP(self), pad_bytes), out);
+
+	hash_buffers[self->levels - 2] = self->block_hashes;
+	nnc_sha256_hash* master_hashes = NULL;
 
 	/* now we'll calculate all sizes of each level */
 	u64 level_sizes[NNC_IVFC_MAX_LEVELS];
