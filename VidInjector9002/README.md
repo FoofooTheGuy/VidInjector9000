@@ -108,6 +108,7 @@ Tested compatibility
 
 Notes: The window is unstable.
 </details>
+
 <details>
 <summary>Windows 10</summary>
 
@@ -116,6 +117,7 @@ Notes: The window is unstable.
 ![](https://img.shields.io/badge/xtd_nightly-008000)
 
 </details>
+
 <details>
 <summary>Ubuntu 20.04.2.0</summary>
 
@@ -126,18 +128,21 @@ Notes: Everything works except async (building and extracting CIA)
 ![](https://img.shields.io/badge/xtd_nightly-008000)
 
 </details>
+
 <details>
 <summary>Wine (Ubuntu 20.04.2.0)</summary>
 
-![](https://img.shields.io/badge/xtd_0.1.1--beta-008000)
+![](https://img.shields.io/badge/xtd_0.1.1--beta-FFA500)
 
+Unicode characters like in Japanese text do not appear on the form.
 </details>
+
 <details>
 <summary>Wine (manjaro)</summary>
 
 ![](https://img.shields.io/badge/xtd_0.1.1--beta-FFA500)
 
-Notes: Clicking on `choice` objects and resizing the parameters window causes the program to stop responding. However, you can use the scroll wheel to change `choice` values and resize the window while in the other menus to work around these.
+Unicode characters like in Japanese text do not appear on the form.
 </details>
 
 Translation
