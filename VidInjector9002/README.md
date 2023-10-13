@@ -5,42 +5,35 @@ A cross platform* injector for 3DS video CIAs
 
 <sup><sup>*If builds for your operating system are not provided then you will have to compile it yourself, see [compiling](https://github.com/FoofooTheGuy/VidInjector9000#compiling).<sup><sup>
 
-## Screenshots
+## Example Screenshots
 <details>
 <summary>Windows 8.1</summary>
 
 ### Light Mode
-![image](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/94aeda22-e9ab-4870-ad44-772bd53ebc63)
+![light](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/2e9f0305-65b4-4183-93a5-22dd2d0705d5)
 
 ### Dark Mode
-![image](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/f28dbc0f-acb6-412f-935c-56271ffe96ee)
+![dark](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/7774cb6a-b5f1-458a-8d04-ebce25f92cbf)
 </details>
+
 <details>
-<summary>Windows 10</summary>
+<summary>Manjaro gnome 23.0-230903</summary>
 
 ### Light Mode
-![light](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/045d4761-8456-4b0e-9de9-7bbe46b5b748)
+![manjaro white](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/5981cedb-e2a4-4f85-a71f-bdd07d58110a)
 
 ### Dark Mode
-![dark](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/01373504-f6f4-4c5a-b22b-560c868fa4f7)
+![manjaro black](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/5ddfeda4-86f0-4fbc-b660-4d5821c32fdd)
 </details>
-<details>
-<summary>Ubuntu 20.04.2.0</summary>
 
-### Light Mode
-![Screenshot from 2023-09-07 10-21-19](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/f4d2cead-3798-4a73-a8de-3ddbce46f3f7)
-
-### Dark Mode
-![Screenshot from 2023-09-07 10-28-46](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/c25c3cc1-1f3d-446e-ae33-58c3898c9d10)
-</details>
 <details>
 <summary>Wine (Manjaro gnome 23.0-230903)</summary>
 
 ### Light Mode
-![Screenshot from 2023-09-13 18-28-06](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/23b56821-4182-4330-8bcd-2bc30c762cd4)
+![wine white](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/c74ac568-cef4-4ad6-9065-1efd1e8a3566)
 
 ### Dark Mode
-![Screenshot from 2023-09-13 17-57-23](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/589dd545-c837-4181-a791-a6f0e43df325)
+![wine black](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/065a2f42-1040-41e4-a6cd-e4bd06b7edcb)
 </details>
 
 VidInjector9002 can...
