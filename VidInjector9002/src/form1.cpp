@@ -603,6 +603,7 @@ form1::form1() {
             bannerpreviewindex--;
         bannerpreviewleft.enabled(bannerpreviewindex != 0);//if it returns false, it means it's at 0 and it turns false, or on if it's true
         setMultiBannerPreview(bannerpreviewindex);
+        indextxt.location({ menubannerpreview.location().x() + ((menubannerpreview.width()) - indextxt.width()) / 2, menubannerpreview.location().y() + menubannerpreview.height() });
         bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
         bannerpreviewright.enabled(mode.selected_index() && bannerpreviewindex != rows - 1);
         if (autoSaveParams && loaded) saveSettings();
@@ -617,6 +618,7 @@ form1::form1() {
             bannerpreviewindex++;
         bannerpreviewright.enabled(bannerpreviewindex != rows - 1);
         setMultiBannerPreview(bannerpreviewindex);
+        indextxt.location({ menubannerpreview.location().x() + ((menubannerpreview.width()) - indextxt.width()) / 2, menubannerpreview.location().y() + menubannerpreview.height() });
         bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
         bannerpreviewright.enabled(mode.selected_index() && bannerpreviewindex != rows - 1);
         if (autoSaveParams && loaded) saveSettings();
@@ -629,6 +631,7 @@ form1::form1() {
             text_box_array.push_back(box_new);//put box in array
             text_box_array.at(y * columns + x)->parent(mediabox);//assign it data
             text_box_array.at(y * columns + x)->font(this->font());
+            text_box_array.at(y * columns + x)->back_color(y % 2 ? (this->back_color() == xtd::drawing::color::white ? xtd::drawing::color::from_argb(0xF5, 0xF5, 0xF5) : xtd::drawing::color::from_argb(0x10, 0x10, 0x10)) : this->back_color());
             //text_box_array.at(y * columns + x)->width(((mediabox.width() - text_box_array.at(y * columns)->height() / 2) / columns) - ((copybox.location().x() / columns) + 1));
             text_box_array.at(y * columns + x)->cursor(xtd::forms::cursors::ibeam());
             text_box_array.at(y * columns + x)->text_changed += [&] {

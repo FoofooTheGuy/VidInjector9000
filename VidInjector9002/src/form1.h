@@ -369,6 +369,7 @@ namespace VidInjector9002 {
                         text_box_array.push_back(box_new);//put box in array
                         text_box_array.at(y * columns + x)->parent(mediabox);//assign it data
                         text_box_array.at(y * columns + x)->font(this->font());
+                        text_box_array.at(y * columns + x)->back_color(y % 2 ? (this->back_color() == xtd::drawing::color::white ? xtd::drawing::color::from_argb(0xF5, 0xF5, 0xF5) : xtd::drawing::color::from_argb(0x10, 0x10, 0x10)) : this->back_color());
                         text_box_array.at(y * columns + x)->cursor(xtd::forms::cursors::ibeam());
 
                         text_box_array.at(y * columns + x)->location({ text_box_array.at(0)->location().x() + (x * text_box_array.at(y * columns + x)->width()), text_box_array.at(0)->location().y() + (y * text_box_array.at(y * columns + x)->height()) });
