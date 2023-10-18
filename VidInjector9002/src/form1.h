@@ -500,11 +500,11 @@ namespace VidInjector9002 {
             appendmedia.enabled(false);
             if (rows > 1) {
                 for (uint8_t x = columns; x > 0; x--) {
-                    delete[] text_box_array.at(((rows - 1) * columns + x) - 1);//murder last row
+                    delete text_box_array.at(((rows - 1) * columns + x) - 1);//murder last row
                     text_box_array.pop_back();
                 }
                 for (int i = 1; i >= 0; i--) {
-                    delete[] butt_array.at((rows - 1) * 2 + i);
+                    delete butt_array.at((rows - 1) * 2 + i);
                     butt_array.pop_back();
                 }
                 rows--;
