@@ -812,9 +812,14 @@ form1::form1() {
     titleIDtxt.font({ this->font(), 15 });
     titleIDtxt.text(xtd::ustring::format("{} 000400000", TitleIDText));
 
+    ZeroZero.parent(finalize);
+    ZeroZero.auto_size(true);
+    ZeroZero.font({ this->font(), 15 });
+    ZeroZero.text("00");
+
     titleIDbox.parent(finalize);
     titleIDbox.font(this->font());
-    titleIDbox.width(55);
+    titleIDbox.width(ZeroZero.width() * 3);
     titleIDbox.cursor(xtd::forms::cursors::ibeam());
     titleIDbox.text(xtd::ustring::format("{:X5}", RandomTID()));
     titleIDbox.text_changed += [&] {
@@ -846,11 +851,6 @@ form1::form1() {
     TitleIDError.text(xtd::ustring::format("{} {}", ErrorText, BadValue));
     TitleIDError.hide();
 
-    ZeroZero.parent(finalize);
-    ZeroZero.auto_size(true);
-    ZeroZero.font({ this->font(), 15 });
-    ZeroZero.text("00");
-
     randomizeTitleID.parent(finalize);
     randomizeTitleID.size({ 38, 38 });
     randomizeTitleID.image(pixels_to_image(randomize_array, 30, 27, 2));
@@ -867,7 +867,7 @@ form1::form1() {
 
     ApplicationName.parent(finalize);
     ApplicationName.font(this->font());
-    ApplicationName.width(95);
+    ApplicationName.width(ZeroZero.width() * 5);
     ApplicationName.cursor(xtd::forms::cursors::ibeam());
     ApplicationName.text("video");
     ApplicationName.text_changed += [&] {
@@ -910,7 +910,7 @@ form1::form1() {
 
     ProductCode.parent(finalize);
     ProductCode.font(this->font());
-    ProductCode.width(57);
+    ProductCode.width(ZeroZero.width() * 2);
     ProductCode.cursor(xtd::forms::cursors::ibeam());
     ProductCode.text("VDIJ");
     ProductCode.text_changed += [&] {
