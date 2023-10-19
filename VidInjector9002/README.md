@@ -119,14 +119,6 @@ Notes: The window is unstable.
 </details>
 
 <details>
-<summary>Wine (Ubuntu 20.04.2.0)</summary>
-
-![](https://img.shields.io/badge/xtd_0.1.1--beta-FFA500)
-
-Unicode characters like in Japanese text do not appear on the form.
-</details>
-
-<details>
 <summary>Manjaro gnome 23.0-230903</summary>
 
 ![](https://img.shields.io/badge/xtd_0.1.1--beta-FFA500)
@@ -136,6 +128,14 @@ Building CIA doesn't work for some reason
 
 <details>
 <summary>Wine (Manjaro gnome 23.0-230903)</summary>
+
+![](https://img.shields.io/badge/xtd_0.1.1--beta-FFA500)
+
+Unicode characters like in Japanese text do not appear on the form.
+</details>
+
+<details>
+<summary>Wine (Ubuntu 20.04.2.0)</summary>
 
 ![](https://img.shields.io/badge/xtd_0.1.1--beta-FFA500)
 
