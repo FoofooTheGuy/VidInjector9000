@@ -119,17 +119,6 @@ Notes: The window is unstable.
 </details>
 
 <details>
-<summary>Ubuntu 20.04.2.0</summary>
-
-![](https://img.shields.io/badge/xtd_0.1.1--beta-FFA500)
-
-Notes: Everything works except async (building and extracting CIA)
-
-![](https://img.shields.io/badge/xtd_nightly-008000)
-
-</details>
-
-<details>
 <summary>Wine (Ubuntu 20.04.2.0)</summary>
 
 ![](https://img.shields.io/badge/xtd_0.1.1--beta-FFA500)
