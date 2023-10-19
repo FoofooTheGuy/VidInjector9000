@@ -476,12 +476,7 @@ namespace VidInjector9002 {
                     text_box_array.at(y * columns + x)->location({ text_box_array.at(0)->location().x() + (x * text_box_array.at(y * columns + x)->width()), text_box_array.at(0)->location().y() + (y * text_box_array.at(y * columns + x)->height()) });
 
                 for (int i = 0; i < 2; i++) {
-                    if (i == 0) {//if even
-                        butt_array.at(y * 2 + i)->location({ text_box_array.at(y * columns + (columns - 1))->location().x() + text_box_array.at(y * columns + (columns - 1))->width(), text_box_array.at(y * columns)->location().y() });
-                    }
-                    else if (i == 1) {//if odd
-                        butt_array.at(y * 2 + i)->location({ text_box_array.at(y * columns + (columns - 1))->location().x() + text_box_array.at(y * columns + (columns - 1))->width(), text_box_array.at(y * columns)->location().y() + text_box_array.at(y * columns)->height() - butt_array.at(y * 2 + i)->height() });
-                    }
+                    butt_array.at(y * 2 + i)->location({ text_box_array.at(y * columns + (columns - 1))->location().x() + text_box_array.at(y * columns + (columns - 1))->width(), i ? (text_box_array.at(y * columns)->location().y() + text_box_array.at(y * columns)->height() - butt_array.at(y * 2 + i)->height()) : text_box_array.at(y * columns)->location().y() });
                 }
             }
             //playertitletxt.location({ mediabox.location().x() + text_box_array.at(0)->location().x() + (text_box_array.at(0)->width() - playertitletxt.width()) / 2, copybox.location().y() + copybox.height() });
@@ -562,12 +557,7 @@ namespace VidInjector9002 {
                     text_box_array.at(y * columns + x)->location({ text_box_array.at(0)->location().x() + (x * text_box_array.at(y * columns + x)->width()), text_box_array.at(0)->location().y() + (y * text_box_array.at(y * columns + x)->height()) });
 
                 for (int i = 0; i < 2; i++) {
-                    if (i == 0) {//if even
-                        butt_array.at(y * 2 + i)->location({ text_box_array.at(y * columns + (columns - 1))->location().x() + text_box_array.at(y * columns + (columns - 1))->width(), text_box_array.at(y * columns)->location().y() });
-                    }
-                    else if (i == 1) {//if odd
-                        butt_array.at(y * 2 + i)->location({ text_box_array.at(y * columns + (columns - 1))->location().x() + text_box_array.at(y * columns + (columns - 1))->width(), text_box_array.at(y * columns)->location().y() + text_box_array.at(y * columns)->height() - butt_array.at(y * 2 + i)->height() });
-                    }
+                    butt_array.at(y * 2 + i)->location({ text_box_array.at(y * columns + (columns - 1))->location().x() + text_box_array.at(y * columns + (columns - 1))->width(), i ? (text_box_array.at(y * columns)->location().y() + text_box_array.at(y * columns)->height() - butt_array.at(y * 2 + i)->height()) : text_box_array.at(y * columns)->location().y() });
                 }
             }
             butt_array.at(butt_array.size() - 1)->hide();
@@ -1072,7 +1062,7 @@ namespace VidInjector9002 {
         bool autoLoadParams = false;
         bool deleteTemp = true;
         uint8_t borderMode = 2;
-        xtd::forms::font_dialog font_dialog;
+        //xtd::forms::font_dialog font_dialog;
         xtd::forms::label MultiOnly;
 
         xtd::forms::tab_control tab_control;

@@ -995,7 +995,7 @@ form1::form1() {
     };
 
     {
-        xtd::ustring outfile = "";
+        static xtd::ustring outfile = "";
 
         buildButt.click += [&] {
             outfile = save_file(CiaFiles, xtd::ustring::format("{} [000400000{}00]", removeInvalids(longname.text()), titleIDbox.text()));
@@ -1030,6 +1030,7 @@ form1::form1() {
             majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, majorBarTxt.location().y() });
             majorBarTxt.show();
 
+            xtd::forms::message_box::show(*this, CiaBig, xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
             //make movie_title.csv (player title)
             {
                 minorBarTxt.text(xtd::ustring::format("{} romfs/movie_title.csv", CreatingFile));
@@ -2378,17 +2379,12 @@ form1::form1() {
                 }
             }
         }
-        for (int y = 0; y < rows; y++) {
-            for (int x = 1; x < columns; x++)
+        for (uint8_t y = 0; y < rows; y++) {
+            for (uint8_t x = 1; x < columns; x++)
                 text_box_array.at(y * columns + x)->location({ text_box_array.at(0)->location().x() + (x * text_box_array.at(y * columns + x)->width()), text_box_array.at(0)->location().y() + (y * text_box_array.at(y * columns + x)->height()) });
 
             for (int i = 0; i < 2; i++) {
-                if (i == 0) {//if even
-                    butt_array.at(y * 2 + i)->location({ text_box_array.at(y * columns + (columns - 1))->location().x() + text_box_array.at(y * columns + (columns - 1))->width(), text_box_array.at(y * columns)->location().y() });
-                }
-                else if (i == 1) {//if odd
-                    butt_array.at(y * 2 + i)->location({ text_box_array.at(y * columns + (columns - 1))->location().x() + text_box_array.at(y * columns + (columns - 1))->width(), text_box_array.at(y * columns)->location().y() + text_box_array.at(y * columns)->height() - butt_array.at(y * 2 + i)->height() });
-                }
+                butt_array.at(y * 2 + i)->location({ text_box_array.at(y * columns + (columns - 1))->location().x() + text_box_array.at(y * columns + (columns - 1))->width(), i ? (text_box_array.at(y * columns)->location().y() + text_box_array.at(y * columns)->height() - butt_array.at(y * 2 + i)->height()) : text_box_array.at(y * columns)->location().y() });
             }
         }
         //playertitletxt.location({ mediabox.location().x() + text_box_array.at(0)->location().x() + (text_box_array.at(0)->width() - playertitletxt.width()) / 2, copybox.location().y() + copybox.height() });
