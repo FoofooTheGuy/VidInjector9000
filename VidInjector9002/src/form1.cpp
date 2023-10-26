@@ -1044,7 +1044,6 @@ form1::form1() {
             majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, majorBarTxt.location().y() });
             majorBarTxt.show();
 
-            xtd::forms::message_box::show(*this, CiaBig, xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
             //make movie_title.csv (player title)
             {
                 minorBarTxt.text(xtd::ustring::format("{} romfs/movie_title.csv", CreatingFile));
