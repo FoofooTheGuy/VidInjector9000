@@ -85,7 +85,7 @@ xtd::ustring CreatingFile = "Creating the file:";
 xtd::ustring CopyingMoflex = "Copying MoFlex files...";
 xtd::ustring CiaFiles = "CTR Importable Archive (.cia)|*.cia";
 xtd::ustring CiaBuilt = "The CIA was built to:";
-xtd::ustring CiaBig = "The CIA file is too large to install.";
+xtd::ustring CiaBig = "The CIA file is too large to be installed.";
 
 xtd::ustring Languagedir = "English";
 
