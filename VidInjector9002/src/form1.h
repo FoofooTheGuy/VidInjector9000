@@ -217,6 +217,9 @@ namespace VidInjector9002 {
             }
             bannerpreviewindex = ((y & 0xFF) > 26 ? 26 : (y & 0xFF));//this should never be greater than 26 but whatever
             indextxt.text(xtd::ustring::format("{}/{}", bannerpreviewindex + 1, rows));
+            indextxt.location({ menubannerpreview.location().x() + ((menubannerpreview.width()) - indextxt.width()) / 2, menubannerpreview.location().y() + menubannerpreview.height() });
+            bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
+            bannerpreviewright.enabled(mode.selected_index() && bannerpreviewindex != rows - 1);
         }
 
         //set DoText to false if you dont want the text from the smdh to be loaded
@@ -378,6 +381,25 @@ namespace VidInjector9002 {
                         };
                         if (y * columns + x > 1)
                             text_box_array.at(y * columns + x)->enabled(mode.selected_index());
+                        if (x == 2) {//if column is multi banner
+                            text_box_array.at(y * columns + x)->text_changed += [&](object& sender, const xtd::event_args& e) {
+                                if (loaded) {
+                                    for (uint8_t r = 0; r < rows; r++)
+                                        if (text_box_array.at(r * columns + 2)->get_hash_code() == sender.get_hash_code()) {
+                                            if (bannerpreviewindex == r)
+                                                setMultiBannerPreview(r);
+                                        }
+                                }
+                            };
+                            text_box_array.at(y * columns + x)->mouse_click += [&](object& sender, const xtd::forms::mouse_event_args& e) {
+                                if (loaded) {
+                                    for (uint8_t r = 0; r < rows; r++)
+                                        if (text_box_array.at(r * columns + 2)->get_hash_code() == sender.get_hash_code()) {
+                                            setMultiBannerPreview(r);
+                                        }
+                                }
+                            };
+                        }
                     }
                     for (int i = 0; i < 2; i++) {
                         xtd::forms::picture_box* button_new = new xtd::forms::picture_box();

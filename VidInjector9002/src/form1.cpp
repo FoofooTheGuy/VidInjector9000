@@ -595,8 +595,6 @@ form1::form1() {
                 filepath = load_file(xtd::ustring::format("{} {}", SupportedImage200x120, SupportedImageListBanner), text_box_array.at(bannerpreviewindex * columns + 2)->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
             if (!filepath.empty()) text_box_array.at(bannerpreviewindex * columns + 2)->text(filepath);
             setMultiBannerPreview(bannerpreviewindex);
-            //bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
-            //bannerpreviewright.enabled(mode.selected_index() && bannerpreviewindex != rows - 1);
         }
     };
 
@@ -615,9 +613,6 @@ form1::form1() {
             bannerpreviewindex--;
         bannerpreviewleft.enabled(bannerpreviewindex != 0);//if it returns false, it means it's at 0 and it turns false, or on if it's true
         setMultiBannerPreview(bannerpreviewindex);
-        indextxt.location({ menubannerpreview.location().x() + ((menubannerpreview.width()) - indextxt.width()) / 2, menubannerpreview.location().y() + menubannerpreview.height() });
-        bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
-        bannerpreviewright.enabled(mode.selected_index() && bannerpreviewindex != rows - 1);
         if (autoSaveParams && loaded) saveSettings();
     };
     bannerpreviewleft.enabled(mode.selected_index());
@@ -630,9 +625,6 @@ form1::form1() {
             bannerpreviewindex++;
         bannerpreviewright.enabled(bannerpreviewindex != rows - 1);
         setMultiBannerPreview(bannerpreviewindex);
-        indextxt.location({ menubannerpreview.location().x() + ((menubannerpreview.width()) - indextxt.width()) / 2, menubannerpreview.location().y() + menubannerpreview.height() });
-        bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
-        bannerpreviewright.enabled(mode.selected_index() && bannerpreviewindex != rows - 1);
         if (autoSaveParams && loaded) saveSettings();
     };
     bannerpreviewright.enabled(mode.selected_index());
@@ -651,6 +643,25 @@ form1::form1() {
             };
             if(y * columns + x > 1)
                 text_box_array.at(y * columns + x)->enabled(mode.selected_index());
+            if (x == 2) {//if column is multi banner
+                text_box_array.at(y * columns + x)->text_changed += [&](object& sender, const xtd::event_args& e) {
+                    if (loaded) {
+                        for (uint8_t r = 0; r < rows; r++)
+                            if (text_box_array.at(r * columns + 2)->get_hash_code() == sender.get_hash_code()) {
+                                if(bannerpreviewindex == r)
+                                    setMultiBannerPreview(r);
+                            }
+                    }
+                };
+                text_box_array.at(y * columns + x)->mouse_click += [&](object& sender, const xtd::forms::mouse_event_args& e) {
+                    if (loaded) {
+                        for (uint8_t r = 0; r < rows; r++)
+                            if (text_box_array.at(r * columns + 2)->get_hash_code() == sender.get_hash_code()) {
+                                setMultiBannerPreview(r);
+                            }
+                    }
+                };
+            }
         }
         for (uint8_t i = 0; i < 2; i++) {
             xtd::forms::picture_box* button_new = new xtd::forms::picture_box();
@@ -776,8 +787,6 @@ form1::form1() {
 
         text_box_array.at(emptyRow * columns + 2)->text(filepath);
         setMultiBannerPreview(emptyRow);
-        bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
-        bannerpreviewright.enabled(mode.selected_index() && bannerpreviewindex != rows - 1);
     };
     multibannerbrowse.enabled(mode.selected_index());
 
