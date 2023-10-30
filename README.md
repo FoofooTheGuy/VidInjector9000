@@ -1,91 +1,184 @@
+<img src="https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/c6dddd9b-dfa7-4560-a7f6-2b478a97b6be" alt="drawing" width="225"/>
+
 # VidInjector9000
-A cross platform,* step-by-step injector for 3DS video CIAs focused on presentation
+A cross platform* injector for 3DS video CIAs
 
-<sup><sup>*If builds for your operating system are not provided then you will have to compile it yourself, see [building](https://github.com/FoofooTheGuy/VidInjector9000#building).<sup><sup>
+<sup><sup>*If builds for your operating system are not provided then you will have to compile it yourself, see [compiling](https://github.com/FoofooTheGuy/VidInjector9000#compiling).<sup><sup>
 
-Outdated Walk Through
----
+## Example Screenshots
+<details>
+<summary>Windows 8.1</summary>
 
-<html>
+### Light Mode
+![light](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/2e9f0305-65b4-4183-93a5-22dd2d0705d5)
 
-<body>
-    <p align="center">
-        <a href="https://www.youtube.com/watch?v=JSvrmVNuGLA">
-            <img width="1012" src="https://i.ytimg.com/vi/JSvrmVNuGLA/maxresdefault.jpg">
-            How to Create Nintendo 3DS Video Injections with VidInjector9001
-        </a>
-    </p>
-</body>
-</html>
+### Dark Mode
+![dark](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/7774cb6a-b5f1-458a-8d04-ebce25f92cbf)
+</details>
 
-Usage
+<details>
+<summary>Windows 10</summary>
+
+### Light Mode
+![win10 white](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/b5ebedd1-4dd0-4d8f-8b6e-05e88061efec)
+
+### Dark Mode
+![win10 black](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/4e95c791-76a6-4e73-859b-37451f861baf)
+</details>
+
+<details>
+<summary>Manjaro gnome 23.0-230903</summary>
+
+### Light Mode
+![manjaro white](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/5981cedb-e2a4-4f85-a71f-bdd07d58110a)
+
+### Dark Mode
+![manjaro black](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/5ddfeda4-86f0-4fbc-b660-4d5821c32fdd)
+</details>
+
+<details>
+<summary>Wine (Manjaro gnome 23.0-230903)</summary>
+
+### Light Mode
+![wine white](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/c74ac568-cef4-4ad6-9065-1efd1e8a3566)
+
+### Dark Mode
+![wine black](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/065a2f42-1040-41e4-a6cd-e4bd06b7edcb)
+</details>
+
+VidInjector9002 can...
 --
-1. Download [VidInjector9001.zip](https://github.com/FoofooTheGuy/VidInjector9000/releases/latest/download/VidInjector9001.zip), extract it somewhere, and run VidInjector9001.exe.
-2. Type the letter corresponding to which part you want to do and follow the directions on screen.
-3. Bask in the glory of the official looking banner!
+
+- **Create video injects.** Input .moflex videos, images, and text, and the program will build cia file for you!
+- **Create multi-video injects.** Similar to the above, but there can be multiple videos in one cia!
+- **Unpack a video CIA.** Load parameters from a .cia file to edit and rebuild!
+- **Save and load parameters.** Save your place and come back later, they can even be saved/loaded automatically!
+- **Be configured for any language.** If you can translate it, you can add it! (See [translation](https://github.com/FoofooTheGuy/VidInjector9000#translation) for details)
 
 **Tips:**
 
-- Drag and drop a .txt file when inputting text for jobs and you will be able to use the contents of the file as input (UTF-8/16 files work best)
-- When typing the letter for which job you want or when it prompts for Y/N, it is not case sensitive!
-- It also only checks for the first letter, so you can actually type something like "yes" and it will still work!
+- Click the icon preview to change border modes!
+- Open a project file (.vi9p) with the program to load in those parameters!
+- Click the multi video banner preview to choose file!
+- Click the logo in the top left to find to the latest release!
+- If an image doesn't fit in, it will be resized and cropped!
 
 You may ask...
 --
 
-**Q: How do I make moflex files?**
+**Q: How do I make .moflex files?**
 
 A: Use Mobiclip Multicore Encoder. The most straight forward way to get that is on the Nintendo Developer Portal, but there are mirrors online somewhere...
 
 **Q: Why did you even make this?**
 
-A: I made this so that the process of injecting with 3D banners is more streamlined. Also, VidInjector9000 2.0+ (aka VidInjector9001) can create multi video injects with MultiVidInjector5000!
+A: I made this so that the process of injecting with 3D banners is more streamlined.
 
 **Q: How is this different from all the other injectors?**
 
-A: This is simple and gives you much control over your injections.
+A: This is simple and gives you much control over your video injections. Plus, VidInjector9000 3.0 (aka VidInjector9002) is a GUI and not a CLI!
 
 Known Issues
 --
-#### Multi Video injects do not work on the regions China, Taiwan and Korea because there are no [language files](https://github.com/FoofooTheGuy/VidInjector9000/tree/main/VidInjector9001/Vidinjector9000Resources/files/templates/MultiVideo/romfs/lang) for those.
-I am unable to add them myself because I don't know those languages so I would appreciate it if someone would translate the files and contribute the following:
+#### Sometimes UTF-8 file paths are not supported on Windows/Wine
+Most things work with UTF-8 file paths but certain things don't. (the location of the program, SMDH reading, CIA reading, CIA writing) These should work on other platforms though.
 
-[(VidInjector9000/VidInjector9001/Vidinjector9000Resources/files/templates/MultiVideo/romfs/lang/)](https://github.com/FoofooTheGuy/VidInjector9000/tree/main/VidInjector9001/Vidinjector9000Resources/files/templates/MultiVideo/romfs/lang)
+#### Multi Video injects do not work on the regions China, Taiwan and Korea because there are no language files for those.
+I am unable to add them myself because I don't know those languages and this isn't really in my "jurisdiction" so I would appreciate it if someone would translate the files and contribute the following:
+
+romfs/lang/
 - CN_Simp_Chinese/message.msbt
 - KR_Hangeul/message.msbt
 - TW_Trad_Chinese/message.msbt
 
 To remedy this, you can use [lumalocaleswitcher](https://github.com/Possum/LumaLocaleSwitcher/releases/latest).
 
-#### ASCII encoded text containing extended characters gets turned into CP437 characters
-I have no idea how to fix this so just use UTF8/16 or CP437 encoded text files.
-
-Building
+Compiling
 --
-**Windows (MinGW)**
+1. Download xtd from [gammasoft71](https://github.com/gammasoft71/xtd) or [my fork](https://github.com/FoofooTheGuy/xtd)
+2. Run the install script that corresponds to your operating system
+3. run the command `xtdc build -r` in the directory of Vidinjector9002's cmakelists.txt
+4. ???
+5. profit!!
 
-0. A better guide can be found [here](https://www.geeksforgeeks.org/complete-guide-to-install-c17-in-windows/)
-1. Download the latest [MinGW](https://nuwen.net/mingw.html) and put the contents on your computer.
-2. Add the bin folder to PATH
-3. run [build.bat](https://github.com/FoofooTheGuy/VidInjector9000/raw/main/VidInjector9001/src/build.bat) or [build.py](https://github.com/FoofooTheGuy/VidInjector9000/raw/main/VidInjector9001/src/build.py)
+Tested compatibility
+--
+![](https://img.shields.io/badge/Fully%20works%20as%20expected-008000)
 
-**\*nix and whatnot**
+![](https://img.shields.io/badge/Some%20functionality%20is%20broken-FFA500)
 
-run [build.py](https://github.com/FoofooTheGuy/VidInjector9000/raw/main/VidInjector9000/src/build.py)
+![](https://img.shields.io/badge/Does%20not%20work-B22222)
 
-Replace [Vidinjector9000Resources/tools/makerom.exe](https://github.com/FoofooTheGuy/VidInjector9000/blob/main/VidInjector9001/Vidinjector9000Resources/tools/makerom.exe) with a build corresponding to your machine.
+<details>
+<summary>Windows 8.1</summary>
 
+![](https://img.shields.io/badge/xtd_0.1.1--beta-008000)
+
+![](https://img.shields.io/badge/xtd_nightly-B22222)
+
+Notes: The window is unstable.
+</details>
+
+<details>
+<summary>Windows 10</summary>
+
+![](https://img.shields.io/badge/xtd_0.1.1--beta-008000)
+
+![](https://img.shields.io/badge/xtd_nightly-008000)
+
+</details>
+
+<details>
+<summary>Manjaro gnome 23.0-230903</summary>
+
+![](https://img.shields.io/badge/xtd_0.1.1--beta-FFA500)
+
+Building CIA doesn't work for some reason
+</details>
+
+<details>
+<summary>Wine (Manjaro gnome 23.0-230903)</summary>
+
+![](https://img.shields.io/badge/xtd_0.1.1--beta-FFA500)
+
+Unicode characters like in Japanese text do not appear on the form.
+</details>
+
+<details>
+<summary>Wine (Ubuntu 20.04.2.0)</summary>
+
+![](https://img.shields.io/badge/xtd_0.1.1--beta-FFA500)
+
+Unicode characters like in Japanese text do not appear on the form.
+</details>
+
+Translation
+--
+- Put a translation text file and an m.bmp in Vidinjector9000Resources/language/\<language>
+(the M in the image stands for Multi, so consider that when translating!)
+- The folder name is recommended to be in ASCII format to avoid issues, but it might actually work so... who knows?
+- the `language` string value in the file should be the name of the language in such language, not the word "English" translated
+
+**Thank you to the following for the work in translating:**
+
+[Deepl](https://www.deepl.com/translator)
+
+[Google Translate](https://translate.google.com/)
+
+[Rayz0rum](https://github.com/Spider-Sonic)
+
+"Pixel"
+
+- Please create a pull request or issue if you want to share your translation of the program.
 
 Credits and Stuff
 --
-[videoinject](https://github.com/ihaveamac/videoinject): Example functions and inspiration
+[xtd](https://github.com/gammasoft71/xtd): The GUI framework that made this whole thing possible
 
-[bannertool](https://github.com/Steveice10/bannertool): code for bannering
-
-[makerom](https://github.com/3DSGuy/Project_CTR): building CIA
-
-[3DBrew:](https://www.3dbrew.org/) Emotional support
+[nnc](https://github.com/MyPasswordIsWeak/nnc): Converting banner and icon images, packing and unpacking CIA files
 
 [stb image](https://github.com/nothings/stb): Manipulating images
 
 [miniz cpp](https://github.com/tfussell/miniz-cpp): Zip extracion
+
+[3DBrew](https://www.3dbrew.org/): Emotional support
