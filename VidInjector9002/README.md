@@ -17,6 +17,16 @@ A cross platform* injector for 3DS video CIAs
 </details>
 
 <details>
+<summary>Windows 10</summary>
+
+### Light Mode
+![win10 white](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/b5ebedd1-4dd0-4d8f-8b6e-05e88061efec)
+
+### Dark Mode
+![win10 black](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/4e95c791-76a6-4e73-859b-37451f861baf)
+</details>
+
+<details>
 <summary>Manjaro gnome 23.0-230903</summary>
 
 ### Light Mode
