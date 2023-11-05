@@ -49,8 +49,8 @@ A cross platform* injector for 3DS video CIAs
 VidInjector9002 can...
 --
 
-- **Create video injects.** Input .moflex videos, images, and text, and the program will build cia file for you!
-- **Create multi-video injects.** Similar to the above, but there can be multiple videos in one cia!
+- **Create video injects.** Input .moflex videos, images, and text, and the program will build a .cia file for you!
+- **Create multi-video injects.** Similar to the above, but there can be multiple videos in one .cia file!
 - **Unpack a video CIA.** Load parameters from a .cia file to edit and rebuild!
 - **Save and load parameters.** Save your place and come back later, they can even be saved/loaded automatically!
 - **Be configured for any language.** If you can translate it, you can add it! (See [translation](https://github.com/FoofooTheGuy/VidInjector9000#translation) for details)
@@ -179,6 +179,6 @@ Credits and Stuff
 
 [stb image](https://github.com/nothings/stb): Manipulating images
 
-[miniz cpp](https://github.com/tfussell/miniz-cpp): Zip extracion
+[miniz cpp](https://github.com/tfussell/miniz-cpp): Zip extraction
 
 [3DBrew](https://www.3dbrew.org/): Emotional support
