@@ -346,9 +346,10 @@ form1::form1() {
     shortnametxt.text(ShortNameText);
 
     shortname.parent(parameters);
+    shortname.multiline(true);
     shortname.font(this->font());
     shortname.location({ shortnametxt.location().x() + shortnametxt.width() + 5, shortnametxt.location().y() + (shortnametxt.height() - shortname.height()) / 2 });//tether to shortnametxt
-    shortname.width(parameters.width() - shortname.location().x() - 23);
+    shortname.size({ parameters.width() - shortname.location().x() - 23, shortname.height() * 2 });
     shortname.cursor(xtd::forms::cursors::ibeam());
 
     shorterror.parent(parameters);
@@ -374,9 +375,10 @@ form1::form1() {
     longnametxt.text(LongNameText);
 
     longname.parent(parameters);
+    longname.multiline(true);
     longname.font(this->font());
     longname.location({ longnametxt.location().x() + longnametxt.width() + 5, longnametxt.location().y() + (longnametxt.height() - longname.height()) / 2 });//tether to longnametxt
-    longname.width(parameters.width() - longname.location().x() - 23);
+    longname.size({ parameters.width() - longname.location().x() - 23, longname.height() * 2 });
     longname.cursor(xtd::forms::cursors::ibeam());
 
     longerror.parent(parameters);
@@ -402,9 +404,10 @@ form1::form1() {
     publishertxt.text(PublisherText);
 
     publisher.parent(parameters);
+    publisher.multiline(true);
     publisher.font(this->font());
     publisher.location({ publishertxt.location().x() + publishertxt.width() + 5, publishertxt.location().y() + (publishertxt.height() - publisher.height()) / 2 });//tether to publishertxt
-    publisher.width(parameters.width() - publisher.location().x() - 23);
+    publisher.size({ parameters.width() - publisher.location().x() - 23, publisher.height() * 2 });
     publisher.cursor(xtd::forms::cursors::ibeam());
 
     publishererror.parent(parameters);
@@ -1108,6 +1111,12 @@ form1::form1() {
                         outlongname.insert(j + 1, "x2C");
                     }
                 }
+                for (size_t j = 0; j < outlongname.size(); j++) {
+                    if (outlongname[j] == '\n') {
+                        outlongname[j] = '\\';
+                        outlongname.insert(j + 1, "n");
+                    }
+                }
 
                 std::string outpublisher = publisher.text();
                 if (outpublisher[0] == '#') {//sneakily fix the string huhuhu
@@ -1118,6 +1127,12 @@ form1::form1() {
                     if (outpublisher[j] == ',') {
                         outpublisher[j] = '\\';
                         outpublisher.insert(j + 1, "x2C");
+                    }
+                }
+                for (size_t j = 0; j < outpublisher.size(); j++) {
+                    if (outpublisher[j] == '\n') {
+                        outpublisher[j] = '\\';
+                        outpublisher.insert(j + 1, "n");
                     }
                 }
 

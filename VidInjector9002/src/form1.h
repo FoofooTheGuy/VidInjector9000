@@ -31,7 +31,7 @@ namespace VidInjector9002 {
         xtd::ustring removeInvalids(xtd::ustring str) {//replace invalid characters with '_', like for file names
             xtd::ustring out;
             for (const auto& c : str) {
-                if (c == '\"' || c == '\\' || c == '/' || c == ':' || c == '<' || c == '>' || c == '*' || c == '?' || c == '|') out += '_';
+                if (c == '\"' || c == '\\' || c == '/' || c == ':' || c == '<' || c == '>' || c == '*' || c == '?' || c == '|' || c == '\n') out += '_';
                 else out += c;
             }
             return out;
