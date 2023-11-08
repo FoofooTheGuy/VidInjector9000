@@ -1079,6 +1079,12 @@ form1::form1() {
                             outstr.insert(j + 1, "x2C");
                         }
                     }
+                    for (size_t j = 0; j < outstr.size(); j++) {
+                        if (outstr[j] == '\n') {
+                            outstr[j] = '\\';
+                            outstr.insert(j + 1, "n");
+                        }
+                    }
                     for (int j = 0; j < 11; j++) {//do it 11 times because it needs to
                         movie_title << UTF8toUTF16(outstr + ",");
                     }
