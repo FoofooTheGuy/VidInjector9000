@@ -1834,6 +1834,7 @@ form1::form1() {
                 //stolen from the NNC cia test code and other places
                 nnc_exefs_file_header headers[NNC_EXEFS_MAX_FILES];
                 nnc_keyset kset = NNC_KEYSET_INIT;
+                nnc_seeddb::nnc_seeddb_entry ent;
                 nnc_cia_content_reader reader;
                 nnc_cia_content_stream ncch;
                 nnc_ncch_section_stream rrs;
@@ -1845,6 +1846,8 @@ form1::form1() {
                 nnc_romfs_ctx ctx;
                 nnc_subview sv;
                 nnc_keypair kp;
+                nnc_seeddb sdb;
+                sdb.size = 1;
                 nnc_file f;
 
                 res = nnc_file_open(&f, filepath.c_str());
@@ -1872,8 +1875,28 @@ form1::form1() {
                     goto end2;
 
                 res = nnc_fill_keypair(&kp, &kset, NULL, &ncch_hdr);
-                if (res != NNC_R_OK)
+                if (res == NNC_R_SEED_NOT_FOUND) {
+                    xtd::forms::dialog_result dres = xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", SeedNotFound, SelectSeed), ErrorText, xtd::forms::message_box_buttons::ok_cancel, xtd::forms::message_box_icon::warning);
+                    if (dres != xtd::forms::dialog_result::ok) {
+                        goto end2;
+                    }
+                    std::ifstream seedfile;
+                    xtd::ustring seedpath = load_file(xtd::ustring::format("{}{}", SeedFiles, AllFilesList), filepath);
+                    if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*seedpath.c_str())) || std::filesystem::file_size(std::filesystem::path((const char8_t*)&*seedpath.c_str())) != NNC_SEED_SIZE) {
+                        goto end2;
+                    }
+                    uint8_t* seedData = (nnc_u8*)malloc(NNC_SEED_SIZE);
+                    seedfile.open(std::filesystem::path((const char8_t*)&*seedpath.c_str()), std::ios_base::in | std::ios_base::binary);
+                    seedfile.read(reinterpret_cast<char*>(seedData), NNC_SEED_SIZE);
+                    memcpy(ent.seed, seedData, NNC_SEED_SIZE);
+                    free(seedData);
+                    ent.title_id = ncch_hdr.partition_id;
+                    sdb.entries = &ent;
+                    res = nnc_fill_keypair(&kp, &kset, &sdb, &ncch_hdr);
+                }
+                if (res != NNC_R_OK) {
                     goto end2;
+                }
 
                 res = nnc_ncch_exefs_full_stream(&ers, &ncch_hdr, NNC_RSP(&ncch), &kp);
                 if (res != NNC_R_OK)

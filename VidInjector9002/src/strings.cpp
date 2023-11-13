@@ -86,6 +86,9 @@ xtd::ustring CopyingMoflex = "Copying MoFlex files...";
 xtd::ustring CiaFiles = "CTR Importable Archive (.cia)|*.cia";
 xtd::ustring CiaBuilt = "The CIA was built to:";
 xtd::ustring CiaBig = "The CIA file is too large to be installed.";
+xtd::ustring SeedNotFound = "Seed not found.";
+xtd::ustring SelectSeed = "Select seed to continue.";
+xtd::ustring SeedFiles = "Seeds (.dat)|*.dat";
 
 xtd::ustring Languagedir = "English";
 
@@ -205,3 +208,6 @@ xtd::ustring inLangCopyingMoflex = "CopyingMoflex";
 xtd::ustring inLangCiaFiles = "CiaFiles";
 xtd::ustring inLangCiaBuilt = "CiaBuilt";
 xtd::ustring inLangCiaBig = "CiaBig";
+xtd::ustring inLangSeedNotFound = "SeedNotFound";
+xtd::ustring inLangSelectSeed = "SelectSeed";
+xtd::ustring inLangSeedFiles = "SeedFiles";

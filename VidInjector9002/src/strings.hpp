@@ -87,6 +87,9 @@ extern xtd::ustring CopyingMoflex;
 extern xtd::ustring CiaFiles;
 extern xtd::ustring CiaBuilt;
 extern xtd::ustring CiaBig;
+extern xtd::ustring SeedNotFound;
+extern xtd::ustring SelectSeed;
+extern xtd::ustring SeedFiles;
 
 extern xtd::ustring Languagedir;//this changes by itself so don't translate it
 
@@ -210,3 +213,6 @@ extern xtd::ustring inLangCopyingMoflex;
 extern xtd::ustring inLangCiaFiles;
 extern xtd::ustring inLangCiaBuilt;
 extern xtd::ustring inLangCiaBig;
+extern xtd::ustring inLangSeedNotFound;
+extern xtd::ustring inLangSelectSeed;
+extern xtd::ustring inLangSeedFiles;
