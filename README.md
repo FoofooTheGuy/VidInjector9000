@@ -60,7 +60,7 @@ VidInjector9002 can...
 - Click the icon preview to change border modes!
 - Open a project file (.vi9p) with the program to load in those parameters!
 - Click the multi video banner preview to choose file!
-- Click the logo in the top left to find to the latest release!
+- Click the logo in the options menu to find to the latest release!
 - If an image doesn't fit in, it will be resized and cropped!
 
 You may ask...
