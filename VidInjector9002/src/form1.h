@@ -676,7 +676,6 @@ namespace VidInjector9002 {
                 outparams <<
                     StrPTitleParam << "(" << std::to_string(y) << ")=\"" << text_box_array.at(y * columns + 0)->text() << "\"\n" <<
                     StrMoflexParam << "(" << std::to_string(y) << ")=\"" << text_box_array.at(y * columns + 1)->text() << "\"\n" <<
-                    //StrMTitleParam << "(" << std::to_string(y) << ")=\"" << text_box_array.at(y * columns + 2)->text() << "\"\n" <<
                     StrMBannerParam << "(" << std::to_string(y) << ")=\"" << text_box_array.at(y * columns + 2)->text() << "\"\n";
             }
             outparams <<
@@ -818,7 +817,7 @@ namespace VidInjector9002 {
                 }
                 if (outrealint > 27) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({})\n{}.", BadValue, outstr, noMoreThan27), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    outrealint -= outrealint - 27;
+                    outrealint = 27;
                     good = false;
                 }
                 if (outrealint < rows) {
