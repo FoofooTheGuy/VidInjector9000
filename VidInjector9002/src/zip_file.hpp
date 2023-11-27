@@ -510,12 +510,12 @@ inline const char *mz_error(int err);
 
 // ------------------- Types and macros
 
-typedef unsigned char mz_uint8;
-typedef signed short mz_int16;
-typedef unsigned short mz_uint16;
-typedef unsigned int mz_uint32;
+typedef uint8_t mz_uint8;
+typedef int16_t mz_int16;
+typedef uint16_t mz_uint16;
+typedef uint32_t mz_uint32;
 typedef unsigned int mz_uint;
-typedef long long mz_int64;
+typedef int64_t mz_int64;
 typedef uint64_t mz_uint64;
 typedef int mz_bool;
 
