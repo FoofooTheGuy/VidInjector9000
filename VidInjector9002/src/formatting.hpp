@@ -51,4 +51,4 @@ int getLargestNumber(std::vector<int> &nums);
 
 uint32_t CRC32(void* pData, size_t iLen);
 
-void copyfile(std::string inpath, std::string outpath);
+std::error_code copyfile(std::string inpath, std::string outpath);

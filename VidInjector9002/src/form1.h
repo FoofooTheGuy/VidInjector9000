@@ -83,8 +83,15 @@ namespace VidInjector9002 {
             }
             else if (res == xtd::forms::dialog_result::yes) {//yes close
                 if (deleteTemp) {
-                    std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*exportsPath.c_str()));
-                    std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*tempPath.c_str()));
+                    std::error_code error;
+                    std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*exportsPath.c_str()), error);
+                    if (error) {
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{}", error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    }
+                    std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*tempPath.c_str()), error);
+                    if (error) {
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{}", error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    }
                 }
                 xtd::forms::application::exit_thread();//obliterate the process
             }
@@ -694,7 +701,7 @@ namespace VidInjector9002 {
                 return false;
             }
             std::vector<xtd::ustring> filelines = fileRead(parampath);
-            if (filelines.size() == 0)
+            if (filelines.empty())
                 return false;
             if (parseLines(outstr, filelines, StrVerParam)) {
                 if (outstr != VI9PVER) {
@@ -943,7 +950,7 @@ namespace VidInjector9002 {
                 settingsfile.close();
             }
             std::vector<xtd::ustring> filelines = fileRead(xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, settingsPath));
-            if (filelines.size() == 0)
+            if (filelines.empty())
                 return false;
             if (parseLines(outstr, filelines, StrDefaultLanguage)) {
                 if (!loadLanguage(outstr)) {

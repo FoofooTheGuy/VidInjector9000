@@ -320,10 +320,11 @@ uint32_t CRC32(void* pData, size_t iLen)
 	return (uiCRC32 ^ 0xFFFFFFFF);
 }
 
-void copyfile(std::string inpath, std::string outpath) {//also works with directories
-	if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*outpath.c_str())))
-		std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*outpath.c_str()));
-	if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*inpath.c_str())))
-		std::filesystem::copy(std::filesystem::path((const char8_t*)&*inpath.c_str()), std::filesystem::path((const char8_t*)&*outpath.c_str()), std::filesystem::copy_options::recursive);
+std::error_code copyfile(std::string inpath, std::string outpath) {//also works with directories
+	std::error_code error;
+	std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*outpath.c_str()), error);
+	if (error) return error;
+	std::filesystem::copy(std::filesystem::path((const char8_t*)&*inpath.c_str()), std::filesystem::path((const char8_t*)&*outpath.c_str()), std::filesystem::copy_options::recursive, error);
+	return error;
 }
 

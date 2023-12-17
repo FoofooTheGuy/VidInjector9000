@@ -1049,7 +1049,13 @@ form1::form1() {
             finalize.cursor(xtd::forms::cursors::app_starting());
 
             //extract base
-            std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*tempPath.c_str()));
+            std::error_code error;
+            std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*tempPath.c_str()), error);
+            if (error) {
+                xtd::forms::message_box::show(*this, xtd::ustring::format("{}", error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, outfile), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                return;
+            }
             Generate_Files(tempPath.c_str(), mode.selected_index());
 
             majorBarTxt.text(xtd::ustring::format("{} romfs", CreatingFile));
@@ -1383,7 +1389,13 @@ form1::form1() {
                         minorBarTxt.text(xtd::ustring::format("{} {}/{}", CopyingMoflex, i + 1, rows));
                         minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
 
-                        copyfile(text_box_array.at(i * columns + 1)->text().c_str(), xtd::ustring::format("{}/romfs/movie/movie_{}.moflex", tempPath, i).c_str());
+                        std::error_code error;
+                        error = copyfile(text_box_array.at(i * columns + 1)->text().c_str(), xtd::ustring::format("{}/romfs/movie/movie_{}.moflex", tempPath, i).c_str());
+                        if (error) {
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("{}", error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/movie/movie_{}.moflex", FailedToCreateFile, tempPath, i), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            return;
+                        }
                         if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/romfs/movie/movie_{}.moflex", tempPath, i).c_str()))) {//this probably only happens if there's no disk space
                             xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/movie/movie_{}.moflex", FailedToCreateFile, tempPath, i), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                             //builder.cancel_async();
@@ -1394,7 +1406,13 @@ form1::form1() {
                         if (builder.cancellation_pending()) return;
                         minorBarTxt.text(xtd::ustring::format("{} 1/1", CopyingMoflex));
                         minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
-                        copyfile(text_box_array.at(i * columns + 1)->text().c_str(), xtd::ustring::format("{}/romfs/movie/movie.moflex", tempPath).c_str());
+                        std::error_code error;
+                        error = copyfile(text_box_array.at(i * columns + 1)->text().c_str(), xtd::ustring::format("{}/romfs/movie/movie.moflex", tempPath).c_str());
+                        if (error) {
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("{}", error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/movie/movie.moflex", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            return;
+                        }
                         if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/romfs/movie/movie.moflex", tempPath).c_str()))) {//this probably only happens if there's no disk space
                             xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/movie/movie.moflex", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                             //builder.cancel_async();
@@ -1468,7 +1486,13 @@ form1::form1() {
                     minorBarTxt.text(xtd::ustring::format("{} romfs/icon.icn", CreatingFile));
                     minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
 
-                    copyfile(xtd::ustring::format("{}/exefs/icon", tempPath).c_str(), xtd::ustring::format("{}/romfs/icon.icn", tempPath).c_str());
+                    std::error_code error;
+                    error = copyfile(xtd::ustring::format("{}/exefs/icon", tempPath).c_str(), xtd::ustring::format("{}/romfs/icon.icn", tempPath).c_str());
+                    if (error) {
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{}", error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/icon.icn", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        return;
+                    }
                     if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/{}/temp/romfs/icon.icn", ProgramDir, resourcesPath).c_str()))) {
                         xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/icon.icn", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                         //builder.cancel_async();
@@ -1498,7 +1522,13 @@ form1::form1() {
                     }
                 }
                 if (banner) {
-                    copyfile(bannerbox.text(), xtd::ustring::format("{}/exefs/banner", tempPath).c_str());
+                    std::error_code error;
+                    error = copyfile(bannerbox.text(), xtd::ustring::format("{}/exefs/banner", tempPath).c_str());
+                    if (error) {
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{}", error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/exefs/banner", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        return;
+                    }
                 }
                 else if (!banner) {
                     uint8_t buffer[256 * 128 * sizeof(nnc_u16)];
@@ -1724,7 +1754,11 @@ form1::form1() {
     };
 
     builder.run_worker_completed += [&] {
-        std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*tempPath.c_str()));
+        std::error_code error;
+        std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*tempPath.c_str()), error);
+        if (error) {
+            xtd::forms::message_box::show(*this, xtd::ustring::format("{}", error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+        }
         minorBarTxt.hide();
         majorBarTxt.hide();
         majorBar.value(0);
@@ -1824,7 +1858,12 @@ form1::form1() {
             xtd::ustring romfspath = xtd::ustring::format("{}/romfs", exportsPath);
             xtd::ustring exefspath = xtd::ustring::format("{}/exefs", exportsPath);
 
-            std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*exportsPath.c_str()));
+            std::error_code error;
+            std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*exportsPath.c_str()), error);
+            if (error) {
+                xtd::forms::message_box::show(*this, xtd::ustring::format("{}", error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                return;
+            }
             //extract important files from the romfs and exefs of cia
             {
 #define CUREC_SIZE 1024
