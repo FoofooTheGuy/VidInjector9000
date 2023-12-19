@@ -38,7 +38,13 @@ namespace VidInjector9002 {
         }
 
         //filter is like "All Image Files|*.bmp;*.gif;*.jpg;*.jpeg;*.png;*.tif;*.tiff;*.xpm|Bitmap Files|*.bmp|Gif Files|*.gif|Jpeg Files|*.jpg;*.jpeg|Png Files|*.png|Tiff Files|*.tif;*.tiff|xpm Files|*.xpm"
-        std::vector<xtd::ustring> load_files(xtd::ustring filter, xtd::ustring old_path = "", xtd::ustring start_folder = xtd::environment::get_folder_path(xtd::environment::special_folder::desktop)) {
+        std::vector<xtd::ustring> load_files(xtd::ustring filter, std::string old_path = "", xtd::ustring start_folder = xtd::environment::get_folder_path(xtd::environment::special_folder::desktop)) {
+            for (size_t i = 0; i < old_path.size(); i++) {
+                if (old_path[i] == '\\') {
+                    old_path[i] = '/';
+                }
+            }
+            
             xtd::forms::open_file_dialog dialog;
             std::vector<xtd::ustring> chosen;
             dialog.multiselect(true);
@@ -54,7 +60,13 @@ namespace VidInjector9002 {
             return chosen;
         }
 
-        xtd::ustring load_file(xtd::ustring filter, xtd::ustring old_path = "", xtd::ustring start_folder = xtd::environment::get_folder_path(xtd::environment::special_folder::desktop)) {//input is like load_files
+        xtd::ustring load_file(xtd::ustring filter, std::string old_path = "", xtd::ustring start_folder = xtd::environment::get_folder_path(xtd::environment::special_folder::desktop)) {//input is like load_files
+            for (size_t i = 0; i < old_path.size(); i++) {
+                if (old_path[i] == '\\') {
+                    old_path[i] = '/';
+                }
+            }
+            
             xtd::forms::open_file_dialog dialog;
             dialog.initial_directory(!old_path.empty() ? xtd::io::path::get_directory_name(old_path) : start_folder);
             dialog.file_name(xtd::io::path::get_file_name(old_path));

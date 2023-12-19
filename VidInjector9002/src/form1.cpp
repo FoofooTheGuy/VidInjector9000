@@ -1022,6 +1022,8 @@ form1::form1() {
 
     {
         static xtd::ustring outfile = "";
+        static std::string fileToCopy = "";
+        static std::string fileToCopyto = "";
 
         buildButt.click += [&] {
             outfile = save_file(CiaFiles, xtd::ustring::format("{} [000400000{}00]", removeInvalids(longname.text()), titleIDbox.text()));
@@ -1049,12 +1051,14 @@ form1::form1() {
             finalize.cursor(xtd::forms::cursors::app_starting());
 
             //extract base
-            std::error_code error;
-            std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*tempPath.c_str()), error);
-            if (error) {
-                xtd::forms::message_box::show(*this, xtd::ustring::format("{}", error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, outfile), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                return;
+            {
+                std::error_code error;
+                std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*tempPath.c_str()), error);
+                if (error) {
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("{}", error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, outfile), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    return;
+                }
             }
             Generate_Files(tempPath.c_str(), mode.selected_index());
 
