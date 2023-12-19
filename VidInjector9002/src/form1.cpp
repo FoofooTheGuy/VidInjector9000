@@ -1022,8 +1022,6 @@ form1::form1() {
 
     {
         static xtd::ustring outfile = "";
-        static std::string fileToCopy = "";
-        static std::string fileToCopyto = "";
 
         buildButt.click += [&] {
             outfile = save_file(CiaFiles, xtd::ustring::format("{} [000400000{}00]", removeInvalids(longname.text()), titleIDbox.text()));
