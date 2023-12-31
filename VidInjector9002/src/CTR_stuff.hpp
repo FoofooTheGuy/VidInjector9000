@@ -97,3 +97,9 @@ uint8_t UTF16fileToUTF8str(const std::string path, std::vector<std::string>* out
 
 //output: string of error or empty string if it completed
 std::string extract_dir(nnc_romfs_ctx* ctx, nnc_romfs_info* info, const char* path, int baselen);
+
+/*infile: path to seeddb file
+TID: title ID to search for
+outseed: array big enough to recieve the seed (0x10 pls)
+return 0 if succeeded or other numbers if fail*/
+uint8_t getSeedFromTID(std::string infile, uint64_t TID, uint8_t* outseed);

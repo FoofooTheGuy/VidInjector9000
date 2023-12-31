@@ -60,6 +60,7 @@ xtd::ustring FailedToFindVar = "Failed to find the variable";
 xtd::ustring FailedToFindPath = "Failed to find the path";
 xtd::ustring FailedToFindFile = "Failed to find the file";
 xtd::ustring FailedToReadFile = "Failed to read the file";
+xtd::ustring FailedToCopyFile = "Failed to copy the file";
 xtd::ustring FailedToCreateFile = "Failed to create the file:";
 xtd::ustring FailedToConvertImage = "Failed to convert the image:";
 xtd::ustring ValueNoChange = "The value will not be changed";
@@ -90,6 +91,7 @@ xtd::ustring SeedNotFound = "Seed not found.";
 xtd::ustring SelectSeed = "Select seed to continue.";
 xtd::ustring SeedFiles = "Seeds (.dat)|*.dat";
 
+xtd::ustring seeddb = "|seeddb.bin|seeddb.bin";
 xtd::ustring Languagedir = "English";
 
 xtd::ustring programVersion = "VidInjector9000 ver. 3.0";
@@ -182,6 +184,7 @@ xtd::ustring inLangFailedToFindVar = "FailedToFindVar";
 xtd::ustring inLangFailedToFindPath = "FailedToFindPath";
 xtd::ustring inLangFailedToFindFile = "FailedToFindFile";
 xtd::ustring inLangFailedToReadFile = "FailedToReadFile";
+xtd::ustring inLangFailedToCopyFile = "FailedToCopyFile";
 xtd::ustring inLangFailedToCreateFile = "FailedToCreateFile";
 xtd::ustring inLangFailedToConvertImage = "FailedToConvertImage";
 xtd::ustring inLangValueNoChange = "ValueNoChange";

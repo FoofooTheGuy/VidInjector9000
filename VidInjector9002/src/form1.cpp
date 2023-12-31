@@ -226,7 +226,8 @@ form1::form1() {
         if(extension.find_last_of(".") != std::string::npos)
             extension.erase(extension.begin(), extension.begin() + extension.find_last_of("."));
         if (extension == ".bimg") {
-            if (std::filesystem::file_size(std::filesystem::path((const char8_t*)&*bannerbox.text().c_str())) == 0x10020) {
+            std::error_code error;
+            if (std::filesystem::file_size(std::filesystem::path((const char8_t*)&*bannerbox.text().c_str()), error) == 0x10020) {
                 w = 256;
                 h = 128;
                 int och = sizeof(nnc_u32);
@@ -259,6 +260,10 @@ form1::form1() {
             }
             else {
                 setDefaultBannerPreview(bannerpreview, &bannererror);
+            }
+            if (error) {
+                xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", bannerbox.text(), error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                return;
             }
         }
         else if (!banner) {
@@ -1053,7 +1058,7 @@ form1::form1() {
                 std::error_code error;
                 std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*tempPath.c_str()), error);
                 if (error) {
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{}", error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", tempPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, outfile), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     return;
                 }
@@ -1394,7 +1399,7 @@ form1::form1() {
                         std::error_code error;
                         error = copyfile(text_box_array.at(i * columns + 1)->text().c_str(), xtd::ustring::format("{}/romfs/movie/movie_{}.moflex", tempPath, i).c_str());
                         if (error) {
-                            xtd::forms::message_box::show(*this, xtd::ustring::format("{}", error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("\"{}\" -> \"{}/romfs/movie/movie_{}.moflex\"\n{}", text_box_array.at(i * columns + 1)->text(), tempPath, i, error.message()), xtd::ustring::format("{} {}", ErrorText, FailedToCopyFile), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                             xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/movie/movie_{}.moflex", FailedToCreateFile, tempPath, i), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                             return;
                         }
@@ -1411,7 +1416,7 @@ form1::form1() {
                         std::error_code error;
                         error = copyfile(text_box_array.at(i * columns + 1)->text().c_str(), xtd::ustring::format("{}/romfs/movie/movie.moflex", tempPath).c_str());
                         if (error) {
-                            xtd::forms::message_box::show(*this, xtd::ustring::format("{}", error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("\"{}\" -> \"{}/romfs/movie/movie.moflex\"\n{}", text_box_array.at(i * columns + 1)->text(), tempPath, error.message()), xtd::ustring::format("{} {}", ErrorText, FailedToCopyFile), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                             xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/movie/movie.moflex", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                             return;
                         }
@@ -1491,7 +1496,7 @@ form1::form1() {
                     std::error_code error;
                     error = copyfile(xtd::ustring::format("{}/exefs/icon", tempPath).c_str(), xtd::ustring::format("{}/romfs/icon.icn", tempPath).c_str());
                     if (error) {
-                        xtd::forms::message_box::show(*this, xtd::ustring::format("{}", error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("\"{}/exefs/icon\" -> \"{}/romfs/icon.icn\"\n{}", tempPath, tempPath, error.message()), xtd::ustring::format("{} {}", ErrorText, FailedToCopyFile), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                         xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/icon.icn", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                         return;
                     }
@@ -1527,7 +1532,7 @@ form1::form1() {
                     std::error_code error;
                     error = copyfile(bannerbox.text(), xtd::ustring::format("{}/exefs/banner", tempPath).c_str());
                     if (error) {
-                        xtd::forms::message_box::show(*this, xtd::ustring::format("{}", error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("\"{}\" -> \"{}/exefs/banner\"\n{}", bannerbox.text(), tempPath, error.message()), xtd::ustring::format("{} {}", ErrorText, FailedToCopyFile), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                         xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/exefs/banner", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                         return;
                     }
@@ -1588,7 +1593,7 @@ form1::form1() {
                 }
 
                 std::fstream exheader(xtd::ustring::format("{}/exheader.bin", tempPath).c_str(), std::ios::in | std::ios::out | std::ios::binary);
-                for (int i = 0; i < 8; i++) {//write application name only 8 bytes because that's the limit. i had to do this loop because it was being weird with .write
+                for (int i = 0; i < 8; i++) {//write application name only 8 bytes because that's the limit. i had to do this loop because it was being weird with .write ???
                     exheader.seekp(i);
                     exheader << char(ApplicationName.text().c_str()[i]);
                 }
@@ -1741,8 +1746,13 @@ form1::form1() {
             }
             if (std::filesystem::exists(outfile.c_str())) {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", CiaBuilt, outfile), xtd::ustring::format("NNC"), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::information);
-                if (std::filesystem::file_size(outfile.c_str()) > 4294967295) {
+                std::error_code error;
+                if (std::filesystem::file_size(outfile.c_str(), error) > 4294967295) {
                     xtd::forms::message_box::show(*this, CiaBig, xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                }
+                if (error) {
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", outfile, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    return;
                 }
             }
             else {
@@ -1759,7 +1769,7 @@ form1::form1() {
         std::error_code error;
         std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*tempPath.c_str()), error);
         if (error) {
-            xtd::forms::message_box::show(*this, xtd::ustring::format("{}", error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+            xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", tempPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
         }
         minorBarTxt.hide();
         majorBarTxt.hide();
@@ -1863,9 +1873,10 @@ form1::form1() {
             std::error_code error;
             std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*exportsPath.c_str()), error);
             if (error) {
-                xtd::forms::message_box::show(*this, xtd::ustring::format("{}", error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", exportsPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 return;
             }
+            std::filesystem::create_directory(std::filesystem::path((const char8_t*)&*exportsPath.c_str()));
             //extract important files from the romfs and exefs of cia
             {
 #define CUREC_SIZE 1024
@@ -1885,8 +1896,8 @@ form1::form1() {
                 nnc_cia_header header;
                 nnc_romfs_info info;
                 nnc_romfs_ctx ctx;
-                nnc_subview sv;
                 nnc_keypair kp;
+                nnc_subview sv;
                 nnc_seeddb sdb;
                 sdb.size = 1;
                 nnc_file f;
@@ -1917,23 +1928,52 @@ form1::form1() {
 
                 res = nnc_fill_keypair(&kp, &kset, NULL, &ncch_hdr);
                 if (res == NNC_R_SEED_NOT_FOUND) {
-                    xtd::forms::dialog_result dres = xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", SeedNotFound, SelectSeed), ErrorText, xtd::forms::message_box_buttons::ok_cancel, xtd::forms::message_box_icon::warning);
-                    if (dres != xtd::forms::dialog_result::ok) {
-                        goto end2;
-                    }
+                    uint8_t seedData[NNC_SEED_SIZE];
+                    uint8_t getSeedret = 2;
                     std::ifstream seedfile;
-                    xtd::ustring seedpath = load_file(xtd::ustring::format("{}{}", SeedFiles, AllFilesList), filepath);
-                    if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*seedpath.c_str())) || std::filesystem::file_size(std::filesystem::path((const char8_t*)&*seedpath.c_str())) != NNC_SEED_SIZE) {
-                        goto end2;
+                    xtd::ustring seedpath;
+                    if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/{}/seeddb.bin", ProgramDir, resourcesPath).c_str()), error)) {
+                        getSeedret = getSeedFromTID(xtd::ustring::format("{}/{}/seeddb.bin", ProgramDir, resourcesPath).c_str(), ncch_hdr.title_id, seedData);
                     }
-                    uint8_t* seedData = (nnc_u8*)malloc(NNC_SEED_SIZE);
-                    seedfile.open(std::filesystem::path((const char8_t*)&*seedpath.c_str()), std::ios_base::in | std::ios_base::binary);
-                    seedfile.read(reinterpret_cast<char*>(seedData), NNC_SEED_SIZE);
+                    if(getSeedret) {
+                        xtd::forms::dialog_result dres = xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", SeedNotFound, SelectSeed), ErrorText, xtd::forms::message_box_buttons::ok_cancel, xtd::forms::message_box_icon::warning);
+                        if (dres != xtd::forms::dialog_result::ok) {
+                            goto end2;
+                        }
+                        seedpath = load_file(xtd::ustring::format("{}{}{}", SeedFiles, seeddb, AllFilesList), filepath);
+                        if (seedpath.substr(seedpath.find_last_of("/\\") + 1) == "seeddb.bin") {
+                            error = copyfile(seedpath.c_str(), xtd::ustring::format("{}/{}/seeddb.bin", ProgramDir, resourcesPath).c_str());
+                            if (error) {
+                                xtd::forms::message_box::show(*this, xtd::ustring::format("\"{}\" -> \"{}/{}/seeddb.bin\"\n{}", seedpath, ProgramDir, resourcesPath, error.message()), xtd::ustring::format("{} {}", ErrorText, FailedToCopyFile), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                                xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/{}/seeddb.bin", FailedToCreateFile, ProgramDir, resourcesPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                                goto end2;
+                            }
+                            getSeedret = getSeedFromTID(seedpath, ncch_hdr.title_id, seedData);
+                            if(getSeedret) xtd::forms::message_box::show(*this, xtd::ustring::format("{}", SeedNotFound), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        }
+                        else {
+                            if (std::filesystem::file_size(std::filesystem::path((const char8_t*)&*seedpath.c_str()), error) != NNC_SEED_SIZE) {
+                                if (error) {
+                                    xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", seedpath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                                }
+                                goto end2;
+                            }
+                            if (error) {
+                                xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", seedpath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                                goto end2;
+                            }
+                            seedfile.open(std::filesystem::path((const char8_t*)&*seedpath.c_str()), std::ios_base::in | std::ios_base::binary);
+                            seedfile.read(reinterpret_cast<char*>(seedData), NNC_SEED_SIZE);
+                        }
+                    }
                     memcpy(ent.seed, seedData, NNC_SEED_SIZE);
-                    free(seedData);
-                    ent.title_id = ncch_hdr.partition_id;
+                    ent.title_id = ncch_hdr.title_id;
                     sdb.entries = &ent;
                     res = nnc_fill_keypair(&kp, &kset, &sdb, &ncch_hdr);
+                    if (error) {
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{}/{}/seeddb.bin\n{}", ProgramDir, resourcesPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        goto end2;
+                    }
                 }
                 if (res != NNC_R_OK) {
                     goto end2;
@@ -2004,8 +2044,9 @@ form1::form1() {
                 if (res != NNC_R_OK)
                 {
                     xtd::forms::message_box::show(*this, nnc_strerror(res), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    //return;
+                    return;
                 }
+                //nnc_free_seeddb(&sdb);
             }
 
             //ignore this

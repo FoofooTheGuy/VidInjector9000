@@ -793,6 +793,8 @@ std::string extract_dir(nnc_romfs_ctx* ctx, nnc_romfs_info* info, const char* pa
 				/* slurping the file is a bit inefficient for large
 				 * files but it's fine for this test */
 				nnc_u8* cbuf = (nnc_u8*)malloc(ent.u.f.size);
+				if (cbuf == NULL)
+					goto out;
 				nnc_subview sv;
 				res = nnc_romfs_open_subview(ctx, &sv, &ent);
 				if (res != NNC_R_OK)
@@ -815,4 +817,24 @@ std::string extract_dir(nnc_romfs_ctx* ctx, nnc_romfs_info* info, const char* pa
 	if (res != NNC_R_OK)
 		return nnc_strerror(res);
 	return "";
+}
+
+//based off of NNC because NNC wasnt working
+uint8_t getSeedFromTID(std::string infile, uint64_t TID, uint8_t* outseed) {
+	std::ifstream seeddb;
+	seeddb.open(std::filesystem::path((const char8_t*)&*infile.c_str()), std::ios_base::in | std::ios_base::binary);
+	uint32_t expected_size = 0;
+	seeddb.seekg(0);
+	seeddb.read(reinterpret_cast<char*>(&expected_size), 0x4);
+	for (uint32_t i = 0x10; i < (expected_size * 0x20) + 0x10; i += 0x20) {
+		uint64_t inTID = 0;
+		seeddb.seekg(i);
+		seeddb.read(reinterpret_cast<char*>(&inTID), 0x8);
+		if (inTID == TID) {
+			seeddb.seekg(i + 0x8);
+			seeddb.read(reinterpret_cast<char*>(outseed), 0x10);//read seed
+			return 0;
+		}
+	}
+	return 1;
 }

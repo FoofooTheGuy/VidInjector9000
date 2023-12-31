@@ -62,6 +62,7 @@ extern xtd::ustring FailedToFindVar;
 extern xtd::ustring FailedToFindPath;
 extern xtd::ustring FailedToFindFile;
 extern xtd::ustring FailedToReadFile;
+extern xtd::ustring FailedToCopyFile;
 extern xtd::ustring FailedToCreateFile;
 extern xtd::ustring FailedToConvertImage;
 extern xtd::ustring ValueNoChange;
@@ -91,7 +92,9 @@ extern xtd::ustring SeedNotFound;
 extern xtd::ustring SelectSeed;
 extern xtd::ustring SeedFiles;
 
-extern xtd::ustring Languagedir;//this changes by itself so don't translate it
+//no need to translate these
+extern xtd::ustring seeddb;
+extern xtd::ustring Languagedir;
 
 //these dont change between languages so dont you change them either
 extern xtd::ustring programVersion;
@@ -187,6 +190,7 @@ extern xtd::ustring inLangFailedToFindVar;
 extern xtd::ustring inLangFailedToFindPath;
 extern xtd::ustring inLangFailedToFindFile;
 extern xtd::ustring inLangFailedToReadFile;
+extern xtd::ustring inLangFailedToCopyFile;
 extern xtd::ustring inLangFailedToCreateFile;
 extern xtd::ustring inLangFailedToConvertImage;
 extern xtd::ustring inLangValueNoChange;
