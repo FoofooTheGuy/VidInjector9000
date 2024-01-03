@@ -1661,12 +1661,12 @@ form1::form1() {
                     nnc_set_default_seeddb(&sdb);
                 TRYB(nnc_fill_keypair(&kp, nnc_get_default_keyset(), nnc_get_default_seeddb(), &ncch_hdr), out7); /* generate the cryptographic keys for if the NCCH is encrypted */
                 if (nnc_file_open(&exheader, xtd::ustring::format("{}/exheader.bin", tempPath).c_str()) != NNC_R_OK) {/* open exheader file */
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("failed to open '{}/exheader.bin'", tempPath), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}/exheader.bin\"", FailedToReadFile, tempPath), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     goto out10;
                 }
                 nnc_exheader exhdr;
                 if (nnc_read_exheader(NNC_RSP(&exheader), &exhdr) != NNC_R_OK) {
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("failed to read exheader from '{}/exheader.bin'", tempPath), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}/exheader.bin\"", FailedToReadExHeader, tempPath), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     goto out10;
                 }
                 TRYB(nnc_ncch_section_logo(&ncch_hdr, NNC_RSP(&ncch0stream), &logo), out9); /* logo stream */
