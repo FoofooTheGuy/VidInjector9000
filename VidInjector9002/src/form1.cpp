@@ -1482,7 +1482,7 @@ form1::form1() {
                 uint8_t ret = 0;
                 ret = convertToIcon(iconbox.text(), xtd::ustring::format("{}/exefs/icon", tempPath).c_str(), UTF8toUTF16(shortname.text()), UTF8toUTF16(longname.text()), UTF8toUTF16(publisher.text()), borderMode);
                 if (ret > 0) {
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/exefs/icon", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/exefs/icon\n({})", FailedToCreateFile, tempPath, ret), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     //builder.cancel_async();
                     return;
                 }
