@@ -95,7 +95,7 @@ xtd::ustring SeedFiles = "Seeds (.dat)|*.dat";
 xtd::ustring seeddb = "|seeddb.bin|seeddb.bin";
 xtd::ustring Languagedir = "English";
 
-xtd::ustring programVersion = "VidInjector9000 ver. 3.0";
+xtd::ustring programVersion = "VidInjector9000 ver. 3.0.3";
 xtd::ustring resourcesPath = "Vidinjector9000Resources";
 xtd::ustring VI9PVER = "VI9P100";
 xtd::ustring StrVerParam = "STR:VER";
