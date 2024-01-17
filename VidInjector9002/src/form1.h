@@ -17,6 +17,8 @@
 #include "nnc/nnc/ticket.h"
 #include "nnc/nnc/swizzle.h"
 
+#define MAX_ROWS 27
+
 /// @brief Represents the namespace that contains application objects.
 namespace VidInjector9002 {
     /// @brief Represents the main form.
@@ -384,7 +386,7 @@ namespace VidInjector9002 {
             removemedia.enabled(false);
             appendmedia.enabled(false);
             butt_array.at(butt_array.size() - 1)->show();
-            if (rows < 27) {
+            if (rows < MAX_ROWS) {
                 for (uint8_t y = rows; y <= rows; y++) {
                     for (uint8_t x = 0; x < columns; x++) {
                         xtd::forms::text_box* box_new = new xtd::forms::text_box();
@@ -472,12 +474,12 @@ namespace VidInjector9002 {
                 butt_array.at(butt_array.size() - 1)->hide();
                 rows++;
             }
-            rowtxt.text(xtd::ustring::format("{}/27", rows));
+            rowtxt.text(xtd::ustring::format("{}/{}", rows, MAX_ROWS));
             bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
             bannerpreviewright.enabled(mode.selected_index() && bannerpreviewindex != rows - 1);
             indextxt.text(xtd::ustring::format("{}/{}", bannerpreviewindex + 1, rows));
             removemedia.enabled(true);
-            appendmedia.enabled(rows < 27);
+            appendmedia.enabled(rows < MAX_ROWS);
             {
                 std::vector<int> wideVec = { moflextxt.width(), playertitletxt.width(), menubannertxt.width() + bannermulti.width() + 3 };
                 int WideMediaText = getLargestNumber(wideVec);
@@ -547,7 +549,7 @@ namespace VidInjector9002 {
             }
             for (uint8_t i = columns; i <= rows * columns - 1; i++)
                 text_box_array.at(i)->enabled(mode.selected_index());
-            rowtxt.text(xtd::ustring::format("{}/27", rows));
+            rowtxt.text(xtd::ustring::format("{}/{}", rows, MAX_ROWS));
             if (bannerpreviewindex == rows)//if you were previewing the removed one, change the selected index
                 setMultiBannerPreview(rows - 1);
             bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
@@ -834,9 +836,9 @@ namespace VidInjector9002 {
                     outrealint = 1;
                     good = false;
                 }
-                if (outrealint > 27) {
+                if (outrealint > MAX_ROWS) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({})\n{}.", BadValue, outstr, noMoreThan27), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    outrealint = 27;
+                    outrealint = MAX_ROWS;
                     good = false;
                 }
                 if (outrealint < rows) {
@@ -851,7 +853,7 @@ namespace VidInjector9002 {
                         doAppendMedia();
                     }
                 }
-                rows = ((outrealint & 0xFF) > 27 ? 27 : (outrealint & 0xFF));
+                rows = ((outrealint & 0xFF) > MAX_ROWS ? MAX_ROWS : (outrealint & 0xFF));
             }
             else {
                 good = false;
@@ -1072,7 +1074,7 @@ namespace VidInjector9002 {
             moflexbrowse.enabled(able);
             multibannerbrowse.enabled(able ? mode.selected_index() : able);
             menubannerpreview.enabled(able);
-            appendmedia.enabled(rows < 27 && (able ? mode.selected_index() : able));
+            appendmedia.enabled(rows < MAX_ROWS && (able ? mode.selected_index() : able));
             removemedia.enabled(rows > 1 && (able ? mode.selected_index() : able));
             titleIDbox.enabled(able);
             randomizeTitleID.enabled(able);

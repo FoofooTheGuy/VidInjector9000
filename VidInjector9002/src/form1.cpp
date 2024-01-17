@@ -801,7 +801,7 @@ form1::form1() {
     rowtxt.parent(mediabox);
     rowtxt.auto_size(true);
     rowtxt.font(this->font());
-    rowtxt.text(xtd::ustring::format("{}/{}", rows, 27));
+    rowtxt.text(xtd::ustring::format("{}/{}", rows, MAX_ROWS));
     if (mode.selected_index()) rowtxt.show();
     else rowtxt.hide();
 
@@ -2198,13 +2198,20 @@ form1::form1() {
                                 ++row;
                             }
                         }
+                        if (output.size() > MAX_ROWS) {
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({})\n{}.", BadValue, output.size(), noMoreThan27), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            while (output.size() > MAX_ROWS) {
+                                output.pop_back();
+                                --row;
+                            }
+                        }
                         while (rows < output.size()) {
                             doAppendMedia();
                         }
                         while (rows > output.size()) {
                             doRemoveMedia();
                         }
-                        for (int i = 0; i < output.size(); i++) {
+                        for (size_t i = 0; i < output.size(); i++) {
                             text_box_array.at(i * columns + 2)->text(output.at(i));
                         }
                     }
@@ -2246,13 +2253,20 @@ form1::form1() {
                         output.push_back(LN);
                         ++row;
                     }
+                    if (output.size() > MAX_ROWS) {
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({})\n{}.", BadValue, output.size(), noMoreThan27), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        while (output.size() > MAX_ROWS) {
+                            output.pop_back();
+                            --row;
+                        }
+                    }
                     while (rows < output.size()) {
                         doAppendMedia();
                     }
                     while (rows > output.size()) {
                         doRemoveMedia();
                     }
-                    for (int i = 0; i < output.size(); i++) {
+                    for (size_t i = 0; i < output.size(); i++) {
                         text_box_array.at(i * columns + 0)->text(output.at(i));
                     }
                 }
@@ -2435,7 +2449,7 @@ form1::form1() {
         bannerpreviewleft.enabled(mode.selected_index() && bannerpreviewindex != 0);
         bannerpreviewright.enabled(mode.selected_index() && bannerpreviewindex != rows - 1);
         multibannerbrowse.enabled(mode.selected_index());
-        appendmedia.enabled(mode.selected_index() && rows < 27);
+        appendmedia.enabled(mode.selected_index() && rows < MAX_ROWS);
         //removemedia.enabled(rows > 1);
         if (mode.selected_index()) indextxt.show();
         else indextxt.hide();
@@ -2650,7 +2664,7 @@ form1::form1() {
         loadParameters();
     }
 
-    appendmedia.enabled(mode.selected_index() && rows < 27);
+    appendmedia.enabled(mode.selected_index() && rows < MAX_ROWS);
     removemedia.enabled(rows > 1);
     SetIconPreview();
     loaded = true;
