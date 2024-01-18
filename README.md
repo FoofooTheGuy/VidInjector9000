@@ -3,6 +3,21 @@
 # VidInjector9000
 A cross platform* injector for 3DS video CIAs
 
+Video
+---
+
+<html>
+
+<body>
+    <p align="center">
+        <a href="https://www.youtube.com/watch?v=GAKF2f7rntI">
+            <img width="1012" src="https://i.ytimg.com/vi/GAKF2f7rntI/maxresdefault.jpg">
+            The Best Way to Watch Movies On the 3DS — VidInjector9002 Tutorial
+        </a>
+    </p>
+</body>
+</html>
+
 <sup><sup>*If builds for your operating system are not provided then you will have to compile it yourself, see [compiling](https://github.com/FoofooTheGuy/VidInjector9000#compiling).<sup><sup>
 
 ## Example Screenshots
