@@ -1410,6 +1410,13 @@ int extract_cia(std::string inCia, std::string outDir, std::string seedpath) {
 						++rows;
 					}
 				}
+				if (output.size() > MAX_ROWS) {
+					std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << outstr << ")\n" << noMoreThan27 << '.' << std::endl;
+					while (output.size() > MAX_ROWS) {
+						output.pop_back();
+						--rows;
+					}
+				}
 				for (size_t i = 0; i < output.size(); i++) {
 					MBannerVec.push_back(output.at(i));
 					//text_box_array.at(i * columns + 2)->text(output.at(i));
@@ -1449,6 +1456,13 @@ int extract_cia(std::string inCia, std::string outDir, std::string seedpath) {
 				}
 				output.push_back(LN);
 				++rows;
+			}
+			if (output.size() > MAX_ROWS) {
+				std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << outstr << ")\n" << noMoreThan27 << '.' << std::endl;
+				while (output.size() > MAX_ROWS) {
+					output.pop_back();
+					--rows;
+				}
 			}
 			for (size_t i = 0; i < output.size(); i++) {
 				PTitleVec.push_back(output.at(i));
