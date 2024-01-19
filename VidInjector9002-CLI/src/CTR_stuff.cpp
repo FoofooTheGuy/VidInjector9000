@@ -1411,7 +1411,7 @@ int extract_cia(std::string inCia, std::string outDir, std::string seedpath) {
 					}
 				}
 				if (output.size() > MAX_ROWS) {
-					std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << outstr << ")\n" << noMoreThan27 << '.' << std::endl;
+					std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << std::to_string(output.size()) << ")\n" << noMoreThan27 << '.' << std::endl;
 					while (output.size() > MAX_ROWS) {
 						output.pop_back();
 						--rows;
@@ -1458,7 +1458,7 @@ int extract_cia(std::string inCia, std::string outDir, std::string seedpath) {
 				++rows;
 			}
 			if (output.size() > MAX_ROWS) {
-				std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << outstr << ")\n" << noMoreThan27 << '.' << std::endl;
+				std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << std::to_string(output.size()) << ")\n" << noMoreThan27 << '.' << std::endl;
 				while (output.size() > MAX_ROWS) {
 					output.pop_back();
 					--rows;
