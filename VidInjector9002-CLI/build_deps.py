@@ -2,12 +2,8 @@ import os
 import shutil
 import subprocess
 
-subprocess.call(["git", "clone", "https://github.com/MyPasswordIsWeak/nnc.git"])
-subprocess.call(["git", "clone", "https://github.com/Mbed-TLS/mbedtls.git"])
-try:
-    raw_input("Press Enter to continue...")
-except:
-    input("Press Enter to continue...")
+#subprocess.call(["git", "clone", "https://github.com/MyPasswordIsWeak/nnc.git", "--depth", "1"])
+#subprocess.call(["git", "clone", "https://github.com/Mbed-TLS/mbedtls.git"])
 os.chdir("mbedtls")
 os.environ["CC"] = "gcc"
 subprocess.call(["make"])
