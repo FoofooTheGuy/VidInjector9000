@@ -1135,7 +1135,7 @@ int extract_cia(std::string inCia, std::string outDir, std::string seedpath) {
 	int mode = 0;
 	std::string banner = "";
 	std::string icon = "";
-	int iconBorder = 2;
+	int iconBorder = 0;
 	std::string Sname = "";
 	std::string Lname = "";
 	std::string publisher = "";
