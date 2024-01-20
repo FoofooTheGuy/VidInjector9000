@@ -1876,7 +1876,11 @@ form1::form1() {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", exportsPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 return;
             }
-            std::filesystem::create_directory(std::filesystem::path((const char8_t*)&*exportsPath.c_str()));
+            std::filesystem::create_directory(std::filesystem::path((const char8_t*)&*exportsPath.c_str()), error);
+            if (error) {
+                xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", exportsPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                return;
+            }
             //extract important files from the romfs and exefs of cia
             {
 #define CUREC_SIZE 1024

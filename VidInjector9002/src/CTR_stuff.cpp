@@ -783,35 +783,26 @@ std::string extract_dir(nnc_romfs_ctx* ctx, nnc_romfs_info* info, const char* pa
 			extract_dir(ctx, &ent, pathbuf, baselen);
 		else
 		{
-			FILE* out = fopen(pathbuf, "wb");
-			if (out == NULL) {
-				return "fopen(pathbuf, \"wb\");";
-			}
+			nnc_wfile outf;
 			/* empty files just need to be touched */
 			if (ent.u.f.size)
 			{
-				/* slurping the file is a bit inefficient for large
-				 * files but it's fine for this test */
-				nnc_u8* cbuf = (nnc_u8*)malloc(ent.u.f.size);
-				if (cbuf == NULL)
-					goto out;
+				nnc_u32 r;
 				nnc_subview sv;
 				res = nnc_romfs_open_subview(ctx, &sv, &ent);
 				if (res != NNC_R_OK)
 					goto out;
-				nnc_u32 r;
-				res = NNC_RS_CALL(sv, read, cbuf, ent.u.f.size, &r);
-				if (res != NNC_R_OK)
-					goto out;
+				res = nnc_wfile_open(&outf, pathbuf);
+				if (res != NNC_R_OK) {
+					return "nnc_wfile_open(&outf, pathbuf);";
+				}
+				nnc_copy(NNC_RSP(&sv), NNC_WSP(&outf), &r);
 				if (r != ent.u.f.size) goto out;
-				if (fwrite(cbuf, ent.u.f.size, 1, out) != 1)
-					goto out;
 			out:
-				fclose(out);
-				free(cbuf);
+				NNC_WS_CALL0(outf, close);
 				continue;
 			}
-			fclose(out);
+			NNC_WS_CALL0(outf, close);
 		}
 	}
 	if (res != NNC_R_OK)

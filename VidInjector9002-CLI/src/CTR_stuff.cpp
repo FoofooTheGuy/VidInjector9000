@@ -1161,7 +1161,11 @@ int extract_cia(std::string inCia, std::string outDir, std::string seedpath) {
 		std::cout << ErrorText << ' ' << outDir << '\n' << error.message() << std::endl;
 		return 1;
 	}*/
-	std::filesystem::create_directory(std::filesystem::path((const char8_t*)&*outDir.c_str()));
+	std::filesystem::create_directory(std::filesystem::path((const char8_t*)&*outDir.c_str()), error);
+	if (error) {
+		std::cout << ErrorText << ' ' << outDir << '\n' << error.message() << std::endl;
+		return 1;
+	}
 	//extract important files from the romfs and exefs of cia
 	{
 		#define CUREC_SIZE 1024
@@ -1311,7 +1315,7 @@ int extract_cia(std::string inCia, std::string outDir, std::string seedpath) {
 			if (res != NNC_R_OK)
 			{
 				std::cout << ErrorText << ' ' << nnc_strerror(res) << std::endl;
-				return 1;
+				return 2;
 			}
 			//nnc_free_seeddb(&sdb);
 	}
@@ -1341,7 +1345,7 @@ int extract_cia(std::string inCia, std::string outDir, std::string seedpath) {
 			input.open(std::filesystem::path((const char8_t*)&*std::string(romfspath + "/settings/copyright.txt").c_str()), std::ios_base::in | std::ios_base::binary);
 			if (!input) {
 				std::cout << ErrorText << ' ' << FailedToReadFile << '\n' << romfspath + "/settings/copyright.txt" << std::endl;
-				return 2;
+				return 3;
 			}
 
 			char Byte;
@@ -1354,7 +1358,7 @@ int extract_cia(std::string inCia, std::string outDir, std::string seedpath) {
 			input.close();
 			if (output[0] == 0xFE && output[1] == 0xFF) {//if little endian (they should be in big endian anyway and i dont want to convert it)
 				std::cout << ErrorText << ' ' << FailedToReadFile << '\n' << romfspath + "/settings/copyright.txt" << std::endl;
-				return 3;
+				return 4;
 			}
 			output.erase(output.begin(), output.begin() + 2);//delete byte order mask
 			outputUTF8 = UTF16toUTF8(output);
@@ -1548,35 +1552,26 @@ std::string extract_dir(nnc_romfs_ctx* ctx, nnc_romfs_info* info, const char* pa
 			extract_dir(ctx, &ent, pathbuf, baselen);
 		else
 		{
-			FILE* out = fopen(pathbuf, "wb");
-			if (out == NULL) {
-				return "fopen(pathbuf, \"wb\");";
-			}
+			nnc_wfile outf;
 			/* empty files just need to be touched */
 			if (ent.u.f.size)
 			{
-				/* slurping the file is a bit inefficient for large
-				 * files but it's fine for this test */
-				nnc_u8* cbuf = (nnc_u8*)malloc(ent.u.f.size);
-				if (cbuf == NULL)
-					goto out;
+				nnc_u32 r;
 				nnc_subview sv;
 				res = nnc_romfs_open_subview(ctx, &sv, &ent);
 				if (res != NNC_R_OK)
 					goto out;
-				nnc_u32 r;
-				res = NNC_RS_CALL(sv, read, cbuf, ent.u.f.size, &r);
-				if (res != NNC_R_OK)
-					goto out;
+				res = nnc_wfile_open(&outf, pathbuf);
+				if (res != NNC_R_OK) {
+					return "nnc_wfile_open(&outf, pathbuf);";
+				}
+				nnc_copy(NNC_RSP(&sv), NNC_WSP(&outf), &r);
 				if (r != ent.u.f.size) goto out;
-				if (fwrite(cbuf, ent.u.f.size, 1, out) != 1)
-					goto out;
 			out:
-				fclose(out);
-				free(cbuf);
+				NNC_WS_CALL0(outf, close);
 				continue;
 			}
-			fclose(out);
+			NNC_WS_CALL0(outf, close);
 		}
 	}
 	if (res != NNC_R_OK)
