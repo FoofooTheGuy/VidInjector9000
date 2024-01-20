@@ -1492,7 +1492,7 @@ int extract_cia(std::string inCia, std::string outDir, std::string seedpath) {
 	if(good) std::cout << ParametersLoaded << '\n' << SuccessfullyLoaded << ' ' << inCia.substr(inCia.find_last_of("/\\") + 1) << '.' << std::endl;
 	else std::cout << ParametersLoaded << '\n' << FailedToLoad << ' ' << inCia.substr(inCia.find_last_of("/\\") + 1) << ".\n" << ValidStillLoaded << std::endl;
 
-	std::cout << CreatingFile << " \"" << outDir + "/parameters.vi9p" << std::endl;
+	std::cout << CreatingFile << " \"" << outDir + "/parameters.vi9p\"" << std::endl;
 	
 	saveParameters(std::string(outDir + "/parameters.vi9p"), mode, banner, icon, iconBorder, Sname, Lname, publisher, copycheck, copyrightInfo, FFrewind, FadeOpt, rows, PTitleVec, MoflexVec, MBannerVec);
 	
