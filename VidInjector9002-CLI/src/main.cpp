@@ -16,11 +16,12 @@ int main(int argc, char *argv[]) {
 		else if(strcmp(argv[i], NArg.c_str()) == 0 || strcmp(argv[i], NArgShort.c_str()) == 0) {
 			if(argc == 3) {
 				saveParameters(argv[2]);
+				return 0;
 			}
 			else {
 				std::cout << NArg << " | " << NArgShort << " : " << NewInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << NArg << " <" << OutVi9pFile << ">" << std::endl;
 			}
-			return 0;
+			return 1;
 		}
 		else if(strcmp(argv[i], SpArg.c_str()) == 0 || strcmp(argv[i], SpArgShort.c_str()) == 0) {
 			if(argc == 6) {
@@ -34,7 +35,7 @@ int main(int argc, char *argv[]) {
 			else {
 				std::cout << SpArg << " | " << SpArgShort << " : " << SetPInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << SpArg << " <" << InVi9pFile << "> <" << number << "> <" << NewValueText << "> <" << OutVi9pFile << ">" << std::endl;
 			}
-			return 0;
+			return 2;
 		}
 		else if(strcmp(argv[i], PpArg.c_str()) == 0 || strcmp(argv[i], PpArgShort.c_str()) == 0) {
 			if(argc == 3) {
@@ -65,7 +66,7 @@ int main(int argc, char *argv[]) {
 		}
 		else if(strcmp(argv[i], BcArg.c_str()) == 0 || strcmp(argv[i], BcArgShort.c_str()) == 0) {
 			if(argc == 4) {
-				build_cia(argv[2], argv[3]);
+				return build_cia(argv[2], argv[3]);
 			}
 			else if(argc == 7) {
 				uint32_t inNumber = 0;
@@ -77,7 +78,7 @@ int main(int argc, char *argv[]) {
 					std::cout << ErrorText << " <" << number << "> " << '\n' << BadValue << " \"" << argv[3] << '\"' << std::endl;
 					return 2;
 				}
-				build_cia(argv[2], argv[6], inNumber, argv[4], argv[5]);
+				return build_cia(argv[2], argv[6], inNumber, argv[4], argv[5]);
 			}
 			else {
 				std::cout << BcArg << " | " << BcArgShort << " : " << BuildCInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << BcArg << " <" << InVi9pFile << "> <" << UniqueIDText << "> <" << AppTitleText << "> <" << ProdCodeLatt << "> <" << OutCiaFile << ">\n\n----\n" << std::endl;
@@ -87,12 +88,10 @@ int main(int argc, char *argv[]) {
 		}
 		else if(strcmp(argv[i], EcArg.c_str()) == 0 || strcmp(argv[i], EcArgShort.c_str()) == 0) {
 			if(argc == 4) {
-				extract_cia(argv[2], argv[3]);
-				//puts("-extract_cia <input .cia file> <output dir>");
+				return extract_cia(argv[2], argv[3]);
 			}
 			else if(argc == 5) {
-				extract_cia(argv[2], argv[4], argv[3]);
-				//puts("-extract_cia <input .cia file> <seed file> <output dir>");
+				return extract_cia(argv[2], argv[4], argv[3]);
 			}
 			else {
 				std::cout << EcArg << " | " << EcArgShort << " : " << ExCInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << EcArg << " <" << InCiaFile << "> <" << OutDir << ">\n\n----\n" << std::endl;
