@@ -1,6 +1,6 @@
 #include "strings.hpp"
 
-std::string Version = "VidInjector9000 ver. 3.0.3-CLI";
+std::string Version = "VidInjector9000 ver. 3.0.5-CLI";
 std::string LogoASCII = "          @@@@@@@@@\n"
 						"        @@@@@@@@@@@@@\n"
 						"     @@@@@@@   @@@@@@@\n"
