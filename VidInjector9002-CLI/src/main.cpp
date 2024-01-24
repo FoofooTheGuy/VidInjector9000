@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
 			else {
 				std::cout << SpArg << " | " << SpArgShort << " : " << SetPInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << SpArg << " <" << InVi9pFile << "> <" << number << "> <" << NewValueText << "> <" << OutVi9pFile << ">" << std::endl;
 			}
-			return 2;
+			return 1;
 		}
 		else if(strcmp(argv[i], PpArg.c_str()) == 0 || strcmp(argv[i], PpArgShort.c_str()) == 0) {
 			if(argc == 3) {
@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
 			else {
 				std::cout << PpArg << " | " << PpArgShort << " : " << PrintPInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << PpArg << " <" << InVi9pFile << ">" << std::endl;
 			}
-			return 0;
+			return 1;
 		}
 		else if(strcmp(argv[i], ArArg.c_str()) == 0 || strcmp(argv[i], ArArgShort.c_str()) == 0) {
 			if(argc == 4) {
@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
 			else {
 				std::cout << ArArg << " | " << ArArgShort << " : " << AddRInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << ArArg << " <" << InVi9pFile << "> <" << OutVi9pFile << ">" << std::endl;
 			}
-			return 0;
+			return 1;
 		}
 		else if(strcmp(argv[i], SrArg.c_str()) == 0 || strcmp(argv[i], SrArgShort.c_str()) == 0) {
 			if(argc == 4) {
@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
 			else {
 				std::cout << SrArg << " | " << SrArgShort << " : " << SubRInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << SrArg << " <" << InVi9pFile << "> <" << OutVi9pFile << ">" << std::endl;
 			}
-			return 0;
+			return 1;
 		}
 		else if(strcmp(argv[i], BcArg.c_str()) == 0 || strcmp(argv[i], BcArgShort.c_str()) == 0) {
 			if(argc == 4) {
@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
 				std::cout << BcArg << " | " << BcArgShort << " : " << BuildCInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << BcArg << " <" << InVi9pFile << "> <" << UniqueIDText << "> <" << AppTitleText << "> <" << ProdCodeLatt << "> <" << OutCiaFile << ">\n\n----\n" << std::endl;
 				std::cout << BcArg << " | " << BcArgShort << " : " << BuildC2InfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << BcArg << " <" << InVi9pFile << "> <" << OutCiaFile << ">" << std::endl;
 			}
-			return 0;
+			return 1;
 		}
 		else if(strcmp(argv[i], EcArg.c_str()) == 0 || strcmp(argv[i], EcArgShort.c_str()) == 0) {
 			if(argc == 4) {
@@ -97,7 +97,7 @@ int main(int argc, char *argv[]) {
 				std::cout << EcArg << " | " << EcArgShort << " : " << ExCInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << EcArg << " <" << InCiaFile << "> <" << OutDir << ">\n\n----\n" << std::endl;
 				std::cout << EcArg << " | " << EcArgShort << " : " << ExC2InfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << EcArg << " <" << InCiaFile << "> <" << SeedFile << "> <" << OutDir << ">" << std::endl;
 			}
-			return 0;
+			return 1;
 		}
 		else {
 			if(argc == 2) {
