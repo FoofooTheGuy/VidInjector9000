@@ -15,7 +15,7 @@
         @@@@@@@@@
 ```
 # VidInjector9002-CLI
-A real deal barebones CLI version of VidInjector9002
+A console program that interfaces with a VidInjector9002 parameters file.
 
 # Compiling
 **Windows (MSYS2)**
@@ -36,5 +36,118 @@ If compiling MbedTLS gives errors, do these and try again:
 python3 -m pip install -U 'jsonschema<4.0'
 python3 -m pip install jinja2
 ```
+
+# Usage
+
+The goal of VidInjector9002-CLI is to do [everything VidInjector9002 can do](https://github.com/FoofooTheGuy/VidInjector9000?tab=readme-ov-file#vidinjector9002-can) but as a CLI so you can use it in automation and with greater cross platform compatibility.
+
+Usage: VidInjector9002-CLI \<argument\> \[parameters...\]
+
+**Arguments:**
+
+<details>
+<summary>-new | -n</summary>
+
+Create a .vi9p file with default parameters
+
+Usage:
+
+VidInjector9002-CLI -new \<output .vi9p file\>
+
+</details>
+
+
+
+<details>
+<summary>-set_parameter | -sp</summary>
+
+Set a parameter based on which number of parameter to set (Output file can be the same as input file)
+
+Usage:
+
+VidInjector9002-CLI -set_parameter \<input .vi9p file\> \<number\> \<new value\> \<output .vi9p file\>
+
+</details>
+
+
+
+<details>
+<summary>-print_parameters | -pp</summary>
+
+Print the parameters in a .vi9p file in a numbered list
+
+Usage:
+
+VidInjector9002-CLI -print_parameters \<input .vi9p file\>
+
+</details>
+
+
+
+<details>
+<summary>-add_row | -ar</summary>
+
+Add parameters for a row and increment the INT:ROWS parameter (Output file can be the same as input file)
+
+Usage:
+
+VidInjector9002-CLI -add_row \<input .vi9p file\> \<output .vi9p file\>
+
+</details>
+
+
+
+<details>
+<summary>-subtract_row | -sr</summary>
+
+Remove the parameters from the last row and decrement the INT:ROWS parameter (Output file can be the same as input file)
+
+Usage:
+
+VidInjector9002-CLI -subtract_row \<input .vi9p file\> \<output .vi9p file\>
+
+</details>
+
+
+
+<details>
+<summary>-build_cia | -bc</summary>
+
+Build a .cia from parameters file. Note that the title IDs for this must range from C0000 - EFFFF in order to avoid confict with other titles.
+
+Usage:
+
+VidInjector9002-CLI -build_cia \<input .vi9p file\> \<unique ID\> \<application title\> \<product code latter\> \<output .cia file\>
+
+----
+
+The same as the previous one, except with the following defaults where the argument parameters are missing: (random unique ID) 'video' 'VDIJ'
+
+Usage:
+
+VidInjector9002-CLI -build_cia \<input .vi9p file\> \<output .cia file\>
+
+</details>
+
+
+
+<details>
+<summary>-extract_cia | -ec</summary>
+
+Extract parameters from a .cia to a directory which will contain the romfs directory, exefs directory, and .vi9p file. Note that \<output directory\> must be a complete path like "C:/dir/dir" and unnecessary files will not be extracted.
+
+Usage:
+
+VidInjector9002-CLI -extract_cia \<input .cia file\> \<output directory\>
+
+----
+
+The same as the previous one, except with the seed to decrypt the content.
+
+Usage:
+
+VidInjector9002-CLI -extract_cia \<input .cia file\> \<seed file\> \<output directory\>
+
+</details>
 
 *This README is under construction.*
