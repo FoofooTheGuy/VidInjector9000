@@ -20,7 +20,6 @@ A console program that interfaces with a VidInjector9002 parameters file.
 # Compiling
 **Windows (MSYS2)**
 1. Download and install [MSYS2](https://www.msys2.org/)
-2. Run `pacman -S unzip`
 4. Run build_deps.py
 5. Run build.py
 
@@ -29,7 +28,9 @@ A console program that interfaces with a VidInjector9002 parameters file.
 2. Run build_deps.py
 3. Run build.py
 
-If `pip` doesn't work, run `python3 -m ensurepip`
+If `pip` doesn't work, run `python -m ensurepip`
+
+If you don't have `ZipFile`, run `python -m pip install zipfile`
 
 If compiling MbedTLS gives errors, do these and try again:
 ```
