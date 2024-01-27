@@ -28,9 +28,9 @@ A console program that interfaces with a VidInjector9002 parameters file.
 2. Run build_deps.py
 3. Run build.py
 
-If `pip` doesn't work, run `python -m ensurepip`
+If `pip` doesn't work, run `python3 -m ensurepip`
 
-If you don't have `ZipFile`, run `python -m pip install zipfile`
+If you don't have `ZipFile`, run `python3 -m pip install zipfile`
 
 If compiling MbedTLS gives errors, do these and try again:
 ```
