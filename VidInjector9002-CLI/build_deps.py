@@ -1,9 +1,14 @@
 import os
 import shutil
 import subprocess
+from zipfile import ZipFile
 
-subprocess.call(["unzip", "-q", "-o", "nnc.zip"])
-subprocess.call(["unzip", "-q", "-o", "mbedtls-3.4.0.zip"])
+with ZipFile("nnc.zip", 'r') as zObject:
+	zObject.extractall(path=".")
+	
+with ZipFile("mbedtls-3.4.0.zip", 'r') as zObject:
+	zObject.extractall(path=".")
+
 os.chdir("mbedtls-3.4.0")
 os.environ["CC"] = "gcc"
 subprocess.call(["make", "-C", "library"])
