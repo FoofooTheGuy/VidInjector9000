@@ -20,6 +20,7 @@ A console program that interfaces with a VidInjector9002 parameters file.
 # Compiling
 **Windows (MSYS2)**
 1. Download and install [MSYS2](https://www.msys2.org/)
+2. Download and install [Python](https://www.python.org/downloads/)
 4. Run build_deps.py
 5. Run build.py
 
