@@ -150,5 +150,3 @@ Usage:
 VidInjector9002-CLI -extract_cia \<input .cia file\> \<seed file\> \<output directory\>
 
 </details>
-
-*This README is under construction.*
