@@ -15,8 +15,7 @@ int main(int argc, char *argv[]) {
 		}
 		else if(strcmp(argv[i], NArg.c_str()) == 0 || strcmp(argv[i], NArgShort.c_str()) == 0) {
 			if(argc == 3) {
-				saveParameters(argv[2]);
-				return 0;
+				return saveParameters(argv[2]);
 			}
 			else {
 				std::cout << NArg << " | " << NArgShort << " : " << NewInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << NArg << " <" << OutVi9pFile << ">" << std::endl;

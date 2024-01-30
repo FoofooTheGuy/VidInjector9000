@@ -1,6 +1,6 @@
 #include "vi9p.hpp"
 
-void saveParameters(std::string parampath, int mode, std::string banner, std::string icon, int iconBorder, std::string Sname, std::string Lname, std::string publisher, int copycheck, std::string copyrightInfo, int FFrewind, int FadeOpt, uint8_t rows, std::vector<std::string> PTitleVec, std::vector<std::string> MoflexVec, std::vector<std::string> MBannerVec) {
+int saveParameters(std::string parampath, int mode, std::string banner, std::string icon, int iconBorder, std::string Sname, std::string Lname, std::string publisher, int copycheck, std::string copyrightInfo, int FFrewind, int FadeOpt, uint8_t rows, std::vector<std::string> PTitleVec, std::vector<std::string> MoflexVec, std::vector<std::string> MBannerVec) {
 	if((PTitleVec.size() & 0xFF) < rows)
 		PTitleVec = std::vector<std::string>(rows, "");
 	if((MoflexVec.size() & 0xFF) < rows)
@@ -31,6 +31,11 @@ void saveParameters(std::string parampath, int mode, std::string banner, std::st
 	outparams <<
 		IntPreIndexParam << "=\"0\"\n";
 	outparams.close();
+	if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*parampath.c_str()))) {
+		std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << parampath << std::endl;
+		return 1;
+	}
+	return 0;
 }
 
 int loadParameters(std::string parampath, int &mode, std::string &banner, std::string &icon, int &iconBorder, std::string &Sname, std::string &Lname, std::string &publisher, int &copycheck, std::string &copyrightInfo, int &FFrewind, int &FadeOpt, uint8_t &rows, std::vector<std::string> &PTitleVec, std::vector<std::string> &MoflexVec, std::vector<std::string> &MBannerVec, int &BannerPreviewIndex) {
