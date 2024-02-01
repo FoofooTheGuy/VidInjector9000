@@ -40,10 +40,9 @@ std::string UTF16toUTF8(const std::string& input) {
 
 std::string to_UTF8(const nnc_u16* UTF16, const size_t UTF16size) {
 	size_t UTF8size = nnc_utf16_to_utf8(NULL, 0, UTF16, UTF16size) + 1;
-	nnc_u8* str = new nnc_u8[UTF8size];
-	size_t rlen = nnc_utf16_to_utf8(str, UTF8size, UTF16, UTF16size);
-	std::string outstr(reinterpret_cast<char*>(str), rlen);
-	delete[] str;
+	std::vector<uint8_t> str = std::vector<uint8_t>(UTF8size);
+	size_t rlen = nnc_utf16_to_utf8(str.data(), UTF8size, UTF16, UTF16size);
+	std::string outstr(reinterpret_cast<char*>(str.data()), rlen);
 	return outstr;
 }
 
