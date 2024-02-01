@@ -92,16 +92,13 @@ form1::form1() {
         int out_h = 120;
         int film_w = 264;
         int film_h = 154;
-        uint8_t* output_4c = (uint8_t*)malloc(out_w * out_h * ch);
-        memset(output_4c, 0xFF, out_w * out_h * ch);
+        std::vector<uint8_t> output_4c = std::vector<uint8_t>(out_w * out_h * ch);
+        memset(output_4c.data(), 0xFF, out_w * out_h * ch);
 
-        uint8_t* output_film = (uint8_t*)malloc(film_w * film_h * 4);
-        layer_pixels(output_film, film_overlay, output_4c, film_w, film_h, 2, out_w, out_h, ch, 32, 11);
-        free(output_4c);
+        std::vector<uint8_t> output_film = std::vector<uint8_t>(film_w * film_h * 4);
+        layer_pixels(output_film.data(), film_overlay, output_4c.data(), film_w, film_h, 2, out_w, out_h, ch, 32, 11);
 
-        bannerpreview.image(pixels_to_image(output_film, film_w, film_h, 4));
-
-        free(output_film);
+        bannerpreview.image(pixels_to_image(output_film.data(), film_w, film_h, 4));
     }
 
     bannerpreviewtxt.parent(parameters);
@@ -149,7 +146,7 @@ form1::form1() {
         if (banner) {
             w = 256;
             h = 128;
-            uint8_t* CGFXdecomp;
+            std::vector<uint8_t> CGFXdecomp;
             uint8_t ret = 0;
             {
                 uint32_t decompressedSize = 0;
@@ -161,12 +158,11 @@ form1::form1() {
                     customnotif.show();
                     return;
                 }
-                CGFXdecomp = (uint8_t*)malloc(decompressedSize);
-                ret = CBMDgetCommonCGFX(bannerbox.text(), compressedSize, decompressedSize, CGFXoffset, CGFXdecomp);
+                CGFXdecomp = std::vector<uint8_t>(decompressedSize);
+                ret = CBMDgetCommonCGFX(bannerbox.text(), compressedSize, decompressedSize, CGFXoffset, CGFXdecomp.data());
                 if (ret > 0) {
                     bannerpreview.image(empty(0, 0));
                     customnotif.show();
-                    free(CGFXdecomp);
                     return;
                 }
             }
@@ -177,11 +173,10 @@ form1::form1() {
             uint32_t mipmap0;
             uint32_t formatID0;
             uint32_t size0;
-            ret = getCGFXtextureInfo(CGFXdecomp, "COMMON0", dataOffset0, height0, width0, mipmap0, formatID0, size0);
+            ret = getCGFXtextureInfo(CGFXdecomp.data(), "COMMON0", dataOffset0, height0, width0, mipmap0, formatID0, size0);
             if (ret > 0 || height0 != 0x80 || width0 != 0x100 || formatID0 != 0x3) {
                 bannerpreview.image(empty(0, 0));
                 customnotif.show();
-                free(CGFXdecomp);
                 return;
             }
 
@@ -191,11 +186,10 @@ form1::form1() {
             uint32_t mipmap1;
             uint32_t formatID1;
             uint32_t size1;
-            ret = getCGFXtextureInfo(CGFXdecomp, "COMMON1", dataOffset1, height1, width1, mipmap1, formatID1, size1);
+            ret = getCGFXtextureInfo(CGFXdecomp.data(), "COMMON1", dataOffset1, height1, width1, mipmap1, formatID1, size1);
             if (ret > 0 || height1 != 0x80 || width1 != 0x100 || formatID1 != 0xC) {
                 bannerpreview.image(empty(0, 0));
                 customnotif.show();
-                free(CGFXdecomp);
                 return;
             }
 
@@ -203,21 +197,16 @@ form1::form1() {
             if (hash != 0x2DB769E8) {
                 bannerpreview.image(empty(0, 0));
                 customnotif.show();
-                free(CGFXdecomp);
                 return;
             }
             int och = sizeof(nnc_u32);
-            uint8_t* output_pixels = (uint8_t*)malloc(w * h * och);
-            nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(&CGFXdecomp[dataOffset0]), reinterpret_cast<nnc_u32*>(output_pixels), w & 0xFFFF, h & 0xFFFF);
-            free(CGFXdecomp);
-            uint8_t* output_cropped = (uint8_t*)malloc(out_w * out_w * och);
-            crop_pixels(output_pixels, w, h, och, output_cropped, 0, 0, out_w, out_h);
-            free(output_pixels);
-            uint8_t* output_film = (uint8_t*)malloc(film_w * film_h * 4);
-            layer_pixels(output_film, film_overlay, output_cropped, film_w, film_h, 2, out_w, out_h, 4, 32, 11);
-            free(output_cropped);
-            bannerpreview.image(pixels_to_image(output_film, film_w, film_h, 4));
-            free(output_film);
+            std::vector<uint8_t> output_pixels = std::vector<uint8_t>(w * h * och);
+            nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(&CGFXdecomp[dataOffset0]), reinterpret_cast<nnc_u32*>(output_pixels.data()), w & 0xFFFF, h & 0xFFFF);
+            std::vector<uint8_t> output_cropped = std::vector<uint8_t>(out_w * out_w * och);
+            crop_pixels(output_pixels.data(), w, h, och, output_cropped.data(), 0, 0, out_w, out_h);
+            std::vector<uint8_t> output_film = std::vector<uint8_t>(film_w * film_h * 4);
+            layer_pixels(output_film.data(), film_overlay, output_cropped.data(), film_w, film_h, 2, out_w, out_h, 4, 32, 11);
+            bannerpreview.image(pixels_to_image(output_film.data(), film_w, film_h, 4));
             bannererror.hide();
             customnotif.hide();
             return;
@@ -233,29 +222,24 @@ form1::form1() {
                 int och = sizeof(nnc_u32);
                 std::ifstream input;
                 input.open(std::filesystem::path((const char8_t*)&*bannerbox.text().c_str()), std::ios_base::in | std::ios_base::binary);//input file
-                uint8_t* input_data = (uint8_t*)malloc((w * h * ich) + 0x20);
-                input.read(reinterpret_cast<char*>(input_data), (w * h * ich) + 0x20);
+                std::vector<uint8_t> input_data = std::vector<uint8_t>((w * h * ich) + 0x20);
+                input.read(reinterpret_cast<char*>(input_data.data()), (w * h * ich) + 0x20);
                 input.close();
                 for (int i = 0; i < 0x1C; i++) {
                     if (input_data[i] != bimgheader[i]) {
-                        free(input_data);
                         setDefaultBannerPreview(bannerpreview, &bannererror);
                         return;
                     }
                 }
-                uint8_t* output_pixels = (uint8_t*)malloc(w * h * och);
-                nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(&input_data[0x20]), reinterpret_cast<nnc_u32*>(output_pixels), w & 0xFFFF, h & 0xFFFF);
-                free(input_data);
-                uint8_t* output_cropped = (uint8_t*)malloc(out_w * out_w * och);
-                crop_pixels(output_pixels, w, h, och, output_cropped, 0, 0, out_w, out_h);
-                free(output_pixels);
-                uint8_t* output_film = (uint8_t*)malloc(film_w * film_h * 4);
-                layer_pixels(output_film, film_overlay, output_cropped, film_w, film_h, 2, out_w, out_h, 4, 32, 11);
+                std::vector<uint8_t> output_pixels = std::vector<uint8_t>(w * h * och);
+                nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(&input_data[0x20]), reinterpret_cast<nnc_u32*>(output_pixels.data()), w & 0xFFFF, h & 0xFFFF);
+                std::vector<uint8_t> output_cropped = std::vector<uint8_t>(out_w * out_w * och);
+                crop_pixels(output_pixels.data(), w, h, och, output_cropped.data(), 0, 0, out_w, out_h);
+                std::vector<uint8_t> output_film = std::vector<uint8_t>(film_w * film_h * 4);
+                layer_pixels(output_film.data(), film_overlay, output_cropped.data(), film_w, film_h, 2, out_w, out_h, 4, 32, 11);
                 //stbi_write_png(xtd::ustring::format("{}/{}/output_film.png", ProgramDir, resourcesPath).c_str(), film_w, film_h, och, output_film, 0);
-                free(output_cropped);
-                bannerpreview.image(pixels_to_image(output_film, film_w, film_h, 4));
+                bannerpreview.image(pixels_to_image(output_film.data(), film_w, film_h, 4));
                 bannererror.hide();
-                free(output_film);
                 customnotif.hide();
             }
             else {
@@ -269,24 +253,24 @@ form1::form1() {
         else if (!banner) {
             if (stbi_info(bannerbox.text().c_str(), &w, &h, &ch)) {
                 uint8_t* input_pixels = stbi_load(bannerbox.text().c_str(), &w, &h, &ch, 0);
-                uint8_t* output_pixels = (uint8_t*)malloc(out_w * out_h * ch);
+                if (input_pixels == NULL) {
+                    //maybe put a message here
+                    return;
+                }
+                std::vector<uint8_t> output_pixels = std::vector<uint8_t>(out_w * out_h * ch);
 
-                if (w == out_w && h == out_h) memcpy(output_pixels, input_pixels, w * h * ch);
-                else resize_crop(input_pixels, w, h, output_pixels, out_w, out_h, ch);//scale to 200x120 if needed
+                if (w == out_w && h == out_h) memcpy(output_pixels.data(), input_pixels, w * h * ch);
+                else resize_crop(input_pixels, w, h, output_pixels.data(), out_w, out_h, ch);//scale to 200x120 if needed
                 free(input_pixels);
-                uint8_t* output_4c = (uint8_t*)malloc(out_w * out_h * 4);
-                uint8_t* white = (uint8_t*)malloc(out_w * out_h * 4);
-                memset(white, 0xFF, out_w * out_h * 4);
-                layer_pixels(output_4c, output_pixels, white, out_w, out_h, ch, out_w, out_h, 4, 0, 0);
-                free(white);
-                free(output_pixels);
-                uint8_t* output_film = (uint8_t*)malloc(film_w * film_h * 4);
+                std::vector<uint8_t> output_4c = std::vector<uint8_t>(out_w * out_h * 4);
+                std::vector<uint8_t> white = std::vector<uint8_t>(out_w * out_h * 4);
+                memset(white.data(), 0xFF, out_w * out_h * 4);
+                layer_pixels(output_4c.data(), output_pixels.data(), white.data(), out_w, out_h, ch, out_w, out_h, 4, 0, 0);
+                std::vector<uint8_t> output_film = std::vector<uint8_t>(film_w * film_h * 4);
                 //memcpy(output_film, film_overlay, film_w * film_h * 4);
-                layer_pixels(output_film, film_overlay, output_4c, film_w, film_h, 2, out_w, out_h, 4, 32, 11);
-                free(output_4c);
-                bannerpreview.image(pixels_to_image(output_film, film_w, film_h, 4));
+                layer_pixels(output_film.data(), film_overlay, output_4c.data(), film_w, film_h, 2, out_w, out_h, 4, 32, 11);
+                bannerpreview.image(pixels_to_image(output_film.data(), film_w, film_h, 4));
                 bannererror.hide();
-                free(output_film);
                 customnotif.hide();
             }
             else {
@@ -1547,18 +1531,18 @@ form1::form1() {
                     }
 
                     //create bcmdl
-                    uint8_t* bcmdl;
-                    bcmdl = (uint8_t*)malloc(sizeof(bannerheader) + sizeof(buffer) + sizeof(bannerfooter));
-                    memcpy(bcmdl, bannerheader, sizeof(bannerheader));
-                    memcpy(bcmdl + sizeof(bannerheader), buffer, sizeof(buffer));
-                    memcpy(bcmdl + sizeof(bannerheader) + sizeof(buffer), bannerfooter, sizeof(bannerfooter));
+                    std::vector<uint8_t> bcmdl;
+                    bcmdl = std::vector<uint8_t>(sizeof(bannerheader) + sizeof(buffer) + sizeof(bannerfooter));
+                    memcpy(bcmdl.data(), bannerheader, sizeof(bannerheader));
+                    memcpy(bcmdl.data() + sizeof(bannerheader), buffer, sizeof(buffer));
+                    memcpy(bcmdl.data() + sizeof(bannerheader) + sizeof(buffer), bannerfooter, sizeof(bannerfooter));
 
                     //build banner (stolen from bannertool)
                     CBMD cbmd;
                     memset(&cbmd, 0, sizeof(cbmd));
 
                     cbmd.cgfxSizes[0] = sizeof(bannerheader) + sizeof(buffer) + sizeof(bannerfooter);
-                    cbmd.cgfxs[0] = bcmdl;
+                    cbmd.cgfxs[0] = bcmdl.data();
 
                     cbmd.cwavSize = sizeof(BCWAV_array);
                     cbmd.cwav = (void*)BCWAV_array;
@@ -1633,7 +1617,7 @@ form1::form1() {
                 nnc_vfs romfs;
                 nnc_vfs exefs;
                 nnc_keypair kp;
-                nnc_seeddb sdb;
+                nnc_seeddb sdb = {};
 
                 if (builder.cancellation_pending()) return;
 
@@ -1703,21 +1687,21 @@ form1::form1() {
                 builder.report_progress(35);
                 {
                     //change the title ID of the ticket
-                    char* ticket_contents = (char*)malloc(NNC_RS_CALL0(ticket, size));
+                    std::vector<char> ticket_contents = std::vector<char>(NNC_RS_CALL0(ticket, size));
                     nnc_u32 out_size = 0;
-                    if (NNC_RS_CALL(ticket, read, (nnc_u8*)ticket_contents, NNC_RS_CALL0(ticket, size), &out_size) != NNC_R_OK)
-                        goto out11;
+                    if (NNC_RS_CALL(ticket, read, (nnc_u8*)ticket_contents.data(), NNC_RS_CALL0(ticket, size), &out_size) != NNC_R_OK)
+                        goto out10;
                     if (out_size != NNC_RS_CALL0(ticket, size))
-                        goto out11;
+                        goto out10;
                     nnc_memory modified_ticket;
                     {
                         uint64_t TIDbigend = 0;
                         encode_bigend_u64(exhdr.title_id, &TIDbigend);
                         *(nnc_u64*)&ticket_contents[nnc_sig_dsize((nnc_sigtype)ticket_contents[3]) + 0xDC] = TIDbigend;
                     }
-                    nnc_mem_open(&modified_ticket, ticket_contents, NNC_RS_CALL0(ticket, size));
+                    nnc_mem_open(&modified_ticket, ticket_contents.data(), NNC_RS_CALL0(ticket, size));
 
-                    if (builder.cancellation_pending()) goto out11;
+                    if (builder.cancellation_pending()) goto out10;
                     builder.report_progress(50);
                     /* and finally write the cia */
                     res = nnc_write_cia(
@@ -1726,7 +1710,6 @@ form1::form1() {
                     );
                     builder.report_progress(100);
                     /* cleanup code, with lots of labels to jump to in case of failure depending on where it failed */
-                out11: free(ticket_contents);
                 }
             out10: nnc_vfs_free(&exefs);
             out9: NNC_RS_CALL0(exheader, close);
@@ -1902,7 +1885,7 @@ form1::form1() {
                 nnc_romfs_ctx ctx;
                 nnc_keypair kp;
                 nnc_subview sv;
-                nnc_seeddb sdb;
+                nnc_seeddb sdb = {};
                 sdb.size = 1;
                 nnc_file f;
 
@@ -2007,16 +1990,16 @@ form1::form1() {
                     }
 
                     nnc_u32 read_size;
-                    nnc_u8* buf = (nnc_u8*)malloc(headers[i].size);
+                    std::vector<nnc_u8> buf = std::vector<nnc_u8>(headers[i].size);
                     NNC_RS_CALL(sv, seek_abs, 0);
-                    if (NNC_RS_CALL(sv, read, buf, headers[i].size, &read_size) != NNC_R_OK || read_size != headers[i].size) {
+                    if (NNC_RS_CALL(sv, read, buf.data(), headers[i].size, &read_size) != NNC_R_OK || read_size != headers[i].size) {
                         xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToReadFile, headers[i].name), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                         continue;
                     }
                     std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*exefspath.c_str()));
                     sprintf(pathbuf, "%s/%s", exefspath.c_str(), fname);
                     FILE* ef = fopen(pathbuf, "wb");
-                    if (fwrite(buf, headers[i].size, 1, ef) != 1)
+                    if (fwrite(buf.data(), headers[i].size, 1, ef) != 1)
                         xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, pathbuf), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     fclose(ef);
                 }
@@ -2050,7 +2033,7 @@ form1::form1() {
                     xtd::forms::message_box::show(*this, nnc_strerror(res), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     return;
                 }
-                //nnc_free_seeddb(&sdb);
+                nnc_free_seeddb(&sdb);
             }
 
             //ignore this

@@ -151,17 +151,14 @@ namespace VidInjector9002 {
             int out_h = 120;
             int film_w = 264;
             int film_h = 154;
-            uint8_t* output_4c = (uint8_t*)malloc(out_w * out_h * ch);
-            memset(output_4c, 0xFF, out_w * out_h * ch);
+            std::vector<uint8_t> output_4c = std::vector<uint8_t>(out_w * out_h * ch);
+            memset(output_4c.data(), 0xFF, out_w * out_h * ch);
 
-            uint8_t* output_film = (uint8_t*)malloc(film_w * film_h * 4);
-            layer_pixels(output_film, film_overlay, output_4c, film_w, film_h, 2, out_w, out_h, ch, 32, 11);
-            free(output_4c);
+            std::vector<uint8_t> output_film = std::vector<uint8_t>(film_w * film_h * 4);
+            layer_pixels(output_film.data(), film_overlay, output_4c.data(), film_w, film_h, 2, out_w, out_h, ch, 32, 11);
 
-            banner.image(pixels_to_image(output_film, film_w, film_h, 4));
+            banner.image(pixels_to_image(output_film.data(), film_w, film_h, 4));
             if (error != nullptr) error->show();
-
-            free(output_film);
         }
 
         //arg is which row to get the path from
@@ -183,27 +180,22 @@ namespace VidInjector9002 {
                         int och = sizeof(nnc_u32);
                         std::ifstream input;
                         input.open(std::filesystem::path((const char8_t*)&*text_box_array.at(y * columns + 2)->text().c_str()), std::ios_base::in | std::ios_base::binary);
-                        uint8_t* input_data = (uint8_t*)malloc((w * h * ich) + 0x20);
-                        input.read(reinterpret_cast<char*>(input_data), (w * h * ich) + 0x20);
+                        std::vector<uint8_t> input_data = std::vector<uint8_t>((w * h * ich) + 0x20);
+                        input.read(reinterpret_cast<char*>(input_data.data()), (w * h * ich) + 0x20);
                         input.close();
                         for (int i = 0; i < 0x1C; i++) {
                             if (input_data[i] != bimgheader[i]) {
-                                free(input_data);
                                 setDefaultBannerPreview(menubannerpreview, nullptr);
                                 return;
                             }
                         }
-                        uint8_t* output_pixels = (uint8_t*)malloc(w * h * och);
-                        nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(&input_data[0x20]), reinterpret_cast<nnc_u32*>(output_pixels), w & 0xFFFF, h & 0xFFFF);
-                        free(input_data);
-                        uint8_t* output_cropped = (uint8_t*)malloc(out_w * out_w * och);
-                        crop_pixels(output_pixels, w, h, och, output_cropped, 0, 0, out_w, out_h);
-                        free(output_pixels);
-                        uint8_t* output_film = (uint8_t*)malloc(film_w * film_h * 4);
-                        layer_pixels(output_film, film_overlay, output_cropped, film_w, film_h, 2, out_w, out_h, 4, 32, 11);
-                        free(output_cropped);
-                        menubannerpreview.image(pixels_to_image(output_film, film_w, film_h, 4));
-                        free(output_film);
+                        std::vector<uint8_t> output_pixels = std::vector<uint8_t>(w * h * och);
+                        nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(&input_data[0x20]), reinterpret_cast<nnc_u32*>(output_pixels.data()), w & 0xFFFF, h & 0xFFFF);
+                        std::vector<uint8_t> output_cropped = std::vector<uint8_t>(out_w * out_w * och);
+                        crop_pixels(output_pixels.data(), w, h, och, output_cropped.data(), 0, 0, out_w, out_h);
+                        std::vector<uint8_t> output_film = std::vector<uint8_t>(film_w * film_h * 4);
+                        layer_pixels(output_film.data(), film_overlay, output_cropped.data(), film_w, film_h, 2, out_w, out_h, 4, 32, 11);
+                        menubannerpreview.image(pixels_to_image(output_film.data(), film_w, film_h, 4));
                     }
                     else {
                         setDefaultBannerPreview(menubannerpreview, nullptr);
@@ -211,23 +203,21 @@ namespace VidInjector9002 {
                 }
                 else if (stbi_info(text_box_array.at(y * columns + 2)->text().c_str(), &w, &h, &ch)) {
                     uint8_t* input_pixels = stbi_load(text_box_array.at(y * columns + 2)->text().c_str(), &w, &h, &ch, 0);
-                    uint8_t* output_pixels = (uint8_t*)malloc(out_w * out_h * ch);
-
-                    if (w == out_w && h == out_h) memcpy(output_pixels, input_pixels, w * h * ch);
-                    else resize_crop(input_pixels, w, h, output_pixels, out_w, out_h, ch);//scale to 200x120 if needed
+                    if (input_pixels == NULL) {
+                        return;
+                    }
+                    std::vector<uint8_t> output_pixels = std::vector<uint8_t>(out_w * out_h * ch);
+                    if (w == out_w && h == out_h) memcpy(output_pixels.data(), input_pixels, w * h * ch);
+                    else resize_crop(input_pixels, w, h, output_pixels.data(), out_w, out_h, ch);//scale to 200x120 if needed
                     free(input_pixels);
-                    uint8_t* output_4c = (uint8_t*)malloc(out_w * out_h * 4);
-                    uint8_t* white = (uint8_t*)malloc(out_w * out_h * 4);
-                    memset(white, 0xFF, out_w * out_h * 4);
-                    layer_pixels(output_4c, output_pixels, white, out_w, out_h, ch, out_w, out_h, 4, 0, 0);
-                    free(white);
-                    free(output_pixels);
-                    uint8_t* output_film = (uint8_t*)malloc(film_w * film_h * 4);
+                    std::vector<uint8_t> output_4c = std::vector<uint8_t>(out_w * out_h * 4);
+                    std::vector<uint8_t> white = std::vector<uint8_t>(out_w * out_h * 4);
+                    memset(white.data(), 0xFF, out_w * out_h * 4);
+                    layer_pixels(output_4c.data(), output_pixels.data(), white.data(), out_w, out_h, ch, out_w, out_h, 4, 0, 0);
+                    std::vector<uint8_t> output_film = std::vector<uint8_t>(film_w * film_h * 4);
                     //memcpy(output_film, film_overlayfilm_overlay, film_w * film_h * 4);
-                    layer_pixels(output_film, film_overlay, output_4c, film_w, film_h, 2, out_w, out_h, 4, 32, 11);
-                    free(output_4c);
-                    menubannerpreview.image(pixels_to_image(output_film, film_w, film_h, 4));
-                    free(output_film);
+                    layer_pixels(output_film.data(), film_overlay, output_4c.data(), film_w, film_h, 2, out_w, out_h, 4, 32, 11);
+                    menubannerpreview.image(pixels_to_image(output_film.data(), film_w, film_h, 4));
                 }
                 else {
                     setDefaultBannerPreview(menubannerpreview, nullptr);
@@ -248,9 +238,9 @@ namespace VidInjector9002 {
             int w = 0, h = 0, comp = 0, ch = 0;
             uint16_t largeWH = 48;
             uint8_t* input_pixels;
-            uint8_t* output_pixels;
-            uint8_t* large_3c;
-            //const int smallLW = 24;
+            std::vector<uint8_t> output_pixels;
+            std::vector<uint8_t> large_3c;
+            //uint16_t smallLW = 24;
             const uint8_t FF = 0xFF;
             bool smdhinput = true;
 
@@ -282,8 +272,8 @@ namespace VidInjector9002 {
                     }
 
                     ch = 4;
-                    output_pixels = (uint8_t*)malloc(largeWH * largeWH * ch);
-                    nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(smdh.icon_large), reinterpret_cast<nnc_u32*>(output_pixels), largeWH, largeWH);
+                    output_pixels = std::vector<uint8_t>(largeWH * largeWH * ch);
+                    nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(smdh.icon_large), reinterpret_cast<nnc_u32*>(output_pixels.data()), largeWH, largeWH);
                 }
                 NNC_RS_CALL0(f, close);
                 break;
@@ -295,50 +285,50 @@ namespace VidInjector9002 {
                     h = largeWH;
                     ch = 4;
                     input_pixels = (uint8_t*)malloc(largeWH * largeWH * ch);
+                    if (input_pixels == NULL) {
+                        return;
+                    }
                     memset(input_pixels, FF, largeWH * largeWH * ch);
                 }
-                else input_pixels = stbi_load(iconbox.text().c_str(), &w, &h, &ch, 0);
-                output_pixels = (uint8_t*)malloc(largeWH * largeWH * ch);
-                if (w == largeWH && h == largeWH) memcpy(output_pixels, input_pixels, w * h * ch);
-                else resize_crop(input_pixels, w, h, output_pixels, largeWH, largeWH, ch);//scale to 48x48 if needed
-                stbi_image_free(input_pixels);//basically the same as free() but whatever
+                else {
+                    input_pixels = stbi_load(iconbox.text().c_str(), &w, &h, &ch, 0);
+                    if (input_pixels == NULL) {
+                        return;
+                    }
+                }
+                output_pixels = std::vector<uint8_t>(largeWH * largeWH * ch);
+                if (w == largeWH && h == largeWH) memcpy(output_pixels.data(), input_pixels, w * h * ch);
+                else resize_crop(input_pixels, w, h, output_pixels.data(), largeWH, largeWH, ch);//scale to 48x48 if needed
+                free(input_pixels);
             }
             if (borderMode == 1) {//under border
-                uint8_t* output_4c = (uint8_t*)malloc(largeWH * largeWH * 4);
-                uint8_t* white_background = (uint8_t*)malloc(largeWH * largeWH * 4);//fix the bugs by not fixing the bugs! :D
-                memset(white_background, FF, largeWH * largeWH * 4);
-                layer_pixels(output_4c, output_pixels, white_background, largeWH, largeWH, ch, largeWH, largeWH, 4, 0, 0);//it warns about output_pixels being potentially uninitialized but that is impossible
-                free(white_background);
-                layer_pixels(output_4c, icon_border, output_4c, largeWH, largeWH, 4, largeWH, largeWH, 4, 0, 0);
+                std::vector<uint8_t> output_4c = std::vector<uint8_t>(largeWH * largeWH * 4);
+                std::vector<uint8_t> white_background = std::vector<uint8_t>(largeWH * largeWH * 4);//fix the bugs by not fixing the bugs! :D
+                memset(white_background.data(), FF, largeWH * largeWH * 4);
+                layer_pixels(output_4c.data(), output_pixels.data(), white_background.data(), largeWH, largeWH, ch, largeWH, largeWH, 4, 0, 0);//it warns about output_pixels being potentially uninitialized but that is impossible
+                layer_pixels(output_4c.data(), icon_border48, output_4c.data(), largeWH, largeWH, 4, largeWH, largeWH, 4, 0, 0);
                 ch = 4;
-                free(output_pixels);
-                output_pixels = (uint8_t*)malloc(largeWH * largeWH * ch);
-                memcpy(output_pixels, output_4c, largeWH * largeWH * ch);
-                free(output_4c);
+                output_pixels = std::vector<uint8_t>(largeWH * largeWH * ch);
+                memcpy(output_pixels.data(), output_4c.data(), largeWH * largeWH * ch);
             }
             else if (borderMode == 2) {//inside border
-                uint8_t* output_4c = (uint8_t*)malloc(largeWH * largeWH * 4);
-                uint8_t* white_background = (uint8_t*)malloc(largeWH * largeWH * 4);//fix the bugs by not fixing the bugs! :D
-                memset(white_background, FF, largeWH * largeWH * 4);
-                layer_pixels(output_4c, output_pixels, white_background, largeWH, largeWH, ch, largeWH, largeWH, 4, 0, 0);
-                free(white_background);
+                std::vector<uint8_t> output_4c = std::vector<uint8_t>(largeWH * largeWH * 4);
+                std::vector<uint8_t> white_background = std::vector<uint8_t>(largeWH * largeWH * 4);//fix the bugs by not fixing the bugs! :D
+                memset(white_background.data(), FF, largeWH * largeWH * 4);
+                layer_pixels(output_4c.data(), output_pixels.data(), white_background.data(), largeWH, largeWH, ch, largeWH, largeWH, 4, 0, 0);
                 ch = 4;
-                uint8_t* scaled = (uint8_t*)malloc(largeWH * largeWH * ch);
-                stbir_resize_uint8(output_4c, largeWH, largeWH, 0, scaled, largeWH - 10, largeWH - 10, 0, ch);//scale it down
-                layer_pixels(output_4c, icon_border, scaled, largeWH, largeWH, ch, largeWH - 10, largeWH - 10, ch, 5, 5);
-                free(scaled);
-                free(output_pixels);
-                output_pixels = (uint8_t*)malloc(largeWH * largeWH * ch);
-                memcpy(output_pixels, output_4c, largeWH * largeWH * ch);
-                free(output_4c);
+                std::vector<uint8_t> scaled = std::vector<uint8_t>(largeWH * largeWH * ch);
+                stbir_resize_uint8(output_4c.data(), largeWH, largeWH, 0, scaled.data(), largeWH - 10, largeWH - 10, 0, ch);//scale it down
+                layer_pixels(output_4c.data(), icon_border48, scaled.data(), largeWH, largeWH, ch, largeWH - 10, largeWH - 10, ch, 5, 5);
+                output_pixels = std::vector<uint8_t>(largeWH * largeWH * ch);
+                memcpy(output_pixels.data(), output_4c.data(), largeWH * largeWH * ch);
             }
 
-            large_3c = (uint8_t*)malloc(largeWH * largeWH * 3);
+            large_3c = std::vector<uint8_t>(largeWH * largeWH * 3);
             if (ch == 4) {//rgba
-                uint8_t* white_background = (uint8_t*)malloc(largeWH * largeWH * 4);
-                memset(white_background, FF, largeWH * largeWH * 4);
-                layer_pixels(output_pixels, output_pixels, white_background, largeWH, largeWH, ch, largeWH, largeWH, 4, 0, 0);
-                free(white_background);
+                std::vector<uint8_t> white_background = std::vector<uint8_t>(largeWH * largeWH * 4);
+                memset(white_background.data(), FF, largeWH * largeWH * 4);
+                layer_pixels(output_pixels.data(), output_pixels.data(), white_background.data(), largeWH, largeWH, ch, largeWH, largeWH, 4, 0, 0);
                 int newi = 0;
                 for (int i = 0; i < largeWH * largeWH * ch; i += ch) {
                     for (int c = 0; c < 3; c++)
@@ -347,21 +337,19 @@ namespace VidInjector9002 {
                 }
             }
             else if (ch == 3) {//rgb
-                memcpy(large_3c, output_pixels, largeWH * largeWH * ch);
+                memcpy(large_3c.data(), output_pixels.data(), largeWH * largeWH * ch);
             }
             else if (ch == 2) {//grayscale a
-                uint8_t* white_background = (uint8_t*)malloc(largeWH * largeWH * ch);
-                uint8_t* output_4c = (uint8_t*)malloc(largeWH * largeWH * 4);
-                memset(white_background, FF, largeWH * largeWH * ch);
-                layer_pixels(output_4c, output_pixels, white_background, largeWH, largeWH, ch, largeWH, largeWH, ch, 0, 0);
-                free(white_background);
+                std::vector<uint8_t> white_background = std::vector<uint8_t>(largeWH * largeWH * ch);
+                std::vector<uint8_t> output_4c = std::vector<uint8_t>(largeWH * largeWH * 4);
+                memset(white_background.data(), FF, largeWH * largeWH * ch);
+                layer_pixels(output_4c.data(), output_pixels.data(), white_background.data(), largeWH, largeWH, ch, largeWH, largeWH, ch, 0, 0);
                 int newi = 0;
                 for (int i = 0; i < largeWH * largeWH * 4; i += 4) {
                     for (int c = 0; c < 3; c++)
                         large_3c[newi + c] = output_4c[i + c];
                     newi += 3;
                 }
-                free(output_4c);
             }
             else if (ch == 1) {//grayscale
                 int ch1 = 0;
@@ -371,11 +359,8 @@ namespace VidInjector9002 {
                     ch1++;
                 }
             }
-            iconpreview.image(pixels_to_image(large_3c, largeWH, largeWH, 3));
-            free(output_pixels);
-            free(large_3c);
+            iconpreview.image(pixels_to_image(large_3c.data(), largeWH, largeWH, 3));
             iconerror.hide();
-
 
             if ((!std::filesystem::exists(std::filesystem::path((const char8_t*)&*iconbox.text().c_str())) || (!stbi_info(iconbox.text().c_str(), &w, &h, &ch) && !smdhinput)) && !iconbox.text().empty()) {
                 iconerror.show();

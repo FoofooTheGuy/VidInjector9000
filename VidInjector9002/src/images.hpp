@@ -15,7 +15,11 @@ extern uint8_t randomize_array[1620];
 
 //48x48, 4 channels (rgba)
 //the overlay for the icon
-extern uint8_t icon_border[9216];
+extern uint8_t icon_border48[9216];
+
+//24x24, 4 channels (rgba)
+//the overlay for the small icon
+extern uint8_t icon_border24[2304];
 
 //6x6, 2 channels (grayscale alpha)
 extern uint8_t arrow_up[72];

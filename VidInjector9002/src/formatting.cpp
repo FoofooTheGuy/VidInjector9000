@@ -11,33 +11,29 @@ size_t chrcount(const std::string& str) {
 }
 
 std::string UTF8toUTF16(const std::string input) {
-	uint8_t* utf8 = new uint8_t[input.size() + 1];
-	uint16_t* utf16 = new uint16_t[chrcount(input) * 2];
-	memcpy(utf8, input.c_str(), input.size());
+	std::vector<uint8_t> utf8 = std::vector<uint8_t>(input.size() + 1);
+	std::vector<uint16_t> utf16 = std::vector<uint16_t>(chrcount(input) * 2);
+	memcpy(utf8.data(), input.c_str(), input.size());
 	utf8[input.size()] = '\0';
-	nnc_utf8_to_utf16(utf16, chrcount(input) * 2 + 1, utf8, input.size());
+	nnc_utf8_to_utf16(utf16.data(), chrcount(input) * 2 + 1, utf8.data(), input.size());
 
-	std::string output(reinterpret_cast<char*>(utf16), chrcount(input) * 2);
+	std::string output(reinterpret_cast<char*>(utf16.data()), chrcount(input) * 2);
 
-	delete[] utf8;
-	delete[] utf16;
 	return output;
 }
 
 std::string UTF16toUTF8(const std::string& input) {
 	size_t outLen = 0;
 	size_t utf16length = input.size() / 2;//divide by 2 because it's a u8 size going into a u16 array
-	uint16_t* utf16 = new uint16_t[utf16length];
-	memcpy(utf16, &input[0], input.size());
-	size_t utf8length = nnc_utf16_to_utf8(NULL, 0, utf16, utf16length) + 1;
-	uint8_t* utf8 = new uint8_t[utf8length];
-	memset(utf8, 0, utf8length);
+	std::vector<uint16_t> utf16 = std::vector<uint16_t>(utf16length);
+	memcpy(utf16.data(), &input[0], input.size());
+	size_t utf8length = nnc_utf16_to_utf8(NULL, 0, utf16.data(), utf16length) + 1;
+	std::vector<uint8_t> utf8 = std::vector<uint8_t>(utf8length);
+	memset(utf8.data(), 0, utf8length);
 
-	outLen = nnc_utf16_to_utf8(utf8, utf8length, utf16, utf16length);
-	std::string output(reinterpret_cast<char*>(utf8), outLen);
+	outLen = nnc_utf16_to_utf8(utf8.data(), utf8length, utf16.data(), utf16length);
+	std::string output(reinterpret_cast<char*>(utf8.data()), outLen);
 
-	delete[] utf16;
-	delete[] utf8;
 	return output;
 }
 
@@ -85,12 +81,12 @@ void ToRGBA(const uint8_t* input, uint8_t* output, int width, int height, int ch
 }
 
 void layer_pixels(uint8_t* out, uint8_t* foreground, uint8_t* background, int forewidth, int foreheight, int forechannels, int backwidth, int backheight, int backchannels, int x_offset, int y_offset) {
-	uint8_t* foreground_4c = (uint8_t*)malloc(forewidth * foreheight * 4);
-	uint8_t* background_4c = (uint8_t*)malloc(backwidth * backheight * 4);
+	std::vector<uint8_t> foreground_4c = std::vector<uint8_t>(forewidth * foreheight * 4);
+	std::vector<uint8_t> background_4c = std::vector<uint8_t>(backwidth * backheight * 4);
 	const uint8_t FF = 0xFF;
 
-	ToRGBA(foreground, foreground_4c, forewidth, foreheight, forechannels);
-	ToRGBA(background, background_4c, backwidth, backheight, backchannels);
+	ToRGBA(foreground, foreground_4c.data(), forewidth, foreheight, forechannels);
+	ToRGBA(background, background_4c.data(), backwidth, backheight, backchannels);
 
 	for (int y = 0; y < foreheight; y++)
 		for (int x = 0; x < forewidth; x++) {
@@ -106,8 +102,6 @@ void layer_pixels(uint8_t* out, uint8_t* foreground, uint8_t* background, int fo
 					out[(y * forewidth + x) * 4 + ch] = foreground_4c[(y * forewidth + x) * 4 + ch];
 			}
 		}
-	free(foreground_4c);
-	free(background_4c);
 }
 
 uint8_t* invert_pixels(uint8_t* input, int width, int height, int channels) {
