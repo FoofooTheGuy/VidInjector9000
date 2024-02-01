@@ -11,8 +11,8 @@ size_t chrcount(const std::string& str) {
 }
 
 std::string UTF8toUTF16(const std::string input) {
-	std::vector<uint8_t> utf8 = std::vector<uint8_t>(input.size() + 1, 0);
-	std::vector<uint16_t> utf16 = std::vector<uint16_t>(chrcount(input) * 2, 0);
+	std::vector<uint8_t> utf8 = std::vector<uint8_t>(input.size() + 1);
+	std::vector<uint16_t> utf16 = std::vector<uint16_t>(chrcount(input) * 2);
 	memcpy(utf8.data(), input.c_str(), input.size());
 	utf8[input.size()] = '\0';
 	nnc_utf8_to_utf16(utf16.data(), chrcount(input) * 2 + 1, utf8.data(), input.size());
@@ -25,17 +25,15 @@ std::string UTF8toUTF16(const std::string input) {
 std::string UTF16toUTF8(const std::string& input) {
 	size_t outLen = 0;
 	size_t utf16length = input.size() / 2;//divide by 2 because it's a u8 size going into a u16 array
-	uint16_t* utf16 = new uint16_t[utf16length];
-	memcpy(utf16, &input[0], input.size());
-	size_t utf8length = nnc_utf16_to_utf8(NULL, 0, utf16, utf16length) + 1;
-	uint8_t* utf8 = new uint8_t[utf8length];
-	memset(utf8, 0, utf8length);
+	std::vector<uint16_t> utf16 = std::vector<uint16_t>(utf16length);
+	memcpy(utf16.data(), &input[0], input.size());
+	size_t utf8length = nnc_utf16_to_utf8(NULL, 0, utf16.data(), utf16length) + 1;
+	std::vector<uint8_t> utf8 = std::vector<uint8_t>(utf8length);
+	memset(utf8.data(), 0, utf8length);
 
-	outLen = nnc_utf16_to_utf8(utf8, utf8length, utf16, utf16length);
-	std::string output(reinterpret_cast<char*>(utf8), outLen);
+	outLen = nnc_utf16_to_utf8(utf8.data(), utf8length, utf16.data(), utf16length);
+	std::string output(reinterpret_cast<char*>(utf8.data()), outLen);
 
-	delete[] utf16;
-	delete[] utf8;
 	return output;
 }
 
@@ -49,7 +47,7 @@ void crop_pixels(const uint8_t* input, int width, int height, int channels, uint
 		}
 }
 
-void resize_crop(const uint8_t* input_pixels, int input_w, int input_h, uint8_t* output_pixels, int output_w, int output_h, int num_channels) {
+void resize_crop(const uint8_t* input_pixels, int input_w, int input_h, uint8_t* output_pixels, int output_w, int output_h, int num_channels) {//this has to be here because of stbir_resize_uint8 and i dont wann include that everywhere because it's all inline
 	int width, height;
 
 	//"inspired" by https://github.com/endlessm/chromium-browser/blob/aa8c819d5ad2fcb3854a688a0401975eca721f43/ui/gfx/favicon_size.cc#L13
@@ -73,12 +71,10 @@ void resize_crop(const uint8_t* input_pixels, int input_w, int input_h, uint8_t*
 		height = output_h;
 		width = static_cast<int>(output_h * static_cast<float>(input_w) / static_cast<float>(input_h));
 	}
-	
-	uint8_t* scaled = new uint8_t[width * height * num_channels];
-	stbir_resize_uint8(input_pixels, input_w, input_h, 0, scaled, width, height, 0, num_channels);//scale it down
-	crop_pixels(scaled, width, height, num_channels, output_pixels, (width - output_w) / 2, (height - output_h) / 2, output_w, output_h);
 
-	delete[] scaled;
+	std::vector<uint8_t> scaled = std::vector<uint8_t>(width * height * num_channels);
+	stbir_resize_uint8(input_pixels, input_w, input_h, 0, scaled.data(), width, height, 0, num_channels);//scale it down
+	crop_pixels(scaled.data(), width, height, num_channels, output_pixels, (width - output_w) / 2, (height - output_h) / 2, output_w, output_h);
 }
 
 void ToRGBA(const uint8_t* input, uint8_t* output, int width, int height, int channels) {

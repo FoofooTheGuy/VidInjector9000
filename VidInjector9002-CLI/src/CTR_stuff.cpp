@@ -77,65 +77,50 @@ uint8_t convertToBimg(const std::string input, uint8_t* outBuffer, bool writeHea
 				std::ifstream infile;
 				infile.open(std::filesystem::path((const char8_t*)&*input.c_str()), std::ios_base::in | std::ios_base::binary);//input file
 				std::vector<uint8_t> input_data = std::vector<uint8_t>((w * h * ich) + 0x20);
-				if (input_data.empty()) {
-					return 1;
-				}
 				infile.read(reinterpret_cast<char*>(input_data.data()), (w * h * ich) + 0x20);
 				infile.close();
 				for (int i = 0; i < 0x1C; i++) {
-					if (input_data.at(i) != bimgheader[i]) {
-						return 2;
+					if (input_data[i] != bimgheader[i]) {
+						return 1;
 					}
 				}
 				if (writeHeader) {
 					memcpy(outBuffer, input_data.data(), (w * h * ich) + 0x20);
 				}
 				else {
-					memcpy(outBuffer, &input_data.at(0x20), (w * h * ich));
+					memcpy(outBuffer, &input_data[0x20], (w * h * ich));
 				}
 				return 0;
 			}
-			return 3;
+			return 2;
 		}
 	}
-
 	if (!stbi_info(input.c_str(), &w, &h, &comp)) {
 		w = out_w;
 		h = out_h;
 		ch = 4;
-		input_pixels = new uint8_t[out_w * out_h * ch];
-		if(input_pixels == NULL)
-			return 4;
+		input_pixels = (uint8_t*)malloc(out_w * out_h * ch);
+		if (input_pixels == NULL) {
+			return 3;
+		}
 		memset(input_pixels, FF, out_w * out_h * ch);
 	}
-	else {
-		input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
+	else input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
+	if (input_pixels == NULL) {
+		return 4;
 	}
-	//stbi_write_png("input_pixels.png", w, h, ch, input_pixels, 0);
-	
 	output_pixels = std::vector<uint8_t>(out_w * out_h * ch);
-	if(output_pixels.empty())
-		return 5;
-
 	if (w == out_w && h == out_h) memcpy(output_pixels.data(), input_pixels, w * h * ch);
 	else resize_crop(input_pixels, w, h, output_pixels.data(), out_w, out_h, ch);//scale to 200x120 if needed
-	delete[] input_pixels;
-	
+	free(input_pixels);
+
 	output_4c = std::vector<uint8_t>(out_w * out_h * 4);
-	if (output_4c.empty()) {
-		return 6;
-	}
 	ToRGBA(output_pixels.data(), output_4c.data(), out_w, out_h, ch);
 	white = std::vector<uint8_t>(out_w * out_h * 4);
-	if (white.empty()) {
-		return 7;
-	}
 	//stbi_write_png("output_pixels.png", out_w, out_h, ch, output_pixels, 0);
 	memset(white.data(), 0xFF, out_w * out_h * 4);
 	layer_pixels(output_4c.data(), output_pixels.data(), white.data(), out_w, out_h, ch, out_w, out_h, 4, 0, 0);
 	//stbi_write_png("output_4c.png", out_w, out_h, 4, output_pixels, 0);
-	white.clear();
-	output_pixels.clear();
 
 	//layer 200x120 image on a 256x128 image
 	output_fin = std::vector<uint8_t>(new_w * new_h * 4);
@@ -143,17 +128,16 @@ uint8_t convertToBimg(const std::string input, uint8_t* outBuffer, bool writeHea
 	memset(output_fin.data(), 0, new_w * new_h * 4);
 	for (int i = 3; i < new_w * new_h * 4; i += 4)
 		output_fin[i] = 0xFF;//make alpha 0xFF
-	//layer_pixels(output_fin, output_4c, black, out_w, out_h, 4, new_w, new_h, 3, 0, 0);//this doesnt work because im bad at coding and it only works when the foreground is larger than background
+	//layer_pixels(output_fin, output_4c, black, out_w, out_h, 4, new_w, new_h, 3, 0, 0);//why doesnt this work for this????
 	for (int y = 0; y < out_h; y++)
 		for (int x = 0; x < out_w; x++) {
 			for (int c = 0; c < 4; c++)
-				output_fin[(y * (new_w)+x) * 4 + c] = output_4c.at((y * (out_w)+x) * 4 + c);
+				output_fin[(y * (new_w)+x) * 4 + c] = output_4c[(y * (out_w)+x) * 4 + c];
 		}
-	output_4c.clear();
+	//stbi_write_png("output_fin.png", new_w, new_h, 4, output_fin, 0);
 
 	uint8_t tiledbanner[new_w * new_h * sizeof(nnc_u16)];
 	nnc_swizzle_zorder_be_rgba8_to_le_rgb565(reinterpret_cast<nnc_u32*>(output_fin.data()), reinterpret_cast<nnc_u16*>(tiledbanner), new_w, new_h);
-	
 	if (writeHeader) {
 		memcpy(outBuffer, bimgheader, sizeof(bimgheader));
 		memcpy(outBuffer + sizeof(bimgheader), tiledbanner, sizeof(tiledbanner));
@@ -166,9 +150,9 @@ uint8_t convertToBimg(const std::string input, uint8_t* outBuffer, bool writeHea
 
 uint8_t convertToIcon(const std::string input, std::string output, std::string shortname, std::string longname, std::string publisher, int borderMode) {//bare bones SMDH creation. thanks 3dbrew
 	uint8_t* input_pixels;
-	uint8_t* output_pixels;
-	uint8_t* large_4c;
-	uint8_t* small_4c;
+	std::vector<uint8_t> output_pixels;
+	std::vector<uint8_t> large_4c;
+	std::vector<uint8_t> small_4c;
 	int w, h, ch, comp;
 	const int largeWH = 48;
 	const int smallWH = 24;
@@ -191,8 +175,8 @@ uint8_t convertToIcon(const std::string input, std::string output, std::string s
 
 		if (smdhinput) {
 			ch = 4;
-			output_pixels = (uint8_t*)malloc(largeWH * largeWH * ch);
-			nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(smdhIn.icon_large), reinterpret_cast<nnc_u32*>(output_pixels), largeWH, largeWH);
+			output_pixels = std::vector<uint8_t>(largeWH * largeWH * ch);
+			nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(smdhIn.icon_large), reinterpret_cast<nnc_u32*>(output_pixels.data()), largeWH, largeWH);
 		}
 		NNC_RS_CALL0(f, close);
 		break;
@@ -204,60 +188,54 @@ uint8_t convertToIcon(const std::string input, std::string output, std::string s
 			h = largeWH;
 			ch = 4;
 			input_pixels = (uint8_t*)malloc(largeWH * largeWH * ch);
+			if (input_pixels == NULL) {
+				return 1;
+			}
 			memset(input_pixels, FF, largeWH * largeWH * ch);
 		}
 		else input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
-		output_pixels = (uint8_t*)malloc(largeWH * largeWH * ch);
-		if (output_pixels == NULL) {
-			free(output_pixels);
-			stbi_image_free(input_pixels);
-			return 1;
+		if (input_pixels == NULL) {
+			return 2;
 		}
-		if (w == largeWH && h == largeWH) memcpy(output_pixels, input_pixels, w * h * ch);
-		else resize_crop(input_pixels, w, h, output_pixels, largeWH, largeWH, ch);//scale to 48x48 if needed
-		stbi_image_free(input_pixels);
+		output_pixels = std::vector<uint8_t>(largeWH * largeWH * ch);
+		if (w == largeWH && h == largeWH) memcpy(output_pixels.data(), input_pixels, w * h * ch);
+		else resize_crop(input_pixels, w, h, output_pixels.data(), largeWH, largeWH, ch);//scale to 48x48 if needed
+		free(input_pixels);
 	}
 
-	if (borderMode == 1) {
-		uint8_t* output_4c = (uint8_t*)malloc(largeWH * largeWH * 4);
-		uint8_t* white_background = (uint8_t*)malloc(largeWH * largeWH * 4);//fix the bugs by not fixing the bugs! :D
-		memset(white_background, FF, largeWH * largeWH * 4);
-		layer_pixels(output_4c, output_pixels, white_background, largeWH, largeWH, ch, largeWH, largeWH, 4, 0, 0);
-		free(white_background);
-		layer_pixels(output_4c, icon_border, output_4c, largeWH, largeWH, 4, largeWH, largeWH, 4, 0, 0);
-		ch = 4;
-		free(output_pixels);
-		output_pixels = (uint8_t*)malloc(largeWH * largeWH * ch);
-		memcpy(output_pixels, output_4c, largeWH * largeWH * ch);
-		free(output_4c);
+	large_4c = std::vector<uint8_t>(largeWH * largeWH * 4);
+	std::vector<uint8_t> white_background = std::vector<uint8_t>(largeWH * largeWH * 4);//fix the bugs by not fixing the bugs! :D
+	memset(white_background.data(), FF, largeWH * largeWH * 4);
+	layer_pixels(large_4c.data(), output_pixels.data(), white_background.data(), largeWH, largeWH, ch, largeWH, largeWH, 4, 0, 0);
+
+	/*if (borderMode == 1) {
+		layer_pixels(large_4c.data(), icon_border48, large_4c.data(), largeWH, largeWH, 4, largeWH, largeWH, 4, 0, 0);
 	}
 	else if (borderMode == 2) {
-		uint8_t* output_4c = (uint8_t*)malloc(largeWH * largeWH * 4);
-		uint8_t* white_background = (uint8_t*)malloc(largeWH * largeWH * 4);//fix the bugs by not fixing the bugs! :D
-		memset(white_background, FF, largeWH * largeWH * 4);
-		layer_pixels(output_4c, output_pixels, white_background, largeWH, largeWH, ch, largeWH, largeWH, 4, 0, 0);
-		free(white_background);
-		ch = 4;
-		uint8_t* scaled = (uint8_t*)malloc(largeWH * largeWH * ch);
-		stbir_resize_uint8(output_4c, largeWH, largeWH, 0, scaled, largeWH - 10, largeWH - 10, 0, ch);//scale it down
-		layer_pixels(output_4c, icon_border, scaled, largeWH, largeWH, ch, largeWH - 10, largeWH - 10, ch, 5, 5);
-		free(scaled);
-		free(output_pixels);
-		output_pixels = (uint8_t*)malloc(largeWH * largeWH * ch);
-		memcpy(output_pixels, output_4c, largeWH * largeWH * ch);
-		free(output_4c);
+		std::vector<uint8_t> scaled = std::vector<uint8_t>(largeWH * largeWH * ch);
+		stbir_resize_uint8(large_4c.data(), largeWH, largeWH, 0, scaled.data(), largeWH - 10, largeWH - 10, 0, ch);//scale it down
+		layer_pixels(large_4c.data(), icon_border48, scaled.data(), largeWH, largeWH, ch, largeWH - 10, largeWH - 10, ch, 5, 5);
+	}*/
+	
+	small_4c = std::vector<uint8_t>(smallWH * smallWH * 4);
+	stbir_resize_uint8(large_4c.data(), largeWH, largeWH, 0, small_4c.data(), smallWH, smallWH, 0, 4);//make the small icon
+
+	if (borderMode == 1) {
+		layer_pixels(small_4c.data(), icon_border24, small_4c.data(), smallWH, smallWH, 4, smallWH, smallWH, 4, 0, 0);
+
+		layer_pixels(large_4c.data(), icon_border48, large_4c.data(), largeWH, largeWH, 4, largeWH, largeWH, 4, 0, 0);
+	}
+	else if (borderMode == 2) {
+		std::vector<uint8_t> scaled = std::vector<uint8_t>((smallWH - 6) * (smallWH - 6) * 4);
+		stbir_resize_uint8(small_4c.data(), smallWH, smallWH, 0, scaled.data(), smallWH - 6, smallWH - 6, 0, 4);//scale it down
+		layer_pixels(small_4c.data(), icon_border24, scaled.data(), smallWH, smallWH, 4, smallWH - 6, smallWH - 6, 4, 3, 3);
+
+		scaled.clear();
+		scaled = std::vector<uint8_t>((largeWH - 10) * (largeWH - 10) * ch);
+		stbir_resize_uint8(large_4c.data(), largeWH, largeWH, 0, scaled.data(), largeWH - 10, largeWH - 10, 0, ch);//scale it down
+		layer_pixels(large_4c.data(), icon_border48, scaled.data(), largeWH, largeWH, ch, largeWH - 10, largeWH - 10, ch, 5, 5);
 	}
 
-	large_4c = (uint8_t*)malloc(largeWH * largeWH * 4);
-	if (large_4c == NULL) {
-		free(large_4c);
-		return 2;
-	}
-	ToRGBA(output_pixels, large_4c, largeWH, largeWH, ch);
-	free(output_pixels);
-
-	small_4c = (uint8_t*)malloc(smallWH * smallWH * 4);
-	stbir_resize_uint8(large_4c, largeWH, largeWH, 0, small_4c, smallWH, smallWH, 0, 4);//make the small icon
 	uint8_t tiledsmall[smallWH * smallWH * sizeof(nnc_u16)];
 	uint8_t tiledlarge[largeWH * largeWH * sizeof(nnc_u16)];
 	if (borderMode == 0 && smdhinput) {
@@ -265,13 +243,11 @@ uint8_t convertToIcon(const std::string input, std::string output, std::string s
 		memcpy(tiledlarge, smdhIn.icon_large, largeWH * largeWH * sizeof(nnc_u16));
 	}
 	else {
-		nnc_swizzle_zorder_be_rgba8_to_le_rgb565(reinterpret_cast<nnc_u32*>(small_4c), reinterpret_cast<nnc_u16*>(tiledsmall), smallWH, smallWH);
-		nnc_swizzle_zorder_be_rgba8_to_le_rgb565(reinterpret_cast<nnc_u32*>(large_4c), reinterpret_cast<nnc_u16*>(tiledlarge), largeWH, largeWH);
+		nnc_swizzle_zorder_be_rgba8_to_le_rgb565(reinterpret_cast<nnc_u32*>(small_4c.data()), reinterpret_cast<nnc_u16*>(tiledsmall), smallWH, smallWH);
+		nnc_swizzle_zorder_be_rgba8_to_le_rgb565(reinterpret_cast<nnc_u32*>(large_4c.data()), reinterpret_cast<nnc_u16*>(tiledlarge), largeWH, largeWH);
 	}
 	//stbi_write_png("imag.png", largeWH, largeWH, 4, large_4c, 0);
 	if (shortname.size() > 0x80 || longname.size() > 0x100 || publisher.size() > 0x80) {
-		free(small_4c);
-		free(large_4c);
 		return 3;
 	}
 	std::ofstream smdhOut(std::filesystem::path((const char8_t*)&*output.c_str()), std::ios_base::out | std::ios_base::binary);
@@ -302,8 +278,6 @@ uint8_t convertToIcon(const std::string input, std::string output, std::string s
 	smdhOut.close();
 
 	//stbi_write_png(output.c_str(), largeLW, largeLW, 3, large_3c, 0);
-	free(small_4c);
-	free(large_4c);
 	return 0;
 }
 
@@ -956,18 +930,18 @@ int build_cia(std::string inVi9p, std::string outCia, uint32_t uniqueID, std::st
 			}
 
 			//create bcmdl
-			uint8_t* bcmdl;
-			bcmdl = (uint8_t*)malloc(sizeof(bannerheader) + sizeof(buffer) + sizeof(bannerfooter));
-			memcpy(bcmdl, bannerheader, sizeof(bannerheader));
-			memcpy(bcmdl + sizeof(bannerheader), buffer, sizeof(buffer));
-			memcpy(bcmdl + sizeof(bannerheader) + sizeof(buffer), bannerfooter, sizeof(bannerfooter));
+			std::vector<uint8_t> bcmdl;
+			bcmdl = std::vector<uint8_t>(sizeof(bannerheader) + sizeof(buffer) + sizeof(bannerfooter));
+			memcpy(bcmdl.data(), bannerheader, sizeof(bannerheader));
+			memcpy(bcmdl.data() + sizeof(bannerheader), buffer, sizeof(buffer));
+			memcpy(bcmdl.data() + sizeof(bannerheader) + sizeof(buffer), bannerfooter, sizeof(bannerfooter));
 
 			//build banner (stolen from bannertool)
 			CBMD cbmd;
 			memset(&cbmd, 0, sizeof(cbmd));
 
 			cbmd.cgfxSizes[0] = sizeof(bannerheader) + sizeof(buffer) + sizeof(bannerfooter);
-			cbmd.cgfxs[0] = bcmdl;
+			cbmd.cgfxs[0] = bcmdl.data();
 
 			cbmd.cwavSize = sizeof(BCWAV_array);
 			cbmd.cwav = (void*)BCWAV_array;
@@ -1025,7 +999,7 @@ int build_cia(std::string inVi9p, std::string outCia, uint32_t uniqueID, std::st
 		nnc_vfs romfs;
 		nnc_vfs exefs;
 		nnc_keypair kp;
-		nnc_seeddb sdb;
+		nnc_seeddb sdb = {};
 
 		TRYB(nnc_file_open(&f, std::string(tempPath + "/base.cia").c_str()), out1); /* open the input file */
 		TRYB(nnc_wfile_open(&wf, outCia.c_str()), out2); /* open the output file */
@@ -1083,29 +1057,27 @@ int build_cia(std::string inVi9p, std::string outCia, uint32_t uniqueID, std::st
 		tmd.title_id = exhdr.title_id;
 		{
 			//change the title ID of the ticket
-			char* ticket_contents = (char*)malloc(NNC_RS_CALL0(ticket, size));
+			std::vector<char> ticket_contents = std::vector<char>(NNC_RS_CALL0(ticket, size));
 			nnc_u32 out_size = 0;
-			if (NNC_RS_CALL(ticket, read, (nnc_u8*)ticket_contents, NNC_RS_CALL0(ticket, size), &out_size) != NNC_R_OK)
-				goto out11;
+			if (NNC_RS_CALL(ticket, read, (nnc_u8*)ticket_contents.data(), NNC_RS_CALL0(ticket, size), &out_size) != NNC_R_OK)
+				goto out10;
 			if (out_size != NNC_RS_CALL0(ticket, size))
-				goto out11;
+				goto out10;
 			nnc_memory modified_ticket;
 			{
 				uint64_t TIDbigend = 0;
 				encode_bigend_u64(exhdr.title_id, &TIDbigend);
 				*(nnc_u64*)&ticket_contents[nnc_sig_dsize((nnc_sigtype)ticket_contents[3]) + 0xDC] = TIDbigend;
 			}
-			nnc_mem_open(&modified_ticket, ticket_contents, NNC_RS_CALL0(ticket, size));
+			nnc_mem_open(&modified_ticket, ticket_contents.data(), NNC_RS_CALL0(ticket, size));
 
 			/* and finally write the cia */
 			res = nnc_write_cia(
 				NNC_CIA_WF_CERTCHAIN_STREAM | NNC_CIA_WF_TICKET_STREAM | NNC_CIA_WF_TMD_BUILD,
 				&certchain, &modified_ticket, &tmd, 1, &ncch0, NNC_WSP(&wf)
 			);
-			//builder.report_progress(100);
-			/* cleanup code, with lots of labels to jump to in case of failure depending on where it failed */
-		out11: free(ticket_contents);
 		}
+	/* cleanup code, with lots of labels to jump to in case of failure depending on where it failed */
 	out10: nnc_vfs_free(&exefs);
 	out9: NNC_RS_CALL0(exheader, close);
 		//out8: NNC_RS_CALL0(exefs, close);
@@ -1187,7 +1159,7 @@ int extract_cia(std::string inCia, std::string outDir, std::string seedpath) {
 		nnc_romfs_ctx ctx;
 		nnc_keypair kp;
 		nnc_subview sv;
-		nnc_seeddb sdb;
+		nnc_seeddb sdb = {};
 		sdb.size = 1;
 		nnc_file f;
 
@@ -1274,16 +1246,16 @@ int extract_cia(std::string inCia, std::string outDir, std::string seedpath) {
 			}
 
 			nnc_u32 read_size;
-			nnc_u8* buf = (nnc_u8*)malloc(headers[i].size);
+			std::vector<nnc_u8> buf = std::vector<nnc_u8>(headers[i].size);
 			NNC_RS_CALL(sv, seek_abs, 0);
-			if (NNC_RS_CALL(sv, read, buf, headers[i].size, &read_size) != NNC_R_OK || read_size != headers[i].size) {
+			if (NNC_RS_CALL(sv, read, buf.data(), headers[i].size, &read_size) != NNC_R_OK || read_size != headers[i].size) {
 				std::cout << ErrorText << ' ' << FailedToReadFile << " \"" << headers[i].name << '\"' << std::endl;
 				continue;
 			}
 			std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*exefspath.c_str()));
 			sprintf(pathbuf, "%s/%s", exefspath.c_str(), fname);
 			FILE* ef = fopen(pathbuf, "wb");
-			if (fwrite(buf, headers[i].size, 1, ef) != 1)
+			if (fwrite(buf.data(), headers[i].size, 1, ef) != 1)
 				std::cout << ErrorText << ' ' << FailedToCreateFile << " \"" << pathbuf << '\"' << std::endl;
 			fclose(ef);
 		}
@@ -1317,7 +1289,7 @@ int extract_cia(std::string inCia, std::string outDir, std::string seedpath) {
 				std::cout << ErrorText << ' ' << nnc_strerror(res) << std::endl;
 				return 2;
 			}
-			//nnc_free_seeddb(&sdb);
+			nnc_free_seeddb(&sdb);
 	}
 	//information_buttons.csv
 	{
