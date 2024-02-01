@@ -14,7 +14,7 @@ extern uint8_t film_overlay[81312];
 extern uint8_t randomize_array[1620];
 
 //48x48, 4 channels (rgba)
-//the overlay for the icon
+//the overlay for the large icon
 extern uint8_t icon_border48[9216];
 
 //24x24, 4 channels (rgba)
