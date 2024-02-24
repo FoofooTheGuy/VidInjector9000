@@ -465,7 +465,45 @@ namespace VidInjector9002 {
             indextxt.text(xtd::ustring::format("{}/{}", bannerpreviewindex + 1, rows));
             removemedia.enabled(true);
             appendmedia.enabled(rows < MAX_ROWS);
-            {
+            if (wideWindow) {
+                std::vector<int> wideVec = { moflextxt.width(), playertitletxt.width(), menubannertxt.width() + bannermulti.width() + 3 };
+                int WideMediaText = getLargestNumber(wideVec);
+
+                mediabox.size({ parameters.width() - publishertxt.location().x() * 2, parameters.height() - (bannerpreviewleft.location().y() + bannerpreviewleft.height() + playertitletxt.height()) - publishertxt.location().x() });
+                if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + rowtxt.height()) {//if scroll is there
+                    if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
+                        for (int y = 0; y < rows; y++)
+                            for (int x = 0; x < columns; x++) {
+                                if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
+                                else text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
+                            }
+                    }
+                    else {
+                        for (int y = 0; y < rows; y++)
+                            for (int x = 0; x < columns; x++) {
+                                if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns) - 20) / columns);
+                                else text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns) - 20) / columns);
+                            }
+                    }
+                }
+                else {
+                    if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
+                        for (int y = 0; y < rows; y++)
+                            for (int x = 0; x < columns; x++) {
+                                if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
+                                else text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
+                            }
+                    }
+                    else {
+                        for (int y = 0; y < rows; y++)
+                            for (int x = 0; x < columns; x++) {
+                                if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns)) / columns);
+                                else text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns)) / columns);
+                            }
+                    }
+                }
+            }
+            else {
                 std::vector<int> wideVec = { moflextxt.width(), playertitletxt.width(), menubannertxt.width() + bannermulti.width() + 3 };
                 int WideMediaText = getLargestNumber(wideVec);
 
@@ -542,11 +580,11 @@ namespace VidInjector9002 {
             indextxt.text(xtd::ustring::format("{}/{}", bannerpreviewindex + 1, rows));
             removemedia.enabled(rows > 1);
             appendmedia.enabled(mode.selected_index());
-            {
+            if (wideWindow) {
                 std::vector<int> wideVec = { moflextxt.width(), playertitletxt.width(), menubannertxt.width() + bannermulti.width() + 3 };
                 int WideMediaText = getLargestNumber(wideVec);
 
-                mediabox.size({ parameters.width() - copybox.location().x() * 2, parameters.height() - (copybox.location().y() + copybox.height() + playertitletxt.height()) - copybox.location().x() });
+                mediabox.size({ parameters.width() - publishertxt.location().x() * 2, parameters.height() - (bannerpreviewleft.location().y() + bannerpreviewleft.height() + playertitletxt.height()) - publishertxt.location().x() });
                 if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + rowtxt.height()) {//if scroll is there
                     if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
                         for (int y = 0; y < rows; y++)
@@ -576,6 +614,40 @@ namespace VidInjector9002 {
                             for (int x = 0; x < columns; x++) {
                                 if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns)) / columns);
                                 else text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns)) / columns);
+                            }
+                    }
+                }
+            }
+            else {
+                std::vector<int> wideVec = { moflextxt.width(), playertitletxt.width(), menubannertxt.width() + bannermulti.width() + 3 };
+                int WideMediaText = getLargestNumber(wideVec);
+
+                mediabox.size({ parameters.width() - copybox.location().x() * 2, parameters.height() - (copybox.location().y() + copybox.height() + playertitletxt.height()) - copybox.location().x() });
+                if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + rowtxt.height()) {//if scroll is there
+                    if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
+                        for (int y = 0; y < rows; y++)
+                            for (int x = 0; x < columns; x++) {
+                                text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
+                            }
+                    }
+                    else {
+                        for (int y = 0; y < rows; y++)
+                            for (int x = 0; x < columns; x++) {
+                                text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns) - 20) / columns);
+                            }
+                    }
+                }
+                else {
+                    if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
+                        for (int y = 0; y < rows; y++)
+                            for (int x = 0; x < columns; x++) {
+                                text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
+                            }
+                    }
+                    else {
+                        for (int y = 0; y < rows; y++)
+                            for (int x = 0; x < columns; x++) {
+                                text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns)) / columns);
                             }
                     }
                 }
