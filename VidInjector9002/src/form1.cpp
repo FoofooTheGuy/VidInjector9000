@@ -2341,8 +2341,12 @@ form1::form1() {
     WideWindowButt.checked(wideWindow);
     WideWindowButt.check_state_changed += [&] {
         wideWindow = WideWindowButt.checked() ? true : false;
-        width(width() + 1);//because idk how to make it resize a better way
+        width(width() + 1);//because idk how to make it call resize in a better way
         width(width() - 1);
+        playertitletxt.location({ mediabox.location().x() + text_box_array.at(0)->location().x() + (text_box_array.at(0)->width() - playertitletxt.width()) / 2, mediabox.location().y() - playertitletxt.height() });
+        moflextxt.location({ mediabox.location().x() + text_box_array.at(1)->location().x() + (text_box_array.at(1)->width() - moflextxt.width()) / 2, mediabox.location().y() - moflextxt.height() });
+        menubannertxt.location({ mediabox.location().x() + text_box_array.at(2)->location().x() + (text_box_array.at(2)->width() - (menubannertxt.width() + bannermulti.width() + 3)) / 2, mediabox.location().y() - menubannertxt.height() });
+        bannermulti.location({ menubannertxt.location().x() + menubannertxt.width() + 3, menubannertxt.location().y() + ((menubannertxt.height() - bannermulti.height()) / 2) });
         //saveSettings();//settings are saved when it is resized
     };
 
@@ -2494,7 +2498,17 @@ form1::form1() {
             copycheck.location({ copybox.location().x(), copybox.location().y() - copycheck.height() });
             copymulti.location({ copycheck.location().x() + copycheck.width() + 3, copycheck.location().y() + ((copycheck.height() - copymulti.height()) / 2) });
 
-            menubannerpreview.location({ copybox.location().x() + ((copybox.width() - menubannerpreview.width()) / 2), copybox.location().y() + copybox.height() + 10 });
+            {
+                std::vector<int> wideVec = { FFrewind.width(), FadeOpt.width() };
+                int widecheck = getLargestNumber(wideVec);
+                if (FFrewind.location().x() + widecheck > copybox.location().x() + ((copybox.width() - menubannerpreview.width()) / 2)) {
+                    menubannerpreview.location({ FFrewind.location().x() + widecheck, copybox.location().y() + copybox.height() + 10 });
+                }
+                else {
+                    menubannerpreview.location({ copybox.location().x() + ((copybox.width() - menubannerpreview.width()) / 2), copybox.location().y() + copybox.height() + 10 });
+                }
+            }
+
             bannerpreviewleft.location({ menubannerpreview.location().x(), menubannerpreview.location().y() + menubannerpreview.height() });
             bannerpreviewright.location({ menubannerpreview.location().x() + menubannerpreview.width() - bannerpreviewright.width(), bannerpreviewleft.location().y() });
             indextxt.location({ menubannerpreview.location().x() + ((menubannerpreview.width()) - indextxt.width()) / 2, menubannerpreview.location().y() + menubannerpreview.height() });
@@ -2665,11 +2679,15 @@ form1::form1() {
             appendmedia.location({ removemedia.location().x() + removemedia.width() + 2, removemedia.location().y() });
             rowtxt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - rowtxt.width()) / 2, removemedia.location().y() + removemedia.height() });
 
-            if (parameters.width() > FFrewind.location().x() + FFrewind.width() + menubannerpreview.width()) {
-                menubannerpreview.location({ FFrewind.location().x() + FFrewind.width() + (((parameters.width() - (FFrewind.location().x() + FFrewind.width())) - menubannerpreview.width()) / 2), copycheck.location().y() + ((copycheck.height() + copybox.height() + 3) - (menubannerpreview.height() + bannerpreviewleft.height())) / 2 });
-            }
-            else {
-                menubannerpreview.location({ FFrewind.location().x() + FFrewind.width(), copycheck.location().y() + ((copycheck.height() + copybox.height() + 3) - (menubannerpreview.height() + bannerpreviewleft.height())) / 2 });
+            {
+                std::vector<int> wideVec = { FFrewind.width(), FadeOpt.width() };
+                int widecheck = getLargestNumber(wideVec);
+                if (parameters.width() > FFrewind.location().x() + widecheck + menubannerpreview.width()) {
+                    menubannerpreview.location({ FFrewind.location().x() + widecheck + (((parameters.width() - (FFrewind.location().x() + widecheck)) - menubannerpreview.width()) / 2), copycheck.location().y() + ((copycheck.height() + copybox.height() + 3) - (menubannerpreview.height() + bannerpreviewleft.height())) / 2 });
+                }
+                else {
+                    menubannerpreview.location({ FFrewind.location().x() + widecheck, copycheck.location().y() + ((copycheck.height() + copybox.height() + 3) - (menubannerpreview.height() + bannerpreviewleft.height())) / 2 });
+                }
             }
 
             bannerpreviewleft.location({ menubannerpreview.location().x(), menubannerpreview.location().y() + menubannerpreview.height() });
@@ -2762,10 +2780,10 @@ form1::form1() {
         moflextxt.location({ mediabox.location().x() + text_box_array.at(1)->location().x() + (text_box_array.at(1)->width() - moflextxt.width()) / 2, mediabox.location().y() - moflextxt.height() });
         menubannertxt.location({ mediabox.location().x() + text_box_array.at(2)->location().x() + (text_box_array.at(2)->width() - (menubannertxt.width() + bannermulti.width() + 3)) / 2, mediabox.location().y() - menubannertxt.height() });
         bannermulti.location({ menubannertxt.location().x() + menubannertxt.width() + 3, menubannertxt.location().y() + ((menubannertxt.height() - bannermulti.height()) / 2) });
-        playertitletxt.refresh();
-        moflextxt.refresh();
-        menubannertxt.refresh();
-        bannermulti.refresh();
+        //playertitletxt.refresh();//what does this even do?
+        //moflextxt.refresh();
+        //menubannertxt.refresh();
+        //bannermulti.refresh();
     };
 
     if (autoLoadParams || LoadFromArgv) {
