@@ -20,7 +20,7 @@ form1::form1() {
     argv.clear();
 
     text(FormText);
-    client_size({ 1030, 885 });
+    //client_size({ 1000, 700 });//formerly 1030x885 (disable because it's loaded in settings now)
     start_position(xtd::forms::form_start_position::center_screen);
     icon(xtd::drawing::icon::from_bitmap(pixels_to_image(logo90, 90, 90, 4)));
 
@@ -1709,8 +1709,8 @@ form1::form1() {
                         &certchain, &modified_ticket, &tmd, 1, &ncch0, NNC_WSP(&wf)
                     );
                     builder.report_progress(100);
-                    /* cleanup code, with lots of labels to jump to in case of failure depending on where it failed */
                 }
+            /* cleanup code, with lots of labels to jump to in case of failure depending on where it failed */
             out10: nnc_vfs_free(&exefs);
             out9: NNC_RS_CALL0(exheader, close);
                 //out8: NNC_RS_CALL0(exefs, close);
@@ -2331,6 +2331,21 @@ form1::form1() {
         saveParametersNow = true;
     };
 
+    WideWindowButt.parent(settings);
+    WideWindowButt.auto_size(true);
+    WideWindowButt.appearance(xtd::forms::appearance::button);
+    WideWindowButt.font({ this->font(), 12 });
+    WideWindowButt.text(WideWindowMode);
+    WideWindowButt.size({ settings.width() - 10, loadbutt.height() });
+    WideWindowButt.text_align(xtd::forms::content_alignment::middle_center);
+    WideWindowButt.checked(wideWindow);
+    WideWindowButt.check_state_changed += [&] {
+        wideWindow = WideWindowButt.checked() ? true : false;
+        width(width() + 1);//because idk how to make it resize a better way
+        width(width() - 1);
+        //saveSettings();//settings are saved when it is resized
+    };
+
     LightDark.parent(settings);
     LightDark.auto_size(true);
     LightDark.appearance(xtd::forms::appearance::button);
@@ -2449,115 +2464,218 @@ form1::form1() {
         //debugs.text(xtd::ustring::format("{}", mediabox.height()));
         //std::this_thread::sleep_for(std::chrono::milliseconds(500));//did this to decrease the flicker but it's annoying so turn it off
         tab_control.size({ client_size().width() - tab_control.location().x() * 2, client_size().height() - tab_control.location().y() * 2 });
-        if (parameters.width() < iconerror.location().x() + iconerror.width() + iconpreview.width() + 480) {
-            iconbrowse.location({ (iconerror.location().x() + iconerror.width()) - iconbrowse.width() - 1, iconbox.location().y() - (iconbrowse.height() / 2 - iconbox.height() / 2) });
-            bannerbrowse.location({ iconbrowse.location().x() + iconpreview.width() + 3, bannerbox.location().y() - (bannerbrowse.height() / 2 - bannerbox.height() / 2) });
-        }
-        else {
-            iconbrowse.location({ parameters.width() - (597 + iconpreview.width() + 3), iconbox.location().y() - (iconbrowse.height() / 2 - iconbox.height() / 2) });
-            bannerbrowse.location({ parameters.width() - 597, bannerbox.location().y() - (bannerbrowse.height() / 2 - bannerbox.height() / 2) });
-        }
 
-        if (bannerpreview.width() > parameters.width() - (bannerbrowse.location().x() + bannerbrowse.width())) {
-            bannerpreview.location({ bannerbrowse.location().x() + bannerbrowse.width() + 2, (shortname.location().y() - (bannerpreview.height() + bannerpreviewtxt.height())) / 2 });
-        }
-        else {
-            bannerpreview.location({ (bannerbrowse.location().x() + bannerbrowse.width() + 2) + (((parameters.width() - (bannerbrowse.location().x() + bannerbrowse.width())) - bannerpreview.width()) / 2), (shortname.location().y() - (bannerpreview.height() + bannerpreviewtxt.height())) / 2 });
-        }
-
-        if (parameters.width() - (iconpreview.location().x() + iconpreview.width()) < 23) {
-            shortname.width((iconpreview.location().x() + iconpreview.width()) - shortname.location().x());
-            longname.width((iconpreview.location().x() + iconpreview.width()) - longname.location().x());
-            publisher.width((iconpreview.location().x() + iconpreview.width()) - publisher.location().x());
-        }
-        else {
-            shortname.width(parameters.width() - shortname.location().x() - 23);
-            longname.width(parameters.width() - longname.location().x() - 23);
-            publisher.width(parameters.width() - publisher.location().x() - 23);
-        }
-
-        if (publisher.location().x() + publisher.width() < copybox.location().x() + 320) {
-            copybox.width(publishertxt.width() + publisher.width() + 5);
-        }
-        else {
-            copybox.width(320);
-        }
-
-        bannerbox.width(bannerbrowse.location().x() - bannerbox.location().x() - 2);
-        iconbox.width(iconbrowse.location().x() - iconbox.location().x() - 2);
-        bannerpreviewtxt.location({ bannerpreview.location().x() + (bannerpreview.width() - bannerpreviewtxt.width()) / 2, bannerpreview.location().y() + bannerpreview.height() });
-        customnotif.location({ bannerpreview.location().x() + (bannerpreview.width() - customnotif.width()) / 2,  bannerpreview.location().y() + (bannerpreview.height() - customnotif.height()) / 2 });
-        iconpreview.location({ iconbrowse.location().x() + iconbrowse.width() + 2, iconbrowse.location().y() + 1 });
-        FFrewind.location({ copybox.location().x() + copybox.width() + 15, copycheck.location().y() + ((((copycheck.height() + copybox.height() + 2) / 2) - FFrewind.height()) / 2) });
-        FadeOpt.location({ FFrewind.location().x(), ((copycheck.height() + copybox.height() + 2) / 2) + copycheck.location().y() + ((((copycheck.height() + copybox.height() + 2) / 2) - FFrewind.height()) / 2) });
-        {//put this stuff in it's own scope for less variable clutter (???)
-            std::vector<int> wideVec = { moflextxt.width(), playertitletxt.width(), menubannertxt.width() + bannermulti.width() + 3 };
-            int WideMediaText = getLargestNumber(wideVec);
-
-            mediabox.size({ parameters.width() - copybox.location().x() * 2, parameters.height() - (copybox.location().y() + copybox.height() + playertitletxt.height()) - copybox.location().x() });
-            if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + rowtxt.height()) {//if scroll is there
-                if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
-                    for (int y = 0; y < rows; y++)
-                        for (int x = 0; x < columns; x++) {
-                            if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
-                            else text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
-                        }
-                }
-                else {
-                    for (int y = 0; y < rows; y++)
-                        for (int x = 0; x < columns; x++) {
-                            if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns) - 20) / columns);
-                            else text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns) - 20) / columns);
-                        }
-                }
+        if (wideWindow) {
+            if (parameters.width() < iconerror.location().x() + iconerror.width() + iconpreview.width() + 622) {
+                copybox.location({ bannerbrowse.location().x() + bannerbrowse.width() + 5 + bannerpreview.width() + 15, modetxt.location().y() + copycheck.height() });
+                iconbrowse.location({ (iconerror.location().x() + iconerror.width()) - iconbrowse.width() - 1, iconbox.location().y() - (iconbrowse.height() / 2 - iconbox.height() / 2) });
+                bannerbrowse.location({ iconbrowse.location().x() + iconpreview.width() + 2, bannerbox.location().y() - (bannerbrowse.height() / 2 - bannerbox.height() / 2) });
             }
             else {
-                if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
-                    for (int y = 0; y < rows; y++)
-                        for (int x = 0; x < columns; x++) {
-                            if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
-                            else text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
-                        }
+                copybox.location({ parameters.width() - (copybox.width() + shortnametxt.location().x()), modetxt.location().y() + copycheck.height() });
+                iconbrowse.location({ (copybox.location().x() - bannerpreview.width() - iconbrowse.width() - iconpreview.width() - 15 - 5), iconbox.location().y() - (iconbrowse.height() / 2 - iconbox.height() / 2) });
+                bannerbrowse.location({ iconbrowse.location().x() + iconpreview.width() + 2, bannerbox.location().y() - (bannerbrowse.height() / 2 - bannerbox.height() / 2) });
+            }
+
+            bannerpreview.location({ copybox.location().x() - bannerpreview.width() - 15, (shortname.location().y() - (bannerpreview.height() + bannerpreviewtxt.height())) / 2 });
+
+            if (parameters.width() - (copybox.location().x() + copybox.width()) > shortnametxt.location().x()) {
+                shortname.width((iconpreview.location().x() + iconpreview.width()) + bannerpreview.width() - shortname.location().x());
+                longname.width((iconpreview.location().x() + iconpreview.width()) + bannerpreview.width() - longname.location().x());
+                publisher.width((iconpreview.location().x() + iconpreview.width()) + bannerpreview.width() - publisher.location().x());
+            }
+            else {
+                shortname.width((bannerpreview.location().x() - shortname.location().x()) + bannerpreview.width());
+                longname.width((bannerpreview.location().x() - longname.location().x()) + bannerpreview.width());
+                publisher.width((bannerpreview.location().x() - publisher.location().x()) + bannerpreview.width());
+            }
+
+            iconpreview.location({ iconbrowse.location().x() + iconbrowse.width() + 2, iconbrowse.location().y() + 1 });
+            copycheck.location({ copybox.location().x(), copybox.location().y() - copycheck.height() });
+            copymulti.location({ copycheck.location().x() + copycheck.width() + 3, copycheck.location().y() + ((copycheck.height() - copymulti.height()) / 2) });
+
+            menubannerpreview.location({ copybox.location().x() + ((copybox.width() - menubannerpreview.width()) / 2), copybox.location().y() + copybox.height() + 10 });
+            bannerpreviewleft.location({ menubannerpreview.location().x(), menubannerpreview.location().y() + menubannerpreview.height() });
+            bannerpreviewright.location({ menubannerpreview.location().x() + menubannerpreview.width() - bannerpreviewright.width(), bannerpreviewleft.location().y() });
+            indextxt.location({ menubannerpreview.location().x() + ((menubannerpreview.width()) - indextxt.width()) / 2, menubannerpreview.location().y() + menubannerpreview.height() });
+
+            bannerbox.width(bannerbrowse.location().x() - bannerbox.location().x() - 2);
+            iconbox.width(iconbrowse.location().x() - iconbox.location().x() - 2);
+            bannerpreviewtxt.location({ bannerpreview.location().x() + (bannerpreview.width() - bannerpreviewtxt.width()) / 2, bannerpreview.location().y() + bannerpreview.height() });
+            customnotif.location({ bannerpreview.location().x() + (bannerpreview.width() - customnotif.width()) / 2,  bannerpreview.location().y() + (bannerpreview.height() - customnotif.height()) / 2 });
+
+            mediabox.location({ publishertxt.location().x(), bannerpreviewleft.location().y() + bannerpreviewleft.height() + playertitletxt.height() });
+            {//put this stuff in it's own scope for less variable clutter (???)
+                std::vector<int> wideVec = { moflextxt.width(), playertitletxt.width(), menubannertxt.width() + bannermulti.width() + 3 };
+                int WideMediaText = getLargestNumber(wideVec);
+
+                mediabox.size({ parameters.width() - publishertxt.location().x() * 2, parameters.height() - (bannerpreviewleft.location().y() + bannerpreviewleft.height() + playertitletxt.height()) - publishertxt.location().x() });
+                if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + rowtxt.height()) {//if scroll is there
+                    if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
+                        for (int y = 0; y < rows; y++)
+                            for (int x = 0; x < columns; x++) {
+                                if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
+                                else text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
+                            }
+                    }
+                    else {
+                        for (int y = 0; y < rows; y++)
+                            for (int x = 0; x < columns; x++) {
+                                if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns) - 20) / columns);
+                                else text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns) - 20) / columns);
+                            }
+                    }
                 }
                 else {
-                    for (int y = 0; y < rows; y++)
-                        for (int x = 0; x < columns; x++) {
-                            if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns)) / columns);
-                            else text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns)) / columns);
-                        }
+                    if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
+                        for (int y = 0; y < rows; y++)
+                            for (int x = 0; x < columns; x++) {
+                                if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
+                                else text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
+                            }
+                    }
+                    else {
+                        for (int y = 0; y < rows; y++)
+                            for (int x = 0; x < columns; x++) {
+                                if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns)) / columns);
+                                else text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns)) / columns);
+                            }
+                    }
                 }
             }
-        }
-        for (uint8_t y = 0; y < rows; y++) {
-            for (uint8_t x = 1; x < columns; x++)
-                text_box_array.at(y * columns + x)->location({ text_box_array.at(0)->location().x() + (x * text_box_array.at(y * columns + x)->width()), text_box_array.at(0)->location().y() + (y * text_box_array.at(y * columns + x)->height()) });
+            for (uint8_t y = 0; y < rows; y++) {
+                for (uint8_t x = 1; x < columns; x++)
+                    text_box_array.at(y * columns + x)->location({ text_box_array.at(0)->location().x() + (x * text_box_array.at(y * columns + x)->width()), text_box_array.at(0)->location().y() + (y * text_box_array.at(y * columns + x)->height()) });
 
-            for (int i = 0; i < 2; i++) {
-                butt_array.at(y * 2 + i)->location({ text_box_array.at(y * columns + (columns - 1))->location().x() + text_box_array.at(y * columns + (columns - 1))->width(), i ? (text_box_array.at(y * columns)->location().y() + text_box_array.at(y * columns)->height() - butt_array.at(y * 2 + i)->height()) : text_box_array.at(y * columns)->location().y() });
+                for (int i = 0; i < 2; i++) {
+                    butt_array.at(y * 2 + i)->location({ text_box_array.at(y * columns + (columns - 1))->location().x() + text_box_array.at(y * columns + (columns - 1))->width(), i ? (text_box_array.at(y * columns)->location().y() + text_box_array.at(y * columns)->height() - butt_array.at(y * 2 + i)->height()) : text_box_array.at(y * columns)->location().y() });
+                }
             }
-        }
-        //playertitletxt.location({ mediabox.location().x() + text_box_array.at(0)->location().x() + (text_box_array.at(0)->width() - playertitletxt.width()) / 2, copybox.location().y() + copybox.height() });
-        //moflextxt.location({ mediabox.location().x() + text_box_array.at(1)->location().x() + (text_box_array.at(1)->width() - moflextxt.width()) / 2, copybox.location().y() + copybox.height() });
-        //menubannertxt.location({ mediabox.location().x() + text_box_array.at(2)->location().x() + (text_box_array.at(2)->width() - (menubannertxt.width() + bannermulti.width() + 3)) / 2, copybox.location().y() + copybox.height() });
-        //bannermulti.location({ menubannertxt.location().x() + menubannertxt.width() + 3, menubannertxt.location().y() + ((menubannertxt.height() - bannermulti.height()) / 2) });
-        moflexbrowse.location({ text_box_array.at((rows - 1) * columns + 1)->location().x() + (text_box_array.at((rows - 1) * columns + 1)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 1)->location().y() + text_box_array.at((rows - 1) * columns + 1)->height() });
-        multibannerbrowse.location({ text_box_array.at((rows - 1) * columns + 2)->location().x() + (text_box_array.at((rows - 1) * columns + 2)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 2)->location().y() + text_box_array.at((rows - 1) * columns + 2)->height() });
-        if(rows == 1) removemedia.location({ (((text_box_array.at(0)->width() * columns) - (removemedia.width() + appendmedia.width() + 2)) / 2) + text_box_array.at(0)->location().x(), text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2});
-        else removemedia.location({ (((text_box_array.at(0)->width() * columns + (text_box_array.at(0)->height() / 2)) - (removemedia.width() + appendmedia.width() + 2)) / 2) + text_box_array.at(0)->location().x(), text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2});
-        appendmedia.location({ removemedia.location().x() + removemedia.width() + 2, removemedia.location().y() });
-        rowtxt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - rowtxt.width()) / 2, removemedia.location().y() + removemedia.height() });
 
-        if (parameters.width() > FFrewind.location().x() + FFrewind.width() + menubannerpreview.width()) {
-            menubannerpreview.location({ FFrewind.location().x() + FFrewind.width() + (((parameters.width() - (FFrewind.location().x() + FFrewind.width())) - menubannerpreview.width()) / 2), copycheck.location().y() + ((copycheck.height() + copybox.height() + 3) - (menubannerpreview.height() + bannerpreviewleft.height())) / 2 });
+            moflexbrowse.location({ text_box_array.at((rows - 1) * columns + 1)->location().x() + (text_box_array.at((rows - 1) * columns + 1)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 1)->location().y() + text_box_array.at((rows - 1) * columns + 1)->height() });
+            multibannerbrowse.location({ text_box_array.at((rows - 1) * columns + 2)->location().x() + (text_box_array.at((rows - 1) * columns + 2)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 2)->location().y() + text_box_array.at((rows - 1) * columns + 2)->height() });
+            if (rows == 1) removemedia.location({ (((text_box_array.at(0)->width() * columns) - (removemedia.width() + appendmedia.width() + 2)) / 2) + text_box_array.at(0)->location().x(), text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
+            else removemedia.location({ (((text_box_array.at(0)->width() * columns + (text_box_array.at(0)->height() / 2)) - (removemedia.width() + appendmedia.width() + 2)) / 2) + text_box_array.at(0)->location().x(), text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
+            appendmedia.location({ removemedia.location().x() + removemedia.width() + 2, removemedia.location().y() });
+            rowtxt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - rowtxt.width()) / 2, removemedia.location().y() + removemedia.height() });
+            FFrewind.location({ publisher.location().x(), publisher.location().y() + publisher.height() });
+            FadeOpt.location({ FFrewind.location().x(), FFrewind.location().y() + FFrewind.height() });
         }
         else {
-            menubannerpreview.location({ FFrewind.location().x() + FFrewind.width(), copycheck.location().y() + ((copycheck.height() + copybox.height() + 3) - (menubannerpreview.height() + bannerpreviewleft.height())) / 2 });
+            if (parameters.width() < iconerror.location().x() + iconerror.width() + iconpreview.width() + 480) {
+                iconbrowse.location({ (iconerror.location().x() + iconerror.width()) - iconbrowse.width() - 1, iconbox.location().y() - (iconbrowse.height() / 2 - iconbox.height() / 2) });
+                bannerbrowse.location({ iconbrowse.location().x() + iconpreview.width() + 3, bannerbox.location().y() - (bannerbrowse.height() / 2 - bannerbox.height() / 2) });
+            }
+            else {
+                iconbrowse.location({ parameters.width() - (597 + iconpreview.width() + 3), iconbox.location().y() - (iconbrowse.height() / 2 - iconbox.height() / 2) });//pls improve this
+                bannerbrowse.location({ parameters.width() - 597, bannerbox.location().y() - (bannerbrowse.height() / 2 - bannerbox.height() / 2) });
+            }
+
+            if (bannerpreview.width() > parameters.width() - (bannerbrowse.location().x() + bannerbrowse.width())) {
+                bannerpreview.location({ bannerbrowse.location().x() + bannerbrowse.width() + 2, (shortname.location().y() - (bannerpreview.height() + bannerpreviewtxt.height())) / 2 });
+            }
+            else {
+                bannerpreview.location({ (bannerbrowse.location().x() + bannerbrowse.width() + 2) + (((parameters.width() - (bannerbrowse.location().x() + bannerbrowse.width())) - bannerpreview.width()) / 2), (shortname.location().y() - (bannerpreview.height() + bannerpreviewtxt.height())) / 2 });
+            }
+
+            if (parameters.width() - (iconpreview.location().x() + iconpreview.width()) < 23) {
+                shortname.width((iconpreview.location().x() + iconpreview.width()) - shortname.location().x());
+                longname.width((iconpreview.location().x() + iconpreview.width()) - longname.location().x());
+                publisher.width((iconpreview.location().x() + iconpreview.width()) - publisher.location().x());
+            }
+            else {
+                shortname.width(parameters.width() - shortname.location().x() - 23);
+                longname.width(parameters.width() - longname.location().x() - 23);
+                publisher.width(parameters.width() - publisher.location().x() - 23);
+            }
+
+            copycheck.location({ publishertxt.location().x(), publishererror.location().y() + publishererror.height() });
+            copybox.location({ copycheck.location().x(), copycheck.location().y() + copycheck.height() + 2 });
+            copymulti.location({ copycheck.location().x() + copycheck.width() + 3, copycheck.location().y() + ((copycheck.height() - copymulti.height()) / 2) });
+            if (publisher.location().x() + publisher.width() < copybox.location().x() + 320) {
+                copybox.width(publishertxt.width() + publisher.width() + 5);
+            }
+            else {
+                copybox.width(320);
+            }
+
+            bannerbox.width(bannerbrowse.location().x() - bannerbox.location().x() - 2);
+            iconbox.width(iconbrowse.location().x() - iconbox.location().x() - 2);
+            bannerpreviewtxt.location({ bannerpreview.location().x() + (bannerpreview.width() - bannerpreviewtxt.width()) / 2, bannerpreview.location().y() + bannerpreview.height() });
+            customnotif.location({ bannerpreview.location().x() + (bannerpreview.width() - customnotif.width()) / 2,  bannerpreview.location().y() + (bannerpreview.height() - customnotif.height()) / 2 });
+            iconpreview.location({ iconbrowse.location().x() + iconbrowse.width() + 2, iconbrowse.location().y() + 1 });
+            FFrewind.location({ copybox.location().x() + copybox.width() + 15, copycheck.location().y() + ((((copycheck.height() + copybox.height() + 2) / 2) - FFrewind.height()) / 2) });
+            FadeOpt.location({ FFrewind.location().x(), ((copycheck.height() + copybox.height() + 2) / 2) + copycheck.location().y() + ((((copycheck.height() + copybox.height() + 2) / 2) - FFrewind.height()) / 2) });
+            
+            mediabox.location({ copybox.location().x(), copybox.location().y() + copybox.height() + playertitletxt.height() });
+            {//put this stuff in it's own scope for less variable clutter (???)
+                std::vector<int> wideVec = { moflextxt.width(), playertitletxt.width(), menubannertxt.width() + bannermulti.width() + 3 };
+                int WideMediaText = getLargestNumber(wideVec);
+
+                mediabox.size({ parameters.width() - copybox.location().x() * 2, parameters.height() - (copybox.location().y() + copybox.height() + playertitletxt.height()) - copybox.location().x() });
+                if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + rowtxt.height()) {//if scroll is there
+                    if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
+                        for (int y = 0; y < rows; y++)
+                            for (int x = 0; x < columns; x++) {
+                                if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
+                                else text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
+                            }
+                    }
+                    else {
+                        for (int y = 0; y < rows; y++)
+                            for (int x = 0; x < columns; x++) {
+                                if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns) - 20) / columns);
+                                else text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns) - 20) / columns);
+                            }
+                    }
+                }
+                else {
+                    if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
+                        for (int y = 0; y < rows; y++)
+                            for (int x = 0; x < columns; x++) {
+                                if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
+                                else text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
+                            }
+                    }
+                    else {
+                        for (int y = 0; y < rows; y++)
+                            for (int x = 0; x < columns; x++) {
+                                if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns)) / columns);
+                                else text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns)) / columns);
+                            }
+                    }
+                }
+            }
+            for (uint8_t y = 0; y < rows; y++) {
+                for (uint8_t x = 1; x < columns; x++)
+                    text_box_array.at(y * columns + x)->location({ text_box_array.at(0)->location().x() + (x * text_box_array.at(y * columns + x)->width()), text_box_array.at(0)->location().y() + (y * text_box_array.at(y * columns + x)->height()) });
+
+                for (int i = 0; i < 2; i++) {
+                    butt_array.at(y * 2 + i)->location({ text_box_array.at(y * columns + (columns - 1))->location().x() + text_box_array.at(y * columns + (columns - 1))->width(), i ? (text_box_array.at(y * columns)->location().y() + text_box_array.at(y * columns)->height() - butt_array.at(y * 2 + i)->height()) : text_box_array.at(y * columns)->location().y() });
+                }
+            }
+            //playertitletxt.location({ mediabox.location().x() + text_box_array.at(0)->location().x() + (text_box_array.at(0)->width() - playertitletxt.width()) / 2, copybox.location().y() + copybox.height() });
+            //moflextxt.location({ mediabox.location().x() + text_box_array.at(1)->location().x() + (text_box_array.at(1)->width() - moflextxt.width()) / 2, copybox.location().y() + copybox.height() });
+            //menubannertxt.location({ mediabox.location().x() + text_box_array.at(2)->location().x() + (text_box_array.at(2)->width() - (menubannertxt.width() + bannermulti.width() + 3)) / 2, copybox.location().y() + copybox.height() });
+            //bannermulti.location({ menubannertxt.location().x() + menubannertxt.width() + 3, menubannertxt.location().y() + ((menubannertxt.height() - bannermulti.height()) / 2) });
+            moflexbrowse.location({ text_box_array.at((rows - 1) * columns + 1)->location().x() + (text_box_array.at((rows - 1) * columns + 1)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 1)->location().y() + text_box_array.at((rows - 1) * columns + 1)->height() });
+            multibannerbrowse.location({ text_box_array.at((rows - 1) * columns + 2)->location().x() + (text_box_array.at((rows - 1) * columns + 2)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 2)->location().y() + text_box_array.at((rows - 1) * columns + 2)->height() });
+            if (rows == 1) removemedia.location({ (((text_box_array.at(0)->width() * columns) - (removemedia.width() + appendmedia.width() + 2)) / 2) + text_box_array.at(0)->location().x(), text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
+            else removemedia.location({ (((text_box_array.at(0)->width() * columns + (text_box_array.at(0)->height() / 2)) - (removemedia.width() + appendmedia.width() + 2)) / 2) + text_box_array.at(0)->location().x(), text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
+            appendmedia.location({ removemedia.location().x() + removemedia.width() + 2, removemedia.location().y() });
+            rowtxt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - rowtxt.width()) / 2, removemedia.location().y() + removemedia.height() });
+
+            if (parameters.width() > FFrewind.location().x() + FFrewind.width() + menubannerpreview.width()) {
+                menubannerpreview.location({ FFrewind.location().x() + FFrewind.width() + (((parameters.width() - (FFrewind.location().x() + FFrewind.width())) - menubannerpreview.width()) / 2), copycheck.location().y() + ((copycheck.height() + copybox.height() + 3) - (menubannerpreview.height() + bannerpreviewleft.height())) / 2 });
+            }
+            else {
+                menubannerpreview.location({ FFrewind.location().x() + FFrewind.width(), copycheck.location().y() + ((copycheck.height() + copybox.height() + 3) - (menubannerpreview.height() + bannerpreviewleft.height())) / 2 });
+            }
+
+            bannerpreviewleft.location({ menubannerpreview.location().x(), menubannerpreview.location().y() + menubannerpreview.height() });
+            bannerpreviewright.location({ menubannerpreview.location().x() + menubannerpreview.width() - bannerpreviewright.width(), bannerpreviewleft.location().y() });
+            indextxt.location({ menubannerpreview.location().x() + ((menubannerpreview.width()) - indextxt.width()) / 2, menubannerpreview.location().y() + menubannerpreview.height() });
         }
-
-        bannerpreviewleft.location({ menubannerpreview.location().x(), menubannerpreview.location().y() + menubannerpreview.height() });
-        bannerpreviewright.location({ menubannerpreview.location().x() + menubannerpreview.width() - bannerpreviewright.width(), bannerpreviewleft.location().y() });
-        indextxt.location({ menubannerpreview.location().x() + ((menubannerpreview.width()) - indextxt.width()) / 2, menubannerpreview.location().y() + menubannerpreview.height() });
-
 
         minorBar.width(finalize.width() - 23);
         majorBar.width(finalize.width() - 23);
@@ -2603,7 +2721,7 @@ form1::form1() {
         subtitle.location({ (settings.width() - subtitle.width()) / 2, maintitle.height() + maintitle.location().y() });
         savebutt.size({ settings.width() - 10, 35 });
         if ((settings.height() / 4) - savebutt.height() - (subtitle.location().y() + subtitle.height()) <= 0) {
-            savebutt.location({ (settings.width() - savebutt.width()) / 2, subtitle.location().y() + subtitle.height()});
+            savebutt.location({ (settings.width() - savebutt.width()) / 2, subtitle.location().y() + subtitle.height() });
         }
         else {
             savebutt.location({ (settings.width() - savebutt.width()) / 2, (settings.height() / 4) - savebutt.height() });
@@ -2619,8 +2737,10 @@ form1::form1() {
         AutoLoad.location({ (settings.width() - AutoLoad.width()) / 2, AutoSave.location().y() + AutoSave.height() });
         DeleteTempButt.size({ savebutt.width(), savebutt.height() });
         DeleteTempButt.location({ (settings.width() - DeleteTempButt.width()) / 2, AutoLoad.location().y() + AutoLoad.height() });
-        LightDark.size({ savebutt.width(), savebutt.height()});
-        LightDark.location({ (settings.width() - LightDark.width()) / 2, DeleteTempButt.location().y() + DeleteTempButt.height() });
+        WideWindowButt.size({ savebutt.width(), savebutt.height() });
+        WideWindowButt.location({ (settings.width() - WideWindowButt.width()) / 2, DeleteTempButt.location().y() + DeleteTempButt.height() });
+        LightDark.size({ savebutt.width(), savebutt.height() });
+        LightDark.location({ (settings.width() - LightDark.width()) / 2, WideWindowButt.location().y() + WideWindowButt.height() });
         //fontchange.location({ (settings.width() - fontchange.width()) / 2, LightDark.location().y() + LightDark.height() });
         LanguageTitle.location({ (settings.width() - LanguageTitle.width()) / 2, LightDark.location().y() + LightDark.height() });
         LanguageChoiche.location({ (settings.width() - LanguageChoiche.width()) / 2, LanguageTitle.location().y() + LanguageTitle.height() });
@@ -2634,12 +2754,13 @@ form1::form1() {
         else {
             version.location({ (settings.width() - version.width()) / 2, settings.height() - version.height() - 3 });
         }
+        saveSettings();
     };
 
     text_box_array.at(columns - 1)->location_changed += [&] {
-        playertitletxt.location({ mediabox.location().x() + text_box_array.at(0)->location().x() + (text_box_array.at(0)->width() - playertitletxt.width()) / 2, copybox.location().y() + copybox.height() });
-        moflextxt.location({ mediabox.location().x() + text_box_array.at(1)->location().x() + (text_box_array.at(1)->width() - moflextxt.width()) / 2, copybox.location().y() + copybox.height() });
-        menubannertxt.location({ mediabox.location().x() + text_box_array.at(2)->location().x() + (text_box_array.at(2)->width() - (menubannertxt.width() + bannermulti.width() + 3)) / 2, copybox.location().y() + copybox.height() });
+        playertitletxt.location({ mediabox.location().x() + text_box_array.at(0)->location().x() + (text_box_array.at(0)->width() - playertitletxt.width()) / 2, mediabox.location().y() - playertitletxt.height() });
+        moflextxt.location({ mediabox.location().x() + text_box_array.at(1)->location().x() + (text_box_array.at(1)->width() - moflextxt.width()) / 2, mediabox.location().y() - moflextxt.height() });
+        menubannertxt.location({ mediabox.location().x() + text_box_array.at(2)->location().x() + (text_box_array.at(2)->width() - (menubannertxt.width() + bannermulti.width() + 3)) / 2, mediabox.location().y() - menubannertxt.height() });
         bannermulti.location({ menubannertxt.location().x() + menubannertxt.width() + 3, menubannertxt.location().y() + ((menubannertxt.height() - bannermulti.height()) / 2) });
         playertitletxt.refresh();
         moflextxt.refresh();

@@ -902,8 +902,8 @@ namespace VidInjector9002 {
             std::vector<xtd::ustring> filelines = fileRead(xtd::ustring::format("{}/{}/language/{}/Language.txt", ProgramDir, resourcesPath, Lang));
             if (filelines.size() == 0)
                 return false;
-            std::vector<xtd::ustring*> inLangVec = { &inLangErrorText, &inLangMissingVariableError, &inLangFailedToFindVar, &inLangValueNoChange, &inLangLanguage, &inLangFormText, &inLangByMeText, &inLangParametersText, &inLangFinalizeText, &inLangOptionsText, &inLangModeText, &inLangSingleVideo, &inLangMultiVideo, &inLangBannerText, &inLangBrowse, &inLangSupportedImage48x48, &inLangSupportedImage200x120, &inLangSupportedImageListBanner, &inLangSupportedImageList, &inLangCGFXList, &inLangSMDHList, &inLangAllFilesList, &inLangMoflexFilesList, &inLangParamFilesList, &inLangImageInfoError, &inLangBannerPreviewText, &inLangCustomNotifText, &inLangIconText, &inLangShortNameText, &inLangLongNameText, &inLangPublisherText, &inLangTextTooLongError, &inLangMultiOnlyText, &inLangCopyrightCheckText, &inLangFFrewindText, &inLangFadeOptText, &inLangPlayerTitleText, &inLangMoflexFileText, &inLangMenuBannerText, &inLangSaveButtText, &inLangLoadButtText, &inLangLoadCIAButtText, &inLangAutoSaveText, &inLangAutoLoadText, &inLangDeleteTempFiles, &inLangLightModeText, &inLangDarkModeText, &inLangLanguageText, &inLangRestartText, &inLangConfirmClose, &inLangLosedata, &inLangConfirmSave, &inLangAlreadyExists, &inLangReplaceIt, &inLangBadValue, &inLangBadVersion, &inLangSupportedVersion, &inLangBeANumber, &inLangFailedToFindPath, &inLangFailedToFindFile, &inLangFailedToReadFile, &inLangFailedToCopyFile, &inLangFailedToCreateFile, &inLangFailedToConvertImage, &inLangFailedToReadExHeader, &inLangnoMoreThan27, &inLangParametersLoaded, &inLangSuccessfullyLoaded, &inLangFailedToLoad, &inLangValidStillLoaded, &inLangTheFile, &inLangDoesntExist, &inLangLanguageChanged, &inLangRestartProgram, &inLangWasEnabled, &inLangTitleIDText, &inLangAppNameText, &inLangProductCodetext, &inLangBuildCIAText, &inLangCancel, &inLangMoflexError, &inLangrow, &inLangcolumn, &inLangCreatingFile, &inLangCopyingMoflex, &inLangCiaFiles, &inLangCiaBuilt, &inLangCiaBig, &inLangSeedNotFound, &inLangSelectSeed, &inLangSeedFiles, };
-            std::vector<xtd::ustring*> LangVec = { &ErrorText, &MissingVariableError, &FailedToFindVar, &ValueNoChange, &Language, &FormText, &ByMeText, &ParametersText, &FinalizeText, &OptionsText, &ModeText, &SingleVideo, &MultiVideo, &BannerText, &Browse, &SupportedImage48x48, &SupportedImage200x120, &SupportedImageListBanner, &SupportedImageList, &CGFXList, &SMDHList, &AllFilesList, &MoflexFilesList, &ParamFilesList, &ImageInfoError, &BannerPreviewText, &CustomNotifText, &IconText, &ShortNameText, &LongNameText, &PublisherText, &TextTooLongError, &MultiOnlyText, &CopyrightCheckText, &FFrewindText, &FadeOptText, &PlayerTitleText, &MoflexFileText, &MenuBannerText, &SaveButtText, &LoadButtText, &LoadCIAButtText, &AutoSaveText, &AutoLoadText, &DeleteTempFiles, &LightModeText, &DarkModeText, &LanguageText, &RestartText, &ConfirmClose, &Losedata, &ConfirmSave, &AlreadyExists, &ReplaceIt, &BadValue, &BadVersion, &SupportedVersion, &BeANumber, &FailedToFindPath, &FailedToFindFile, &FailedToReadFile, &FailedToCopyFile, &FailedToCreateFile, &FailedToConvertImage, &FailedToReadExHeader, &noMoreThan27, &ParametersLoaded, &SuccessfullyLoaded, &FailedToLoad, &ValidStillLoaded, &TheFile, &DoesntExist, &LanguageChanged, &RestartProgram, &WasEnabled, &TitleIDText, &AppNameText, &ProductCodetext, &BuildCIAText, &Cancel, &MoflexError, &row, &column, &CreatingFile, &CopyingMoflex, &CiaFiles, &CiaBuilt, &CiaBig, &SeedNotFound, &SelectSeed, &SeedFiles, };
+            std::vector<xtd::ustring*> inLangVec = { &inLangErrorText, &inLangMissingVariableError, &inLangFailedToFindVar, &inLangValueNoChange, &inLangLanguage, &inLangFormText, &inLangByMeText, &inLangParametersText, &inLangFinalizeText, &inLangOptionsText, &inLangModeText, &inLangSingleVideo, &inLangMultiVideo, &inLangBannerText, &inLangBrowse, &inLangSupportedImage48x48, &inLangSupportedImage200x120, &inLangSupportedImageListBanner, &inLangSupportedImageList, &inLangCGFXList, &inLangSMDHList, &inLangAllFilesList, &inLangMoflexFilesList, &inLangParamFilesList, &inLangImageInfoError, &inLangBannerPreviewText, &inLangCustomNotifText, &inLangIconText, &inLangShortNameText, &inLangLongNameText, &inLangPublisherText, &inLangTextTooLongError, &inLangMultiOnlyText, &inLangCopyrightCheckText, &inLangFFrewindText, &inLangFadeOptText, &inLangPlayerTitleText, &inLangMoflexFileText, &inLangMenuBannerText, &inLangSaveButtText, &inLangLoadButtText, &inLangLoadCIAButtText, &inLangAutoSaveText, &inLangAutoLoadText, &inLangDeleteTempFiles, &inLangWideWindowMode, &inLangLightModeText, &inLangDarkModeText, &inLangLanguageText, &inLangRestartText, &inLangConfirmClose, &inLangLosedata, &inLangConfirmSave, &inLangAlreadyExists, &inLangReplaceIt, &inLangBadValue, &inLangBadVersion, &inLangSupportedVersion, &inLangBeANumber, &inLangFailedToFindPath, &inLangFailedToFindFile, &inLangFailedToReadFile, &inLangFailedToCopyFile, &inLangFailedToCreateFile, &inLangFailedToConvertImage, &inLangFailedToReadExHeader, &inLangnoMoreThan27, &inLangParametersLoaded, &inLangSuccessfullyLoaded, &inLangFailedToLoad, &inLangValidStillLoaded, &inLangTheFile, &inLangDoesntExist, &inLangLanguageChanged, &inLangRestartProgram, &inLangWasEnabled, &inLangTitleIDText, &inLangAppNameText, &inLangProductCodetext, &inLangBuildCIAText, &inLangCancel, &inLangMoflexError, &inLangrow, &inLangcolumn, &inLangCreatingFile, &inLangCopyingMoflex, &inLangCiaFiles, &inLangCiaBuilt, &inLangCiaBig, &inLangSeedNotFound, &inLangSelectSeed, &inLangSeedFiles, };
+            std::vector<xtd::ustring*> LangVec = { &ErrorText, &MissingVariableError, &FailedToFindVar, &ValueNoChange, &Language, &FormText, &ByMeText, &ParametersText, &FinalizeText, &OptionsText, &ModeText, &SingleVideo, &MultiVideo, &BannerText, &Browse, &SupportedImage48x48, &SupportedImage200x120, &SupportedImageListBanner, &SupportedImageList, &CGFXList, &SMDHList, &AllFilesList, &MoflexFilesList, &ParamFilesList, &ImageInfoError, &BannerPreviewText, &CustomNotifText, &IconText, &ShortNameText, &LongNameText, &PublisherText, &TextTooLongError, &MultiOnlyText, &CopyrightCheckText, &FFrewindText, &FadeOptText, &PlayerTitleText, &MoflexFileText, &MenuBannerText, &SaveButtText, &LoadButtText, &LoadCIAButtText, &AutoSaveText, &AutoLoadText, &DeleteTempFiles, &WideWindowMode, &LightModeText, &DarkModeText, &LanguageText, &RestartText, &ConfirmClose, &Losedata, &ConfirmSave, &AlreadyExists, &ReplaceIt, &BadValue, &BadVersion, &SupportedVersion, &BeANumber, &FailedToFindPath, &FailedToFindFile, &FailedToReadFile, &FailedToCopyFile, &FailedToCreateFile, &FailedToConvertImage, &FailedToReadExHeader, &noMoreThan27, &ParametersLoaded, &SuccessfullyLoaded, &FailedToLoad, &ValidStillLoaded, &TheFile, &DoesntExist, &LanguageChanged, &RestartProgram, &WasEnabled, &TitleIDText, &AppNameText, &ProductCodetext, &BuildCIAText, &Cancel, &MoflexError, &row, &column, &CreatingFile, &CopyingMoflex, &CiaFiles, &CiaBuilt, &CiaBig, &SeedNotFound, &SelectSeed, &SeedFiles, };
             for (size_t i = 0; i < inLangVec.size(); i++) {
                 if (parseLines(outstr, filelines, *inLangVec[i])) {
                     *LangVec[i] = outstr;
@@ -927,6 +927,9 @@ namespace VidInjector9002 {
                 IntAutoSaveParams << "=\"" << autoSaveParams << "\"\n" <<
                 IntAutoLoadParams << "=\"" << autoLoadParams << "\"\n" <<
                 IntDeleteTempFiles << "=\"" << deleteTemp << "\"\n" <<
+                IntWideWindowMode << "=\"" << wideWindow << "\"\n" <<
+                IntFormWidth << "=\"" << width() << "\"\n" <<
+                IntFormHeight << "=\"" << height() << "\"\n" <<
                 IntDarkMode << "=\"" << LightDark.checked() << "\"\n" <<
                 StrParamsPath << "=\"" << parampath << "\"\n";
             settingsfile.close();
@@ -944,6 +947,9 @@ namespace VidInjector9002 {
                     IntAutoSaveParams << "=\"0\"\n" <<
                     IntAutoLoadParams << "=\"0\"\n" <<
                     IntDeleteTempFiles << "=\"1\"\n" <<
+                    IntWideWindowMode << "=\"1\"\n" <<
+                    IntFormWidth << "=\"1000\"\n" <<
+                    IntFormHeight << "=\"700\"\n" <<
                     IntDarkMode << "=\"0\"\n" <<
                     StrParamsPath << "=\"\"\n";
                 settingsfile.close();
@@ -996,6 +1002,44 @@ namespace VidInjector9002 {
             else {
                 good = false;
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, IntDeleteTempFiles, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+            }
+            if (parseLines(outstr, filelines, IntWideWindowMode)) {
+                if (!stoul_s(outrealint, outstr)) {
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({})\n{} {}", BadValue, outstr, IntWideWindowMode, BeANumber), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    outrealint = 1;
+                    good = false;
+                }
+                wideWindow = outrealint;
+            }
+            else {
+                good = false;
+                xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, IntWideWindowMode, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+            }
+            if (parseLines(outstr, filelines, IntFormWidth)) {
+                if (!stoul_s(outrealint, outstr)) {
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({})\n{} {}", BadValue, outstr, IntFormWidth, BeANumber), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    outrealint = 1000;
+                    good = false;
+                }
+                width(outrealint);
+            }
+            else {
+                width(1000);
+                good = false;
+                xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, IntFormWidth, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+            }
+            if (parseLines(outstr, filelines, IntFormHeight)) {
+                if (!stoul_s(outrealint, outstr)) {
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({})\n{} {}", BadValue, outstr, IntFormHeight, BeANumber), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    outrealint = 700;
+                    good = false;
+                }
+                height(outrealint);
+            }
+            else {
+                width(700);
+                good = false;
+                xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, IntFormHeight, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
             }
             if (parseLines(outstr, filelines, IntDarkMode)) {
                 if (!stoul_s(outrealint, outstr)) {
@@ -1089,6 +1133,8 @@ namespace VidInjector9002 {
         bool autoLoadParams = false;
         bool deleteTemp = true;
         uint8_t borderMode = 2;
+        bool wideWindow = true;
+
         //xtd::forms::font_dialog font_dialog;
         xtd::forms::label MultiOnly;
 
@@ -1192,6 +1238,7 @@ namespace VidInjector9002 {
         xtd::forms::check_box AutoSave;
         xtd::forms::check_box AutoLoad;
         xtd::forms::check_box DeleteTempButt;
+        xtd::forms::check_box WideWindowButt;
         xtd::forms::check_box LightDark;
         //xtd::forms::button fontchange;
         xtd::forms::label LanguageTitle;
