@@ -1037,7 +1037,7 @@ namespace VidInjector9002 {
                 height(outrealint);
             }
             else {
-                width(700);
+                height(700);
                 good = false;
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, IntFormHeight, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
             }
