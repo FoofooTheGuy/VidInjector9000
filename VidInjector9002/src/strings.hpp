@@ -175,6 +175,7 @@ extern xtd::ustring inLangFadeOptText;
 extern xtd::ustring inLangPlayerTitleText;
 extern xtd::ustring inLangMoflexFileText;
 extern xtd::ustring inLangMenuBannerText;
+extern xtd::ustring inLangSplitIntoPatchText;
 extern xtd::ustring inLangSaveButtText;
 extern xtd::ustring inLangLoadButtText;
 extern xtd::ustring inLangLoadCIAButtText;
