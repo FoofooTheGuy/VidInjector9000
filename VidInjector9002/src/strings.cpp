@@ -40,6 +40,7 @@ xtd::ustring FadeOptText = "Fade after 5 seconds";
 xtd::ustring PlayerTitleText = "Player title";
 xtd::ustring MoflexFileText = "MoFlex file";
 xtd::ustring MenuBannerText = "Menu banner";
+xtd::ustring SplitIntoPatchText = "Split into patch";
 xtd::ustring SaveButtText = "Save parameters to file";
 xtd::ustring LoadButtText = "Load parameters from file";
 xtd::ustring LoadCIAButtText = "Load parameters from CIA file";

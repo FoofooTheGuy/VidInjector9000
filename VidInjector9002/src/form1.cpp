@@ -415,14 +415,6 @@ form1::form1() {
         else publishererror.hide();
     };
 
-    //multionly
-    MultiOnly.parent(parameters);
-    MultiOnly.font({ this->font(), 8 });
-    MultiOnly.auto_size(true);
-    MultiOnly.text(MultiOnlyText);
-    MultiOnly.border_style(xtd::forms::border_style::fixed_single);
-    MultiOnly.hide();
-
     //copyright stuff (multivideo only)
     copycheck.parent(parameters);
     copycheck.font({ this->font(), 15 });
@@ -465,6 +457,7 @@ form1::form1() {
                 MultiOnly.location({ copymulti.location().x() + e.location().x() - MultiOnly.width(), copymulti.location().y() + e.location().y() - MultiOnly.height() });
             justchanged = true;
             MultiOnly.show();
+            MultiOnly.refresh();
         };
         copymulti.mouse_leave += [&] {
             justchanged = false;
@@ -557,6 +550,7 @@ form1::form1() {
                 MultiOnly.location({ bannermulti.location().x() + e.location().x() - MultiOnly.width(), bannermulti.location().y() + e.location().y() - MultiOnly.height() });
             justchanged = true;
             MultiOnly.show();
+            MultiOnly.refresh();
         };
         bannermulti.mouse_leave += [&] {
             justchanged = false;
@@ -711,6 +705,74 @@ form1::form1() {
     butt_array.at(butt_array.size() - 1)->hide();
     setMultiBannerPreview(rows - 1);
 
+    SplitUp.parent(mediabox);
+    SplitUp.border_style(xtd::forms::border_style::fixed_3d);
+    SplitUp.cursor(xtd::forms::cursors::hand());
+    SplitUp.size(butt_array.at(0)->size());
+    SplitUp.image(pixels_to_image(arrow_up, 6, 6, 2));
+    SplitUp.mouse_click += [&] {
+        if (splitPos > 1)
+            splitPos--;
+
+        if (splitPos <= 1)
+            SplitUp.hide();
+
+        SplitDown.show();
+
+        for (uint8_t y = 0; y < rows; y++) {
+            for (uint8_t x = 0; x < columns; x++) {
+                if (splitpatchbutt.checked() && y == splitPos) text_box_array.at(y * columns + x)->location({ text_box_array.at(0)->location().x() + (x * text_box_array.at(y * columns + x)->width()), text_box_array.at(0)->location().y() + (y * text_box_array.at(y * columns + x)->height()) + SplitUp.height() + 2 });
+                else text_box_array.at(y * columns + x)->location({ text_box_array.at(0)->location().x() + (x * text_box_array.at(y * columns + x)->width()), text_box_array.at((y == 0 ? 0 : y - 1) * columns)->location().y() + (y == 0 ? 0 : text_box_array.at(y * columns + x)->height()) });
+                text_box_array.at(y * columns + x)->refresh();
+            }
+
+            for (int i = 0; i < 2; i++) {
+                butt_array.at(y * 2 + i)->location({ text_box_array.at(y * columns + (columns - 1))->location().x() + text_box_array.at(y * columns + (columns - 1))->width(), i ? (text_box_array.at(y * columns)->location().y() + text_box_array.at(y * columns)->height() - butt_array.at(y * 2 + i)->height()) : text_box_array.at(y * columns)->location().y() });
+            }
+        }
+        SplitUp.hide();
+        SplitDown.hide();
+        SplitUp.location({ text_box_array.at(splitPos * columns + (columns - 1))->location().x() + text_box_array.at(splitPos * columns + (columns - 1))->width() - (SplitUp.width() + SplitDown.width() + 1), text_box_array.at(splitPos * columns + (columns - 1))->location().y() - SplitUp.height() - 1 });
+        SplitDown.location({ SplitUp.location().x() + SplitUp.width() + 1, SplitUp.location().y() });
+        if (splitPos > 1)
+            SplitUp.show();
+        SplitDown.show();
+    };
+
+    SplitDown.parent(mediabox);
+    SplitDown.border_style(xtd::forms::border_style::fixed_3d);
+    SplitDown.cursor(xtd::forms::cursors::hand());
+    SplitDown.size(butt_array.at(0)->size());
+    SplitDown.image(pixels_to_image(arrow_down, 6, 6, 2));
+    SplitDown.mouse_click += [&] {
+        if (splitPos < rows - 1)
+            splitPos++;
+
+        if (splitPos >= rows - 1)
+            SplitDown.hide();
+
+        SplitUp.show();
+
+        for (uint8_t y = 0; y < rows; y++) {
+            for (uint8_t x = 0; x < columns; x++) {
+                if (splitpatchbutt.checked() && y == splitPos) text_box_array.at(y * columns + x)->location({ text_box_array.at(0)->location().x() + (x * text_box_array.at(y * columns + x)->width()), text_box_array.at(0)->location().y() + (y * text_box_array.at(y * columns + x)->height()) + SplitUp.height() + 2 });
+                else text_box_array.at(y * columns + x)->location({ text_box_array.at(0)->location().x() + (x * text_box_array.at(y * columns + x)->width()), text_box_array.at((y == 0 ? 0 : y - 1) * columns)->location().y() + (y == 0 ? 0 : text_box_array.at(y * columns + x)->height()) });
+                text_box_array.at(y * columns + x)->refresh();
+            }
+
+            for (int i = 0; i < 2; i++) {
+                butt_array.at(y * 2 + i)->location({ text_box_array.at(y * columns + (columns - 1))->location().x() + text_box_array.at(y * columns + (columns - 1))->width(), i ? (text_box_array.at(y * columns)->location().y() + text_box_array.at(y * columns)->height() - butt_array.at(y * 2 + i)->height()) : text_box_array.at(y * columns)->location().y() });
+            }
+        }
+        SplitUp.hide();
+        SplitDown.hide();
+        SplitUp.location({ text_box_array.at(splitPos * columns + (columns - 1))->location().x() + text_box_array.at(splitPos * columns + (columns - 1))->width() - (SplitUp.width() + SplitDown.width() + 1), text_box_array.at(splitPos * columns + (columns - 1))->location().y() - SplitUp.height() - 1 });
+        SplitDown.location({ SplitUp.location().x() + SplitUp.width() + 1, SplitUp.location().y() });
+        SplitUp.show();
+        if (splitPos < rows - 1)
+            SplitDown.show();
+    };
+
     moflexbrowse.parent(mediabox);
     moflexbrowse.size({ 119, 35 });
     moflexbrowse.font(this->font());
@@ -782,13 +844,6 @@ form1::form1() {
     };
     multibannerbrowse.enabled(mode.selected_index());
 
-    rowtxt.parent(mediabox);
-    rowtxt.auto_size(true);
-    rowtxt.font(this->font());
-    rowtxt.text(xtd::ustring::format("{}/{}", rows, MAX_ROWS));
-    if (mode.selected_index()) rowtxt.show();
-    else rowtxt.hide();
-
     appendmedia.parent(mediabox);
     appendmedia.auto_size(true);
     appendmedia.font({ this->font(), 20 });
@@ -816,6 +871,58 @@ form1::form1() {
         }
         if (autoSaveParams && loaded) saveSettings();
     };
+
+    splitpatchbutt.parent(mediabox);
+    splitpatchbutt.auto_size(true);
+    splitpatchbutt.appearance(xtd::forms::appearance::button);
+    splitpatchbutt.font({ this->font(), 12 });
+    splitpatchbutt.text(SplitIntoPatchText);
+    splitpatchbutt.text_align(xtd::forms::content_alignment::middle_center);
+    splitpatchbutt.check_state_changed += [&] {
+        splitPos = splitpatchbutt.checked();
+
+        for (uint8_t y = 0; y < rows; y++) {
+            for (uint8_t x = 0; x < columns; x++) {
+                if (splitpatchbutt.checked() && y == splitPos) text_box_array.at(y * columns + x)->location({ text_box_array.at(0)->location().x() + (x * text_box_array.at(y * columns + x)->width()), text_box_array.at(0)->location().y() + (y * text_box_array.at(y * columns + x)->height()) + SplitUp.height() + 2 });
+                else text_box_array.at(y * columns + x)->location({ text_box_array.at(0)->location().x() + (x * text_box_array.at(y * columns + x)->width()), text_box_array.at((y == 0 ? 0 : y - 1) * columns)->location().y() + (y == 0 ? 0 : text_box_array.at(y * columns + x)->height()) });
+                text_box_array.at(y * columns + x)->refresh();
+            }
+
+            for (int i = 0; i < 2; i++) {
+                butt_array.at(y * 2 + i)->location({ text_box_array.at(y * columns + (columns - 1))->location().x() + text_box_array.at(y * columns + (columns - 1))->width(), i ? (text_box_array.at(y * columns)->location().y() + text_box_array.at(y * columns)->height() - butt_array.at(y * 2 + i)->height()) : text_box_array.at(y * columns)->location().y() });
+            }
+        }
+        SplitUp.location({ text_box_array.at(splitPos * columns + (columns - 1))->location().x() + text_box_array.at(splitPos * columns + (columns - 1))->width() - (SplitUp.width() + SplitDown.width() + 1), text_box_array.at(splitPos * columns + (columns - 1))->location().y() - SplitUp.height() - 1 });
+        SplitDown.location({ SplitUp.location().x() + SplitUp.width() + 1, SplitUp.location().y() });
+
+        moflexbrowse.location({ text_box_array.at((rows - 1) * columns + 1)->location().x() + (text_box_array.at((rows - 1) * columns + 1)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 1)->location().y() + text_box_array.at((rows - 1) * columns + 1)->height() });
+        multibannerbrowse.location({ text_box_array.at((rows - 1) * columns + 2)->location().x() + (text_box_array.at((rows - 1) * columns + 2)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 2)->location().y() + text_box_array.at((rows - 1) * columns + 2)->height() });
+        removemedia.location({ (((text_box_array.at(0)->width() * columns + (text_box_array.at(0)->height() / 2)) - (removemedia.width() + appendmedia.width() + 2)) / 2) + text_box_array.at(0)->location().x(), text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
+        appendmedia.location({ removemedia.location().x() + removemedia.width() + 2, removemedia.location().y() });
+        splitpatchbutt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - splitpatchbutt.width()) / 2, removemedia.location().y() + removemedia.height() });
+        rowtxt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - rowtxt.width()) / 2, splitpatchbutt.location().y() + splitpatchbutt.height() });
+        moflexbrowse.refresh();
+        multibannerbrowse.refresh();
+        removemedia.refresh();
+        appendmedia.refresh();
+        splitpatchbutt.refresh();
+        rowtxt.refresh();
+
+        if (splitPos > 1)
+            SplitUp.show();
+        else SplitUp.hide();
+
+        if (splitPos < rows - 1)
+            SplitDown.show();
+        else SplitDown.hide();
+    };
+
+    rowtxt.parent(mediabox);
+    rowtxt.auto_size(true);
+    rowtxt.font(this->font());
+    rowtxt.text(xtd::ustring::format("{}/{}", rows, MAX_ROWS));
+    if (mode.selected_index()) rowtxt.show();
+    else rowtxt.hide();
 
     //finalize
     finalize.parent(tab_control);
@@ -2464,6 +2571,14 @@ form1::form1() {
         if (autoSaveParams && loaded) saveSettings();
     };
 
+    //multionly (put this here so it's on top)
+    MultiOnly.parent(parameters);
+    MultiOnly.font({ this->font(), 8 });
+    MultiOnly.auto_size(true);
+    MultiOnly.text(MultiOnlyText);
+    MultiOnly.border_style(xtd::forms::border_style::fixed_single);
+    MultiOnly.hide();
+
     resize += [&] {
         //debugs.text(xtd::ustring::format("{}", mediabox.height()));
         //std::this_thread::sleep_for(std::chrono::milliseconds(500));//did this to decrease the flicker but it's annoying so turn it off
@@ -2518,62 +2633,11 @@ form1::form1() {
             bannerpreviewtxt.location({ bannerpreview.location().x() + (bannerpreview.width() - bannerpreviewtxt.width()) / 2, bannerpreview.location().y() + bannerpreview.height() });
             customnotif.location({ bannerpreview.location().x() + (bannerpreview.width() - customnotif.width()) / 2,  bannerpreview.location().y() + (bannerpreview.height() - customnotif.height()) / 2 });
 
-            mediabox.location({ publishertxt.location().x(), bannerpreviewleft.location().y() + bannerpreviewleft.height() + playertitletxt.height() });
-            {//put this stuff in it's own scope for less variable clutter (???)
-                std::vector<int> wideVec = { moflextxt.width(), playertitletxt.width(), menubannertxt.width() + bannermulti.width() + 3 };
-                int WideMediaText = getLargestNumber(wideVec);
-
-                mediabox.size({ parameters.width() - publishertxt.location().x() * 2, parameters.height() - (bannerpreviewleft.location().y() + bannerpreviewleft.height() + playertitletxt.height()) - publishertxt.location().x() });
-                if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + rowtxt.height()) {//if scroll is there
-                    if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
-                        for (int y = 0; y < rows; y++)
-                            for (int x = 0; x < columns; x++) {
-                                if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
-                                else text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
-                            }
-                    }
-                    else {
-                        for (int y = 0; y < rows; y++)
-                            for (int x = 0; x < columns; x++) {
-                                if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns) - 20) / columns);
-                                else text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns) - 20) / columns);
-                            }
-                    }
-                }
-                else {
-                    if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
-                        for (int y = 0; y < rows; y++)
-                            for (int x = 0; x < columns; x++) {
-                                if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
-                                else text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
-                            }
-                    }
-                    else {
-                        for (int y = 0; y < rows; y++)
-                            for (int x = 0; x < columns; x++) {
-                                if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns)) / columns);
-                                else text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns)) / columns);
-                            }
-                    }
-                }
-            }
-            for (uint8_t y = 0; y < rows; y++) {
-                for (uint8_t x = 1; x < columns; x++)
-                    text_box_array.at(y * columns + x)->location({ text_box_array.at(0)->location().x() + (x * text_box_array.at(y * columns + x)->width()), text_box_array.at(0)->location().y() + (y * text_box_array.at(y * columns + x)->height()) });
-
-                for (int i = 0; i < 2; i++) {
-                    butt_array.at(y * 2 + i)->location({ text_box_array.at(y * columns + (columns - 1))->location().x() + text_box_array.at(y * columns + (columns - 1))->width(), i ? (text_box_array.at(y * columns)->location().y() + text_box_array.at(y * columns)->height() - butt_array.at(y * 2 + i)->height()) : text_box_array.at(y * columns)->location().y() });
-                }
-            }
-
-            moflexbrowse.location({ text_box_array.at((rows - 1) * columns + 1)->location().x() + (text_box_array.at((rows - 1) * columns + 1)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 1)->location().y() + text_box_array.at((rows - 1) * columns + 1)->height() });
-            multibannerbrowse.location({ text_box_array.at((rows - 1) * columns + 2)->location().x() + (text_box_array.at((rows - 1) * columns + 2)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 2)->location().y() + text_box_array.at((rows - 1) * columns + 2)->height() });
-            if (rows == 1) removemedia.location({ (((text_box_array.at(0)->width() * columns) - (removemedia.width() + appendmedia.width() + 2)) / 2) + text_box_array.at(0)->location().x(), text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
-            else removemedia.location({ (((text_box_array.at(0)->width() * columns + (text_box_array.at(0)->height() / 2)) - (removemedia.width() + appendmedia.width() + 2)) / 2) + text_box_array.at(0)->location().x(), text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
-            appendmedia.location({ removemedia.location().x() + removemedia.width() + 2, removemedia.location().y() });
-            rowtxt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - rowtxt.width()) / 2, removemedia.location().y() + removemedia.height() });
             FFrewind.location({ publisher.location().x(), publisher.location().y() + publisher.height() });
             FadeOpt.location({ FFrewind.location().x(), FFrewind.location().y() + FFrewind.height() });
+
+            mediabox.location({ publishertxt.location().x(), bannerpreviewleft.location().y() + bannerpreviewleft.height() + playertitletxt.height() });
+            mediabox.size({ parameters.width() - publishertxt.location().x() * 2, parameters.height() - (bannerpreviewleft.location().y() + bannerpreviewleft.height() + playertitletxt.height()) - publishertxt.location().x() });
         }
         else {
             if (parameters.width() < iconerror.location().x() + iconerror.width() + iconpreview.width() + 480) {
@@ -2622,62 +2686,7 @@ form1::form1() {
             FadeOpt.location({ FFrewind.location().x(), ((copycheck.height() + copybox.height() + 2) / 2) + copycheck.location().y() + ((((copycheck.height() + copybox.height() + 2) / 2) - FFrewind.height()) / 2) });
             
             mediabox.location({ copybox.location().x(), copybox.location().y() + copybox.height() + playertitletxt.height() });
-            {//put this stuff in it's own scope for less variable clutter (???)
-                std::vector<int> wideVec = { moflextxt.width(), playertitletxt.width(), menubannertxt.width() + bannermulti.width() + 3 };
-                int WideMediaText = getLargestNumber(wideVec);
-
-                mediabox.size({ parameters.width() - copybox.location().x() * 2, parameters.height() - (copybox.location().y() + copybox.height() + playertitletxt.height()) - copybox.location().x() });
-                if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + rowtxt.height()) {//if scroll is there
-                    if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
-                        for (int y = 0; y < rows; y++)
-                            for (int x = 0; x < columns; x++) {
-                                if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
-                                else text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
-                            }
-                    }
-                    else {
-                        for (int y = 0; y < rows; y++)
-                            for (int x = 0; x < columns; x++) {
-                                if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns) - 20) / columns);
-                                else text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns) - 20) / columns);
-                            }
-                    }
-                }
-                else {
-                    if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
-                        for (int y = 0; y < rows; y++)
-                            for (int x = 0; x < columns; x++) {
-                                if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
-                                else text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
-                            }
-                    }
-                    else {
-                        for (int y = 0; y < rows; y++)
-                            for (int x = 0; x < columns; x++) {
-                                if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns)) / columns);
-                                else text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns)) / columns);
-                            }
-                    }
-                }
-            }
-            for (uint8_t y = 0; y < rows; y++) {
-                for (uint8_t x = 1; x < columns; x++)
-                    text_box_array.at(y * columns + x)->location({ text_box_array.at(0)->location().x() + (x * text_box_array.at(y * columns + x)->width()), text_box_array.at(0)->location().y() + (y * text_box_array.at(y * columns + x)->height()) });
-
-                for (int i = 0; i < 2; i++) {
-                    butt_array.at(y * 2 + i)->location({ text_box_array.at(y * columns + (columns - 1))->location().x() + text_box_array.at(y * columns + (columns - 1))->width(), i ? (text_box_array.at(y * columns)->location().y() + text_box_array.at(y * columns)->height() - butt_array.at(y * 2 + i)->height()) : text_box_array.at(y * columns)->location().y() });
-                }
-            }
-            //playertitletxt.location({ mediabox.location().x() + text_box_array.at(0)->location().x() + (text_box_array.at(0)->width() - playertitletxt.width()) / 2, copybox.location().y() + copybox.height() });
-            //moflextxt.location({ mediabox.location().x() + text_box_array.at(1)->location().x() + (text_box_array.at(1)->width() - moflextxt.width()) / 2, copybox.location().y() + copybox.height() });
-            //menubannertxt.location({ mediabox.location().x() + text_box_array.at(2)->location().x() + (text_box_array.at(2)->width() - (menubannertxt.width() + bannermulti.width() + 3)) / 2, copybox.location().y() + copybox.height() });
-            //bannermulti.location({ menubannertxt.location().x() + menubannertxt.width() + 3, menubannertxt.location().y() + ((menubannertxt.height() - bannermulti.height()) / 2) });
-            moflexbrowse.location({ text_box_array.at((rows - 1) * columns + 1)->location().x() + (text_box_array.at((rows - 1) * columns + 1)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 1)->location().y() + text_box_array.at((rows - 1) * columns + 1)->height() });
-            multibannerbrowse.location({ text_box_array.at((rows - 1) * columns + 2)->location().x() + (text_box_array.at((rows - 1) * columns + 2)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 2)->location().y() + text_box_array.at((rows - 1) * columns + 2)->height() });
-            if (rows == 1) removemedia.location({ (((text_box_array.at(0)->width() * columns) - (removemedia.width() + appendmedia.width() + 2)) / 2) + text_box_array.at(0)->location().x(), text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
-            else removemedia.location({ (((text_box_array.at(0)->width() * columns + (text_box_array.at(0)->height() / 2)) - (removemedia.width() + appendmedia.width() + 2)) / 2) + text_box_array.at(0)->location().x(), text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
-            appendmedia.location({ removemedia.location().x() + removemedia.width() + 2, removemedia.location().y() });
-            rowtxt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - rowtxt.width()) / 2, removemedia.location().y() + removemedia.height() });
+            mediabox.size({ parameters.width() - copybox.location().x() * 2, parameters.height() - (copybox.location().y() + copybox.height() + playertitletxt.height()) - copybox.location().x() });
 
             {
                 std::vector<int> wideVec = { FFrewind.width(), FadeOpt.width() };
@@ -2694,6 +2703,65 @@ form1::form1() {
             bannerpreviewright.location({ menubannerpreview.location().x() + menubannerpreview.width() - bannerpreviewright.width(), bannerpreviewleft.location().y() });
             indextxt.location({ menubannerpreview.location().x() + ((menubannerpreview.width()) - indextxt.width()) / 2, menubannerpreview.location().y() + menubannerpreview.height() });
         }
+
+        {//put this stuff in it's own scope for less variable clutter (???)
+            std::vector<int> wideVec = { moflextxt.width(), playertitletxt.width(), menubannertxt.width() + bannermulti.width() + 3 };
+            int WideMediaText = getLargestNumber(wideVec);
+
+            if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + splitpatchbutt.height() + rowtxt.height()) {//if scroll is there
+                if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
+                    for (int y = 0; y < rows; y++)
+                        for (int x = 0; x < columns; x++) {
+                            if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
+                            else text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
+                        }
+                }
+                else {
+                    for (int y = 0; y < rows; y++)
+                        for (int x = 0; x < columns; x++) {
+                            if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns) - 20) / columns);
+                            else text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns) - 20) / columns);
+                        }
+                }
+            }
+            else {
+                if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
+                    for (int y = 0; y < rows; y++)
+                        for (int x = 0; x < columns; x++) {
+                            if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
+                            else text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
+                        }
+                }
+                else {
+                    for (int y = 0; y < rows; y++)
+                        for (int x = 0; x < columns; x++) {
+                            if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns)) / columns);
+                            else text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns)) / columns);
+                        }
+                }
+            }
+        }
+        for (uint8_t y = 0; y < rows; y++) {
+            for (uint8_t x = 0; x < columns; x++) {
+                if (splitpatchbutt.checked() && y == splitPos) text_box_array.at(y * columns + x)->location({ text_box_array.at(0)->location().x() + (x * text_box_array.at(y * columns + x)->width()), text_box_array.at(0)->location().y() + (y * text_box_array.at(y * columns + x)->height()) + SplitUp.height() + 2 });
+                else text_box_array.at(y * columns + x)->location({ text_box_array.at(0)->location().x() + (x * text_box_array.at(y * columns + x)->width()), text_box_array.at((y == 0 ? 0 : y - 1) * columns)->location().y() + (y == 0 ? 0 : text_box_array.at(y * columns + x)->height()) });
+                text_box_array.at(y * columns + x)->refresh();
+            }
+
+            for (int i = 0; i < 2; i++) {
+                butt_array.at(y * 2 + i)->location({ text_box_array.at(y * columns + (columns - 1))->location().x() + text_box_array.at(y * columns + (columns - 1))->width(), i ? (text_box_array.at(y * columns)->location().y() + text_box_array.at(y * columns)->height() - butt_array.at(y * 2 + i)->height()) : text_box_array.at(y * columns)->location().y() });
+            }
+        }
+        SplitUp.location({ text_box_array.at(splitPos * columns + (columns - 1))->location().x() + text_box_array.at(splitPos * columns + (columns - 1))->width() - (SplitUp.width() + SplitDown.width() + 1), text_box_array.at(splitPos * columns + (columns - 1))->location().y() - SplitUp.height() - 1 });
+        SplitDown.location({ SplitUp.location().x() + SplitUp.width() + 1, SplitUp.location().y() });
+
+        moflexbrowse.location({ text_box_array.at((rows - 1) * columns + 1)->location().x() + (text_box_array.at((rows - 1) * columns + 1)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 1)->location().y() + text_box_array.at((rows - 1) * columns + 1)->height() });
+        multibannerbrowse.location({ text_box_array.at((rows - 1) * columns + 2)->location().x() + (text_box_array.at((rows - 1) * columns + 2)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 2)->location().y() + text_box_array.at((rows - 1) * columns + 2)->height() });
+        if (rows == 1) removemedia.location({ (((text_box_array.at(0)->width() * columns) - (removemedia.width() + appendmedia.width() + 2)) / 2) + text_box_array.at(0)->location().x(), text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
+        else removemedia.location({ (((text_box_array.at(0)->width() * columns + (text_box_array.at(0)->height() / 2)) - (removemedia.width() + appendmedia.width() + 2)) / 2) + text_box_array.at(0)->location().x(), text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
+        appendmedia.location({ removemedia.location().x() + removemedia.width() + 2, removemedia.location().y() });
+        splitpatchbutt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - splitpatchbutt.width()) / 2, removemedia.location().y() + removemedia.height() });
+        rowtxt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - rowtxt.width()) / 2, splitpatchbutt.location().y() + splitpatchbutt.height() });
 
         minorBar.width(finalize.width() - 23);
         majorBar.width(finalize.width() - 23);
@@ -2780,10 +2848,10 @@ form1::form1() {
         moflextxt.location({ mediabox.location().x() + text_box_array.at(1)->location().x() + (text_box_array.at(1)->width() - moflextxt.width()) / 2, mediabox.location().y() - moflextxt.height() });
         menubannertxt.location({ mediabox.location().x() + text_box_array.at(2)->location().x() + (text_box_array.at(2)->width() - (menubannertxt.width() + bannermulti.width() + 3)) / 2, mediabox.location().y() - menubannertxt.height() });
         bannermulti.location({ menubannertxt.location().x() + menubannertxt.width() + 3, menubannertxt.location().y() + ((menubannertxt.height() - bannermulti.height()) / 2) });
-        //playertitletxt.refresh();//what does this even do?
-        //moflextxt.refresh();
-        //menubannertxt.refresh();
-        //bannermulti.refresh();
+        playertitletxt.refresh();
+        moflextxt.refresh();
+        menubannertxt.refresh();
+        bannermulti.refresh();
     };
 
     if (autoLoadParams || LoadFromArgv) {
@@ -2792,6 +2860,7 @@ form1::form1() {
 
     appendmedia.enabled(mode.selected_index() && rows < MAX_ROWS);
     removemedia.enabled(rows > 1);
+    splitpatchbutt.enabled(mode.selected_index() && rows > 1);
     SetIconPreview();
     loaded = true;
     top_most(false);

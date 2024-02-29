@@ -41,6 +41,7 @@ extern xtd::ustring FadeOptText;
 extern xtd::ustring PlayerTitleText;
 extern xtd::ustring MoflexFileText;
 extern xtd::ustring MenuBannerText;
+extern xtd::ustring SplitIntoPatchText;
 extern xtd::ustring SaveButtText;
 extern xtd::ustring LoadButtText;
 extern xtd::ustring LoadCIAButtText;
