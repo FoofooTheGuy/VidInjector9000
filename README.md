@@ -190,7 +190,7 @@ Credits and Stuff
 --
 [xtd](https://github.com/gammasoft71/xtd): The GUI framework that made this whole thing possible
 
-[nnc](https://github.com/MyPasswordIsWeak/nnc): Converting banner and icon images, packing and unpacking CIA files
+~~[nnc](https://github.com/MyPasswordIsWeak/nnc)~~ [(my fork of nnc)](https://github.com/FoofooTheGuy/nnc): Converting banner and icon images, packing and unpacking CIA files
 
 [stb image](https://github.com/nothings/stb): Manipulating images
 
