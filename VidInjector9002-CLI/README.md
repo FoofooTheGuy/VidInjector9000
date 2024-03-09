@@ -34,7 +34,7 @@ If you don't have `ZipFile`, run `python3 -m pip install zipfile`
 
 If compiling MbedTLS gives errors, do these and try again:
 ```
-python3 -m pip install -U 'jsonschema<4.0'
+python3 -m pip install -U jsonschema
 python3 -m pip install jinja2
 ```
 
