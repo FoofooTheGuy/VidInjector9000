@@ -5501,9 +5501,14 @@ public:
     void write(const std::string &filename, const std::string &arcname)
     {
         std::fstream file(filename, std::ios::binary | std::ios::in);
-        std::stringstream ss;
+        /*std::stringstream ss;
         ss << file.rdbuf();
-        std::string bytes = ss.str();
+        std::string bytes;*/
+        file.seekg(0, std::ios::end);//https://stackoverflow.com/a/2602258
+        size_t size = file.tellg();
+        std::string bytes(size, ' ');
+        file.seekg(0);
+        file.read(&bytes[0], size);
 
         writestr(arcname, bytes);
     }

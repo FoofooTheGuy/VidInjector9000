@@ -4,7 +4,9 @@
 #include <cstring>
 #include <vector>
 #include <filesystem>
+#include <fstream>
 #include "nnc/nnc/utf.h"
+#include "microtar.hpp"
 
 #ifdef SIZE_MAX
 #define _SIZE_MAX ((SIZE_MAX) >> 1)
@@ -52,3 +54,20 @@ int getLargestNumber(std::vector<int> &nums);
 uint32_t CRC32(void* pData, size_t iLen);
 
 std::error_code copyfile(std::string inpath, std::string outpath);
+
+std::string fixSlashes(std::string instr);
+
+/*memory efficient tar file adding
+tar: mtar tar thing. be sure to call mtar_open before doing this
+filename: input file path to add
+arcname: filename to write to the tar archive. must only be a file name.
+buffersize: size of chunk to read from the file at a time.
+*/
+std::error_code add_file(mtar_t* tar, std::string filename, std::string arcname, size_t buffersize);
+
+/*add all of a directory to a tar using
+tar: mtar tar thing. be sure to call mtar_open before doing this
+dirname: directory to put in the tar, must be an absolute path.
+buffersize: size of chunk to read from the file at a time.
+*/
+std::error_code add_directory(mtar_t* tar, std::string dirname, size_t buffersize);

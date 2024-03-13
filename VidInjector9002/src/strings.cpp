@@ -25,6 +25,7 @@ xtd::ustring SMDHList = "|SMDH Icons (.smdh, .icn, .bin)|*.smdh;*.icn;*.bin";
 xtd::ustring AllFilesList = "|All Files|*.*";
 xtd::ustring MoflexFilesList = "MoFlex videos (.moflex)|*.moflex";
 xtd::ustring ParamFilesList = "VidInjector9000 project (.vi9p)|*.vi9p";
+xtd::ustring TarFilesList = "Tape Archive (.tar)|*.tar";
 xtd::ustring ImageInfoError = "Failed to get image info.";
 xtd::ustring BannerPreviewText = "Banner preview";
 xtd::ustring CustomNotifText = "Preview is not available for custom banners.";

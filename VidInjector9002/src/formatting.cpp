@@ -321,3 +321,55 @@ std::error_code copyfile(std::string inpath, std::string outpath) {//also works 
 	return error;
 }
 
+std::string fixSlashes(std::string instr) {
+	for (size_t i = 0; i < instr.size(); i++) {
+		if (instr[i] == '\\') {
+			instr[i] = '/';
+		}
+	}
+	return instr;
+}
+
+std::error_code add_file(mtar_t* tar, std::string filename, std::string arcname, size_t buffersize) {
+	std::error_code ec;
+	size_t filesize = std::filesystem::file_size(filename, ec);
+	if (ec) {
+		return ec;
+	}
+
+	mtar_write_file_header(tar, arcname.c_str(), filesize);
+	for (size_t i = 0; i < filesize; i += buffersize) {
+		std::fstream file(filename, std::ios::binary | std::ios::in);
+		file.seekg(0, std::ios::end);//https://stackoverflow.com/a/2602258
+		std::vector<uint8_t> bytes = std::vector<uint8_t>(buffersize);
+		file.seekg(i);
+		if (i + buffersize > filesize) {//filesize will probably not be a multiple of buffersize
+			file.read(reinterpret_cast<char*>(bytes.data()), filesize - i);
+			mtar_write_data(tar, bytes.data(), filesize - i);
+		}
+		else {
+			file.read(reinterpret_cast<char*>(bytes.data()), buffersize);
+			mtar_write_data(tar, bytes.data(), buffersize);
+		}
+	}
+	return ec;
+}
+
+std::error_code add_directory(mtar_t* tar, std::string dirname, size_t buffersize) {
+	std::string arcname = dirname.substr(dirname.find_last_of("/\\") + 1);
+	std::error_code ec;
+	mtar_write_dir_header(tar, (arcname + '/').c_str());
+	for (auto const& dir_entry : std::filesystem::recursive_directory_iterator{ dirname }) {
+		auto filename_c = std::filesystem::canonical(dir_entry);
+		std::string filename = fixSlashes(filename_c.string());
+		if (!std::filesystem::is_directory(filename)) {
+			if (ec) return ec;
+			ec = add_file(tar, filename_c.string(), filename.substr(dirname.size() - arcname.size()), buffersize);
+			if (ec) return ec;
+		}
+		else {
+			mtar_write_dir_header(tar, (filename.substr(filename.rfind(arcname + '/')) + '/').c_str());
+		}
+	}
+	return ec;
+}

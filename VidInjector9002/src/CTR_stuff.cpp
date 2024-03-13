@@ -700,14 +700,13 @@ uint8_t UTF16fileToUTF8str(const std::string path, std::vector<std::string>* out
 	if (!input)
 		return 1;
 
-	char Byte;
-	//size_t it = 0;
-	input.read(&Byte, 1);//grab first byte of file
-	while (input) {//continue until input stream fails
-		output += Byte;//append byte to string
-		input.read(&Byte, 1);//grab next byte of file
-	}
+	input.seekg(0, std::ios::end);//https://stackoverflow.com/a/2602258
+	size_t size = input.tellg();
+	output.resize(size, ' ');
+	input.seekg(0);
+	input.read(&output[0], size);
 	input.close();
+
 	if ((output[0] & 0xFF) == 0xFE && (output[1] & 0xFF) == 0xFF)//if little endian (they should be in big endian anyway and i dont want to convert it)
 		return 2;
 	output.erase(output.begin(), output.begin() + 2);//delete byte order mask

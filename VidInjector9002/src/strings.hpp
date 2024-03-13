@@ -26,6 +26,7 @@ extern xtd::ustring SMDHList;
 extern xtd::ustring AllFilesList;
 extern xtd::ustring MoflexFilesList;
 extern xtd::ustring ParamFilesList;
+extern xtd::ustring TarFilesList;
 extern xtd::ustring ImageInfoError;
 extern xtd::ustring BannerPreviewText;
 extern xtd::ustring CustomNotifText;

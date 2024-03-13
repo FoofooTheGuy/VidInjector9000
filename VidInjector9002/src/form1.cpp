@@ -486,6 +486,18 @@ form1::form1() {
     FadeOpt.checked(true);
     //FadeOpt.location({ FFrewind.location().x(), ((copycheck.height() + copybox.height() + 2) / 2) + copycheck.location().y() + ((((copycheck.height() + copybox.height() + 2) / 2) - FFrewind.height()) / 2)});
 
+    mediabox.parent(parameters);
+    mediabox.border_style(xtd::forms::border_style::fixed_3d);
+    //mediabox.location({ copybox.location().x(), copybox.location().y() + copybox.height() + playertitletxt.height() });
+    //mediabox.size({ parameters.width() - copybox.location().x() * 2, parameters.height() - (copybox.location().y() + copybox.height() + playertitletxt.height()) - copybox.location().x() });
+    mediabox.auto_scroll(true);
+    if (wideWindow) {
+        mediabox.location({ publishertxt.location().x(), bannerpreviewleft.location().y() + bannerpreviewleft.height() + playertitletxt.height() });
+    }
+    else {
+        mediabox.location({ copybox.location().x(), copybox.location().y() + copybox.height() + playertitletxt.height() });
+    }
+
     //text box array stuff
     playertitletxt.parent(parameters);
     playertitletxt.auto_size(true);
@@ -497,23 +509,11 @@ form1::form1() {
     moflextxt.font({ this->font(), 15 });
     moflextxt.text(MoflexFileText);
 
-    /*menutitletxt.parent(parameters);
-    menutitletxt.auto_size(true);
-    menutitletxt.font({ this->font(), 15 });
-    menutitletxt.text(MenuTitleText);
-    menutitletxt.enabled(mode.selected_index());*/
-
     menubannertxt.parent(parameters);
     menubannertxt.auto_size(true);
     menubannertxt.font({ this->font(), 15 });
     menubannertxt.text(MenuBannerText);
     menubannertxt.enabled(mode.selected_index());
-
-    mediabox.parent(parameters);
-    mediabox.border_style(xtd::forms::border_style::fixed_3d);
-    mediabox.location({ copybox.location().x(), copybox.location().y() + copybox.height() + playertitletxt.height() });
-    //mediabox.size({ parameters.width() - copybox.location().x() * 2, parameters.height() - (copybox.location().y() + copybox.height() + playertitletxt.height()) - copybox.location().x() });
-    mediabox.auto_scroll(true);
 
     /*titlemulti.parent(parameters);
     titlemulti.size({ 9, 9 });
@@ -698,9 +698,6 @@ form1::form1() {
             }
         }
     }
-    /*for (uint8_t y = 0; y < rows; y++) {
-        
-    }*/
     butt_array.at(0)->hide();
     butt_array.at(butt_array.size() - 1)->hide();
     setMultiBannerPreview(rows - 1);
@@ -728,6 +725,7 @@ form1::form1() {
 
             for (int i = 0; i < 2; i++) {
                 butt_array.at(y * 2 + i)->location({ text_box_array.at(y * columns + (columns - 1))->location().x() + text_box_array.at(y * columns + (columns - 1))->width(), i ? (text_box_array.at(y * columns)->location().y() + text_box_array.at(y * columns)->height() - butt_array.at(y * 2 + i)->height()) : text_box_array.at(y * columns)->location().y() });
+                butt_array.at(y * 2 + i)->refresh();
             }
         }
         SplitUp.hide();
@@ -762,6 +760,7 @@ form1::form1() {
 
             for (int i = 0; i < 2; i++) {
                 butt_array.at(y * 2 + i)->location({ text_box_array.at(y * columns + (columns - 1))->location().x() + text_box_array.at(y * columns + (columns - 1))->width(), i ? (text_box_array.at(y * columns)->location().y() + text_box_array.at(y * columns)->height() - butt_array.at(y * 2 + i)->height()) : text_box_array.at(y * columns)->location().y() });
+                butt_array.at(y * 2 + i)->refresh();
             }
         }
         SplitUp.hide();
@@ -890,6 +889,7 @@ form1::form1() {
 
             for (int i = 0; i < 2; i++) {
                 butt_array.at(y * 2 + i)->location({ text_box_array.at(y * columns + (columns - 1))->location().x() + text_box_array.at(y * columns + (columns - 1))->width(), i ? (text_box_array.at(y * columns)->location().y() + text_box_array.at(y * columns)->height() - butt_array.at(y * 2 + i)->height()) : text_box_array.at(y * columns)->location().y() });
+                butt_array.at(y * 2 + i)->refresh();
             }
         }
         SplitUp.location({ text_box_array.at(splitPos * columns + (columns - 1))->location().x() + text_box_array.at(splitPos * columns + (columns - 1))->width() - (SplitUp.width() + SplitDown.width() + 1), text_box_array.at(splitPos * columns + (columns - 1))->location().y() - SplitUp.height() - 1 });
@@ -1118,6 +1118,8 @@ form1::form1() {
 
     {
         static xtd::ustring outfile = "";
+        static xtd::ustring patchfile = "";//game patch stuff zipped
+        static bool dopatch = false;
 
         buildButt.click += [&] {
             outfile = save_file(CiaFiles, xtd::ustring::format("{} [000400000{}00]", removeInvalids(longname.text()), titleIDbox.text()));
@@ -1129,6 +1131,18 @@ form1::form1() {
                     return;
                 if (outfile.empty())
                     return;
+            }
+            if (mode.selected_index() && splitpatchbutt.checked()) {
+                patchfile = save_file(TarFilesList, xtd::ustring::format("{} (patch)", outfile.substr(outfile.find_last_of("/\\") + 1)), outfile.substr(0, outfile.find_last_of("/\\") + 1));
+                {
+                    xtd::forms::dialog_result res = xtd::forms::dialog_result::yes;
+                    if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*patchfile.c_str())))
+                        res = xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}", patchfile.substr(patchfile.find_last_of("/\\") + 1), AlreadyExists, ReplaceIt), ConfirmSave, xtd::forms::message_box_buttons::yes_no, xtd::forms::message_box_icon::question);
+                    if (res == xtd::forms::dialog_result::no || res == xtd::forms::dialog_result::none)
+                        return;
+                    if (patchfile.empty())
+                        return;
+                }
             }
             minorBar.style(xtd::forms::progress_bar_style::marquee);
             ableObjects(false);
@@ -1143,697 +1157,796 @@ form1::form1() {
             //minorBar.minimum(0);
 
             finalize.cursor(xtd::forms::cursors::app_starting());
-
-            //extract base
-            {
-                std::error_code error;
-                std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*tempPath.c_str()), error);
-                if (error) {
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", tempPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, outfile), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    return;
-                }
-            }
-            Generate_Files(tempPath.c_str(), mode.selected_index());
-
-            majorBarTxt.text(xtd::ustring::format("{} romfs", CreatingFile));
-            majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, majorBarTxt.location().y() });
-            majorBarTxt.show();
-
-            //make movie_title.csv (player title)
-            {
-                minorBarTxt.text(xtd::ustring::format("{} romfs/movie_title.csv", CreatingFile));
-                minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
-                minorBarTxt.show();
-
-                std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/{}/temp/romfs/movie", ProgramDir, resourcesPath).c_str()));
-                std::ofstream movie_title(xtd::ustring::format("{}/{}/temp/romfs/movie/movie_title.csv", ProgramDir, resourcesPath).c_str(), std::ios_base::out | std::ios_base::binary);
-
-                movie_title << "\xFF\xFE" + UTF8toUTF16("#JP,#EN,#FR,#GE,#IT,#SP,#CH,#KO,#DU,#PO,#RU,#TW\x0D\x0A");
-                for (int i = 0; i < (mode.selected_index() ? rows : 1); i++) {
-                    std::string outstr = text_box_array.at(i * columns)->text();
-
-                    if (outstr[0] == '#') {//sneakily fix the string huhuhu
-                        outstr[0] = '\\';
-                        outstr.insert(1, "x23");
+            do {
+                //extract base (or don't)
+                {
+                    std::error_code error;
+                    std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*tempPath.c_str()), error);
+                    if (error) {
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", tempPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, outfile), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        return;
                     }
-                    for (size_t j = 0; j < outstr.size(); j++) {
-                        if (outstr[j] == ',') {
-                            outstr[j] = '\\';
-                            outstr.insert(j + 1, "x2C");
+                }
+                if (!dopatch)
+                    Generate_Files(tempPath.c_str(), mode.selected_index());
+
+                xtd::ustring romfsPath;
+                if (dopatch) {
+                    romfsPath = xtd::ustring::format("{}/luma/titles/000400000{}00/romfs", tempPath, titleIDbox.text());
+                }
+                else {
+                    romfsPath = xtd::ustring::format("{}/romfs", tempPath);
+                }
+                //delete all the stuff instead of making another file (which i will probably end up doing anyway since we only need exheader from it) jk just dont extract base since it's a luma patch now
+                /*if (dopatch) {
+                    {
+                        std::error_code error;
+                        std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/romfs/effect", tempPath).c_str()), error);
+                        if (error) {
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("{}/romfs/effect\n{}", tempPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, outfile), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            return;
                         }
                     }
-                    for (size_t j = 0; j < outstr.size(); j++) {
-                        if (outstr[j] == '\n') {
-                            outstr[j] = '\\';
-                            outstr.insert(j + 1, "n");
+                    {
+                        std::error_code error;
+                        std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/romfs/lang", tempPath).c_str()), error);
+                        if (error) {
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("{}/romfs/lang\n{}", tempPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, outfile), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            return;
                         }
                     }
-                    for (int j = 0; j < 11; j++) {//do it 11 times because it needs to
-                        movie_title << UTF8toUTF16(outstr + ",");
+                    {
+                        std::error_code error;
+                        std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/romfs/layout", tempPath).c_str()), error);
+                        if (error) {
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("{}/romfs/layout\n{}", tempPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, outfile), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            return;
+                        }
                     }
-                    movie_title << UTF8toUTF16(outstr + "\x0D\x0A");//put the last stuff
-                }
-                movie_title.close();
-                if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/{}/temp/romfs/movie/movie_title.csv", ProgramDir, resourcesPath).c_str()))) {
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/{}/temp/romfs/movie/movie_title.csv", FailedToCreateFile, ProgramDir, resourcesPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    //builder.cancel_async();
-                    return;
-                }
-            }
-            if (builder.cancellation_pending()) return;
-            //make settingsTL.csv (menu title and stuff)
-            {
-                minorBarTxt.text(xtd::ustring::format("{} romfs/settings/settingsTL.csv", CreatingFile));
-                minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
+                    {
+                        std::error_code error;
+                        std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/romfs/settings", tempPath).c_str()), error);
+                        if (error) {
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("{}/romfs/settings\n{}", tempPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, outfile), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            return;
+                        }
+                    }
+                    {
+                        std::error_code error;
+                        std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/romfs/shaders", tempPath).c_str()), error);
+                        if (error) {
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("{}/romfs/shaders\n{}", tempPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, outfile), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            return;
+                        }
+                    }
+                    {
+                        std::error_code error;
+                        std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/romfs/sound", tempPath).c_str()), error);
+                        if (error) {
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("{}/romfs/sound\n{}", tempPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, outfile), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            return;
+                        }
+                    }
+                }*/
 
-                std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/romfs/settings", tempPath).c_str()));
-                std::ofstream settingsTL(xtd::ustring::format("{}/romfs/settings/settingsTL.csv", tempPath).c_str(), std::ios_base::out | std::ios_base::binary);
+                majorBarTxt.text(xtd::ustring::format("{} romfs", CreatingFile));
+                majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, majorBarTxt.location().y() });
+                majorBarTxt.show();
 
-                std::string outlongname = longname.text();
-                if (outlongname[0] == '#') {//sneakily fix the string huhuhu
-                    outlongname[0] = '\\';
-                    outlongname.insert(1, "x23");
-                }
-                for (size_t j = 0; j < outlongname.size(); j++) {
-                    if (outlongname[j] == ',') {
-                        outlongname[j] = '\\';
-                        outlongname.insert(j + 1, "x2C");
+                //make movie_title.csv (player title)
+                {
+                    minorBarTxt.text(xtd::ustring::format("{} romfs/movie_title.csv", CreatingFile));
+                    minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
+                    minorBarTxt.show();
+
+                    std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/movie", romfsPath).c_str()));
+                    std::ofstream movie_title(xtd::ustring::format("{}/movie/movie_title.csv", romfsPath).c_str(), std::ios_base::out | std::ios_base::binary);
+
+                    movie_title << "\xFF\xFE" + UTF8toUTF16("#JP,#EN,#FR,#GE,#IT,#SP,#CH,#KO,#DU,#PO,#RU,#TW\x0D\x0A");
+                    for (int i = 0; i < (mode.selected_index() ? ((splitpatchbutt.checked() && !dopatch) ? splitPos : rows) : 1); i++) {
+                        std::string outstr = text_box_array.at(i * columns)->text();
+
+                        if (outstr[0] == '#') {//sneakily fix the string huhuhu
+                            outstr[0] = '\\';
+                            outstr.insert(1, "x23");
+                        }
+                        for (size_t j = 0; j < outstr.size(); j++) {
+                            if (outstr[j] == ',') {
+                                outstr[j] = '\\';
+                                outstr.insert(j + 1, "x2C");
+                            }
+                        }
+                        for (size_t j = 0; j < outstr.size(); j++) {
+                            if (outstr[j] == '\n') {
+                                outstr[j] = '\\';
+                                outstr.insert(j + 1, "n");
+                            }
+                        }
+                        for (int j = 0; j < 11; j++) {//do it 11 times because it needs to
+                            movie_title << UTF8toUTF16(outstr + ",");
+                        }
+                        movie_title << UTF8toUTF16(outstr + "\x0D\x0A");//put the last stuff
+                    }
+                    movie_title.close();
+                    if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/movie/movie_title.csv", romfsPath).c_str()))) {
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/movie/movie_title.csv", FailedToCreateFile, romfsPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        //builder.cancel_async();
+                        return;
                     }
                 }
-                for (size_t j = 0; j < outlongname.size(); j++) {
-                    if (outlongname[j] == '\n') {
-                        outlongname[j] = '\\';
-                        outlongname.insert(j + 1, "n");
+                if (builder.cancellation_pending()) return;
+                //make settingsTL.csv (menu title and stuff)
+                {
+                    minorBarTxt.text(xtd::ustring::format("{} romfs/settings/settingsTL.csv", CreatingFile));
+                    minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
+
+                    std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/settings", romfsPath).c_str()));
+                    std::ofstream settingsTL(xtd::ustring::format("{}/settings/settingsTL.csv", romfsPath).c_str(), std::ios_base::out | std::ios_base::binary);
+
+                    std::string outlongname = longname.text();
+                    if (outlongname[0] == '#') {//sneakily fix the string huhuhu
+                        outlongname[0] = '\\';
+                        outlongname.insert(1, "x23");
+                    }
+                    for (size_t j = 0; j < outlongname.size(); j++) {
+                        if (outlongname[j] == ',') {
+                            outlongname[j] = '\\';
+                            outlongname.insert(j + 1, "x2C");
+                        }
+                    }
+                    for (size_t j = 0; j < outlongname.size(); j++) {
+                        if (outlongname[j] == '\n') {
+                            outlongname[j] = '\\';
+                            outlongname.insert(j + 1, "n");
+                        }
+                    }
+
+                    std::string outpublisher = publisher.text();
+                    if (outpublisher[0] == '#') {//sneakily fix the string huhuhu
+                        outpublisher[0] = '\\';
+                        outpublisher.insert(1, "x23");
+                    }
+                    for (size_t j = 0; j < outpublisher.size(); j++) {
+                        if (outpublisher[j] == ',') {
+                            outpublisher[j] = '\\';
+                            outpublisher.insert(j + 1, "x2C");
+                        }
+                    }
+                    for (size_t j = 0; j < outpublisher.size(); j++) {
+                        if (outpublisher[j] == '\n') {
+                            outpublisher[j] = '\\';
+                            outpublisher.insert(j + 1, "n");
+                        }
+                    }
+
+                    settingsTL << "\xFF\xFE" +
+                        UTF8toUTF16("# おしらせURL\x0D\x0A"//hard to read because of line breaks but hey better than hex
+                            "# JP:\x0D\x0A"
+                            "none\x0D\x0A"
+                            "\x0D\x0A"
+                            "# EN:\x0D\x0A"
+                            "none\x0D\x0A"
+                            "\x0D\x0A"
+                            "# FR:\x0D\x0A"
+                            "none\x0D\x0A"
+                            "\x0D\x0A"
+                            "# GE:\x0D\x0A"
+                            "none\x0D\x0A"
+                            "\x0D\x0A"
+                            "# IT:\x0D\x0A"
+                            "none\x0D\x0A"
+                            "\x0D\x0A"
+                            "# SP:\x0D\x0A"
+                            "none\x0D\x0A"
+                            "\x0D\x0A"
+                            "# CN:\x0D\x0A"
+                            "none\x0D\x0A"
+                            "\x0D\x0A"
+                            "# KO:\x0D\x0A"
+                            "none\x0D\x0A"
+                            "\x0D\x0A"
+                            "# DU:\x0D\x0A"
+                            "none\x0D\x0A"
+                            "\x0D\x0A"
+                            "# PO:\x0D\x0A"
+                            "none\x0D\x0A"
+                            "\x0D\x0A"
+                            "# RU:\x0D\x0A"
+                            "none\x0D\x0A"
+                            "\x0D\x0A"
+                            "# TW:\x0D\x0A"
+                            "none\x0D\x0A"
+                            "\x0D\x0A"
+                            "# アプリ名（ロングネーム）\x0D\x0A"//app long name
+                            "# JP:\x0D\x0A"
+                            + outlongname + "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# EN:\x0D\x0A"
+                            + outlongname + "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# FR:\x0D\x0A"
+                            + outlongname + "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# GE:\x0D\x0A"
+                            + outlongname + "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# IT:\x0D\x0A"
+                            + outlongname + "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# SP:\x0D\x0A"
+                            + outlongname + "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# CN:\x0D\x0A"
+                            + outlongname + "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# KO:\x0D\x0A"
+                            + outlongname + "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# DU:\x0D\x0A"
+                            + outlongname + "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# PO:\x0D\x0A"
+                            + outlongname + "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# RU:\x0D\x0A"
+                            + outlongname + "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# TW:\x0D\x0A"
+                            + outlongname + "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# 拡張セーブデータのID（16進数）\x0D\x0A"//save data ID
+                            + titleIDbox.text().c_str() + "\x0D\x0A"//make it the save as title ID because yes
+                            "\x0D\x0A"
+                            "# NADLタスクのID\x0D\x0A"
+                            "none\x0D\x0A"
+                            "\x0D\x0A"
+                            "# タスクの実行間隔（h）（10進数）\x0D\x0A"
+                            "0\x0D\x0A"
+                            "\x0D\x0A"
+                            "# タスクの実行回数（10進数）\x0D\x0A"
+                            "0\x0D\x0A"
+                            "\x0D\x0A"
+                            "# おしらせのあり、なし\x0D\x0A"//not sure what this is, but if you enable it in single vid it instantly crashes... maybe it's the thing telling you to take a break? nah because it's false and that still appears
+                            "false\x0D\x0A"
+                            "\x0D\x0A"
+                            "# 早送り、巻戻しボタンのあり、なし\x0D\x0A"//ff rewind
+                            + (FFrewind.checked() ? "true" : "false") + "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# 優しさ演出のあり、なし\x0D\x0A"//gentleness
+                            + (FadeOpt.checked() ? "true" : "false") + "\x0D\x0A");
+
+                    if (mode.selected_index()) {
+                        settingsTL << UTF8toUTF16("\x0D\x0A"
+                            "# 動画の数\x0D\x0A"//amount of videos
+                            + std::to_string((splitpatchbutt.checked() && !dopatch) ? splitPos : rows) + "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# 動画パブリッシャー名\x0D\x0A"//publisher name
+                            "# JP:\x0D\x0A"
+                            + outpublisher + "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# EN:\x0D\x0A"
+                            + outpublisher + "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# FR:\x0D\x0A"
+                            + outpublisher + "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# GE:\x0D\x0A"
+                            + outpublisher + "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# IT:\x0D\x0A"
+                            + outpublisher + "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# SP:\x0D\x0A"
+                            + outpublisher + "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# CN:\x0D\x0A"
+                            + outpublisher + "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# KO:\x0D\x0A"
+                            + outpublisher + "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# DU:\x0D\x0A"
+                            + outpublisher + "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# PO:\x0D\x0A"
+                            + outpublisher + "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# RU:\x0D\x0A"
+                            + outpublisher + "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# TW:\x0D\x0A"
+                            + outpublisher + "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# WEBブラウザ用のURL\x0D\x0A"//web browser URL (?)
+                            "# JP:\x0D\x0A"
+                            "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# EN:\x0D\x0A"
+                            "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# FR:\x0D\x0A"
+                            "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# GE:\x0D\x0A"
+                            "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# IT:\x0D\x0A"
+                            "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# SP:\x0D\x0A"
+                            "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# CN:\x0D\x0A"
+                            "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# KO:\x0D\x0A"
+                            "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# DU:\x0D\x0A"
+                            "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# PO:\x0D\x0A"
+                            "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# RU:\x0D\x0A"
+                            "\x0D\x0A"
+                            "\x0D\x0A"
+                            "# TW:");
+                    }
+                    settingsTL.close();
+                    if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/settings/settingsTL.csv", romfsPath).c_str()))) {
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/settings/settingsTL.csv", FailedToCreateFile, romfsPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        //builder.cancel_async();
+                        return;
                     }
                 }
-
-                std::string outpublisher = publisher.text();
-                if (outpublisher[0] == '#') {//sneakily fix the string huhuhu
-                    outpublisher[0] = '\\';
-                    outpublisher.insert(1, "x23");
-                }
-                for (size_t j = 0; j < outpublisher.size(); j++) {
-                    if (outpublisher[j] == ',') {
-                        outpublisher[j] = '\\';
-                        outpublisher.insert(j + 1, "x2C");
-                    }
-                }
-                for (size_t j = 0; j < outpublisher.size(); j++) {
-                    if (outpublisher[j] == '\n') {
-                        outpublisher[j] = '\\';
-                        outpublisher.insert(j + 1, "n");
-                    }
-                }
-
-                settingsTL << "\xFF\xFE" +
-                    UTF8toUTF16("# おしらせURL\x0D\x0A"//hard to read because of line breaks but hey better than hex
-                        "# JP:\x0D\x0A"
-                        "none\x0D\x0A"
-                        "\x0D\x0A"
-                        "# EN:\x0D\x0A"
-                        "none\x0D\x0A"
-                        "\x0D\x0A"
-                        "# FR:\x0D\x0A"
-                        "none\x0D\x0A"
-                        "\x0D\x0A"
-                        "# GE:\x0D\x0A"
-                        "none\x0D\x0A"
-                        "\x0D\x0A"
-                        "# IT:\x0D\x0A"
-                        "none\x0D\x0A"
-                        "\x0D\x0A"
-                        "# SP:\x0D\x0A"
-                        "none\x0D\x0A"
-                        "\x0D\x0A"
-                        "# CN:\x0D\x0A"
-                        "none\x0D\x0A"
-                        "\x0D\x0A"
-                        "# KO:\x0D\x0A"
-                        "none\x0D\x0A"
-                        "\x0D\x0A"
-                        "# DU:\x0D\x0A"
-                        "none\x0D\x0A"
-                        "\x0D\x0A"
-                        "# PO:\x0D\x0A"
-                        "none\x0D\x0A"
-                        "\x0D\x0A"
-                        "# RU:\x0D\x0A"
-                        "none\x0D\x0A"
-                        "\x0D\x0A"
-                        "# TW:\x0D\x0A"
-                        "none\x0D\x0A"
-                        "\x0D\x0A"
-                        "# アプリ名（ロングネーム）\x0D\x0A"//app long name
-                        "# JP:\x0D\x0A"
-                        + outlongname + "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# EN:\x0D\x0A"
-                        + outlongname + "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# FR:\x0D\x0A"
-                        + outlongname + "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# GE:\x0D\x0A"
-                        + outlongname + "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# IT:\x0D\x0A"
-                        + outlongname + "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# SP:\x0D\x0A"
-                        + outlongname + "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# CN:\x0D\x0A"
-                        + outlongname + "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# KO:\x0D\x0A"
-                        + outlongname + "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# DU:\x0D\x0A"
-                        + outlongname + "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# PO:\x0D\x0A"
-                        + outlongname + "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# RU:\x0D\x0A"
-                        + outlongname + "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# TW:\x0D\x0A"
-                        + outlongname + "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# 拡張セーブデータのID（16進数）\x0D\x0A"//save data ID
-                        + titleIDbox.text().c_str() + "\x0D\x0A"//make it the save as title ID because yes
-                        "\x0D\x0A"
-                        "# NADLタスクのID\x0D\x0A"
-                        "none\x0D\x0A"
-                        "\x0D\x0A"
-                        "# タスクの実行間隔（h）（10進数）\x0D\x0A"
-                        "0\x0D\x0A"
-                        "\x0D\x0A"
-                        "# タスクの実行回数（10進数）\x0D\x0A"
-                        "0\x0D\x0A"
-                        "\x0D\x0A"
-                        "# おしらせのあり、なし\x0D\x0A"//not sure what this is, but if you enable it in single vid it instantly crashes... maybe it's the thing telling you to take a break? nah because it's false and that still appears
-                        "false\x0D\x0A"
-                        "\x0D\x0A"
-                        "# 早送り、巻戻しボタンのあり、なし\x0D\x0A"//ff rewind
-                        + (FFrewind.checked() ? "true" : "false") + "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# 優しさ演出のあり、なし\x0D\x0A"//gentleness
-                        + (FadeOpt.checked() ? "true" : "false") + "\x0D\x0A");
-
-                if (mode.selected_index()) {
-                    settingsTL << UTF8toUTF16("\x0D\x0A"
-                        "# 動画の数\x0D\x0A"//amount of videos
-                        + std::to_string(rows) + "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# 動画パブリッシャー名\x0D\x0A"//publisher name
-                        "# JP:\x0D\x0A"
-                        + outpublisher + "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# EN:\x0D\x0A"
-                        + outpublisher + "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# FR:\x0D\x0A"
-                        + outpublisher + "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# GE:\x0D\x0A"
-                        + outpublisher + "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# IT:\x0D\x0A"
-                        + outpublisher + "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# SP:\x0D\x0A"
-                        + outpublisher + "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# CN:\x0D\x0A"
-                        + outpublisher + "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# KO:\x0D\x0A"
-                        + outpublisher + "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# DU:\x0D\x0A"
-                        + outpublisher + "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# PO:\x0D\x0A"
-                        + outpublisher + "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# RU:\x0D\x0A"
-                        + outpublisher + "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# TW:\x0D\x0A"
-                        + outpublisher + "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# WEBブラウザ用のURL\x0D\x0A"//web browser URL (?)
-                        "# JP:\x0D\x0A"
-                        "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# EN:\x0D\x0A"
-                        "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# FR:\x0D\x0A"
-                        "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# GE:\x0D\x0A"
-                        "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# IT:\x0D\x0A"
-                        "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# SP:\x0D\x0A"
-                        "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# CN:\x0D\x0A"
-                        "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# KO:\x0D\x0A"
-                        "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# DU:\x0D\x0A"
-                        "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# PO:\x0D\x0A"
-                        "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# RU:\x0D\x0A"
-                        "\x0D\x0A"
-                        "\x0D\x0A"
-                        "# TW:");
-                }
-                settingsTL.close();
-                if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/romfs/settings/settingsTL.csv", tempPath).c_str()))) {
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/settings/settingsTL.csv", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    //builder.cancel_async();
-                    return;
-                }
-            }
-            if (builder.cancellation_pending()) return;
-            //make copyright stuff (multi vid only)
-            if (mode.selected_index()) {
-                minorBarTxt.text(xtd::ustring::format("{} romfs/settings/information_buttons.csv", CreatingFile));
-                minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
-
-                std::filesystem::create_directories(xtd::ustring::format("{}/romfs/settings", tempPath).c_str());//just in case Hehehhhah
-                std::ofstream information_buttons(xtd::ustring::format("{}/romfs/settings/information_buttons.csv", tempPath).c_str(), std::ios_base::out | std::ios_base::binary);
-                information_buttons << (copycheck.checked() ? ("\xFF\xFE" + UTF8toUTF16("Copyright")) : "\xFF\xFE");
-                information_buttons.close();
-                if (!std::filesystem::exists(xtd::ustring::format("{}/romfs/settings/information_buttons.csv", tempPath).c_str())) {
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/settings/information_buttons.csv", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    //builder.cancel_async();
-                    return;
-                }
-
-                if (copycheck.checked()) {
-                    minorBarTxt.text(xtd::ustring::format("{} romfs/settings/copyright.txt", CreatingFile));
+                if (builder.cancellation_pending()) return;
+                //make copyright stuff (multi vid only)
+                if (mode.selected_index() && !dopatch) {//we dont need to do this again in the patch
+                    minorBarTxt.text(xtd::ustring::format("{} romfs/settings/information_buttons.csv", CreatingFile));
                     minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
 
-                    std::ofstream copyrighttxt(xtd::ustring::format("{}/romfs/settings/copyright.txt", tempPath).c_str(), std::ios_base::out | std::ios_base::binary);
-                    copyrighttxt << "\xFF\xFE" + UTF8toUTF16(copybox.text());
-                    copyrighttxt.close();
-                    if (!std::filesystem::exists(xtd::ustring::format("{}/romfs/settings/copyright.txt", tempPath).c_str())) {
-                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/settings/copyright.txt", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    std::filesystem::create_directories(xtd::ustring::format("{}/settings", romfsPath).c_str());//just in case Hehehhhah
+                    std::ofstream information_buttons(xtd::ustring::format("{}/settings/information_buttons.csv", romfsPath).c_str(), std::ios_base::out | std::ios_base::binary);
+                    information_buttons << (copycheck.checked() ? ("\xFF\xFE" + UTF8toUTF16("Copyright")) : "\xFF\xFE");
+                    information_buttons.close();
+                    if (!std::filesystem::exists(xtd::ustring::format("{}/settings/information_buttons.csv", romfsPath).c_str())) {
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/settings/information_buttons.csv", FailedToCreateFile, romfsPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                         //builder.cancel_async();
                         return;
                     }
-                }
-            }
-            if (builder.cancellation_pending()) return;
-            builder.report_progress(15);
-            //copy moflex
-            {
-                uint8_t Checker[4];
-                for (int i = 0; i < (mode.selected_index() ? rows : 1); i++) {
-                    if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*text_box_array.at(i * columns + 1)->text().c_str()))) {
-                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}, {} 2\n{} \"{}\"", row, i + 1, column, FailedToFindPath, text_box_array.at(i * columns + 1)->text()), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                        //builder.cancel_async();
-                        return;
-                    }
-                    std::string extension = text_box_array.at(i * columns + 1)->text();
-                    if (extension.find_last_of(".") != std::string::npos)
-                        extension.erase(extension.begin(), extension.begin() + extension.find_last_of("."));
-                    std::ifstream inmoflex(std::filesystem::path((const char8_t*)&*text_box_array.at(i * columns + 1)->text().c_str()), std::ios_base::in | std::ios::binary);
-                    for (int j = 0; j < 4; j++) {
-                        inmoflex >> Checker[j];//https://stackoverflow.com/a/2974735
-                        if (extension != ".moflex" || Checker[j] != moflexMagic[j]) {
-                            xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}, {} 2\n\"{}\" {}", row, i + 1, column, text_box_array.at(i * columns + 1)->text(), MoflexError), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                            //builder.cancel_async();
-                            return;
-                        }
-                    }
-                    std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/romfs/movie", tempPath).c_str()));
-                    if (mode.selected_index()) {
 
-                        if (builder.cancellation_pending()) return;
-                        minorBarTxt.text(xtd::ustring::format("{} {}/{}", CopyingMoflex, i + 1, rows));
-                        minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
+                    if (copycheck.checked()) {
+                        minorBarTxt.text(xtd::ustring::format("{} romfs/settings/copyright.txt", CreatingFile));
+                        minorBarTxt.location().x((finalize.width() - minorBarTxt.width()) / 2);
 
-                        std::error_code error;
-                        error = copyfile(text_box_array.at(i * columns + 1)->text().c_str(), xtd::ustring::format("{}/romfs/movie/movie_{}.moflex", tempPath, i).c_str());
-                        if (error) {
-                            xtd::forms::message_box::show(*this, xtd::ustring::format("\"{}\" -> \"{}/romfs/movie/movie_{}.moflex\"\n{}", text_box_array.at(i * columns + 1)->text(), tempPath, i, error.message()), xtd::ustring::format("{} {}", ErrorText, FailedToCopyFile), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                            xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/movie/movie_{}.moflex", FailedToCreateFile, tempPath, i), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                            return;
-                        }
-                        if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/romfs/movie/movie_{}.moflex", tempPath, i).c_str()))) {//this probably only happens if there's no disk space
-                            xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/movie/movie_{}.moflex", FailedToCreateFile, tempPath, i), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                            //builder.cancel_async();
-                            return;
-                        }
-                    }
-                    else {
-                        if (builder.cancellation_pending()) return;
-                        minorBarTxt.text(xtd::ustring::format("{} 1/1", CopyingMoflex));
-                        minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
-                        std::error_code error;
-                        error = copyfile(text_box_array.at(i * columns + 1)->text().c_str(), xtd::ustring::format("{}/romfs/movie/movie.moflex", tempPath).c_str());
-                        if (error) {
-                            xtd::forms::message_box::show(*this, xtd::ustring::format("\"{}\" -> \"{}/romfs/movie/movie.moflex\"\n{}", text_box_array.at(i * columns + 1)->text(), tempPath, error.message()), xtd::ustring::format("{} {}", ErrorText, FailedToCopyFile), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                            xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/movie/movie.moflex", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                            return;
-                        }
-                        if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/romfs/movie/movie.moflex", tempPath).c_str()))) {//this probably only happens if there's no disk space
-                            xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/movie/movie.moflex", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        std::ofstream copyrighttxt(xtd::ustring::format("{}/settings/copyright.txt", romfsPath).c_str(), std::ios_base::out | std::ios_base::binary);
+                        copyrighttxt << "\xFF\xFE" + UTF8toUTF16(copybox.text());
+                        copyrighttxt.close();
+                        if (!std::filesystem::exists(xtd::ustring::format("{}/settings/copyright.txt", romfsPath).c_str())) {
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/settings/copyright.txt", FailedToCreateFile, romfsPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                             //builder.cancel_async();
                             return;
                         }
                     }
                 }
-            }
-            builder.report_progress(75);
-            if (builder.cancellation_pending()) return;
-            //convert to bimg (multi vid only)
-            if (mode.selected_index()) {
-                for (int i = 0; i < rows; i++) {
-                    uint8_t bimg[256 * 128 * sizeof(nnc_u16) + 0x20];
-                    /*if (!std::filesystem::exists(text_box_array.at(i * columns + 2)->text().c_str())) {//comment out because we want blank image if it failed
-                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}, {} 3\n{} \"{}\"", row, i + 1, column, FailedToFindPath, text_box_array.at(i * columns + 2)->text()), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                        //builder.cancel_async();
-                        return;
-                    }*/
+                if (builder.cancellation_pending()) return;
+                builder.report_progress(15);
+                //copy moflex
+                {
+                    uint8_t Checker[4];
+                    for (int i = dopatch ? splitPos : 0; i < (mode.selected_index() ? ((splitpatchbutt.checked() && !dopatch) ? splitPos : rows) : 1); i++) {
+                        if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*text_box_array.at(i * columns + 1)->text().c_str()))) {
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}, {} 2\n{} \"{}\"", row, i + 1, column, FailedToFindPath, text_box_array.at(i * columns + 1)->text()), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            //builder.cancel_async();
+                            return;
+                        }
+                        std::string extension = text_box_array.at(i * columns + 1)->text();
+                        if (extension.find_last_of(".") != std::string::npos)
+                            extension.erase(extension.begin(), extension.begin() + extension.find_last_of("."));
+                        std::ifstream inmoflex(std::filesystem::path((const char8_t*)&*text_box_array.at(i * columns + 1)->text().c_str()), std::ios_base::in | std::ios::binary);
+                        for (int j = 0; j < 4; j++) {
+                            inmoflex >> Checker[j];//https://stackoverflow.com/a/2974735
+                            if (extension != ".moflex" || Checker[j] != moflexMagic[j]) {
+                                xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}, {} 2\n\"{}\" {}", row, i + 1, column, text_box_array.at(i * columns + 1)->text(), MoflexError), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                                //builder.cancel_async();
+                                return;
+                            }
+                        }
+                        std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/movie", romfsPath).c_str()));
+                        if (mode.selected_index()) {
 
-                    minorBarTxt.text(xtd::ustring::format("{} romfs/movie/movie_{}.bimg", CreatingFile, i));
-                    minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
+                            if (builder.cancellation_pending()) return;
+                            minorBarTxt.text(xtd::ustring::format("{} {}/{}", CopyingMoflex, i + 1, rows));
+                            minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
 
-                    uint8_t ret = convertToBimg(text_box_array.at(i * columns + 2)->text(), bimg, true);
-                    if (ret > 0) {
-                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/movie/movie_{}.bimg\n({})", FailedToCreateFile, tempPath, i, ret), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                        //builder.cancel_async();
-                        return;
-                    }
-                    std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/romfs/movie", tempPath).c_str()));
-                    std::ofstream bimgfile(xtd::ustring::format("{}/romfs/movie/movie_{}.bimg", tempPath, i).c_str(), std::ios_base::out | std::ios_base::binary);
-                    bimgfile.write(reinterpret_cast<const char*>(bimg), sizeof(bimg));
-                    bimgfile.close();
-                }
-                //make movie_bnrname.csv
-                std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/romfs/settings", tempPath).c_str()));
-                std::ofstream movie_bnrname(xtd::ustring::format("{}/romfs/settings/movie_bnrname.csv", tempPath).c_str(), std::ios_base::out | std::ios_base::binary);
-                movie_bnrname << "\xFF\xFE" + UTF8toUTF16(std::to_string(rows) + "\x0D\x0A");
-                for (int i = 0; i < rows; i++) {
-                    movie_bnrname << UTF8toUTF16("movie_" + std::to_string(i) + ".bimg\x0D\x0A");
-                }
-                movie_bnrname.close();
-                if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/romfs/settings/movie_bnrname.csv", tempPath).c_str()))) {
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/settings/movie_bnrname.csv", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    //builder.cancel_async();
-                    return;
-                }
-            }
-            if (builder.cancellation_pending()) return;
-            builder.report_progress(100);
-            //do exefs (icon and banner)
-            {
-                builder.report_progress(0);
-                majorBarTxt.text(xtd::ustring::format("{} exefs", CreatingFile));
-                majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, majorBarTxt.location().y() });
-
-                minorBarTxt.text(xtd::ustring::format("{} exefs/icon", CreatingFile));
-                minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
-
-                uint8_t ret = 0;
-                ret = convertToIcon(iconbox.text(), xtd::ustring::format("{}/exefs/icon", tempPath).c_str(), UTF8toUTF16(shortname.text()), UTF8toUTF16(longname.text()), UTF8toUTF16(publisher.text()), borderMode);
-                if (ret > 0) {
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/exefs/icon\n({})", FailedToCreateFile, tempPath, ret), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    //builder.cancel_async();
-                    return;
-                }
-                if (mode.selected_index()) {//multi vid needs an icon here so that it can make ext data or something (the game crashes if it isnt here)
-                    majorBarTxt.text(xtd::ustring::format("{} romfs", CreatingFile));
-                    majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, majorBarTxt.location().y() });
-
-                    minorBarTxt.text(xtd::ustring::format("{} romfs/icon.icn", CreatingFile));
-                    minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
-
-                    std::error_code error;
-                    error = copyfile(xtd::ustring::format("{}/exefs/icon", tempPath).c_str(), xtd::ustring::format("{}/romfs/icon.icn", tempPath).c_str());
-                    if (error) {
-                        xtd::forms::message_box::show(*this, xtd::ustring::format("\"{}/exefs/icon\" -> \"{}/romfs/icon.icn\"\n{}", tempPath, tempPath, error.message()), xtd::ustring::format("{} {}", ErrorText, FailedToCopyFile), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/icon.icn", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                        return;
-                    }
-                    if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/{}/temp/romfs/icon.icn", ProgramDir, resourcesPath).c_str()))) {
-                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/romfs/icon.icn", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                        //builder.cancel_async();
-                        return;
-                    }
-                    majorBarTxt.text(xtd::ustring::format("{} exefs", CreatingFile));
-                    majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, majorBarTxt.location().y() });
-                }
-                builder.report_progress(50);
-                //make banner
-                minorBarTxt.text(xtd::ustring::format("{} exefs/banner", CreatingFile));
-                majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, majorBarTxt.location().y() });
-
-                uint8_t Checker[4];
-                bool banner = false;
-                std::ifstream inbanner(std::filesystem::path((const char8_t*)&*bannerbox.text().c_str()), std::ios::binary);
-                if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*bannerbox.text().c_str()))) {
-                    for (int i = 0; i < 4; i++) {
-                        inbanner >> Checker[i];//https://stackoverflow.com/a/2974735
-                        if (Checker[i] == bannerMagic[i]) {
-                            banner = true;
+                            std::error_code error;
+                            error = copyfile(text_box_array.at(i * columns + 1)->text().c_str(), xtd::ustring::format("{}/movie/movie_{}.moflex", romfsPath, i).c_str());
+                            if (error) {
+                                xtd::forms::message_box::show(*this, xtd::ustring::format("\"{}\" -> \"{}/movie/movie_{}.moflex\"\n{}", text_box_array.at(i * columns + 1)->text(), romfsPath, i, error.message()), xtd::ustring::format("{} {}", ErrorText, FailedToCopyFile), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                                xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/movie/movie_{}.moflex", FailedToCreateFile, romfsPath, i), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                                return;
+                            }
+                            if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/movie/movie_{}.moflex", romfsPath, i).c_str()))) {//this probably only happens if there's no disk space
+                                xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/movie/movie_{}.moflex", FailedToCreateFile, romfsPath, i), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                                //builder.cancel_async();
+                                return;
+                            }
                         }
                         else {
-                            banner = false;
-                            break;
+                            if (builder.cancellation_pending()) return;
+                            minorBarTxt.text(xtd::ustring::format("{} 1/1", CopyingMoflex));
+                            minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
+                            std::error_code error;
+                            error = copyfile(text_box_array.at(i * columns + 1)->text().c_str(), xtd::ustring::format("{}/movie/movie.moflex", romfsPath).c_str());
+                            if (error) {
+                                xtd::forms::message_box::show(*this, xtd::ustring::format("\"{}\" -> \"{}/movie/movie.moflex\"\n{}", text_box_array.at(i * columns + 1)->text(), romfsPath, error.message()), xtd::ustring::format("{} {}", ErrorText, FailedToCopyFile), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                                xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/movie/movie.moflex", FailedToCreateFile, romfsPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                                return;
+                            }
+                            if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/movie/movie.moflex", romfsPath).c_str()))) {//this probably only happens if there's no disk space
+                                xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/movie/movie.moflex", FailedToCreateFile, romfsPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                                //builder.cancel_async();
+                                return;
+                            }
                         }
                     }
                 }
-                if (banner) {
-                    std::error_code error;
-                    error = copyfile(bannerbox.text(), xtd::ustring::format("{}/exefs/banner", tempPath).c_str());
-                    if (error) {
-                        xtd::forms::message_box::show(*this, xtd::ustring::format("\"{}\" -> \"{}/exefs/banner\"\n{}", bannerbox.text(), tempPath, error.message()), xtd::ustring::format("{} {}", ErrorText, FailedToCopyFile), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/exefs/banner", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                        return;
+                builder.report_progress(75);
+                if (builder.cancellation_pending()) return;
+                //convert to bimg (multi vid only)
+                if (mode.selected_index()) {
+                    for (int i = dopatch ? splitPos : 0; i < ((splitpatchbutt.checked() && !dopatch) ? splitPos : rows); i++) {
+                        uint8_t bimg[256 * 128 * sizeof(nnc_u16) + 0x20];
+                        /*if (!std::filesystem::exists(text_box_array.at(i * columns + 2)->text().c_str())) {//comment out because we want blank image if it failed
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}, {} 3\n{} \"{}\"", row, i + 1, column, FailedToFindPath, text_box_array.at(i * columns + 2)->text()), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            //builder.cancel_async();
+                            return;
+                        }*/
+
+                        minorBarTxt.text(xtd::ustring::format("{} romfs/movie/movie_{}.bimg", CreatingFile, i));
+                        minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
+
+                        uint8_t ret = convertToBimg(text_box_array.at(i * columns + 2)->text(), bimg, true);
+                        if (ret > 0) {
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/movie/movie_{}.bimg\n({})", FailedToCreateFile, romfsPath, i, ret), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            //builder.cancel_async();
+                            return;
+                        }
+                        std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/movie", romfsPath).c_str()));
+                        std::ofstream bimgfile(xtd::ustring::format("{}/movie/movie_{}.bimg", romfsPath, i).c_str(), std::ios_base::out | std::ios_base::binary);
+                        bimgfile.write(reinterpret_cast<const char*>(bimg), sizeof(bimg));
+                        bimgfile.close();
                     }
-                }
-                else if (!banner) {
-                    uint8_t buffer[256 * 128 * sizeof(nnc_u16)];
-                    ret = convertToBimg(bannerbox.text(), buffer, false);
-                    if (ret > 0) {
-                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"\n({})", FailedToConvertImage, bannerbox.text(), ret), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    //make movie_bnrname.csv
+                    std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/settings", romfsPath).c_str()));
+                    std::ofstream movie_bnrname(xtd::ustring::format("{}/settings/movie_bnrname.csv", romfsPath).c_str(), std::ios_base::out | std::ios_base::binary);
+                    movie_bnrname << "\xFF\xFE" + UTF8toUTF16(std::to_string(((splitpatchbutt.checked() && !dopatch) ? splitPos : rows)) + "\x0D\x0A");
+                    for (int i = 0; i < ((splitpatchbutt.checked() && !dopatch) ? splitPos : rows); i++) {
+                        movie_bnrname << UTF8toUTF16("movie_" + std::to_string(i) + ".bimg\x0D\x0A");
+                    }
+                    movie_bnrname.close();
+                    if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/settings/movie_bnrname.csv", romfsPath).c_str()))) {
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/settings/movie_bnrname.csv", FailedToCreateFile, romfsPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                         //builder.cancel_async();
                         return;
                     }
-
-                    //create bcmdl
-                    std::vector<uint8_t> bcmdl;
-                    bcmdl = std::vector<uint8_t>(sizeof(bannerheader) + sizeof(buffer) + sizeof(bannerfooter));
-                    memcpy(bcmdl.data(), bannerheader, sizeof(bannerheader));
-                    memcpy(bcmdl.data() + sizeof(bannerheader), buffer, sizeof(buffer));
-                    memcpy(bcmdl.data() + sizeof(bannerheader) + sizeof(buffer), bannerfooter, sizeof(bannerfooter));
-
-                    //build banner (stolen from bannertool)
-                    CBMD cbmd;
-                    memset(&cbmd, 0, sizeof(cbmd));
-
-                    cbmd.cgfxSizes[0] = sizeof(bannerheader) + sizeof(buffer) + sizeof(bannerfooter);
-                    cbmd.cgfxs[0] = bcmdl.data();
-
-                    cbmd.cwavSize = sizeof(BCWAV_array);
-                    cbmd.cwav = (void*)BCWAV_array;
-
-                    uint32_t bnrSize = 0;
-
-                    void* bnr = cbmd_build_data(&bnrSize, cbmd);
-
-                    std::ofstream bnrfile(xtd::ustring::format("{}/exefs/banner", tempPath).c_str(), std::ios_base::out | std::ios_base::binary);
-                    bnrfile.write(reinterpret_cast<const char*>(bnr), bnrSize);
-                    bnrfile.close();
                 }
-                if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/exefs/banner", tempPath).c_str()))) {
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/exefs/banner", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    //builder.cancel_async();
-                    return;
-                }
-            }
-            builder.report_progress(100);
-            if (builder.cancellation_pending()) return;
-            //modify exheader
-            {
-                if (ApplicationName.text().empty()) {
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}", AppNameText, BadValue), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    return;
-                }
-                uint32_t unique_id = 0;
-                stoul_s(unique_id, titleIDbox.text().c_str(), true);
-                if (!TIDisValid(unique_id)) {
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}", TitleIDText, BadValue), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    return;
-                }
-
-                std::fstream exheader(xtd::ustring::format("{}/exheader.bin", tempPath).c_str(), std::ios::in | std::ios::out | std::ios::binary);
-                for (int i = 0; i < 8; i++) {//write application name only 8 bytes because that's the limit. i had to do this loop because it was being weird with .write ???
-                    exheader.seekp(i);
-                    exheader << char(ApplicationName.text().c_str()[i]);
-                }
-                exheader.seekp(0x1C9);
-                exheader.write(reinterpret_cast<const char*>(&unique_id), sizeof(uint32_t));
-                exheader.seekp(0x201);
-                exheader.write(reinterpret_cast<const char*>(&unique_id), sizeof(uint32_t));
-                exheader.seekp(0x601);
-                exheader.write(reinterpret_cast<const char*>(&unique_id), sizeof(uint32_t));
-                exheader.close();
-            }
-            //CIA creation
-            {
-                majorBarTxt.text(xtd::ustring::format("{} {}", CreatingFile, outfile.substr(outfile.find_last_of("/\\") + 1)));
-                majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, majorBarTxt.location().y() });
-                minorBarTxt.text(xtd::ustring::format("{} {}", CreatingFile, outfile.substr(outfile.find_last_of("/\\") + 1)));
-                minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
-                builder.report_progress(0);
-                std::ofstream baseCIA(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/base.cia", tempPath).c_str()), std::ios_base::out | std::ios_base::binary);
-                baseCIA.write(reinterpret_cast<const char*>(base_cia), sizeof(base_cia));
-                baseCIA.close();
-
-#define TRYB(expr, lbl) if((res = ( expr )) != NNC_R_OK) goto lbl
-
-                nnc_subview certchain, ticket, tmd_strm, logo;
-                nnc_buildable_ncch ncch0b;
-                nnc_tmd_header tmd;
-                nnc_cia_writable_ncch ncch0;
-                nnc_ncch_header ncch_hdr;
-                nnc_cia_content_reader reader;
-                nnc_cia_content_stream ncch0stream;
-                nnc_file exheader;
-                nnc_cia_header cia_hdr;
-                nnc_result res;
-                nnc_wfile wf;
-                nnc_file f;
-                nnc_vfs romfs;
-                nnc_vfs exefs;
-                nnc_keypair kp;
-                nnc_seeddb sdb = {};
-
                 if (builder.cancellation_pending()) return;
+                builder.report_progress(100);
+                //do exefs (icon and banner)
+                if (!dopatch) {//dont need exefs for luma patch
+                    builder.report_progress(0);
+                    majorBarTxt.text(xtd::ustring::format("{} exefs", CreatingFile));
+                    majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, majorBarTxt.location().y() });
 
-                TRYB(nnc_file_open(&f, xtd::ustring::format("{}/base.cia", tempPath).c_str()), out1); /* open the input file */
-                TRYB(nnc_wfile_open(&wf, outfile.c_str()), out2); /* open the output file */
-                TRYB(nnc_read_cia_header(NNC_RSP(&f), &cia_hdr), out3); /* read the cia header */
-                nnc_cia_open_certchain(&cia_hdr, NNC_RSP(&f), &certchain); /* open the certificate chain for later copying it into the new cia */
-                nnc_cia_open_ticket(&cia_hdr, NNC_RSP(&f), &ticket); /* open the ticket for later copying it into the new cia */
-                nnc_cia_open_tmd(&cia_hdr, NNC_RSP(&f), &tmd_strm); /* open the tmd which we will modify some things of and then write tot he new cia */
-                TRYB(nnc_read_tmd_header(NNC_RSP(&tmd_strm), &tmd), out3); /* parse the ticket */
-                TRYB(nnc_cia_make_reader(&cia_hdr, NNC_RSP(&f), nnc_get_default_keyset(), &reader), out3); /* create a content (= NCCH) reader */
-                TRYB(nnc_cia_open_content(&reader, 0, &ncch0stream, NULL), out4); /* open the first content (NCCH0) */
-                TRYB(nnc_read_ncch_header(NNC_RSP(&ncch0stream), &ncch_hdr), out5); /* parse the NCCH header */
+                    minorBarTxt.text(xtd::ustring::format("{} exefs/icon", CreatingFile));
+                    minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
 
-                if (builder.cancellation_pending()) goto out5;
-
-                TRYB(nnc_vfs_init(&romfs), out5); /* initialize a VFS */
-                TRYB(nnc_vfs_link_directory(&romfs.root_directory, xtd::ustring::format("{}/romfs", tempPath).c_str(), nnc_vfs_identity_transform, NULL), out6); /* populate the VFS, another source of files could be a RomFS, see #nnc_romfs_to_vfs */
-                TRYB(nnc_vfs_init(&exefs), out5); /* initialize a VFS */
-                TRYB(nnc_vfs_link_directory(&exefs.root_directory, xtd::ustring::format("{}/exefs", tempPath).c_str(), nnc_vfs_identity_transform, NULL), out10);
-
-                builder.report_progress(10);
-
-                if ((res = nnc_scan_seeddb(&sdb)) != NNC_R_OK) /* scan for a seeddb for use with "new crypto" and set it as the default */
-                    nnc_set_default_seeddb(&sdb);
-                TRYB(nnc_fill_keypair(&kp, nnc_get_default_keyset(), nnc_get_default_seeddb(), &ncch_hdr), out7); /* generate the cryptographic keys for if the NCCH is encrypted */
-                if (nnc_file_open(&exheader, xtd::ustring::format("{}/exheader.bin", tempPath).c_str()) != NNC_R_OK) {/* open exheader file */
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}/exheader.bin\"", FailedToReadFile, tempPath), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    goto out10;
-                }
-                nnc_exheader exhdr;
-                if (nnc_read_exheader(NNC_RSP(&exheader), &exhdr) != NNC_R_OK) {
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}/exheader.bin\"", FailedToReadExHeader, tempPath), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    goto out10;
-                }
-                TRYB(nnc_ncch_section_logo(&ncch_hdr, NNC_RSP(&ncch0stream), &logo), out9); /* logo stream */
-
-                builder.report_progress(25);
-
-                /* setup the parameters for building, for more options see the documentation. */
-                ncch0.type = NNC_CIA_NCCHBUILD_BUILD;
-                ncch0.ncch = &ncch0b;
-                nnc_condense_ncch(&ncch0b.chdr, &ncch_hdr);
-                ncch0b.wflags = NNC_NCCH_WF_ROMFS_VFS | NNC_NCCH_WF_EXEFS_VFS | NNC_NCCH_WF_EXHEADER_STREAM;
-                if (builder.cancellation_pending()) goto out10;
-                ncch0b.romfs = &romfs;
-                ncch0b.exefs = &exefs;
-                ncch0b.exheader = &exheader;
-                ncch0b.logo = NNC_RSP(&logo);
-                ncch0b.plain = NULL;
-                ncch0b.chdr.partition_id = exhdr.title_id;
-                ncch0b.chdr.title_id = exhdr.title_id;
-
-                if (chrcount(ProductCode.text()) != 4) {
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}", ProductCodetext, BadValue), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    goto out10;
-                }
-                {
-                    xtd::ustring productCodeFull = "";
-                    productCodeFull += "CTR-H-";
-                    productCodeFull += ProductCode.text();
-                    strcpy(ncch0b.chdr.product_code, productCodeFull.c_str());//modify product code
-                }
-
-                tmd.content_count = 1;
-                tmd.title_id = exhdr.title_id;
-                builder.report_progress(35);
-                {
-                    //change the title ID of the ticket
-                    std::vector<char> ticket_contents = std::vector<char>(NNC_RS_CALL0(ticket, size));
-                    nnc_u32 out_size = 0;
-                    if (NNC_RS_CALL(ticket, read, (nnc_u8*)ticket_contents.data(), NNC_RS_CALL0(ticket, size), &out_size) != NNC_R_OK)
-                        goto out10;
-                    if (out_size != NNC_RS_CALL0(ticket, size))
-                        goto out10;
-                    nnc_memory modified_ticket;
-                    {
-                        uint64_t TIDbigend = 0;
-                        encode_bigend_u64(exhdr.title_id, &TIDbigend);
-                        *(nnc_u64*)&ticket_contents[nnc_sig_dsize((nnc_sigtype)ticket_contents[3]) + 0xDC] = TIDbigend;
+                    uint8_t ret = 0;
+                    ret = convertToIcon(iconbox.text(), xtd::ustring::format("{}/exefs/icon", tempPath).c_str(), UTF8toUTF16(shortname.text()), UTF8toUTF16(longname.text()), UTF8toUTF16(publisher.text()), borderMode);
+                    if (ret > 0) {
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/exefs/icon\n({})", FailedToCreateFile, tempPath, ret), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        //builder.cancel_async();
+                        return;
                     }
-                    nnc_mem_open(&modified_ticket, ticket_contents.data(), NNC_RS_CALL0(ticket, size));
+                    if (mode.selected_index() && !dopatch) {//multi vid needs an icon here so it can make ext data or something (the game crashes if it isnt here)
+                        majorBarTxt.text(xtd::ustring::format("{} romfs", CreatingFile));
+                        majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, majorBarTxt.location().y() });
 
-                    if (builder.cancellation_pending()) goto out10;
+                        minorBarTxt.text(xtd::ustring::format("{} romfs/icon.icn", CreatingFile));
+                        minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
+
+                        std::error_code error;
+                        error = copyfile(xtd::ustring::format("{}/exefs/icon", tempPath).c_str(), xtd::ustring::format("{}/icon.icn", romfsPath).c_str());
+                        if (error) {
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("\"{}/exefs/icon\" -> \"{}/icon.icn\"\n{}", tempPath, romfsPath, error.message()), xtd::ustring::format("{} {}", ErrorText, FailedToCopyFile), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/icon.icn", FailedToCreateFile, romfsPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            return;
+                        }
+                        if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/icon.icn", romfsPath).c_str()))) {
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/icon.icn", FailedToCreateFile, romfsPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            //builder.cancel_async();
+                            return;
+                        }
+                        majorBarTxt.text(xtd::ustring::format("{} exefs", CreatingFile));
+                        majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, majorBarTxt.location().y() });
+                    }
                     builder.report_progress(50);
-                    /* and finally write the cia */
-                    res = nnc_write_cia(
-                        NNC_CIA_WF_CERTCHAIN_STREAM | NNC_CIA_WF_TICKET_STREAM | NNC_CIA_WF_TMD_BUILD,
-                        &certchain, &modified_ticket, &tmd, 1, &ncch0, NNC_WSP(&wf)
-                    );
-                    builder.report_progress(100);
+                    //make banner
+                    {
+                        minorBarTxt.text(xtd::ustring::format("{} exefs/banner", CreatingFile));
+                        majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, majorBarTxt.location().y() });
+
+                        uint8_t Checker[4];
+                        bool banner = false;
+                        std::ifstream inbanner(std::filesystem::path((const char8_t*)&*bannerbox.text().c_str()), std::ios::binary);
+                        if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*bannerbox.text().c_str()))) {
+                            for (int i = 0; i < 4; i++) {
+                                inbanner >> Checker[i];//https://stackoverflow.com/a/2974735
+                                if (Checker[i] == bannerMagic[i]) {
+                                    banner = true;
+                                }
+                                else {
+                                    banner = false;
+                                    break;
+                                }
+                            }
+                        }
+                        if (banner) {
+                            std::error_code error;
+                            error = copyfile(bannerbox.text(), xtd::ustring::format("{}/exefs/banner", tempPath).c_str());
+                            if (error) {
+                                xtd::forms::message_box::show(*this, xtd::ustring::format("\"{}\" -> \"{}/exefs/banner\"\n{}", bannerbox.text(), tempPath, error.message()), xtd::ustring::format("{} {}", ErrorText, FailedToCopyFile), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                                xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/exefs/banner", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                                return;
+                            }
+                        }
+                        else if (!banner) {
+                            uint8_t buffer[256 * 128 * sizeof(nnc_u16)];
+                            ret = convertToBimg(bannerbox.text(), buffer, false);
+                            if (ret > 0) {
+                                xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"\n({})", FailedToConvertImage, bannerbox.text(), ret), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                                //builder.cancel_async();
+                                return;
+                            }
+
+                            //create bcmdl
+                            std::vector<uint8_t> bcmdl;
+                            bcmdl = std::vector<uint8_t>(sizeof(bannerheader) + sizeof(buffer) + sizeof(bannerfooter));
+                            memcpy(bcmdl.data(), bannerheader, sizeof(bannerheader));
+                            memcpy(bcmdl.data() + sizeof(bannerheader), buffer, sizeof(buffer));
+                            memcpy(bcmdl.data() + sizeof(bannerheader) + sizeof(buffer), bannerfooter, sizeof(bannerfooter));
+
+                            //build banner (stolen from bannertool)
+                            CBMD cbmd;
+                            memset(&cbmd, 0, sizeof(cbmd));
+
+                            cbmd.cgfxSizes[0] = sizeof(bannerheader) + sizeof(buffer) + sizeof(bannerfooter);
+                            cbmd.cgfxs[0] = bcmdl.data();
+
+                            cbmd.cwavSize = sizeof(BCWAV_array);
+                            cbmd.cwav = (void*)BCWAV_array;
+
+                            uint32_t bnrSize = 0;
+
+                            void* bnr = cbmd_build_data(&bnrSize, cbmd);
+
+                            std::ofstream bnrfile(xtd::ustring::format("{}/exefs/banner", tempPath).c_str(), std::ios_base::out | std::ios_base::binary);
+                            bnrfile.write(reinterpret_cast<const char*>(bnr), bnrSize);
+                            bnrfile.close();
+                        }
+                        if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/exefs/banner", tempPath).c_str()))) {
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}/exefs/banner", FailedToCreateFile, tempPath), xtd::ustring::format("{} {}", ErrorText, FailedToFindPath), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            //builder.cancel_async();
+                            return;
+                        }
+                    }
                 }
-            /* cleanup code, with lots of labels to jump to in case of failure depending on where it failed */
-            out10: nnc_vfs_free(&exefs);
-            out9: NNC_RS_CALL0(exheader, close);
-                //out8: NNC_RS_CALL0(exefs, close);
-            out7: nnc_free_seeddb(&sdb);
-            out6: nnc_vfs_free(&romfs);
-            out5: NNC_RS_CALL0(ncch0stream, close);
-            out4: nnc_cia_free_reader(&reader);
-            out3: NNC_WS_CALL0(wf, close);
-            out2: NNC_RS_CALL0(f, close);
-            out1:
-                if (res != NNC_R_OK)
-                {
-                    xtd::forms::message_box::show(*this, xtd::ustring::format("failed: {}", nnc_strerror(res)), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    return;
+                builder.report_progress(100);
+                if (builder.cancellation_pending()) return;
+                //modify exheader
+                if (!dopatch) {//dont need this in a patch either
+                    if (ApplicationName.text().empty()) {
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}", AppNameText, BadValue), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        return;
+                    }
+                    uint32_t unique_id = 0;
+                    stoul_s(unique_id, titleIDbox.text().c_str(), true);
+                    if (!TIDisValid(unique_id)) {
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}", TitleIDText, BadValue), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        return;
+                    }
+
+                    std::fstream exheader(xtd::ustring::format("{}/exheader.bin", tempPath).c_str(), std::ios::in | std::ios::out | std::ios::binary);
+                    for (int i = 0; i < 8; i++) {//write application name only 8 bytes because that's the limit. i had to do this loop because it was being weird with .write ???
+                        exheader.seekp(i);
+                        exheader << char(ApplicationName.text().c_str()[i]);
+                    }
+                    exheader.seekp(0x1C9);
+                    exheader.write(reinterpret_cast<const char*>(&unique_id), sizeof(uint32_t));
+                    exheader.seekp(0x201);
+                    exheader.write(reinterpret_cast<const char*>(&unique_id), sizeof(uint32_t));
+                    exheader.seekp(0x601);
+                    exheader.write(reinterpret_cast<const char*>(&unique_id), sizeof(uint32_t));
+                    exheader.close();
+                }
+                //CIA or patch creation
+                if(!dopatch) {//because the patch is just a luma game patch directory XDDD
+                    majorBarTxt.text(xtd::ustring::format("{} {}", CreatingFile, outfile.substr(outfile.find_last_of("/\\") + 1)));
+                    majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, majorBarTxt.location().y() });
+                    minorBarTxt.text(xtd::ustring::format("{} {}", CreatingFile, outfile.substr(outfile.find_last_of("/\\") + 1)));
+                    minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
+                    builder.report_progress(0);
+                    std::ofstream baseCIA(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/base.cia", tempPath).c_str()), std::ios_base::out | std::ios_base::binary);
+                    baseCIA.write(reinterpret_cast<const char*>(base_cia), sizeof(base_cia));
+                    baseCIA.close();
+
+                #define TRYB(expr, lbl) if((res = ( expr )) != NNC_R_OK) goto lbl
+
+                    nnc_subview certchain, ticket, tmd_strm, logo;
+                    nnc_buildable_ncch ncch0b;
+                    nnc_tmd_header tmd;
+                    nnc_cia_writable_ncch ncch0;
+                    nnc_ncch_header ncch_hdr;
+                    nnc_cia_content_reader reader;
+                    nnc_cia_content_stream ncch0stream;
+                    nnc_file exheader;
+                    nnc_cia_header cia_hdr;
+                    nnc_result res;
+                    nnc_wfile wf;
+                    nnc_file f;
+                    nnc_vfs romfs;
+                    nnc_vfs exefs;
+                    nnc_keypair kp;
+                    nnc_seeddb sdb = {};
+
+                    if (builder.cancellation_pending()) return;
+
+                    TRYB(nnc_file_open(&f, xtd::ustring::format("{}/base.cia", tempPath).c_str()), out1); /* open the input file */
+                    TRYB(nnc_wfile_open(&wf, outfile.c_str()), out2); /* open the output file */
+                    TRYB(nnc_read_cia_header(NNC_RSP(&f), &cia_hdr), out3); /* read the cia header */
+                    nnc_cia_open_certchain(&cia_hdr, NNC_RSP(&f), &certchain); /* open the certificate chain for later copying it into the new cia */
+                    nnc_cia_open_ticket(&cia_hdr, NNC_RSP(&f), &ticket); /* open the ticket for later copying it into the new cia */
+                    nnc_cia_open_tmd(&cia_hdr, NNC_RSP(&f), &tmd_strm); /* open the tmd which we will modify some things of and then write tot he new cia */
+                    TRYB(nnc_read_tmd_header(NNC_RSP(&tmd_strm), &tmd), out3); /* parse the ticket */
+                    TRYB(nnc_cia_make_reader(&cia_hdr, NNC_RSP(&f), nnc_get_default_keyset(), &reader), out3); /* create a content (= NCCH) reader */
+                    TRYB(nnc_cia_open_content(&reader, 0, &ncch0stream, NULL), out4); /* open the first content (NCCH0) */
+                    TRYB(nnc_read_ncch_header(NNC_RSP(&ncch0stream), &ncch_hdr), out5); /* parse the NCCH header */
+
+                    if (builder.cancellation_pending()) goto out5;
+
+                    TRYB(nnc_vfs_init(&romfs), out5); /* initialize a VFS */
+                    TRYB(nnc_vfs_link_directory(&romfs.root_directory, romfsPath.c_str(), nnc_vfs_identity_transform, NULL), out6); /* populate the VFS, another source of files could be a RomFS, see #nnc_romfs_to_vfs */
+                    TRYB(nnc_vfs_init(&exefs), out5); /* initialize a VFS */
+                    TRYB(nnc_vfs_link_directory(&exefs.root_directory, xtd::ustring::format("{}/exefs", tempPath).c_str(), nnc_vfs_identity_transform, NULL), out10);
+
+                    builder.report_progress(10);
+
+                    if ((res = nnc_scan_seeddb(&sdb)) != NNC_R_OK) /* scan for a seeddb for use with "new crypto" and set it as the default */
+                        nnc_set_default_seeddb(&sdb);
+                    TRYB(nnc_fill_keypair(&kp, nnc_get_default_keyset(), nnc_get_default_seeddb(), &ncch_hdr), out7); /* generate the cryptographic keys for if the NCCH is encrypted */
+                    if (nnc_file_open(&exheader, xtd::ustring::format("{}/exheader.bin", tempPath).c_str()) != NNC_R_OK) {/* open exheader file */
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}/exheader.bin\"", FailedToReadFile, tempPath), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        goto out10;
+                    }
+                    nnc_exheader exhdr;
+                    if (nnc_read_exheader(NNC_RSP(&exheader), &exhdr) != NNC_R_OK) {
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}/exheader.bin\"", FailedToReadExHeader, tempPath), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        goto out10;
+                    }
+                    TRYB(nnc_ncch_section_logo(&ncch_hdr, NNC_RSP(&ncch0stream), &logo), out9); /* logo stream */
+
+                    builder.report_progress(25);
+
+                    /* setup the parameters for building, for more options see the documentation. */
+                    ncch0.type = NNC_CIA_NCCHBUILD_BUILD;
+                    ncch0.ncch = &ncch0b;
+                    nnc_condense_ncch(&ncch0b.chdr, &ncch_hdr);
+                    ncch0b.wflags = NNC_NCCH_WF_ROMFS_VFS | NNC_NCCH_WF_EXEFS_VFS | NNC_NCCH_WF_EXHEADER_STREAM;
+                    if (builder.cancellation_pending()) goto out10;
+                    ncch0b.romfs = &romfs;
+                    ncch0b.exefs = &exefs;
+                    ncch0b.exheader = &exheader;
+                    ncch0b.logo = NNC_RSP(&logo);
+                    ncch0b.plain = NULL;
+                    ncch0b.chdr.partition_id = exhdr.jump_id;
+                    ncch0b.chdr.title_id = exhdr.jump_id;
+
+                    if (chrcount(ProductCode.text()) != 4) {
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}", ProductCodetext, BadValue), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        goto out10;
+                    }
+                    {
+                        xtd::ustring productCodeFull = "";
+                        productCodeFull += "CTR-H-";
+                        productCodeFull += ProductCode.text();
+                        strcpy(ncch0b.chdr.product_code, productCodeFull.c_str());//modify product code
+                    }
+
+                    tmd.content_count = 1;
+                    tmd.title_id = exhdr.jump_id;
+                    builder.report_progress(35);
+                    {
+                        //change the title ID of the ticket
+                        std::vector<char> ticket_contents = std::vector<char>(NNC_RS_CALL0(ticket, size));
+                        nnc_u32 out_size = 0;
+                        if (NNC_RS_CALL(ticket, read, (nnc_u8*)ticket_contents.data(), NNC_RS_CALL0(ticket, size), &out_size) != NNC_R_OK)
+                            goto out10;
+                        if (out_size != NNC_RS_CALL0(ticket, size))
+                            goto out10;
+                        nnc_memory modified_ticket;
+                        {
+                            uint64_t TIDbigend = 0;
+                            encode_bigend_u64(exhdr.jump_id, &TIDbigend);
+                            *(nnc_u64*)&ticket_contents[nnc_sig_dsize((nnc_sigtype)ticket_contents[3]) + 0xDC] = TIDbigend;
+                        }
+                        nnc_mem_open(&modified_ticket, ticket_contents.data(), NNC_RS_CALL0(ticket, size));
+
+                        if (builder.cancellation_pending()) goto out10;
+                        builder.report_progress(50);
+                        /* and finally write the cia */
+                        res = nnc_write_cia(
+                            NNC_CIA_WF_CERTCHAIN_STREAM | NNC_CIA_WF_TICKET_STREAM | NNC_CIA_WF_TMD_BUILD,
+                            &certchain, &modified_ticket, &tmd, 1, &ncch0, NNC_WSP(&wf)
+                        );
+                        builder.report_progress(100);
+                    }
+                    /* cleanup code, with lots of labels to jump to in case of failure depending on where it failed */
+                out10: nnc_vfs_free(&exefs);
+                out9: NNC_RS_CALL0(exheader, close);
+                    //out8: NNC_RS_CALL0(exefs, close);
+                out7: nnc_free_seeddb(&sdb);
+                out6: nnc_vfs_free(&romfs);
+                out5: NNC_RS_CALL0(ncch0stream, close);
+                out4: nnc_cia_free_reader(&reader);
+                out3: NNC_WS_CALL0(wf, close);
+                out2: NNC_RS_CALL0(f, close);
+                out1:
+                    if (res != NNC_R_OK)
+                    {
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("failed: {}", nnc_strerror(res)), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        return;
+                    }
+                }
+                else {
+                    mtar_t tar;
+
+                    /* Open archive for writing */
+                    mtar_open(&tar, patchfile.c_str(), "wb");
+
+                    std::filesystem::path tarpath(xtd::ustring::format("{}/luma", tempPath).c_str());
+                    if (tarpath.is_relative())
+                        tarpath = std::filesystem::absolute(tarpath);
+                    std::string tarpathstr = tarpath.string();
+                    tarpathstr = fixSlashes(tarpathstr);
+                    std::error_code error = add_directory(&tar, tarpathstr, 30000000);
+                    if(error) {
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", tarpathstr, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, patchfile), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    }
+
+                    /* Finalize -- this needs to be the last thing done before closing */
+                    mtar_finalize(&tar);
+
+                    /* Close archive */
+                    mtar_close(&tar);
+                }
+                if (mode.selected_index() && splitpatchbutt.checked() && !dopatch) {
+                    dopatch = true;
+                }
+                else if (dopatch) {
+                    dopatch = false;
                 }
             }
+            while (dopatch);//https://www.geeksforgeeks.org/cpp-do-while-loop/
             if (std::filesystem::exists(outfile.c_str())) {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", CiaBuilt, outfile), xtd::ustring::format("NNC"), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::information);
                 std::error_code error;
@@ -1869,6 +1982,7 @@ form1::form1() {
         ableObjects(true);
         finalize.cursor(xtd::forms::cursors::default_cursor());
     };
+
 
     //settings
     settings.parent(tab_control);
@@ -2178,14 +2292,13 @@ form1::form1() {
                         return;
                     }
 
-                    char Byte;
-                    //size_t it = 0;
-                    input.read(&Byte, 1);//grab first byte of file
-                    while (input) {//continue until input stream fails
-                        output += Byte;//append byte to string
-                        input.read(&Byte, 1);//grab next byte of file
-                    }
+                    input.seekg(0, std::ios::end);//https://stackoverflow.com/a/2602258
+                    size_t size = input.tellg();
+                    output.resize(size, ' ');
+                    input.seekg(0);
+                    input.read(&output[0], size);
                     input.close();
+
                     if (output[0] == 0xFE && output[1] == 0xFF) {//if little endian (they should be in big endian anyway and i dont want to convert it)
                         xtd::forms::message_box::show(*this, xtd::ustring::format("{}/settings/copyright.txt", romfspath), xtd::ustring::format("{} {}", ErrorText, FailedToReadFile), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                         return;
@@ -2754,6 +2867,11 @@ form1::form1() {
         }
         SplitUp.location({ text_box_array.at(splitPos * columns + (columns - 1))->location().x() + text_box_array.at(splitPos * columns + (columns - 1))->width() - (SplitUp.width() + SplitDown.width() + 1), text_box_array.at(splitPos * columns + (columns - 1))->location().y() - SplitUp.height() - 1 });
         SplitDown.location({ SplitUp.location().x() + SplitUp.width() + 1, SplitUp.location().y() });
+
+        playertitletxt.location({ mediabox.location().x() + text_box_array.at(0)->location().x() + (text_box_array.at(0)->width() - playertitletxt.width()) / 2, mediabox.location().y() - playertitletxt.height() });
+        moflextxt.location({ mediabox.location().x() + text_box_array.at(1)->location().x() + (text_box_array.at(1)->width() - moflextxt.width()) / 2, mediabox.location().y() - moflextxt.height() });
+        menubannertxt.location({ mediabox.location().x() + text_box_array.at(2)->location().x() + (text_box_array.at(2)->width() - (menubannertxt.width() + bannermulti.width() + 3)) / 2, mediabox.location().y() - menubannertxt.height() });
+        bannermulti.location({ menubannertxt.location().x() + menubannertxt.width() + 3, menubannertxt.location().y() + ((menubannertxt.height() - bannermulti.height()) / 2) });
 
         moflexbrowse.location({ text_box_array.at((rows - 1) * columns + 1)->location().x() + (text_box_array.at((rows - 1) * columns + 1)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 1)->location().y() + text_box_array.at((rows - 1) * columns + 1)->height() });
         multibannerbrowse.location({ text_box_array.at((rows - 1) * columns + 2)->location().x() + (text_box_array.at((rows - 1) * columns + 2)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 2)->location().y() + text_box_array.at((rows - 1) * columns + 2)->height() });
