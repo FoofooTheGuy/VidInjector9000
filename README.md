@@ -196,4 +196,6 @@ Credits and Stuff
 
 [miniz cpp](https://github.com/tfussell/miniz-cpp): Zip extraction
 
+[microtar](https://github.com/mudita/microtar): TAR reading and writing
+
 [3DBrew](https://www.3dbrew.org/): Emotional support
