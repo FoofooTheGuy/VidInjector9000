@@ -161,6 +161,7 @@ extern xtd::ustring inLangSMDHList;
 extern xtd::ustring inLangAllFilesList;
 extern xtd::ustring inLangMoflexFilesList;
 extern xtd::ustring inLangParamFilesList;
+extern xtd::ustring inLangTarFilesList;
 extern xtd::ustring inLangImageInfoError;
 extern xtd::ustring inLangBannerPreviewText;
 extern xtd::ustring inLangCustomNotifText;

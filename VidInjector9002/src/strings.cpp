@@ -156,6 +156,7 @@ xtd::ustring inLangSMDHList = "SMDHList";
 xtd::ustring inLangAllFilesList = "AllFilesList";
 xtd::ustring inLangMoflexFilesList = "MoflexFilesList";
 xtd::ustring inLangParamFilesList = "ParamFilesList";
+xtd::ustring inLangTarFilesList = "TarFilesList";
 xtd::ustring inLangImageInfoError = "ImageInfoError";
 xtd::ustring inLangBannerPreviewText = "BannerPreviewText";
 xtd::ustring inLangCustomNotifText = "CustomNotifText";
