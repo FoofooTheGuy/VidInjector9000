@@ -182,6 +182,7 @@ extern xtd::ustring inLangSplitIntoPatchText;
 extern xtd::ustring inLangSaveButtText;
 extern xtd::ustring inLangLoadButtText;
 extern xtd::ustring inLangLoadCIAButtText;
+extern xtd::ustring inLangLoadPatchButtText;
 extern xtd::ustring inLangAutoSaveText;
 extern xtd::ustring inLangAutoLoadText;
 extern xtd::ustring inLangDeleteTempFiles;

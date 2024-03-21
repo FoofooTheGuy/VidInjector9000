@@ -177,6 +177,7 @@ xtd::ustring inLangSplitIntoPatchText = "SplitIntoPatchText";
 xtd::ustring inLangSaveButtText = "SaveButtText";
 xtd::ustring inLangLoadButtText = "LoadButtText";
 xtd::ustring inLangLoadCIAButtText = "LoadCIAButtText";
+xtd::ustring inLangLoadPatchButtText = "LoadPatchButtText";
 xtd::ustring inLangAutoSaveText = "AutoSaveText";
 xtd::ustring inLangAutoLoadText = "AutoLoadText";
 xtd::ustring inLangDeleteTempFiles = "DeleteTempFiles";
