@@ -46,6 +46,7 @@ extern xtd::ustring SplitIntoPatchText;
 extern xtd::ustring SaveButtText;
 extern xtd::ustring LoadButtText;
 extern xtd::ustring LoadCIAButtText;
+extern xtd::ustring LoadPatchButtText;
 extern xtd::ustring AutoSaveText;
 extern xtd::ustring AutoLoadText;
 extern xtd::ustring WideWindowMode;

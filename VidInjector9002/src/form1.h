@@ -1167,6 +1167,7 @@ namespace VidInjector9002 {
             buildButt.enabled(able);
             loadbutt.enabled(able);
             loadCIAbutt.enabled(able);
+            loadPatchbutt.enabled(able);
         }
 
         //objects
@@ -1292,6 +1293,7 @@ namespace VidInjector9002 {
         xtd::forms::button savebutt;
         xtd::forms::button loadbutt;
         xtd::forms::button loadCIAbutt;
+        xtd::forms::button loadPatchbutt;
         xtd::forms::check_box AutoSave;
         xtd::forms::check_box AutoLoad;
         xtd::forms::check_box DeleteTempButt;

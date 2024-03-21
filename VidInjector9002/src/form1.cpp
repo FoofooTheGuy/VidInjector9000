@@ -878,7 +878,11 @@ form1::form1() {
     splitpatchbutt.text(SplitIntoPatchText);
     splitpatchbutt.text_align(xtd::forms::content_alignment::middle_center);
     splitpatchbutt.check_state_changed += [&] {
-        splitPos = splitpatchbutt.checked();
+        if (splitPos == 0)
+            splitPos = 1;
+        if (!splitpatchbutt.checked())
+            splitPos = 0;
+        //splitPos = splitpatchbutt.checked();
 
         for (uint8_t y = 0; y < rows; y++) {
             for (uint8_t x = 0; x < columns; x++) {
@@ -1118,7 +1122,7 @@ form1::form1() {
 
     {
         static xtd::ustring outfile = "";
-        static xtd::ustring patchfile = "";//game patch stuff zipped
+        static xtd::ustring patchfile = "";//game patch stuff tar
         static bool dopatch = false;
 
         buildButt.click += [&] {
@@ -1133,7 +1137,7 @@ form1::form1() {
                     return;
             }
             if (mode.selected_index() && splitpatchbutt.checked()) {
-                patchfile = save_file(TarFilesList, xtd::ustring::format("{} (patch)", outfile.substr(outfile.find_last_of("/\\") + 1)), outfile.substr(0, outfile.find_last_of("/\\") + 1));
+                patchfile = save_file(TarFilesList, xtd::ustring::format("{} [000400000{}00] (patch)", removeInvalids(longname.text()), titleIDbox.text()), outfile.substr(0, outfile.find_last_of("/\\") + 1));
                 {
                     xtd::forms::dialog_result res = xtd::forms::dialog_result::yes;
                     if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*patchfile.c_str())))
@@ -1178,63 +1182,6 @@ form1::form1() {
                 else {
                     romfsPath = xtd::ustring::format("{}/romfs", tempPath);
                 }
-                //delete all the stuff instead of making another file (which i will probably end up doing anyway since we only need exheader from it) jk just dont extract base since it's a luma patch now
-                /*if (dopatch) {
-                    {
-                        std::error_code error;
-                        std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/romfs/effect", tempPath).c_str()), error);
-                        if (error) {
-                            xtd::forms::message_box::show(*this, xtd::ustring::format("{}/romfs/effect\n{}", tempPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                            xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, outfile), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                            return;
-                        }
-                    }
-                    {
-                        std::error_code error;
-                        std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/romfs/lang", tempPath).c_str()), error);
-                        if (error) {
-                            xtd::forms::message_box::show(*this, xtd::ustring::format("{}/romfs/lang\n{}", tempPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                            xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, outfile), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                            return;
-                        }
-                    }
-                    {
-                        std::error_code error;
-                        std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/romfs/layout", tempPath).c_str()), error);
-                        if (error) {
-                            xtd::forms::message_box::show(*this, xtd::ustring::format("{}/romfs/layout\n{}", tempPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                            xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, outfile), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                            return;
-                        }
-                    }
-                    {
-                        std::error_code error;
-                        std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/romfs/settings", tempPath).c_str()), error);
-                        if (error) {
-                            xtd::forms::message_box::show(*this, xtd::ustring::format("{}/romfs/settings\n{}", tempPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                            xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, outfile), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                            return;
-                        }
-                    }
-                    {
-                        std::error_code error;
-                        std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/romfs/shaders", tempPath).c_str()), error);
-                        if (error) {
-                            xtd::forms::message_box::show(*this, xtd::ustring::format("{}/romfs/shaders\n{}", tempPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                            xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, outfile), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                            return;
-                        }
-                    }
-                    {
-                        std::error_code error;
-                        std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/romfs/sound", tempPath).c_str()), error);
-                        if (error) {
-                            xtd::forms::message_box::show(*this, xtd::ustring::format("{}/romfs/sound\n{}", tempPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                            xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, outfile), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                            return;
-                        }
-                    }
-                }*/
 
                 majorBarTxt.text(xtd::ustring::format("{} romfs", CreatingFile));
                 majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, majorBarTxt.location().y() });
@@ -1946,7 +1893,7 @@ form1::form1() {
                     dopatch = false;
                 }
             }
-            while (dopatch);//https://www.geeksforgeeks.org/cpp-do-while-loop/
+            while (dopatch);
             if (std::filesystem::exists(outfile.c_str())) {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", CiaBuilt, outfile), xtd::ustring::format("NNC"), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::information);
                 std::error_code error;
@@ -2051,8 +1998,15 @@ form1::form1() {
     loadCIAbutt.font({ this->font(), 12 });
     loadCIAbutt.text(LoadCIAButtText);
 
+    loadPatchbutt.parent(settings);
+    loadPatchbutt.auto_size(true);
+    loadPatchbutt.font({ this->font(), 12 });
+    loadPatchbutt.text(LoadPatchButtText);
+
     {//wut
-        static xtd::ustring filepath;
+        static xtd::ustring filepath = "";
+        static xtd::ustring patchfile = "";//game patch stuff tar
+        static bool dopatch = false;
 
         loadCIAbutt.click += [&] {
             parampath = xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, DefaultParamFile);
@@ -2061,32 +2015,46 @@ form1::form1() {
                 return;
             }
             ableObjects(false);
+            dopatch = false;
+            extractor.run_worker_async();
+        };
+
+        loadPatchbutt.click += [&] {
+            parampath = xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, DefaultParamFile);
+            filepath = load_file(TarFilesList, filepath);
+            if (filepath.empty()) {
+                return;
+            }
+            ableObjects(false);
+            dopatch = true;
             extractor.run_worker_async();
         };
 
         static nnc_result res;
         static bool cancel;
         extractor.do_work += [&] {
-
             settings.cursor(xtd::forms::cursors::app_starting());
+            splitpatchbutt.checked(false);
 
             loaded = false;
             xtd::ustring romfspath = xtd::ustring::format("{}/romfs", exportsPath);
             xtd::ustring exefspath = xtd::ustring::format("{}/exefs", exportsPath);
 
             std::error_code error;
-            std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*exportsPath.c_str()), error);
-            if (error) {
-                xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", exportsPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                return;
-            }
-            std::filesystem::create_directory(std::filesystem::path((const char8_t*)&*exportsPath.c_str()), error);
-            if (error) {
-                xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", exportsPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                return;
+            if (!dopatch) {
+                std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*exportsPath.c_str()), error);
+                if (error) {
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", exportsPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    return;
+                }
+                std::filesystem::create_directory(std::filesystem::path((const char8_t*)&*exportsPath.c_str()), error);
+                if (error) {
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", exportsPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    return;
+                }
             }
             //extract important files from the romfs and exefs of cia
-            {
+            if(!dopatch) {
 #define CUREC_SIZE 1024
 
                 std::string extractErr = "";
@@ -2256,6 +2224,63 @@ form1::form1() {
                 }
                 nnc_free_seeddb(&sdb);
             }
+            else {
+                int ret = 0;
+                mtar_t tar;
+
+                /* Open archive for reading */
+                ret = mtar_open(&tar, filepath.c_str(), "rb");
+                if (ret) {
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", filepath, mtar_strerror(ret)), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    return;
+                }
+                ret = extract_content(&tar, filepath, exportsPath, 30000000);
+                if (ret) {
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", filepath, mtar_strerror(ret)), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    mtar_close(&tar);
+                    return;
+                }
+                mtar_close(&tar);
+                std::filesystem::create_directory(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/romfs/", exportsPath).c_str()), error);
+                std::string lumaromfs = "";
+                for (const auto& entry : std::filesystem::recursive_directory_iterator(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/luma", exportsPath).c_str()), error)) {//do this because we dont know the title ID
+                    auto filename = std::filesystem::canonical(entry);
+                    if (std::filesystem::is_directory(entry, error) && filename.string().rfind("romfs") != std::string::npos) {//this only works because we know there isnt gonna be a "romfs" subdir
+                        lumaromfs = filename.string();
+                        break;
+                    }
+                }
+                for (int i = 0; i < MAX_ROWS; i++)//uh probably better than checking the string
+                    if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/movie/movie_{}.moflex", lumaromfs, i).c_str()))) {
+                        splitPos = i;
+                        break;
+                    }
+                for (const auto& entry : std::filesystem::recursive_directory_iterator(std::filesystem::path((const char8_t*)&*lumaromfs.c_str()), error)) {
+                    auto filename = std::filesystem::canonical(entry);
+                    std::string outdir = xtd::ustring::format("{}/romfs/", exportsPath).c_str();
+                    outdir += std::filesystem::relative(filename, std::filesystem::path((const char8_t*)&*lumaromfs.c_str())).string();
+                    if (std::filesystem::is_directory(filename, error)) {
+                        std::filesystem::create_directory(std::filesystem::path((const char8_t*)&*outdir.c_str()), error);
+                        if (error) {
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", filename, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            return;
+                        }
+                    }
+                    else if (std::filesystem::is_regular_file(filename, error)) {
+                        std::filesystem::rename(filename, std::filesystem::path((const char8_t*)&*outdir.c_str()), error);
+                    }
+
+                    if (std::filesystem::is_regular_file(entry, error)) {
+                        if (error) {
+                            xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", filename, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        }
+                    }
+                }
+                std::filesystem::remove_all(xtd::ustring::format("{}/luma", exportsPath).c_str(), error);//lol
+                if (error) {
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", exportsPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                }
+            }
 
             //ignore this
             {}
@@ -2342,7 +2367,7 @@ form1::form1() {
             this needs to be here because we doRemoveMedia or doAppendMedia. apparently it can't change that asynchronously
             */
             //set banner and icon
-            {
+            if (!dopatch) {
                 bannerbox.text("");
                 iconbox.text("");
                 bannerbox.text(xtd::ustring::format("{}/banner.bin", exefspath));
@@ -2488,9 +2513,16 @@ form1::form1() {
                             doRemoveMedia();
                 }
                 else {
-                    for (int i = 0; i < rows; i++)
-                        text_box_array.at(i * columns + 1)->text(std::filesystem::exists(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/movie/movie_{}.moflex", romfspath, i).c_str())) ? xtd::ustring::format("{}/movie/movie_{}.moflex", romfspath, i) : "");
+                    for (int i = 0; i < rows; i++) {
+                        if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/movie/movie_{}.moflex", romfspath, i).c_str()))) {
+                            text_box_array.at(i * columns + 1)->text(xtd::ustring::format("{}/movie/movie_{}.moflex", romfspath, i));
+                        }
+                        else {
+                            text_box_array.at(i * columns + 1)->text("");
+                        }
+                    }
                 }
+                if (dopatch) splitpatchbutt.checked(true);
             }
             ableObjects(true);
 
@@ -2935,8 +2967,10 @@ form1::form1() {
         loadbutt.location({ (settings.width() - loadbutt.width()) / 2, savebutt.location().y() + savebutt.height() });
         loadCIAbutt.size({ savebutt.width(), savebutt.height() });
         loadCIAbutt.location({ (settings.width() - loadCIAbutt.width()) / 2, loadbutt.location().y() + loadbutt.height() });
+        loadPatchbutt.size({ savebutt.width(), savebutt.height() });
+        loadPatchbutt.location({ (settings.width() - loadPatchbutt.width()) / 2, loadCIAbutt.location().y() + loadCIAbutt.height() });
         AutoSave.size({ savebutt.width(), savebutt.height() });
-        AutoSave.location({ (settings.width() - AutoSave.width()) / 2, loadCIAbutt.location().y() + loadCIAbutt.height() });
+        AutoSave.location({ (settings.width() - AutoSave.width()) / 2, loadPatchbutt.location().y() + loadPatchbutt.height() });
         AutoLoad.size({ savebutt.width(), savebutt.height() });
         AutoLoad.location({ (settings.width() - AutoLoad.width()) / 2, AutoSave.location().y() + AutoSave.height() });
         DeleteTempButt.size({ savebutt.width(), savebutt.height() });

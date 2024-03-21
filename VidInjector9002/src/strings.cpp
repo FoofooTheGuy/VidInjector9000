@@ -45,6 +45,7 @@ xtd::ustring SplitIntoPatchText = "Split into a patch";
 xtd::ustring SaveButtText = "Save parameters to file";
 xtd::ustring LoadButtText = "Load parameters from file";
 xtd::ustring LoadCIAButtText = "Load parameters from CIA file";
+xtd::ustring LoadPatchButtText = "Load patch parameters from TAR file";
 xtd::ustring AutoSaveText = "Auto save parameters";
 xtd::ustring AutoLoadText = "Auto load parameters";
 xtd::ustring DeleteTempFiles = "Delete temporary files upon exit";

@@ -373,3 +373,56 @@ std::error_code add_directory(mtar_t* tar, std::string dirname, size_t buffersiz
 	}
 	return ec;
 }
+
+//do read on our own because mtar_read_data didnt work (???)
+int read_record_data(mtar_t* tar, mtar_header_t* h, std::string inputfile, std::string outputdir, size_t buffersize) {
+	std::ofstream file(std::filesystem::path((const char8_t*)&*(outputdir + '/' + std::string(h->name)).c_str()), std::ios_base::out | std::ios_base::binary);
+	std::vector<uint8_t> bytes = std::vector<uint8_t>(buffersize);
+	size_t pos = tar->pos + sizeof(mtar_raw_header_t);
+	std::fstream tarfile(inputfile, std::ios::binary | std::ios::in);//do tar read like this because something is broken or im missing something
+	if (!tarfile.is_open()) return 1;
+	for (size_t i = 0; i < h->size; i += buffersize) {
+		tarfile.seekg(pos);
+		if (i + buffersize > h->size) {//h->size will probably not be a multiple of buffersize
+			//puts("write hsize");
+			//printf("pos: %lli, h.size: %lli\n", pos, h->size);
+			tarfile.read(reinterpret_cast<char*>(bytes.data()), h->size - i);
+			file.write(reinterpret_cast<char*>(bytes.data()), h->size - i);
+			pos += h->size - i;
+		}
+		else {
+			//puts("write buffersize");
+			//printf(">pos: %lli, h.size: %lli\n", pos, h->size);
+			tarfile.read(reinterpret_cast<char*>(bytes.data()), buffersize);
+			file.write(reinterpret_cast<char*>(bytes.data()), buffersize);
+			pos += buffersize;
+			//mtar_seek(tar, tar->pos + buffersize);
+		}
+	}
+	return 0;
+}
+
+int extract_content(mtar_t* tar, std::string inputfile, std::string outputdir, size_t buffersize) {
+	int ret = 0;
+	mtar_header_t h;
+	//size_t pos = 0;
+
+	while ((mtar_read_header(tar, &h)) != MTAR_ENULLRECORD) {
+
+		mtar_find(tar, h.name, &h);
+		//printf("mtar_find tar->pos: %lli\n", tar->pos);
+
+		//printf("%s (%lli bytes), type: %i\n", h.name, h.size, h.type);
+
+		if (h.type == 53) {//directory
+			std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*(outputdir + '/' + std::string(h.name)).c_str()));
+		}
+		else if (h.type == 48) {//file
+			if (read_record_data(tar, &h, inputfile, outputdir, buffersize))//0 (false) = good (this isnt bool)
+				return MTAR_EFAILURE;
+		}
+		ret = mtar_next(tar);
+		if (ret) return ret;
+	}
+	return ret;
+}
