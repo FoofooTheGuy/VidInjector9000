@@ -735,6 +735,7 @@ namespace VidInjector9002 {
                     StrMBannerParam << "(" << std::to_string(y) << ")=\"" << text_box_array.at(y * columns + 2)->text() << "\"\n";
             }
             outparams <<
+                IntSplitPatchParam << "=\"" << std::to_string(splitPos) << "\"\n" <<
                 IntPreIndexParam << "=\"" << std::to_string(bannerpreviewindex) << "\"\n";
             outparams.close();
         }
@@ -918,6 +919,20 @@ namespace VidInjector9002 {
                         xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}({})\n{}.", FailedToFindVar, StrMBannerParam, y, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     }
                 }
+            }
+            if (parseLines(outstr, filelines, IntSplitPatchParam)) {
+                if (!stoul_s(outrealint, outstr)) {
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({})\n{} {}", BadValue, outstr, IntSplitPatchParam, BeANumber), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    outrealint = 0;
+                    good = false;
+                }
+                splitpatchbutt.checked(false);
+                splitPos = outrealint;
+                splitpatchbutt.checked(true);
+            }
+            else {
+                good = false;
+                xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, IntSplitPatchParam, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
             }
             if (parseLines(outstr, filelines, IntPreIndexParam)) {
                 if (!stoul_s(outrealint, outstr)) {

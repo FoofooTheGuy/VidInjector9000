@@ -83,6 +83,7 @@ extern xtd::ustring RestartProgram;
 extern xtd::ustring WasEnabled;
 extern xtd::ustring TitleIDText;
 extern xtd::ustring AppNameText;
+extern xtd::ustring ProductCodetext;
 extern xtd::ustring BuildCIAText;
 extern xtd::ustring Cancel;
 extern xtd::ustring MoflexError;
@@ -122,8 +123,8 @@ extern xtd::ustring StrPTitleParam;
 extern xtd::ustring StrMoflexParam;
 //extern xtd::ustring StrMTitleParam;
 extern xtd::ustring StrMBannerParam;
+extern xtd::ustring IntSplitPatchParam;
 extern xtd::ustring IntPreIndexParam;
-extern xtd::ustring ProductCodetext;
 
 extern xtd::ustring settingsPath;
 extern xtd::ustring DefaultParamFile;

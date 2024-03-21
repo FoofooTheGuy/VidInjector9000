@@ -119,6 +119,7 @@ xtd::ustring IntRowsParam = "INT:ROWS";
 xtd::ustring StrPTitleParam = "STR:PTITLE";
 xtd::ustring StrMoflexParam = "STR:MOFLEX";
 xtd::ustring StrMBannerParam = "STR:MBANNER";
+xtd::ustring IntSplitPatchParam = "INT:SPLITPATCH";
 xtd::ustring IntPreIndexParam = "INT:PREINDEX";
 
 xtd::ustring settingsPath = "settings.txt";

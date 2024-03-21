@@ -2034,7 +2034,6 @@ form1::form1() {
         static bool cancel;
         extractor.do_work += [&] {
             settings.cursor(xtd::forms::cursors::app_starting());
-            splitpatchbutt.checked(false);
 
             loaded = false;
             xtd::ustring romfspath = xtd::ustring::format("{}/romfs", exportsPath);
@@ -2045,11 +2044,13 @@ form1::form1() {
                 std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*exportsPath.c_str()), error);
                 if (error) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", exportsPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    cancel = true;
                     return;
                 }
                 std::filesystem::create_directory(std::filesystem::path((const char8_t*)&*exportsPath.c_str()), error);
                 if (error) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", exportsPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    cancel = true;
                     return;
                 }
             }
@@ -2220,6 +2221,7 @@ form1::form1() {
                 if (res != NNC_R_OK)
                 {
                     xtd::forms::message_box::show(*this, nnc_strerror(res), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    cancel = true;
                     return;
                 }
                 nnc_free_seeddb(&sdb);
@@ -2229,19 +2231,22 @@ form1::form1() {
                 mtar_t tar;
 
                 /* Open archive for reading */
-                ret = mtar_open(&tar, filepath.c_str(), "rb");
+                ret = mtar_open(&tar, filepath.c_str(), "rb");//doesnt work with unicode
                 if (ret) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", filepath, mtar_strerror(ret)), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                    cancel = true;
                     return;
                 }
                 ret = extract_content(&tar, filepath, exportsPath, 30000000);
                 if (ret) {
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", filepath, mtar_strerror(ret)), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     mtar_close(&tar);
+                    cancel = true;
                     return;
                 }
                 mtar_close(&tar);
                 std::filesystem::create_directory(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/romfs/", exportsPath).c_str()), error);
+                splitpatchbutt.checked(false);//do this here so it doesnt disable it if fail
                 std::string lumaromfs = "";
                 for (const auto& entry : std::filesystem::recursive_directory_iterator(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/luma", exportsPath).c_str()), error)) {//do this because we dont know the title ID
                     auto filename = std::filesystem::canonical(entry);
@@ -2263,6 +2268,7 @@ form1::form1() {
                         std::filesystem::create_directory(std::filesystem::path((const char8_t*)&*outdir.c_str()), error);
                         if (error) {
                             xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", filename, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                            cancel = true;
                             return;
                         }
                     }
@@ -2282,8 +2288,6 @@ form1::form1() {
                 }
             }
 
-            //ignore this
-            {}
             //information_buttons.csv
             {
                 uint8_t ret;
@@ -2314,6 +2318,7 @@ form1::form1() {
                     input.open(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/settings/copyright.txt", romfspath).c_str()), std::ios_base::in | std::ios_base::binary);
                     if (!input) {
                         xtd::forms::message_box::show(*this, xtd::ustring::format("{}/settings/copyright.txt", romfspath), xtd::ustring::format("{} {}", ErrorText, FailedToReadFile), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        cancel = true;
                         return;
                     }
 
@@ -2326,6 +2331,7 @@ form1::form1() {
 
                     if (output[0] == 0xFE && output[1] == 0xFF) {//if little endian (they should be in big endian anyway and i dont want to convert it)
                         xtd::forms::message_box::show(*this, xtd::ustring::format("{}/settings/copyright.txt", romfspath), xtd::ustring::format("{} {}", ErrorText, FailedToReadFile), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        cancel = true;
                         return;
                     }
                     output.erase(output.begin(), output.begin() + 2);//delete byte order mask
@@ -2344,6 +2350,7 @@ form1::form1() {
                 ableObjects(true);
                 settings.cursor(xtd::forms::cursors::default_cursor());
                 loaded = true;
+                cancel = false;
                 return;
             }
             if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*exportsPath.c_str()))) {
