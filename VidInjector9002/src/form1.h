@@ -368,6 +368,35 @@ namespace VidInjector9002 {
             }
         }
 
+        void drawSplitPatchLine() {
+            if (splitpatchbutt.checked()) {
+                //SplitPatchLine
+                int width = (SplitUp.location().x() - 2);
+                int height = 3;
+                int channels = 4;
+                uint32_t mask = 0x00FFFFFF;
+                auto texture = xtd::drawing::bitmap{ width, height, };
+                std::vector<uint32_t> Line = std::vector<uint32_t>(width * height * channels, (0xFF << 24) + (fore_color().r() << 16) + (fore_color().g() << 8) + fore_color().b());
+
+                //clear corners
+                Line.at(0) = Line.at(0) & mask;
+                Line.at(width - 1) = Line.at(width - 1) & mask;
+                Line.at(2 * width) = Line.at(2 * width) & mask;
+                Line.at(2 * width + (width - 1)) = Line.at(2 * width + (width - 1)) & mask;
+
+                for (int y = 0; y < height; y++)
+                    for (int x = 0; x < width; x++)
+                        texture.set_pixel(x, y, xtd::drawing::color::from_argb(Line.at(y * width + x)));
+                SplitPatchLine.width(width);
+                SplitPatchLine.image(texture);
+
+                SplitPatchLine.show();
+                SplitPatchLine.refresh();
+            }
+            else
+                SplitPatchLine.hide();
+        }
+
         void doAppendMedia() {
             removemedia.enabled(false);
             appendmedia.enabled(false);
@@ -393,7 +422,7 @@ namespace VidInjector9002 {
                                 if (loaded) {
                                     for (uint8_t r = 0; r < rows; r++)
                                         if (text_box_array.at(r * columns + 2)->get_hash_code() == sender.get_hash_code()) {
-                                            if (bannerpreviewindex == r)
+                                            if (bannerpreviewindex == r && mode.selected_index())
                                                 setMultiBannerPreview(r);
                                         }
                                 }
@@ -401,7 +430,7 @@ namespace VidInjector9002 {
                             text_box_array.at(y * columns + x)->mouse_click += [&](object& sender, const xtd::forms::mouse_event_args& e) {
                                 if (loaded) {
                                     for (uint8_t r = 0; r < rows; r++)
-                                        if (text_box_array.at(r * columns + 2)->get_hash_code() == sender.get_hash_code()) {
+                                        if (text_box_array.at(r * columns + 2)->get_hash_code() == sender.get_hash_code() && mode.selected_index()) {
                                             setMultiBannerPreview(r);
                                         }
                                 }
@@ -427,7 +456,7 @@ namespace VidInjector9002 {
                                             text_box_array.at((r / 2 - 1) * columns + c)->text(text_box_array.at((r / 2) * columns + c)->text());
                                             text_box_array.at((r / 2) * columns + c)->text(tempstr);
                                         }
-                                        if (r / 2 == bannerpreviewindex || r / 2 - 1 == bannerpreviewindex)
+                                        if ((r / 2 == bannerpreviewindex || r / 2 - 1 == bannerpreviewindex) && mode.selected_index())
                                             setMultiBannerPreview(bannerpreviewindex);
                                         return;
                                     }
@@ -445,10 +474,10 @@ namespace VidInjector9002 {
                                             tempstr = text_box_array.at((r / 2 + 1) * columns + c)->text();
                                             text_box_array.at((r / 2 + 1) * columns + c)->text(text_box_array.at((r / 2) * columns + c)->text());
                                             text_box_array.at((r / 2) * columns + c)->text(tempstr);
-                                            if (r / 2 == bannerpreviewindex)
+                                            if (r / 2 == bannerpreviewindex && mode.selected_index())
                                                 setMultiBannerPreview(bannerpreviewindex);
                                         }
-                                        if (r / 2 == bannerpreviewindex || r / 2 + 1 == bannerpreviewindex)
+                                        if ((r / 2 == bannerpreviewindex || r / 2 + 1 == bannerpreviewindex) && mode.selected_index())
                                             setMultiBannerPreview(bannerpreviewindex);
                                         return;
                                     }
@@ -478,19 +507,21 @@ namespace VidInjector9002 {
             std::vector<int> wideVec = { moflextxt.width(), playertitletxt.width(), menubannertxt.width() + bannermulti.width() + 3 };
             int WideMediaText = getLargestNumber(wideVec);
 
-            if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + splitpatchbutt.height() + rowtxt.height()) {//if scroll is there
-                if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
+            if (mediabox.height() - 20 <= text_box_array.at((rows - 1) * columns)->location().y() + text_box_array.at((rows - 1) * columns)->height() + moflexbrowse.height() + 2 + removemedia.height() + splitpatchbutt.height() + rowtxt.height()) {//if scroll is there
+                if (mediabox.width() - 20 < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
                     for (int y = 0; y < rows; y++)
                         for (int x = 0; x < columns; x++) {
-                            if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
-                            else text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
+                            //if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
+                            //else 
+                            text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
                         }
                 }
                 else {
                     for (int y = 0; y < rows; y++)
                         for (int x = 0; x < columns; x++) {
-                            if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns) - 20) / columns);
-                            else text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns) - 20) / columns);
+                            //if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns) - 20) / columns);//20 is the width of the scroll bar (not really)
+                            //else 
+                            text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns) - 20) / columns);
                         }
                 }
             }
@@ -498,18 +529,21 @@ namespace VidInjector9002 {
                 if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
                     for (int y = 0; y < rows; y++)
                         for (int x = 0; x < columns; x++) {
-                            if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
-                            else text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
+                            //if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
+                            //else 
+                            text_box_array.at(y * columns + x)->width(WideMediaText - ((text_box_array.at(0)->height() / 2) / columns));
                         }
                 }
                 else {
                     for (int y = 0; y < rows; y++)
                         for (int x = 0; x < columns; x++) {
-                            if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns)) / columns);
-                            else text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns)) / columns);
+                            //if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns)) / columns);
+                            //else 
+                            text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns)) / columns);
                         }
                 }
             }
+
             for (uint8_t y = 0; y < rows; y++) {
                 for (uint8_t x = 0; x < columns; x++) {
                     if (splitpatchbutt.checked() && y == splitPos) text_box_array.at(y * columns + x)->location({ text_box_array.at(0)->location().x() + (x * text_box_array.at(y * columns + x)->width()), text_box_array.at(0)->location().y() + (y * text_box_array.at(y * columns + x)->height()) + SplitUp.height() + 2 });
@@ -528,6 +562,7 @@ namespace VidInjector9002 {
             SplitDown.hide();
             SplitUp.location({ text_box_array.at(splitPos * columns + (columns - 1))->location().x() + text_box_array.at(splitPos * columns + (columns - 1))->width() - (SplitUp.width() + SplitDown.width() + 1), text_box_array.at(splitPos * columns + (columns - 1))->location().y() - SplitUp.height() - 1 });
             SplitDown.location({ SplitUp.location().x() + SplitUp.width() + 1, SplitUp.location().y() });
+            drawSplitPatchLine();
             if (splitPos > 1)
                 SplitUp.show();
             SplitDown.show();
@@ -538,6 +573,7 @@ namespace VidInjector9002 {
             appendmedia.location({ removemedia.location().x() + removemedia.width() + 2, removemedia.location().y() });
             splitpatchbutt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - splitpatchbutt.width()) / 2, removemedia.location().y() + removemedia.height() });
             rowtxt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - rowtxt.width()) / 2, splitpatchbutt.location().y() + splitpatchbutt.height() });
+
             moflexbrowse.refresh();//because it needs to
             multibannerbrowse.refresh();
             removemedia.refresh();
@@ -586,8 +622,8 @@ namespace VidInjector9002 {
             std::vector<int> wideVec = { moflextxt.width(), playertitletxt.width(), menubannertxt.width() + bannermulti.width() + 3 };
             int WideMediaText = getLargestNumber(wideVec);
 
-            if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + splitpatchbutt.height() + rowtxt.height()) {//if scroll is there
-                if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
+            if (mediabox.height() - 20 <= text_box_array.at((rows - 1) * columns)->location().y() + text_box_array.at((rows - 1) * columns)->height() + moflexbrowse.height() + 2 + removemedia.height() + splitpatchbutt.height() + rowtxt.height()) {//if scroll is there
+                if (mediabox.width() - 20 < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
                     for (int y = 0; y < rows; y++)
                         for (int x = 0; x < columns; x++) {
                             if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
@@ -597,7 +633,7 @@ namespace VidInjector9002 {
                 else {
                     for (int y = 0; y < rows; y++)
                         for (int x = 0; x < columns; x++) {
-                            if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns) - 20) / columns);
+                            if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns) - 20) / columns);//20 is the width of the scroll bar (not really)
                             else text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns) - 20) / columns);
                         }
                 }
@@ -637,6 +673,7 @@ namespace VidInjector9002 {
             SplitDown.hide();
             SplitUp.location({ text_box_array.at(splitPos * columns + (columns - 1))->location().x() + text_box_array.at(splitPos * columns + (columns - 1))->width() - (SplitUp.width() + SplitDown.width() + 1), text_box_array.at(splitPos * columns + (columns - 1))->location().y() - SplitUp.height() - 1 });
             SplitDown.location({ SplitUp.location().x() + SplitUp.width() + 1, SplitUp.location().y() });
+            drawSplitPatchLine();
             if (splitPos > 1)
                 SplitUp.show();
             if (splitPos < rows - 1)
@@ -649,6 +686,7 @@ namespace VidInjector9002 {
             appendmedia.location({ removemedia.location().x() + removemedia.width() + 2, removemedia.location().y() });
             splitpatchbutt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - splitpatchbutt.width()) / 2, removemedia.location().y() + removemedia.height() });
             rowtxt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - rowtxt.width()) / 2, splitpatchbutt.location().y() + splitpatchbutt.height() });
+
             bannermulti.refresh();//so it doesnt have the text messing it up when the stuff moves horizontally
         }
 
@@ -910,14 +948,12 @@ namespace VidInjector9002 {
                     good = false;
                     xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}({})\n{}.", FailedToFindVar, StrMoflexParam, y, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 }
-                if (mode.selected_index()) {
-                    if (parseLines(outstr, filelines, xtd::ustring::format("{}({})", StrMBannerParam, y))) {
-                        text_box_array.at(y * columns + 2)->text(outstr);
-                    }
-                    else {
-                        good = false;
-                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}({})\n{}.", FailedToFindVar, StrMBannerParam, y, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                    }
+                if (parseLines(outstr, filelines, xtd::ustring::format("{}({})", StrMBannerParam, y))) {
+                    text_box_array.at(y * columns + 2)->text(outstr);
+                }
+                else {
+                    good = false;
+                    xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}({})\n{}.", FailedToFindVar, StrMBannerParam, y, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                 }
             }
             if (parseLines(outstr, filelines, IntSplitPatchParam)) {
@@ -927,8 +963,8 @@ namespace VidInjector9002 {
                     good = false;
                 }
                 splitpatchbutt.checked(false);
-                splitPos = outrealint;
-                splitpatchbutt.checked(true);
+                splitPos = (splitPos < rows) ? outrealint & 0xFF : rows - 1;
+                splitpatchbutt.checked(splitPos);
             }
             else {
                 good = false;
@@ -1170,8 +1206,8 @@ namespace VidInjector9002 {
             multibannerbrowse.enabled(able ? mode.selected_index() : able);
             menubannerpreview.enabled(able);
             appendmedia.enabled(rows < MAX_ROWS && (able ? mode.selected_index() : able));
-            removemedia.enabled(rows > 1 && (able ? mode.selected_index() : able));
-            splitpatchbutt.enabled(rows > 1 && (able ? mode.selected_index() : able));
+            removemedia.enabled(rows > 1 && able);
+            splitpatchbutt.enabled(rows > 1 && able);
             SplitUp.enabled(able);
             SplitDown.enabled(able);
             titleIDbox.enabled(able);
@@ -1268,7 +1304,8 @@ namespace VidInjector9002 {
         xtd::forms::button appendmedia;
         xtd::forms::button removemedia;
         xtd::forms::check_box splitpatchbutt;
-        uint8_t splitPos = 0;//0 = no split, 1 = split after video 1, ect.
+        uint8_t splitPos = 0;//0 = no split, 1 = split after row 1, ect.
+        xtd::forms::picture_box SplitPatchLine;
         xtd::forms::picture_box SplitUp;
         xtd::forms::picture_box SplitDown;
         xtd::forms::label rowtxt;

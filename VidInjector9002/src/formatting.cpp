@@ -359,7 +359,7 @@ std::error_code add_directory(mtar_t* tar, std::string dirname, size_t buffersiz
 	std::string arcname = dirname.substr(dirname.find_last_of("/\\") + 1);
 	std::error_code ec;
 	mtar_write_dir_header(tar, (arcname + '/').c_str());
-	for (auto const& dir_entry : std::filesystem::recursive_directory_iterator{ dirname }) {
+	for (auto const& dir_entry : std::filesystem::recursive_directory_iterator(dirname, ec)) {
 		auto filename_c = std::filesystem::canonical(dir_entry);
 		std::string filename = fixSlashes(filename_c.string());
 		if (!std::filesystem::is_directory(filename)) {

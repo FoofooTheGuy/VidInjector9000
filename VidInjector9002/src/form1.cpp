@@ -634,7 +634,7 @@ form1::form1() {
                     if (loaded) {
                         for (uint8_t r = 0; r < rows; r++)
                             if (text_box_array.at(r * columns + 2)->get_hash_code() == sender.get_hash_code()) {
-                                if(bannerpreviewindex == r)
+                                if(bannerpreviewindex == r && mode.selected_index())
                                     setMultiBannerPreview(r);
                             }
                     }
@@ -642,7 +642,7 @@ form1::form1() {
                 text_box_array.at(y * columns + x)->mouse_click += [&](object& sender, const xtd::forms::mouse_event_args& e) {
                     if (loaded) {
                         for (uint8_t r = 0; r < rows; r++)
-                            if (text_box_array.at(r * columns + 2)->get_hash_code() == sender.get_hash_code()) {
+                            if (text_box_array.at(r * columns + 2)->get_hash_code() == sender.get_hash_code() && mode.selected_index()) {
                                 setMultiBannerPreview(r);
                             }
                     }
@@ -668,7 +668,7 @@ form1::form1() {
                                 text_box_array.at((r / 2 - 1) * columns + c)->text(text_box_array.at((r / 2) * columns + c)->text());
                                 text_box_array.at((r / 2) * columns + c)->text(tempstr);
                             }
-                            if (r / 2 == bannerpreviewindex || r / 2 - 1 == bannerpreviewindex)
+                            if ((r / 2 == bannerpreviewindex || r / 2 - 1 == bannerpreviewindex) && mode.selected_index())
                                 setMultiBannerPreview(bannerpreviewindex);
                             return;
                         }
@@ -686,10 +686,10 @@ form1::form1() {
                                 tempstr = text_box_array.at((r / 2 + 1) * columns + c)->text();
                                 text_box_array.at((r / 2 + 1) * columns + c)->text(text_box_array.at((r / 2) * columns + c)->text());
                                 text_box_array.at((r / 2) * columns + c)->text(tempstr);
-                                if (r / 2 == bannerpreviewindex)
+                                if (r / 2 == bannerpreviewindex && mode.selected_index())
                                     setMultiBannerPreview(bannerpreviewindex);
                             }
-                            if (r / 2 == bannerpreviewindex || r / 2 + 1 == bannerpreviewindex)
+                            if ((r / 2 == bannerpreviewindex || r / 2 + 1 == bannerpreviewindex) && mode.selected_index())
                                 setMultiBannerPreview(bannerpreviewindex);
                             return;
                         }
@@ -732,9 +732,14 @@ form1::form1() {
         SplitDown.hide();
         SplitUp.location({ text_box_array.at(splitPos * columns + (columns - 1))->location().x() + text_box_array.at(splitPos * columns + (columns - 1))->width() - (SplitUp.width() + SplitDown.width() + 1), text_box_array.at(splitPos * columns + (columns - 1))->location().y() - SplitUp.height() - 1 });
         SplitDown.location({ SplitUp.location().x() + SplitUp.width() + 1, SplitUp.location().y() });
+        SplitPatchLine.location({ 1, SplitUp.location().y() + ((SplitUp.height() - SplitPatchLine.height()) / 2) });
+        SplitPatchLine.refresh();
+
         if (splitPos > 1)
             SplitUp.show();
         SplitDown.show();
+
+        if (autoSaveParams && loaded) saveSettings();
     };
 
     SplitDown.parent(mediabox);
@@ -767,10 +772,18 @@ form1::form1() {
         SplitDown.hide();
         SplitUp.location({ text_box_array.at(splitPos * columns + (columns - 1))->location().x() + text_box_array.at(splitPos * columns + (columns - 1))->width() - (SplitUp.width() + SplitDown.width() + 1), text_box_array.at(splitPos * columns + (columns - 1))->location().y() - SplitUp.height() - 1 });
         SplitDown.location({ SplitUp.location().x() + SplitUp.width() + 1, SplitUp.location().y() });
+        SplitPatchLine.location({ 1, SplitUp.location().y() + ((SplitUp.height() - SplitPatchLine.height()) / 2) });
+        SplitPatchLine.refresh();
+
         SplitUp.show();
         if (splitPos < rows - 1)
             SplitDown.show();
+
+        if (autoSaveParams && loaded) saveSettings();
     };
+
+    SplitPatchLine.parent(mediabox);
+    SplitPatchLine.size({ 1, 3 });
 
     moflexbrowse.parent(mediabox);
     moflexbrowse.size({ 119, 35 });
@@ -898,6 +911,9 @@ form1::form1() {
         }
         SplitUp.location({ text_box_array.at(splitPos * columns + (columns - 1))->location().x() + text_box_array.at(splitPos * columns + (columns - 1))->width() - (SplitUp.width() + SplitDown.width() + 1), text_box_array.at(splitPos * columns + (columns - 1))->location().y() - SplitUp.height() - 1 });
         SplitDown.location({ SplitUp.location().x() + SplitUp.width() + 1, SplitUp.location().y() });
+        SplitPatchLine.location({ 1, SplitUp.location().y() + ((SplitUp.height() - SplitPatchLine.height()) / 2) });
+
+        drawSplitPatchLine();
 
         moflexbrowse.location({ text_box_array.at((rows - 1) * columns + 1)->location().x() + (text_box_array.at((rows - 1) * columns + 1)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 1)->location().y() + text_box_array.at((rows - 1) * columns + 1)->height() });
         multibannerbrowse.location({ text_box_array.at((rows - 1) * columns + 2)->location().x() + (text_box_array.at((rows - 1) * columns + 2)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 2)->location().y() + text_box_array.at((rows - 1) * columns + 2)->height() });
@@ -919,6 +935,8 @@ form1::form1() {
         if (splitPos < rows - 1)
             SplitDown.show();
         else SplitDown.hide();
+
+        if (autoSaveParams && loaded) saveSettings();
     };
 
     rowtxt.parent(mediabox);
@@ -1168,7 +1186,7 @@ form1::form1() {
                     std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*tempPath.c_str()), error);
                     if (error) {
                         xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", tempPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, outfile), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, dopatch ? patchfile : outfile)), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                         return;
                     }
                 }
@@ -1726,7 +1744,7 @@ form1::form1() {
                     exheader.close();
                 }
                 //CIA or patch creation
-                if(!dopatch) {//because the patch is just a luma game patch directory XDDD
+                if (!dopatch) {//because the patch is just a luma game patch directory XDDD
                     majorBarTxt.text(xtd::ustring::format("{} {}", CreatingFile, outfile.substr(outfile.find_last_of("/\\") + 1)));
                     majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, majorBarTxt.location().y() });
                     minorBarTxt.text(xtd::ustring::format("{} {}", CreatingFile, outfile.substr(outfile.find_last_of("/\\") + 1)));
@@ -1864,6 +1882,12 @@ form1::form1() {
                     }
                 }
                 else {
+                    majorBarTxt.text(xtd::ustring::format("{} {}", CreatingFile, patchfile.substr(patchfile.find_last_of("/\\") + 1)));
+                    majorBarTxt.location({ (finalize.width() - majorBarTxt.width()) / 2, majorBarTxt.location().y() });
+                    minorBarTxt.text(xtd::ustring::format("{} {}", CreatingFile, patchfile.substr(patchfile.find_last_of("/\\") + 1)));
+                    minorBarTxt.location({ (finalize.width() - minorBarTxt.width()) / 2, minorBarTxt.location().y() });
+                    builder.report_progress(0);
+
                     mtar_t tar;
 
                     /* Open archive for writing */
@@ -1880,6 +1904,8 @@ form1::form1() {
                         xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, patchfile), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                     }
 
+                    builder.report_progress(50);
+
                     /* Finalize -- this needs to be the last thing done before closing */
                     mtar_finalize(&tar);
 
@@ -1892,8 +1918,9 @@ form1::form1() {
                 else if (dopatch) {
                     dopatch = false;
                 }
-            }
-            while (dopatch);
+                builder.report_progress(100);
+            } while (dopatch);
+
             if (std::filesystem::exists(outfile.c_str())) {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", CiaBuilt, outfile), xtd::ustring::format("NNC"), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::information);
                 std::error_code error;
@@ -1907,6 +1934,9 @@ form1::form1() {
             }
             else {
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, outfile), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+            }
+            if (!std::filesystem::exists(patchfile.c_str()) && mode.selected_index() && splitpatchbutt.checked()) {
+                xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, patchfile), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
             }
         };
     }
@@ -2257,7 +2287,7 @@ form1::form1() {
                 }
                 for (int i = 0; i < MAX_ROWS; i++)//uh probably better than checking the string
                     if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/movie/movie_{}.moflex", lumaromfs, i).c_str()))) {
-                        splitPos = i;
+                        splitPos = i & 0xFF;
                         break;
                     }
                 for (const auto& entry : std::filesystem::recursive_directory_iterator(std::filesystem::path((const char8_t*)&*lumaromfs.c_str()), error)) {
@@ -2860,8 +2890,8 @@ form1::form1() {
             std::vector<int> wideVec = { moflextxt.width(), playertitletxt.width(), menubannertxt.width() + bannermulti.width() + 3 };
             int WideMediaText = getLargestNumber(wideVec);
 
-            if (mediabox.height() < (text_box_array.at(0)->height() * rows) + moflexbrowse.height() + removemedia.height() + 2 + splitpatchbutt.height() + rowtxt.height()) {//if scroll is there
-                if (mediabox.width() < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
+            if (mediabox.height() - 20 <= text_box_array.at((rows - 1) * columns)->location().y() + text_box_array.at((rows - 1) * columns)->height() + moflexbrowse.height() + 2 + removemedia.height() + splitpatchbutt.height() + rowtxt.height()) {//if scroll is there
+                if (mediabox.width() - 20 < WideMediaText * columns + (text_box_array.at(0)->height() / 2)) {
                     for (int y = 0; y < rows; y++)
                         for (int x = 0; x < columns; x++) {
                             if (rows == 1) text_box_array.at(y * columns + x)->width(WideMediaText);
@@ -2871,7 +2901,7 @@ form1::form1() {
                 else {
                     for (int y = 0; y < rows; y++)
                         for (int x = 0; x < columns; x++) {
-                            if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns) - 20) / columns);
+                            if (rows == 1) text_box_array.at(y * columns + x)->width(((mediabox.width() - (mediabox.location().x()) / columns) - 20) / columns);//20 is the width of the scroll bar (not really)
                             else text_box_array.at(y * columns + x)->width((((mediabox.width() - text_box_array.at(0)->height() / 2) - (mediabox.location().x()) / columns) - 20) / columns);
                         }
                 }
@@ -2906,6 +2936,7 @@ form1::form1() {
         }
         SplitUp.location({ text_box_array.at(splitPos * columns + (columns - 1))->location().x() + text_box_array.at(splitPos * columns + (columns - 1))->width() - (SplitUp.width() + SplitDown.width() + 1), text_box_array.at(splitPos * columns + (columns - 1))->location().y() - SplitUp.height() - 1 });
         SplitDown.location({ SplitUp.location().x() + SplitUp.width() + 1, SplitUp.location().y() });
+        drawSplitPatchLine();
 
         playertitletxt.location({ mediabox.location().x() + text_box_array.at(0)->location().x() + (text_box_array.at(0)->width() - playertitletxt.width()) / 2, mediabox.location().y() - playertitletxt.height() });
         moflextxt.location({ mediabox.location().x() + text_box_array.at(1)->location().x() + (text_box_array.at(1)->width() - moflextxt.width()) / 2, mediabox.location().y() - moflextxt.height() });
@@ -2914,8 +2945,8 @@ form1::form1() {
 
         moflexbrowse.location({ text_box_array.at((rows - 1) * columns + 1)->location().x() + (text_box_array.at((rows - 1) * columns + 1)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 1)->location().y() + text_box_array.at((rows - 1) * columns + 1)->height() });
         multibannerbrowse.location({ text_box_array.at((rows - 1) * columns + 2)->location().x() + (text_box_array.at((rows - 1) * columns + 2)->width() - moflexbrowse.width()) / 2, text_box_array.at((rows - 1) * columns + 2)->location().y() + text_box_array.at((rows - 1) * columns + 2)->height() });
-        if (rows == 1) removemedia.location({ (((text_box_array.at(0)->width() * columns) - (removemedia.width() + appendmedia.width() + 2)) / 2) + text_box_array.at(0)->location().x(), text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
-        else removemedia.location({ (((text_box_array.at(0)->width() * columns + (text_box_array.at(0)->height() / 2)) - (removemedia.width() + appendmedia.width() + 2)) / 2) + text_box_array.at(0)->location().x(), text_box_array.at((rows - 1) * columns + (columns - 1))->location().y() + text_box_array.at((rows - 1) * columns + (columns - 1))->height() + moflexbrowse.height() + 2 });
+        if (rows == 1) removemedia.location({ (((text_box_array.at(0)->width() * columns) - (removemedia.width() + appendmedia.width() + 2)) / 2) + text_box_array.at(0)->location().x(), moflexbrowse.location().y() + moflexbrowse.height() + 2 });
+        else removemedia.location({ (((text_box_array.at(0)->width() * columns + (text_box_array.at(0)->height() / 2)) - (removemedia.width() + appendmedia.width() + 2)) / 2) + text_box_array.at(0)->location().x(), moflexbrowse.location().y() + moflexbrowse.height() + 2 });
         appendmedia.location({ removemedia.location().x() + removemedia.width() + 2, removemedia.location().y() });
         splitpatchbutt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - splitpatchbutt.width()) / 2, removemedia.location().y() + removemedia.height() });
         rowtxt.location({ removemedia.location().x() + ((removemedia.width() + appendmedia.width() + 2) - rowtxt.width()) / 2, splitpatchbutt.location().y() + splitpatchbutt.height() });
@@ -2999,7 +3030,7 @@ form1::form1() {
         else {
             version.location({ (settings.width() - version.width()) / 2, settings.height() - version.height() - 3 });
         }
-        saveSettings();
+        if(loaded) saveSettings();
     };
 
     text_box_array.at(columns - 1)->location_changed += [&] {
