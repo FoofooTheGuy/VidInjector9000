@@ -43,6 +43,7 @@ extern std::string IntRowsParam;
 extern std::string StrPTitleParam;
 extern std::string StrMoflexParam;
 extern std::string StrMBannerParam;
+extern std::string IntSplitPatchParam;
 extern std::string IntPreIndexParam;
 
 //stuff you change
@@ -63,12 +64,14 @@ extern std::string AddRInfoText;
 extern std::string SubRInfoText;
 extern std::string BuildCInfoText;
 extern std::string BuildC2InfoText;
+extern std::string BuildC3InfoText;
 extern std::string ExCInfoText;
 extern std::string ExC2InfoText;
 extern std::string InVi9pFile;
 extern std::string InCiaFile;
 extern std::string OutVi9pFile;
 extern std::string OutCiaFile;
+extern std::string OutTarFile;
 extern std::string OutDir;
 extern std::string SeedFile;
 extern std::string SeedNotFound;

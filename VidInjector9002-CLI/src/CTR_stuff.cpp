@@ -465,7 +465,7 @@ void* cbmd_build_data(uint32_t* size, CBMD cbmd) {//this is here because it has 
 	return output;
 }
 
-int build_cia(std::string inVi9p, std::string outCia, uint32_t uniqueID, std::string ApplicationName, std::string ProductCode) {
+int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, uint32_t uniqueID, std::string ApplicationName, std::string ProductCode) {
 	//default finalization stuff
 	/*uint32_t uniqueID = RandomTID();
 	std::string ApplicationName = "video";
@@ -489,611 +489,657 @@ int build_cia(std::string inVi9p, std::string outCia, uint32_t uniqueID, std::st
 	std::vector<std::string> PTitleVec = std::vector<std::string>(1, "");
 	std::vector<std::string> MoflexVec = std::vector<std::string>(1, "");
 	std::vector<std::string> MBannerVec = std::vector<std::string>(1, "");
+	uint8_t splitPos = 0;
 	int BannerPreviewIndex = 0;
 	
-	int res = loadParameters(inVi9p, mode, banner, icon, iconBorder, Sname, Lname, publisher, copycheck, copyrightInfo, FFrewind, FadeOpt, rows, PTitleVec, MoflexVec, MBannerVec, BannerPreviewIndex);
+	int res = loadParameters(inVi9p, mode, banner, icon, iconBorder, Sname, Lname, publisher, copycheck, copyrightInfo, FFrewind, FadeOpt, rows, PTitleVec, MoflexVec, MBannerVec, splitPos, BannerPreviewIndex);
+	
+	bool dopatch = 0;
 	
 	std::string tempPath = resourcesPath + "/temp";
-	//extract base
-	{
-		std::error_code error;
-		std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*tempPath.c_str()), error);
-		if (error) {
-			std::cout << ErrorText << ' ' << tempPath << '\n' << error.message() << std::endl;
-			std::cout << ErrorText << ' ' << FailedToCreateFile << " \"" << outCia << '\"' << std::endl;
-			return 6;
+	std::string romfsPath;
+	do {
+		if (dopatch) {
+			romfsPath = tempPath + "/luma/titles/000400000" + uniqueIDstr + "00/romfs";
+			std::cout << romfsPath << std::endl;
 		}
-	}
-	Generate_Files(tempPath.c_str(), mode);
-	std::cout << CreatingFile << " romfs" << std::endl;
-	//make movie_title.csv (player title)
-	{
-		std::cout << CreatingFile << " romfs/movie_title.csv" << std::endl;
-		
-		std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(tempPath + "/romfs/movie").c_str()));
-		std::ofstream movie_title(std::string(tempPath + "/romfs/movie/movie_title.csv").c_str(), std::ios_base::out | std::ios_base::binary);
-
-		movie_title << "\xFF\xFE" + UTF8toUTF16("#JP,#EN,#FR,#GE,#IT,#SP,#CH,#KO,#DU,#PO,#RU,#TW\x0D\x0A");
-		for (int i = 0; i < (mode ? rows : 1); i++) {
-			std::string outstr = PTitleVec.at(i);
-
-			if (outstr[0] == '#') {//sneakily fix the string huhuhu
-				outstr[0] = '\\';
-				outstr.insert(1, "x23");
-			}
-			for (size_t j = 0; j < outstr.size(); j++) {
-				if (outstr[j] == ',') {
-					outstr[j] = '\\';
-					outstr.insert(j + 1, "x2C");
-				}
-			}
-			for (size_t j = 0; j < outstr.size(); j++) {
-				if (outstr[j] == '\n') {
-					outstr[j] = '\\';
-					outstr.insert(j + 1, "n");
-				}
-			}
-			for (int j = 0; j < 11; j++) {//do it 11 times because it needs to
-				movie_title << UTF8toUTF16(outstr + ",");
-			}
-			movie_title << UTF8toUTF16(outstr + "\x0D\x0A");//put the last stuff
+		else {
+			romfsPath = tempPath + "/romfs";
 		}
-		movie_title.close();
-		if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(tempPath + "/romfs/movie/movie_title.csv").c_str()))) {
-			std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << tempPath << "/romfs/movie/movie_title.csv" << std::endl;
-			return 7;
-		}
-	}
-	//make settingsTL.csv (menu title and stuff)
-	{
-		std::cout << CreatingFile << " romfs/settings/settingsTL.csv" << std::endl;
-		
-		std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(tempPath + "/romfs/settings").c_str()));
-		std::ofstream settingsTL(std::string(tempPath + "/romfs/settings/settingsTL.csv").c_str(), std::ios_base::out | std::ios_base::binary);
-
-		std::string outlongname = Lname;
-		if (outlongname[0] == '#') {//sneakily fix the string huhuhu
-			outlongname[0] = '\\';
-			outlongname.insert(1, "x23");
-		}
-		for (size_t j = 0; j < outlongname.size(); j++) {
-			if (outlongname[j] == ',') {
-				outlongname[j] = '\\';
-				outlongname.insert(j + 1, "x2C");
-			}
-		}
-		for (size_t j = 0; j < outlongname.size(); j++) {
-			if (outlongname[j] == '\n') {
-				outlongname[j] = '\\';
-				outlongname.insert(j + 1, "n");
-			}
-		}
-
-		std::string outpublisher = publisher;
-		if (outpublisher[0] == '#') {//sneakily fix the string huhuhu
-			outpublisher[0] = '\\';
-			outpublisher.insert(1, "x23");
-		}
-		for (size_t j = 0; j < outpublisher.size(); j++) {
-			if (outpublisher[j] == ',') {
-				outpublisher[j] = '\\';
-				outpublisher.insert(j + 1, "x2C");
-			}
-		}
-		for (size_t j = 0; j < outpublisher.size(); j++) {
-			if (outpublisher[j] == '\n') {
-				outpublisher[j] = '\\';
-				outpublisher.insert(j + 1, "n");
-			}
-		}
-
-		settingsTL << "\xFF\xFE" +
-			UTF8toUTF16("# おしらせURL\x0D\x0A"//hard to read because of line breaks but hey better than hex
-				"# JP:\x0D\x0A"
-				"none\x0D\x0A"
-				"\x0D\x0A"
-				"# EN:\x0D\x0A"
-				"none\x0D\x0A"
-				"\x0D\x0A"
-				"# FR:\x0D\x0A"
-				"none\x0D\x0A"
-				"\x0D\x0A"
-				"# GE:\x0D\x0A"
-				"none\x0D\x0A"
-				"\x0D\x0A"
-				"# IT:\x0D\x0A"
-				"none\x0D\x0A"
-				"\x0D\x0A"
-				"# SP:\x0D\x0A"
-				"none\x0D\x0A"
-				"\x0D\x0A"
-				"# CN:\x0D\x0A"
-				"none\x0D\x0A"
-				"\x0D\x0A"
-				"# KO:\x0D\x0A"
-				"none\x0D\x0A"
-				"\x0D\x0A"
-				"# DU:\x0D\x0A"
-				"none\x0D\x0A"
-				"\x0D\x0A"
-				"# PO:\x0D\x0A"
-				"none\x0D\x0A"
-				"\x0D\x0A"
-				"# RU:\x0D\x0A"
-				"none\x0D\x0A"
-				"\x0D\x0A"
-				"# TW:\x0D\x0A"
-				"none\x0D\x0A"
-				"\x0D\x0A"
-				"# アプリ名（ロングネーム）\x0D\x0A"//app long name
-				"# JP:\x0D\x0A"
-				+ outlongname + "\x0D\x0A"
-				"\x0D\x0A"
-				"# EN:\x0D\x0A"
-				+ outlongname + "\x0D\x0A"
-				"\x0D\x0A"
-				"# FR:\x0D\x0A"
-				+ outlongname + "\x0D\x0A"
-				"\x0D\x0A"
-				"# GE:\x0D\x0A"
-				+ outlongname + "\x0D\x0A"
-				"\x0D\x0A"
-				"# IT:\x0D\x0A"
-				+ outlongname + "\x0D\x0A"
-				"\x0D\x0A"
-				"# SP:\x0D\x0A"
-				+ outlongname + "\x0D\x0A"
-				"\x0D\x0A"
-				"# CN:\x0D\x0A"
-				+ outlongname + "\x0D\x0A"
-				"\x0D\x0A"
-				"# KO:\x0D\x0A"
-				+ outlongname + "\x0D\x0A"
-				"\x0D\x0A"
-				"# DU:\x0D\x0A"
-				+ outlongname + "\x0D\x0A"
-				"\x0D\x0A"
-				"# PO:\x0D\x0A"
-				+ outlongname + "\x0D\x0A"
-				"\x0D\x0A"
-				"# RU:\x0D\x0A"
-				+ outlongname + "\x0D\x0A"
-				"\x0D\x0A"
-				"# TW:\x0D\x0A"
-				+ outlongname + "\x0D\x0A"
-				"\x0D\x0A"
-				"# 拡張セーブデータのID（16進数）\x0D\x0A"//save data ID
-				+ uniqueIDstr + "\x0D\x0A"//make it the save as unique ID because yes
-				"\x0D\x0A"
-				"# NADLタスクのID\x0D\x0A"
-				"none\x0D\x0A"
-				"\x0D\x0A"
-				"# タスクの実行間隔（h）（10進数）\x0D\x0A"
-				"0\x0D\x0A"
-				"\x0D\x0A"
-				"# タスクの実行回数（10進数）\x0D\x0A"
-				"0\x0D\x0A"
-				"\x0D\x0A"
-				"# おしらせのあり、なし\x0D\x0A"//not sure what this is, but if you enable it in single vid it instantly crashes... maybe it's the thing telling you to take a break? nah because it's false and that still appears
-				"false\x0D\x0A"
-				"\x0D\x0A"
-				"# 早送り、巻戻しボタンのあり、なし\x0D\x0A"//ff rewind
-				+ (FFrewind ? "true" : "false") + "\x0D\x0A"
-				"\x0D\x0A"
-				"# 優しさ演出のあり、なし\x0D\x0A"//gentleness
-				+ (FadeOpt ? "true" : "false") + "\x0D\x0A");
-
-		if (mode) {
-			settingsTL << UTF8toUTF16("\x0D\x0A"
-				"# 動画の数\x0D\x0A"//amount of videos
-				+ std::to_string(rows) + "\x0D\x0A"
-				"\x0D\x0A"
-				"# 動画パブリッシャー名\x0D\x0A"//publisher name
-				"# JP:\x0D\x0A"
-				+ outpublisher + "\x0D\x0A"
-				"\x0D\x0A"
-				"# EN:\x0D\x0A"
-				+ outpublisher + "\x0D\x0A"
-				"\x0D\x0A"
-				"# FR:\x0D\x0A"
-				+ outpublisher + "\x0D\x0A"
-				"\x0D\x0A"
-				"# GE:\x0D\x0A"
-				+ outpublisher + "\x0D\x0A"
-				"\x0D\x0A"
-				"# IT:\x0D\x0A"
-				+ outpublisher + "\x0D\x0A"
-				"\x0D\x0A"
-				"# SP:\x0D\x0A"
-				+ outpublisher + "\x0D\x0A"
-				"\x0D\x0A"
-				"# CN:\x0D\x0A"
-				+ outpublisher + "\x0D\x0A"
-				"\x0D\x0A"
-				"# KO:\x0D\x0A"
-				+ outpublisher + "\x0D\x0A"
-				"\x0D\x0A"
-				"# DU:\x0D\x0A"
-				+ outpublisher + "\x0D\x0A"
-				"\x0D\x0A"
-				"# PO:\x0D\x0A"
-				+ outpublisher + "\x0D\x0A"
-				"\x0D\x0A"
-				"# RU:\x0D\x0A"
-				+ outpublisher + "\x0D\x0A"
-				"\x0D\x0A"
-				"# TW:\x0D\x0A"
-				+ outpublisher + "\x0D\x0A"
-				"\x0D\x0A"
-				"# WEBブラウザ用のURL\x0D\x0A"//web browser URL (?)
-				"# JP:\x0D\x0A"
-				"\x0D\x0A"
-				"\x0D\x0A"
-				"# EN:\x0D\x0A"
-				"\x0D\x0A"
-				"\x0D\x0A"
-				"# FR:\x0D\x0A"
-				"\x0D\x0A"
-				"\x0D\x0A"
-				"# GE:\x0D\x0A"
-				"\x0D\x0A"
-				"\x0D\x0A"
-				"# IT:\x0D\x0A"
-				"\x0D\x0A"
-				"\x0D\x0A"
-				"# SP:\x0D\x0A"
-				"\x0D\x0A"
-				"\x0D\x0A"
-				"# CN:\x0D\x0A"
-				"\x0D\x0A"
-				"\x0D\x0A"
-				"# KO:\x0D\x0A"
-				"\x0D\x0A"
-				"\x0D\x0A"
-				"# DU:\x0D\x0A"
-				"\x0D\x0A"
-				"\x0D\x0A"
-				"# PO:\x0D\x0A"
-				"\x0D\x0A"
-				"\x0D\x0A"
-				"# RU:\x0D\x0A"
-				"\x0D\x0A"
-				"\x0D\x0A"
-				"# TW:");
-		}
-		settingsTL.close();
-		if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(tempPath + "/romfs/settings/settingsTL.csv").c_str()))) {
-			std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << tempPath << "/romfs/settings/settingsTL.csv" << std::endl;
-			return 8;
-		}
-	}
-	//make copyright stuff (multi vid only)
-	if (mode) {
-		std::cout << CreatingFile << " romfs/settings/information_buttons.csv" << std::endl;
-		
-		std::filesystem::create_directories(std::string(tempPath + "/romfs/settings").c_str());//just in case Hehehhhah
-		std::ofstream information_buttons(std::string(tempPath + "/romfs/settings/information_buttons.csv").c_str(), std::ios_base::out | std::ios_base::binary);
-		information_buttons << (copycheck ? ("\xFF\xFE" + UTF8toUTF16("Copyright")) : "\xFF\xFE");
-		information_buttons.close();
-		if (!std::filesystem::exists(std::string(tempPath + "/romfs/settings/information_buttons.csv").c_str())) {
-			std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << tempPath << "/romfs/settings/information_buttons.csv" << std::endl;
-			return 9;
-		}
-
-		if (copycheck) {
-			std::cout << CreatingFile << " romfs/settings/copyright.txt" << std::endl;
-			
-			std::ofstream copyrighttxt(std::string(tempPath + "/romfs/settings/copyright.txt").c_str(), std::ios_base::out | std::ios_base::binary);
-			copyrighttxt << "\xFF\xFE" + UTF8toUTF16(copyrightInfo);
-			copyrighttxt.close();
-			if (!std::filesystem::exists(std::string(tempPath + "/romfs/settings/copyright.txt").c_str())) {
-				std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << tempPath << "/romfs/settings/copyright.txt" << std::endl;
-				return 10;
-			}
-		}
-	}
-	//copy moflex
-	{
-		uint8_t Checker[4];
-		for (int i = 0; i < (mode ? rows : 1); i++) {
-			if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*MoflexVec.at(i).c_str()))) {
-				std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << MoflexVec.at(i) << std::endl;
-				return 11;
-			}
-			std::string extension = MoflexVec.at(i).c_str();
-			if (extension.find_last_of(".") != std::string::npos)
-				extension.erase(extension.begin(), extension.begin() + extension.find_last_of("."));
-			std::ifstream inmoflex(std::filesystem::path((const char8_t*)&*MoflexVec.at(i).c_str()), std::ios_base::in | std::ios::binary);
-			for (int j = 0; j < 4; j++) {
-				inmoflex >> Checker[j];//https://stackoverflow.com/a/2974735
-				if (extension != ".moflex" || Checker[j] != moflexMagic[j]) {
-					std::cout << ErrorText << ' ' << BadValue << "\n\"" << MoflexVec.at(i) << "\" " << MoflexError << std::endl;
-					return 12;
-				}
-			}
-			std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(tempPath + "/romfs/movie").c_str()));
-			if (mode) {
-				std::cout << CopyingMoflex << ' ' << std::to_string(i + 1) << '/' << std::to_string(rows) << std::endl;
-				std::error_code error;
-				error = copyfile(MoflexVec.at(i).c_str(), std::string(tempPath + "/romfs/movie/movie_" + std::to_string(i) + ".moflex").c_str());
-				if (error) {
-					std::cout << ErrorText << ' ' << FailedToCopyFile << "\n\"" << MoflexVec.at(i) << "\" -> \"" << tempPath << "/romfs/movie/movie_" << std::to_string(i) << ".moflex\"\n" << error.message() << std::endl;
-					std::cout << ErrorText << ' ' << FailedToCreateFile << ' ' << tempPath << "/romfs/movie/movie_" << std::to_string(i) << ".moflex" << std::endl;
-					return 13;
-				}
-				if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(tempPath + "/romfs/movie/movie_" + std::to_string(i) + ".moflex").c_str()))) {//this probably only happens if there's no disk space
-					std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << tempPath << "/romfs/movie/movie_" << std::to_string(i) << ".moflex" << std::endl;
-					return 14;
-				}
-			}
-			else {
-				std::cout << CopyingMoflex << " 1/1" << std::endl;
-				std::error_code error;
-				error = copyfile(MoflexVec.at(i).c_str(), std::string(tempPath + "/romfs/movie/movie.moflex").c_str());
-				if (error) {
-					std::cout << ErrorText << ' ' << FailedToCopyFile << "\n\"" << MoflexVec.at(i) << "\" -> \"" << tempPath << "/romfs/movie/movie.moflex\"\n" << error.message() << std::endl;
-					std::cout << ErrorText << ' ' << FailedToCreateFile << ' ' << tempPath << "/romfs/movie/movie.moflex" << std::endl;
-					return 15;
-				}
-				if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(tempPath + "/romfs/movie/movie.moflex").c_str()))) {//this probably only happens if there's no disk space
-					std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << tempPath << "/romfs/movie/movie.moflex" << std::endl;
-					return 16;
-				}
-			}
-		}
-	}
-	//convert to bimg (multi vid only)
-	if (mode) {
-		for (int i = 0; i < rows; i++) {
-			std::vector<uint8_t> bimg = std::vector<uint8_t>(256 * 128 * sizeof(nnc_u16) + 0x20);
-			
-			std::cout << CreatingFile << " romfs/movie/movie_" << std::to_string(i) << ".bimg" << std::endl;
-			
-			uint8_t ret = convertToBimg(MBannerVec.at(i), bimg.data(), true);
-			if (ret > 0) {
-				std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << tempPath << "/romfs/movie/movie_" << std::to_string(i) << ".bimg\n(" << std::to_string(ret) << ')' << std::endl;
-				return 17;
-			}
-			std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(tempPath + "/romfs/movie").c_str()));
-			std::ofstream bimgfile(std::string(tempPath + "/romfs/movie/movie_" + std::to_string(i) + ".bimg").c_str(), std::ios_base::out | std::ios_base::binary);
-			bimgfile.write(reinterpret_cast<const char*>(bimg.data()), bimg.size());
-			bimgfile.close();
-		}
-		//make movie_bnrname.csv
-		std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(tempPath + "/romfs/settings").c_str()));
-		std::ofstream movie_bnrname(std::string(tempPath + "/romfs/settings/movie_bnrname.csv").c_str(), std::ios_base::out | std::ios_base::binary);
-		movie_bnrname << "\xFF\xFE" + UTF8toUTF16(std::to_string(rows) + "\x0D\x0A");
-		for (int i = 0; i < rows; i++) {
-			movie_bnrname << UTF8toUTF16("movie_" + std::to_string(i) + ".bimg\x0D\x0A");
-		}
-		movie_bnrname.close();
-		if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(tempPath + "/romfs/settings/movie_bnrname.csv").c_str()))) {
-			std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << tempPath << "/romfs/settings/movie_bnrname.csv" << std::endl;
-			return 18;
-		}
-	}
-	//do exefs (icon and banner)
-	{
-		std::cout << CreatingFile << " exefs/icon" << std::endl;
-		uint8_t ret = 0;
-		ret = convertToIcon(icon, std::string(tempPath + "/exefs/icon"), UTF8toUTF16(Sname), UTF8toUTF16(Lname), UTF8toUTF16(publisher), iconBorder);
-		if (ret > 0) {
-			std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << tempPath << "/exefs/icon\n(" << std::to_string(ret) << ')' << std::endl;
-			return 19;
-		}
-		if (mode) {//multi vid needs an icon here so that it can make ext data or something (the game crashes if it isnt here)
-			std::cout << CreatingFile << " romfs/icon.icn" << std::endl;
+		//extract base
+		{
 			std::error_code error;
-			error = copyfile(std::string(tempPath + "/exefs/icon").c_str(), std::string(tempPath + "/romfs/icon.icn").c_str());
+			std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*tempPath.c_str()), error);
 			if (error) {
-				std::cout << ErrorText << ' ' << FailedToCopyFile << "\n\"" << tempPath << "/exefs/icon\" -> \"" << tempPath << "/romfs/icon.icn\"\n" << error.message() << std::endl;
-				std::cout << ErrorText << ' ' << FailedToCreateFile << ' ' << tempPath << "/romfs/icon.icn" << std::endl;
-				return 20;
-			}
-			if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(tempPath + "/romfs/icon.icn").c_str()))) {
-				std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << tempPath << "/romfs/icon.icn" << std::endl;
-				return 21;
+				std::cout << ErrorText << ' ' << tempPath << '\n' << error.message() << std::endl;
+				std::cout << ErrorText << ' ' << FailedToCreateFile << " \"" << (dopatch ? outTAR : outCIA) << '\"' << std::endl;
+				return 6;
 			}
 		}
-		//make banner
-		std::cout << CreatingFile << " exefs/banner" << std::endl;
-		uint8_t Checker[4];
-		bool bannerbool = false;
-		std::ifstream inbanner(std::filesystem::path((const char8_t*)&*banner.c_str()), std::ios::binary);
-		if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*banner.c_str()))) {
-			for (int i = 0; i < 4; i++) {
-				inbanner >> Checker[i];//https://stackoverflow.com/a/2974735
-				if (Checker[i] == bannerMagic[i]) {
-					bannerbool = true;
+		if(!dopatch)
+			Generate_Files(tempPath.c_str(), mode);
+		std::cout << CreatingFile << " romfs" << std::endl;
+		//make movie_title.csv (player title)
+		{
+			std::cout << CreatingFile << " romfs/movie_title.csv" << std::endl;
+			
+			std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie").c_str()));
+			//if(dopatch) return 0;
+			std::ofstream movie_title(std::string(romfsPath + "/movie/movie_title.csv").c_str(), std::ios_base::out | std::ios_base::binary);
+
+			movie_title << "\xFF\xFE" + UTF8toUTF16("#JP,#EN,#FR,#GE,#IT,#SP,#CH,#KO,#DU,#PO,#RU,#TW\x0D\x0A");
+			for (int i = 0; i < (mode ? ((splitPos && !dopatch) ? splitPos : rows) : 1); i++) {
+				std::string outstr = PTitleVec.at(i);
+
+				if (outstr[0] == '#') {//sneakily fix the string huhuhu
+					outstr[0] = '\\';
+					outstr.insert(1, "x23");
+				}
+				for (size_t j = 0; j < outstr.size(); j++) {
+					if (outstr[j] == ',') {
+						outstr[j] = '\\';
+						outstr.insert(j + 1, "x2C");
+					}
+				}
+				for (size_t j = 0; j < outstr.size(); j++) {
+					if (outstr[j] == '\n') {
+						outstr[j] = '\\';
+						outstr.insert(j + 1, "n");
+					}
+				}
+				for (int j = 0; j < 11; j++) {//do it 11 times because it needs to
+					movie_title << UTF8toUTF16(outstr + ",");
+				}
+				movie_title << UTF8toUTF16(outstr + "\x0D\x0A");//put the last stuff
+			}
+			movie_title.close();
+			if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie/movie_title.csv").c_str()))) {
+				std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/movie/movie_title.csv" << std::endl;
+				return 7;
+			}
+		}
+		//make settingsTL.csv (menu title and stuff)
+		{
+			std::cout << CreatingFile << " romfs/settings/settingsTL.csv" << std::endl;
+			
+			std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/settings").c_str()));
+			std::ofstream settingsTL(std::string(romfsPath + "/settings/settingsTL.csv").c_str(), std::ios_base::out | std::ios_base::binary);
+
+			std::string outlongname = Lname;
+			if (outlongname[0] == '#') {//sneakily fix the string huhuhu
+				outlongname[0] = '\\';
+				outlongname.insert(1, "x23");
+			}
+			for (size_t j = 0; j < outlongname.size(); j++) {
+				if (outlongname[j] == ',') {
+					outlongname[j] = '\\';
+					outlongname.insert(j + 1, "x2C");
+				}
+			}
+			for (size_t j = 0; j < outlongname.size(); j++) {
+				if (outlongname[j] == '\n') {
+					outlongname[j] = '\\';
+					outlongname.insert(j + 1, "n");
+				}
+			}
+
+			std::string outpublisher = publisher;
+			if (outpublisher[0] == '#') {//sneakily fix the string huhuhu
+				outpublisher[0] = '\\';
+				outpublisher.insert(1, "x23");
+			}
+			for (size_t j = 0; j < outpublisher.size(); j++) {
+				if (outpublisher[j] == ',') {
+					outpublisher[j] = '\\';
+					outpublisher.insert(j + 1, "x2C");
+				}
+			}
+			for (size_t j = 0; j < outpublisher.size(); j++) {
+				if (outpublisher[j] == '\n') {
+					outpublisher[j] = '\\';
+					outpublisher.insert(j + 1, "n");
+				}
+			}
+
+			settingsTL << "\xFF\xFE" +
+				UTF8toUTF16("# おしらせURL\x0D\x0A"//hard to read because of line breaks but hey better than hex
+					"# JP:\x0D\x0A"
+					"none\x0D\x0A"
+					"\x0D\x0A"
+					"# EN:\x0D\x0A"
+					"none\x0D\x0A"
+					"\x0D\x0A"
+					"# FR:\x0D\x0A"
+					"none\x0D\x0A"
+					"\x0D\x0A"
+					"# GE:\x0D\x0A"
+					"none\x0D\x0A"
+					"\x0D\x0A"
+					"# IT:\x0D\x0A"
+					"none\x0D\x0A"
+					"\x0D\x0A"
+					"# SP:\x0D\x0A"
+					"none\x0D\x0A"
+					"\x0D\x0A"
+					"# CN:\x0D\x0A"
+					"none\x0D\x0A"
+					"\x0D\x0A"
+					"# KO:\x0D\x0A"
+					"none\x0D\x0A"
+					"\x0D\x0A"
+					"# DU:\x0D\x0A"
+					"none\x0D\x0A"
+					"\x0D\x0A"
+					"# PO:\x0D\x0A"
+					"none\x0D\x0A"
+					"\x0D\x0A"
+					"# RU:\x0D\x0A"
+					"none\x0D\x0A"
+					"\x0D\x0A"
+					"# TW:\x0D\x0A"
+					"none\x0D\x0A"
+					"\x0D\x0A"
+					"# アプリ名（ロングネーム）\x0D\x0A"//app long name
+					"# JP:\x0D\x0A"
+					+ outlongname + "\x0D\x0A"
+					"\x0D\x0A"
+					"# EN:\x0D\x0A"
+					+ outlongname + "\x0D\x0A"
+					"\x0D\x0A"
+					"# FR:\x0D\x0A"
+					+ outlongname + "\x0D\x0A"
+					"\x0D\x0A"
+					"# GE:\x0D\x0A"
+					+ outlongname + "\x0D\x0A"
+					"\x0D\x0A"
+					"# IT:\x0D\x0A"
+					+ outlongname + "\x0D\x0A"
+					"\x0D\x0A"
+					"# SP:\x0D\x0A"
+					+ outlongname + "\x0D\x0A"
+					"\x0D\x0A"
+					"# CN:\x0D\x0A"
+					+ outlongname + "\x0D\x0A"
+					"\x0D\x0A"
+					"# KO:\x0D\x0A"
+					+ outlongname + "\x0D\x0A"
+					"\x0D\x0A"
+					"# DU:\x0D\x0A"
+					+ outlongname + "\x0D\x0A"
+					"\x0D\x0A"
+					"# PO:\x0D\x0A"
+					+ outlongname + "\x0D\x0A"
+					"\x0D\x0A"
+					"# RU:\x0D\x0A"
+					+ outlongname + "\x0D\x0A"
+					"\x0D\x0A"
+					"# TW:\x0D\x0A"
+					+ outlongname + "\x0D\x0A"
+					"\x0D\x0A"
+					"# 拡張セーブデータのID（16進数）\x0D\x0A"//save data ID
+					+ uniqueIDstr + "\x0D\x0A"//make it the save as unique ID because yes
+					"\x0D\x0A"
+					"# NADLタスクのID\x0D\x0A"
+					"none\x0D\x0A"
+					"\x0D\x0A"
+					"# タスクの実行間隔（h）（10進数）\x0D\x0A"
+					"0\x0D\x0A"
+					"\x0D\x0A"
+					"# タスクの実行回数（10進数）\x0D\x0A"
+					"0\x0D\x0A"
+					"\x0D\x0A"
+					"# おしらせのあり、なし\x0D\x0A"//not sure what this is, but if you enable it in single vid it instantly crashes... maybe it's the thing telling you to take a break? nah because it's false and that still appears
+					"false\x0D\x0A"
+					"\x0D\x0A"
+					"# 早送り、巻戻しボタンのあり、なし\x0D\x0A"//ff rewind
+					+ (FFrewind ? "true" : "false") + "\x0D\x0A"
+					"\x0D\x0A"
+					"# 優しさ演出のあり、なし\x0D\x0A"//gentleness
+					+ (FadeOpt ? "true" : "false") + "\x0D\x0A");
+
+			if (mode) {
+				settingsTL << UTF8toUTF16("\x0D\x0A"
+					"# 動画の数\x0D\x0A"//amount of videos
+					+ std::to_string((splitPos && !dopatch) ? splitPos : rows) + "\x0D\x0A"
+					"\x0D\x0A"
+					"# 動画パブリッシャー名\x0D\x0A"//publisher name
+					"# JP:\x0D\x0A"
+					+ outpublisher + "\x0D\x0A"
+					"\x0D\x0A"
+					"# EN:\x0D\x0A"
+					+ outpublisher + "\x0D\x0A"
+					"\x0D\x0A"
+					"# FR:\x0D\x0A"
+					+ outpublisher + "\x0D\x0A"
+					"\x0D\x0A"
+					"# GE:\x0D\x0A"
+					+ outpublisher + "\x0D\x0A"
+					"\x0D\x0A"
+					"# IT:\x0D\x0A"
+					+ outpublisher + "\x0D\x0A"
+					"\x0D\x0A"
+					"# SP:\x0D\x0A"
+					+ outpublisher + "\x0D\x0A"
+					"\x0D\x0A"
+					"# CN:\x0D\x0A"
+					+ outpublisher + "\x0D\x0A"
+					"\x0D\x0A"
+					"# KO:\x0D\x0A"
+					+ outpublisher + "\x0D\x0A"
+					"\x0D\x0A"
+					"# DU:\x0D\x0A"
+					+ outpublisher + "\x0D\x0A"
+					"\x0D\x0A"
+					"# PO:\x0D\x0A"
+					+ outpublisher + "\x0D\x0A"
+					"\x0D\x0A"
+					"# RU:\x0D\x0A"
+					+ outpublisher + "\x0D\x0A"
+					"\x0D\x0A"
+					"# TW:\x0D\x0A"
+					+ outpublisher + "\x0D\x0A"
+					"\x0D\x0A"
+					"# WEBブラウザ用のURL\x0D\x0A"//web browser URL (?)
+					"# JP:\x0D\x0A"
+					"\x0D\x0A"
+					"\x0D\x0A"
+					"# EN:\x0D\x0A"
+					"\x0D\x0A"
+					"\x0D\x0A"
+					"# FR:\x0D\x0A"
+					"\x0D\x0A"
+					"\x0D\x0A"
+					"# GE:\x0D\x0A"
+					"\x0D\x0A"
+					"\x0D\x0A"
+					"# IT:\x0D\x0A"
+					"\x0D\x0A"
+					"\x0D\x0A"
+					"# SP:\x0D\x0A"
+					"\x0D\x0A"
+					"\x0D\x0A"
+					"# CN:\x0D\x0A"
+					"\x0D\x0A"
+					"\x0D\x0A"
+					"# KO:\x0D\x0A"
+					"\x0D\x0A"
+					"\x0D\x0A"
+					"# DU:\x0D\x0A"
+					"\x0D\x0A"
+					"\x0D\x0A"
+					"# PO:\x0D\x0A"
+					"\x0D\x0A"
+					"\x0D\x0A"
+					"# RU:\x0D\x0A"
+					"\x0D\x0A"
+					"\x0D\x0A"
+					"# TW:");
+			}
+			settingsTL.close();
+			if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/settings/settingsTL.csv").c_str()))) {
+				std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/settings/settingsTL.csv" << std::endl;
+				return 8;
+			}
+		}
+		//make copyright stuff (multi vid only)
+		if (mode && !dopatch) {
+			std::cout << CreatingFile << " romfs/settings/information_buttons.csv" << std::endl;
+			
+			std::filesystem::create_directories(std::string(romfsPath + "/settings").c_str());//just in case Hehehhhah
+			std::ofstream information_buttons(std::string(romfsPath + "/settings/information_buttons.csv").c_str(), std::ios_base::out | std::ios_base::binary);
+			information_buttons << (copycheck ? ("\xFF\xFE" + UTF8toUTF16("Copyright")) : "\xFF\xFE");
+			information_buttons.close();
+			if (!std::filesystem::exists(std::string(romfsPath + "/settings/information_buttons.csv").c_str())) {
+				std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/settings/information_buttons.csv" << std::endl;
+				return 9;
+			}
+
+			if (copycheck) {
+				std::cout << CreatingFile << " romfs/settings/copyright.txt" << std::endl;
+				
+				std::ofstream copyrighttxt(std::string(romfsPath + "/settings/copyright.txt").c_str(), std::ios_base::out | std::ios_base::binary);
+				copyrighttxt << "\xFF\xFE" + UTF8toUTF16(copyrightInfo);
+				copyrighttxt.close();
+				if (!std::filesystem::exists(std::string(romfsPath + "/settings/copyright.txt").c_str())) {
+					std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/settings/copyright.txt" << std::endl;
+					return 10;
+				}
+			}
+		}
+		//copy moflex
+		{
+			uint8_t Checker[4];
+			for (int i = dopatch ? splitPos : 0; i < (mode ? ((splitPos && !dopatch) ? splitPos : rows) : 1); i++) {
+				if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*MoflexVec.at(i).c_str()))) {
+					std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << MoflexVec.at(i) << std::endl;
+					return 11;
+				}
+				std::string extension = MoflexVec.at(i).c_str();
+				if (extension.find_last_of(".") != std::string::npos)
+					extension.erase(extension.begin(), extension.begin() + extension.find_last_of("."));
+				std::ifstream inmoflex(std::filesystem::path((const char8_t*)&*MoflexVec.at(i).c_str()), std::ios_base::in | std::ios::binary);
+				for (int j = 0; j < 4; j++) {
+					inmoflex >> Checker[j];//https://stackoverflow.com/a/2974735
+					if (extension != ".moflex" || Checker[j] != moflexMagic[j]) {
+						std::cout << ErrorText << ' ' << BadValue << "\n\"" << MoflexVec.at(i) << "\" " << MoflexError << std::endl;
+						return 12;
+					}
+				}
+				std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie").c_str()));
+				if (mode) {
+					std::cout << CopyingMoflex << ' ' << std::to_string(i + 1) << '/' << std::to_string(rows) << std::endl;
+					std::error_code error;
+					error = copyfile(MoflexVec.at(i).c_str(), std::string(romfsPath + "/movie/movie_" + std::to_string(i) + ".moflex").c_str());
+					if (error) {
+						std::cout << ErrorText << ' ' << FailedToCopyFile << "\n\"" << MoflexVec.at(i) << "\" -> \"" << romfsPath << "/movie/movie_" << std::to_string(i) << ".moflex\"\n" << error.message() << std::endl;
+						std::cout << ErrorText << ' ' << FailedToCreateFile << ' ' << romfsPath << "/movie/movie_" << std::to_string(i) << ".moflex" << std::endl;
+						return 13;
+					}
+					if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie/movie_" + std::to_string(i) + ".moflex").c_str()))) {//this probably only happens if there's no disk space
+						std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/movie/movie_" << std::to_string(i) << ".moflex" << std::endl;
+						return 14;
+					}
 				}
 				else {
-					bannerbool = false;
-					break;
+					std::cout << CopyingMoflex << " 1/1" << std::endl;
+					std::error_code error;
+					error = copyfile(MoflexVec.at(i).c_str(), std::string(romfsPath + "/movie/movie.moflex").c_str());
+					if (error) {
+						std::cout << ErrorText << ' ' << FailedToCopyFile << "\n\"" << MoflexVec.at(i) << "\" -> \"" << romfsPath << "/movie/movie.moflex\"\n" << error.message() << std::endl;
+						std::cout << ErrorText << ' ' << FailedToCreateFile << ' ' << romfsPath << "/movie/movie.moflex" << std::endl;
+						return 15;
+					}
+					if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie/movie.moflex").c_str()))) {//this probably only happens if there's no disk space
+						std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/movie/movie.moflex" << std::endl;
+						return 16;
+					}
 				}
 			}
 		}
-		if (bannerbool) {
-			std::error_code error;
-			error = copyfile(banner, std::string(tempPath + "/exefs/banner").c_str());
-			if (error) {
-				std::cout << ErrorText << ' ' << FailedToCopyFile << "\n\"" << banner << "\" -> \"" << tempPath << "/exefs/banner\"\n" << error.message() << std::endl;
-				std::cout << ErrorText << ' ' << FailedToCreateFile << ' ' << tempPath << "/exefs/banner" << std::endl;
-				return 22;
+		//convert to bimg (multi vid only)
+		if (mode) {
+			for (int i = dopatch ? splitPos : 0; i < ((splitPos && !dopatch) ? splitPos : rows); i++) {
+				std::vector<uint8_t> bimg = std::vector<uint8_t>(256 * 128 * sizeof(nnc_u16) + 0x20);
+				
+				std::cout << CreatingFile << " romfs/movie/movie_" << std::to_string(i) << ".bimg" << std::endl;
+				
+				uint8_t ret = convertToBimg(MBannerVec.at(i), bimg.data(), true);
+				if (ret > 0) {
+					std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/movie/movie_" << std::to_string(i) << ".bimg\n(" << std::to_string(ret) << ')' << std::endl;
+					return 17;
+				}
+				std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie").c_str()));
+				std::ofstream bimgfile(std::string(romfsPath + "/movie/movie_" + std::to_string(i) + ".bimg").c_str(), std::ios_base::out | std::ios_base::binary);
+				bimgfile.write(reinterpret_cast<const char*>(bimg.data()), bimg.size());
+				bimgfile.close();
+			}
+			//make movie_bnrname.csv
+			std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/settings").c_str()));
+			std::ofstream movie_bnrname(std::string(romfsPath + "/settings/movie_bnrname.csv").c_str(), std::ios_base::out | std::ios_base::binary);
+			movie_bnrname << "\xFF\xFE" + UTF8toUTF16(std::to_string(rows) + "\x0D\x0A");
+			for (int i = 0; i < rows; i++) {
+				movie_bnrname << UTF8toUTF16("movie_" + std::to_string(i) + ".bimg\x0D\x0A");
+			}
+			movie_bnrname.close();
+			if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/settings/movie_bnrname.csv").c_str()))) {
+				std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/settings/movie_bnrname.csv" << std::endl;
+				return 18;
 			}
 		}
-		else if (!bannerbool) {
-			uint8_t buffer[256 * 128 * sizeof(nnc_u16)];
-			ret = convertToBimg(banner, buffer, false);
+		//do exefs (icon and banner)
+		if (!dopatch) {//dont need exefs for luma patch
+			std::cout << CreatingFile << " exefs/icon" << std::endl;
+			uint8_t ret = 0;
+			ret = convertToIcon(icon, std::string(tempPath + "/exefs/icon"), UTF8toUTF16(Sname), UTF8toUTF16(Lname), UTF8toUTF16(publisher), iconBorder);
 			if (ret > 0) {
-				std::cout << ErrorText << ' ' << BadValue << '\n' << FailedToConvertImage << " \"" << banner << "\"\n(" << std::to_string(ret) << ')' << std::endl;
-				return 23;
+				std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << tempPath << "/exefs/icon\n(" << std::to_string(ret) << ')' << std::endl;
+				return 19;
 			}
+			if (mode) {//multi vid needs an icon here so that it can make ext data or something (the game crashes if it isnt here)
+				std::cout << CreatingFile << " romfs/icon.icn" << std::endl;
+				std::error_code error;
+				error = copyfile(std::string(tempPath + "/exefs/icon").c_str(), std::string(romfsPath + "/icon.icn").c_str());
+				if (error) {
+					std::cout << ErrorText << ' ' << FailedToCopyFile << "\n\"" << tempPath << "/exefs/icon\" -> \"" << romfsPath << "/icon.icn\"\n" << error.message() << std::endl;
+					std::cout << ErrorText << ' ' << FailedToCreateFile << ' ' << romfsPath << "/icon.icn" << std::endl;
+					return 20;
+				}
+				if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/icon.icn").c_str()))) {
+					std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/icon.icn" << std::endl;
+					return 21;
+				}
+			}
+			//make banner
+			std::cout << CreatingFile << " exefs/banner" << std::endl;
+			uint8_t Checker[4];
+			bool bannerbool = false;
+			std::ifstream inbanner(std::filesystem::path((const char8_t*)&*banner.c_str()), std::ios::binary);
+			if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*banner.c_str()))) {
+				for (int i = 0; i < 4; i++) {
+					inbanner >> Checker[i];//https://stackoverflow.com/a/2974735
+					if (Checker[i] == bannerMagic[i]) {
+						bannerbool = true;
+					}
+					else {
+						bannerbool = false;
+						break;
+					}
+				}
+			}
+			if (bannerbool) {
+				std::error_code error;
+				error = copyfile(banner, std::string(tempPath + "/exefs/banner").c_str());
+				if (error) {
+					std::cout << ErrorText << ' ' << FailedToCopyFile << "\n\"" << banner << "\" -> \"" << tempPath << "/exefs/banner\"\n" << error.message() << std::endl;
+					std::cout << ErrorText << ' ' << FailedToCreateFile << ' ' << tempPath << "/exefs/banner" << std::endl;
+					return 22;
+				}
+			}
+			else if (!bannerbool) {
+				uint8_t buffer[256 * 128 * sizeof(nnc_u16)];
+				ret = convertToBimg(banner, buffer, false);
+				if (ret > 0) {
+					std::cout << ErrorText << ' ' << BadValue << '\n' << FailedToConvertImage << " \"" << banner << "\"\n(" << std::to_string(ret) << ')' << std::endl;
+					return 23;
+				}
 
-			//create bcmdl
-			std::vector<uint8_t> bcmdl;
-			bcmdl = std::vector<uint8_t>(sizeof(bannerheader) + sizeof(buffer) + sizeof(bannerfooter));
-			memcpy(bcmdl.data(), bannerheader, sizeof(bannerheader));
-			memcpy(bcmdl.data() + sizeof(bannerheader), buffer, sizeof(buffer));
-			memcpy(bcmdl.data() + sizeof(bannerheader) + sizeof(buffer), bannerfooter, sizeof(bannerfooter));
+				//create bcmdl
+				std::vector<uint8_t> bcmdl;
+				bcmdl = std::vector<uint8_t>(sizeof(bannerheader) + sizeof(buffer) + sizeof(bannerfooter));
+				memcpy(bcmdl.data(), bannerheader, sizeof(bannerheader));
+				memcpy(bcmdl.data() + sizeof(bannerheader), buffer, sizeof(buffer));
+				memcpy(bcmdl.data() + sizeof(bannerheader) + sizeof(buffer), bannerfooter, sizeof(bannerfooter));
 
-			//build banner (stolen from bannertool)
-			CBMD cbmd;
-			memset(&cbmd, 0, sizeof(cbmd));
+				//build banner (stolen from bannertool)
+				CBMD cbmd;
+				memset(&cbmd, 0, sizeof(cbmd));
 
-			cbmd.cgfxSizes[0] = sizeof(bannerheader) + sizeof(buffer) + sizeof(bannerfooter);
-			cbmd.cgfxs[0] = bcmdl.data();
+				cbmd.cgfxSizes[0] = sizeof(bannerheader) + sizeof(buffer) + sizeof(bannerfooter);
+				cbmd.cgfxs[0] = bcmdl.data();
 
-			cbmd.cwavSize = sizeof(BCWAV_array);
-			cbmd.cwav = (void*)BCWAV_array;
+				cbmd.cwavSize = sizeof(BCWAV_array);
+				cbmd.cwav = (void*)BCWAV_array;
 
-			uint32_t bnrSize = 0;
+				uint32_t bnrSize = 0;
 
-			void* bnr = cbmd_build_data(&bnrSize, cbmd);
+				void* bnr = cbmd_build_data(&bnrSize, cbmd);
 
-			std::ofstream bnrfile(std::string(tempPath + "/exefs/banner").c_str(), std::ios_base::out | std::ios_base::binary);
-			bnrfile.write(reinterpret_cast<const char*>(bnr), bnrSize);
-			bnrfile.close();
+				std::ofstream bnrfile(std::string(tempPath + "/exefs/banner").c_str(), std::ios_base::out | std::ios_base::binary);
+				bnrfile.write(reinterpret_cast<const char*>(bnr), bnrSize);
+				bnrfile.close();
+			}
+			if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(tempPath + "/exefs/banner").c_str()))) {
+				std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << tempPath << "/exefs/banner" << std::endl;
+				return 24;
+			}
 		}
-		if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(tempPath + "/exefs/banner").c_str()))) {
-			std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << tempPath << "/exefs/banner" << std::endl;
-			return 24;
+		//modify exheader
+		if (!dopatch) {//dont need this in a patch either
+			std::fstream exheader(std::string(tempPath + "/exheader.bin").c_str(), std::ios::in | std::ios::out | std::ios::binary);
+			for (int i = 0; i < 8; i++) {//write application name only 8 bytes because that's the limit. i had to do this loop because it was being weird with .write ???
+				exheader.seekp(i);
+				exheader << char(ApplicationName.c_str()[i]);
+			}
+			exheader.seekp(0x1C9);
+			exheader.write(reinterpret_cast<const char*>(&uniqueID), sizeof(uint32_t));
+			exheader.seekp(0x201);
+			exheader.write(reinterpret_cast<const char*>(&uniqueID), sizeof(uint32_t));
+			exheader.seekp(0x601);
+			exheader.write(reinterpret_cast<const char*>(&uniqueID), sizeof(uint32_t));
+			exheader.close();
 		}
-	}
-	//modify exheader
-	{
-		std::fstream exheader(std::string(tempPath + "/exheader.bin").c_str(), std::ios::in | std::ios::out | std::ios::binary);
-		for (int i = 0; i < 8; i++) {//write application name only 8 bytes because that's the limit. i had to do this loop because it was being weird with .write ???
-			exheader.seekp(i);
-			exheader << char(ApplicationName.c_str()[i]);
-		}
-		exheader.seekp(0x1C9);
-		exheader.write(reinterpret_cast<const char*>(&uniqueID), sizeof(uint32_t));
-		exheader.seekp(0x201);
-		exheader.write(reinterpret_cast<const char*>(&uniqueID), sizeof(uint32_t));
-		exheader.seekp(0x601);
-		exheader.write(reinterpret_cast<const char*>(&uniqueID), sizeof(uint32_t));
-		exheader.close();
-	}
-	//CIA creation
-	{
-		std::cout << CreatingFile << ' ' << outCia.substr(outCia.find_last_of("/\\") + 1) << std::endl;
+		//CIA creation
+		if (!dopatch) {
+			std::cout << CreatingFile << ' ' << outCIA.substr(outCIA.find_last_of("/\\") + 1) << std::endl;
 
-		std::ofstream baseCIA(std::filesystem::path((const char8_t*)&*std::string(tempPath + "/base.cia").c_str()), std::ios_base::out | std::ios_base::binary);
-		baseCIA.write(reinterpret_cast<const char*>(base_cia), sizeof(base_cia));
-		baseCIA.close();
+			std::ofstream baseCIA(std::filesystem::path((const char8_t*)&*std::string(tempPath + "/base.cia").c_str()), std::ios_base::out | std::ios_base::binary);
+			baseCIA.write(reinterpret_cast<const char*>(base_cia), sizeof(base_cia));
+			baseCIA.close();
 
-		#define TRYB(expr, lbl) if((res = ( expr )) != NNC_R_OK) goto lbl
+			#define TRYB(expr, lbl) if((res = ( expr )) != NNC_R_OK) goto lbl
 
-		nnc_subview certchain, ticket, tmd_strm, logo;
-		nnc_buildable_ncch ncch0b;
-		nnc_tmd_header tmd;
-		nnc_cia_writable_ncch ncch0;
-		nnc_ncch_header ncch_hdr;
-		nnc_cia_content_reader reader;
-		nnc_cia_content_stream ncch0stream;
-		nnc_file exheader;
-		nnc_cia_header cia_hdr;
-		nnc_result res;
-		nnc_wfile wf;
-		nnc_file f;
-		nnc_vfs romfs;
-		nnc_vfs exefs;
-		nnc_keypair kp;
-		nnc_seeddb sdb = {};
+			nnc_subview certchain, ticket, tmd_strm, logo;
+			nnc_buildable_ncch ncch0b;
+			nnc_tmd_header tmd;
+			nnc_cia_writable_ncch ncch0;
+			nnc_ncch_header ncch_hdr;
+			nnc_cia_content_reader reader;
+			nnc_cia_content_stream ncch0stream;
+			nnc_file exheader;
+			nnc_cia_header cia_hdr;
+			nnc_result res;
+			nnc_wfile wf;
+			nnc_file f;
+			nnc_vfs romfs;
+			nnc_vfs exefs;
+			nnc_keypair kp;
+			nnc_seeddb sdb = {};
 
-		TRYB(nnc_file_open(&f, std::string(tempPath + "/base.cia").c_str()), out1); /* open the input file */
-		TRYB(nnc_wfile_open(&wf, outCia.c_str()), out2); /* open the output file */
-		TRYB(nnc_read_cia_header(NNC_RSP(&f), &cia_hdr), out3); /* read the cia header */
-		nnc_cia_open_certchain(&cia_hdr, NNC_RSP(&f), &certchain); /* open the certificate chain for later copying it into the new cia */
-		nnc_cia_open_ticket(&cia_hdr, NNC_RSP(&f), &ticket); /* open the ticket for later copying it into the new cia */
-		nnc_cia_open_tmd(&cia_hdr, NNC_RSP(&f), &tmd_strm); /* open the tmd which we will modify some things of and then write tot he new cia */
-		TRYB(nnc_read_tmd_header(NNC_RSP(&tmd_strm), &tmd), out3); /* parse the ticket */
-		TRYB(nnc_cia_make_reader(&cia_hdr, NNC_RSP(&f), nnc_get_default_keyset(), &reader), out3); /* create a content (= NCCH) reader */
-		TRYB(nnc_cia_open_content(&reader, 0, &ncch0stream, NULL), out4); /* open the first content (NCCH0) */
-		TRYB(nnc_read_ncch_header(NNC_RSP(&ncch0stream), &ncch_hdr), out5); /* parse the NCCH header */
+			TRYB(nnc_file_open(&f, std::string(tempPath + "/base.cia").c_str()), out1); /* open the input file */
+			TRYB(nnc_wfile_open(&wf, outCIA.c_str()), out2); /* open the output file */
+			TRYB(nnc_read_cia_header(NNC_RSP(&f), &cia_hdr), out3); /* read the cia header */
+			nnc_cia_open_certchain(&cia_hdr, NNC_RSP(&f), &certchain); /* open the certificate chain for later copying it into the new cia */
+			nnc_cia_open_ticket(&cia_hdr, NNC_RSP(&f), &ticket); /* open the ticket for later copying it into the new cia */
+			nnc_cia_open_tmd(&cia_hdr, NNC_RSP(&f), &tmd_strm); /* open the tmd which we will modify some things of and then write tot he new cia */
+			TRYB(nnc_read_tmd_header(NNC_RSP(&tmd_strm), &tmd), out3); /* parse the ticket */
+			TRYB(nnc_cia_make_reader(&cia_hdr, NNC_RSP(&f), nnc_get_default_keyset(), &reader), out3); /* create a content (= NCCH) reader */
+			TRYB(nnc_cia_open_content(&reader, 0, &ncch0stream, NULL), out4); /* open the first content (NCCH0) */
+			TRYB(nnc_read_ncch_header(NNC_RSP(&ncch0stream), &ncch_hdr), out5); /* parse the NCCH header */
 
-		TRYB(nnc_vfs_init(&romfs), out5); /* initialize a VFS */
-		TRYB(nnc_vfs_link_directory(&romfs.root_directory, std::string(tempPath + "/romfs").c_str(), nnc_vfs_identity_transform, NULL), out6); /* populate the VFS, another source of files could be a RomFS, see #nnc_romfs_to_vfs */
-		TRYB(nnc_vfs_init(&exefs), out5); /* initialize a VFS */
-		TRYB(nnc_vfs_link_directory(&exefs.root_directory, std::string(tempPath + "/exefs").c_str(), nnc_vfs_identity_transform, NULL), out10);
+			TRYB(nnc_vfs_init(&romfs), out5); /* initialize a VFS */
+			TRYB(nnc_vfs_link_directory(&romfs.root_directory, romfsPath.c_str(), nnc_vfs_identity_transform, NULL), out6); /* populate the VFS, another source of files could be a RomFS, see #nnc_romfs_to_vfs */
+			TRYB(nnc_vfs_init(&exefs), out5); /* initialize a VFS */
+			TRYB(nnc_vfs_link_directory(&exefs.root_directory, std::string(tempPath + "/exefs").c_str(), nnc_vfs_identity_transform, NULL), out10);
 
-		if ((res = nnc_scan_seeddb(&sdb)) != NNC_R_OK) /* scan for a seeddb for use with "new crypto" and set it as the default */
-			nnc_set_default_seeddb(&sdb);
-		TRYB(nnc_fill_keypair(&kp, nnc_get_default_keyset(), nnc_get_default_seeddb(), &ncch_hdr), out7); /* generate the cryptographic keys for if the NCCH is encrypted */
-		if (nnc_file_open(&exheader, std::string(tempPath + "/exheader.bin").c_str()) != NNC_R_OK) {/* open exheader file */
-			std::cout << ErrorText << ' ' << FailedToReadFile << " \"" << tempPath << "/exheader.bin\"" << std::endl;
-			goto out10;
-		}
-		nnc_exheader exhdr;
-		if (nnc_read_exheader(NNC_RSP(&exheader), &exhdr) != NNC_R_OK) {
-			std::cout << ErrorText << ' ' << FailedToReadExHeader << " \"" << tempPath << "/exheader.bin\"" << std::endl;
-			goto out10;
-		}
-		TRYB(nnc_ncch_section_logo(&ncch_hdr, NNC_RSP(&ncch0stream), &logo), out9); /* logo stream */
-
-		/* setup the parameters for building, for more options see the documentation. */
-		ncch0.type = NNC_CIA_NCCHBUILD_BUILD;
-		ncch0.ncch = &ncch0b;
-		nnc_condense_ncch(&ncch0b.chdr, &ncch_hdr);
-		ncch0b.wflags = NNC_NCCH_WF_ROMFS_VFS | NNC_NCCH_WF_EXEFS_VFS | NNC_NCCH_WF_EXHEADER_STREAM;
-		ncch0b.romfs = &romfs;
-		ncch0b.exefs = &exefs;
-		ncch0b.exheader = &exheader;
-		ncch0b.logo = NNC_RSP(&logo);
-		ncch0b.plain = NULL;
-		ncch0b.chdr.partition_id = exhdr.title_id;
-		ncch0b.chdr.title_id = exhdr.title_id;
-
-		if (chrcount(ProductCode) != 4) {
-			std::cout << ErrorText << ' ' << ProductCodetext << ' ' << BadValue << std::endl;
-			goto out10;
-		}
-		{
-			std::string productCodeFull = "CTR-H-" + ProductCode;
-			strcpy(ncch0b.chdr.product_code, productCodeFull.c_str());//modify product code
-		}
-
-		tmd.content_count = 1;
-		tmd.title_id = exhdr.title_id;
-		{
-			//change the title ID of the ticket
-			std::vector<char> ticket_contents = std::vector<char>(NNC_RS_CALL0(ticket, size));
-			nnc_u32 out_size = 0;
-			if (NNC_RS_CALL(ticket, read, (nnc_u8*)ticket_contents.data(), NNC_RS_CALL0(ticket, size), &out_size) != NNC_R_OK)
+			if ((res = nnc_scan_seeddb(&sdb)) != NNC_R_OK) /* scan for a seeddb for use with "new crypto" and set it as the default */
+				nnc_set_default_seeddb(&sdb);
+			TRYB(nnc_fill_keypair(&kp, nnc_get_default_keyset(), nnc_get_default_seeddb(), &ncch_hdr), out7); /* generate the cryptographic keys for if the NCCH is encrypted */
+			if (nnc_file_open(&exheader, std::string(tempPath + "/exheader.bin").c_str()) != NNC_R_OK) {/* open exheader file */
+				std::cout << ErrorText << ' ' << FailedToReadFile << " \"" << tempPath << "/exheader.bin\"" << std::endl;
 				goto out10;
-			if (out_size != NNC_RS_CALL0(ticket, size))
+			}
+			nnc_exheader exhdr;
+			if (nnc_read_exheader(NNC_RSP(&exheader), &exhdr) != NNC_R_OK) {
+				std::cout << ErrorText << ' ' << FailedToReadExHeader << " \"" << tempPath << "/exheader.bin\"" << std::endl;
 				goto out10;
-			nnc_memory modified_ticket;
+			}
+			TRYB(nnc_ncch_section_logo(&ncch_hdr, NNC_RSP(&ncch0stream), &logo), out9); /* logo stream */
+
+			/* setup the parameters for building, for more options see the documentation. */
+			ncch0.type = NNC_CIA_NCCHBUILD_BUILD;
+			ncch0.ncch = &ncch0b;
+			nnc_condense_ncch(&ncch0b.chdr, &ncch_hdr);
+			ncch0b.wflags = NNC_NCCH_WF_ROMFS_VFS | NNC_NCCH_WF_EXEFS_VFS | NNC_NCCH_WF_EXHEADER_STREAM;
+			ncch0b.romfs = &romfs;
+			ncch0b.exefs = &exefs;
+			ncch0b.exheader = &exheader;
+			ncch0b.logo = NNC_RSP(&logo);
+			ncch0b.plain = NULL;
+			ncch0b.chdr.partition_id = exhdr.title_id;
+			ncch0b.chdr.title_id = exhdr.title_id;
+
+			if (chrcount(ProductCode) != 4) {
+				std::cout << ErrorText << ' ' << ProductCodetext << ' ' << BadValue << std::endl;
+				goto out10;
+			}
 			{
-				uint64_t TIDbigend = 0;
-				encode_bigend_u64(exhdr.title_id, &TIDbigend);
-				*(nnc_u64*)&ticket_contents[nnc_sig_dsize((nnc_sigtype)ticket_contents[3]) + 0xDC] = TIDbigend;
+				std::string productCodeFull = "CTR-H-" + ProductCode;
+				strcpy(ncch0b.chdr.product_code, productCodeFull.c_str());//modify product code
 			}
-			nnc_mem_open(&modified_ticket, ticket_contents.data(), NNC_RS_CALL0(ticket, size));
 
-			/* and finally write the cia */
-			res = nnc_write_cia(
-				NNC_CIA_WF_CERTCHAIN_STREAM | NNC_CIA_WF_TICKET_STREAM | NNC_CIA_WF_TMD_BUILD,
-				&certchain, &modified_ticket, &tmd, 1, &ncch0, NNC_WSP(&wf)
-			);
+			tmd.content_count = 1;
+			tmd.title_id = exhdr.title_id;
+			{
+				//change the title ID of the ticket
+				std::vector<char> ticket_contents = std::vector<char>(NNC_RS_CALL0(ticket, size));
+				nnc_u32 out_size = 0;
+				if (NNC_RS_CALL(ticket, read, (nnc_u8*)ticket_contents.data(), NNC_RS_CALL0(ticket, size), &out_size) != NNC_R_OK)
+					goto out10;
+				if (out_size != NNC_RS_CALL0(ticket, size))
+					goto out10;
+				nnc_memory modified_ticket;
+				{
+					uint64_t TIDbigend = 0;
+					encode_bigend_u64(exhdr.title_id, &TIDbigend);
+					*(nnc_u64*)&ticket_contents[nnc_sig_dsize((nnc_sigtype)ticket_contents[3]) + 0xDC] = TIDbigend;
+				}
+				nnc_mem_open(&modified_ticket, ticket_contents.data(), NNC_RS_CALL0(ticket, size));
+
+				/* and finally write the cia */
+				res = nnc_write_cia(
+					NNC_CIA_WF_CERTCHAIN_STREAM | NNC_CIA_WF_TICKET_STREAM | NNC_CIA_WF_TMD_BUILD,
+					&certchain, &modified_ticket, &tmd, 1, &ncch0, NNC_WSP(&wf)
+				);
+			}
+		/* cleanup code, with lots of labels to jump to in case of failure depending on where it failed */
+		out10: nnc_vfs_free(&exefs);
+		out9: NNC_RS_CALL0(exheader, close);
+			//out8: NNC_RS_CALL0(exefs, close);
+		out7: nnc_free_seeddb(&sdb);
+		out6: nnc_vfs_free(&romfs);
+		out5: NNC_RS_CALL0(ncch0stream, close);
+		out4: nnc_cia_free_reader(&reader);
+		out3: NNC_WS_CALL0(wf, close);
+		out2: NNC_RS_CALL0(f, close);
+		out1:
+			if (res != NNC_R_OK)
+			{
+				std::cout << "failed: " << nnc_strerror(res) << std::endl;
+				return res;
+			}
 		}
-	/* cleanup code, with lots of labels to jump to in case of failure depending on where it failed */
-	out10: nnc_vfs_free(&exefs);
-	out9: NNC_RS_CALL0(exheader, close);
-		//out8: NNC_RS_CALL0(exefs, close);
-	out7: nnc_free_seeddb(&sdb);
-	out6: nnc_vfs_free(&romfs);
-	out5: NNC_RS_CALL0(ncch0stream, close);
-	out4: nnc_cia_free_reader(&reader);
-	out3: NNC_WS_CALL0(wf, close);
-	out2: NNC_RS_CALL0(f, close);
-	out1:
-		if (res != NNC_R_OK)
-		{
-			std::cout << "failed: " << nnc_strerror(res) << std::endl;
-			return res;
+		else {
+			std::cout << CreatingFile << ' ' << outTAR.substr(outTAR.find_last_of("/\\") + 1) << std::endl;
+
+			mtar_t tar;
+
+			/* Open archive for writing */
+			mtar_open(&tar, outTAR.c_str(), "wb");
+
+			std::filesystem::path tarpath = tempPath + "/luma";
+			if (tarpath.is_relative())
+				tarpath = std::filesystem::absolute(tarpath);
+			std::string tarpathstr = tarpath.string();
+			tarpathstr = fixSlashes(tarpathstr);
+			std::error_code error = add_directory(&tar, tarpathstr, 30000000);//CRASH
+			if(error) {
+				std::cout << ErrorText << ' ' << tarpathstr << '\n' << error.message() << std::endl;
+				std::cout << ErrorText << ' ' << FailedToCreateFile << " \"" << outTAR << '\"' << std::endl;
+			}
+
+			/* Finalize -- this needs to be the last thing done before closing */
+			mtar_finalize(&tar);
+
+			/* Close archive */
+			mtar_close(&tar);
 		}
-	}
+		if (mode && !outTAR.empty() && splitPos && !dopatch) {
+			dopatch = true;
+		}
+		else if (dopatch) {
+			dopatch = false;
+		}
+	} while (dopatch);
 	std::error_code error;
 	std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*tempPath.c_str()), error);
 	if (error) {

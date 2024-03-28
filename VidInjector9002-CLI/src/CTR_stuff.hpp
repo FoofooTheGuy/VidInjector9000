@@ -7,6 +7,7 @@
 #include <chrono>
 #include <random>
 
+#include "microtar.hpp"
 #include "zip_file.hpp"
 #include "strings.hpp"
 #include "arrays.hpp"
@@ -58,7 +59,7 @@ uint32_t lz11_get_occurence_length(uint8_t* newPtr, uint32_t newLength, uint8_t*
 void* lz11_compress(uint32_t* size, void* input, uint32_t inputSize);
 void* cbmd_build_data(uint32_t* size, CBMD cbmd);
 
-int build_cia(std::string inVi9p, std::string outCia, uint32_t uniqueID = RandomTID(), std::string ApplicationName = "video", std::string ProductCode = "VDIJ");
+int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR = "", uint32_t uniqueID = RandomTID(), std::string ApplicationName = "video", std::string ProductCode = "VDIJ");
 
 int extract_cia(std::string inCia, std::string outDir, std::string seedpath = "");
 

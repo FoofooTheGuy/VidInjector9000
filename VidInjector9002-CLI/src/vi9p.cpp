@@ -1,6 +1,6 @@
 #include "vi9p.hpp"
 
-int saveParameters(std::string parampath, int mode, std::string banner, std::string icon, int iconBorder, std::string Sname, std::string Lname, std::string publisher, int copycheck, std::string copyrightInfo, int FFrewind, int FadeOpt, uint8_t rows, std::vector<std::string> PTitleVec, std::vector<std::string> MoflexVec, std::vector<std::string> MBannerVec) {
+int saveParameters(std::string parampath, int mode, std::string banner, std::string icon, int iconBorder, std::string Sname, std::string Lname, std::string publisher, int copycheck, std::string copyrightInfo, int FFrewind, int FadeOpt, uint8_t rows, std::vector<std::string> PTitleVec, std::vector<std::string> MoflexVec, std::vector<std::string> MBannerVec, uint8_t splitPos) {
 	if((PTitleVec.size() & 0xFF) < rows)
 		PTitleVec = std::vector<std::string>(rows, "");
 	if((MoflexVec.size() & 0xFF) < rows)
@@ -29,6 +29,7 @@ int saveParameters(std::string parampath, int mode, std::string banner, std::str
 			StrMBannerParam << "(" << std::to_string(y) << ")=\"" << MBannerVec.at(y) << "\"\n";
 	}
 	outparams <<
+		IntSplitPatchParam << "=\"" << std::to_string(splitPos) << "\"\n" <<
 		IntPreIndexParam << "=\"0\"\n";
 	outparams.close();
 	if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*parampath.c_str()))) {
@@ -38,7 +39,7 @@ int saveParameters(std::string parampath, int mode, std::string banner, std::str
 	return 0;
 }
 
-int loadParameters(std::string parampath, int &mode, std::string &banner, std::string &icon, int &iconBorder, std::string &Sname, std::string &Lname, std::string &publisher, int &copycheck, std::string &copyrightInfo, int &FFrewind, int &FadeOpt, uint8_t &rows, std::vector<std::string> &PTitleVec, std::vector<std::string> &MoflexVec, std::vector<std::string> &MBannerVec, int &BannerPreviewIndex) {
+int loadParameters(std::string parampath, int &mode, std::string &banner, std::string &icon, int &iconBorder, std::string &Sname, std::string &Lname, std::string &publisher, int &copycheck, std::string &copyrightInfo, int &FFrewind, int &FadeOpt, uint8_t &rows, std::vector<std::string> &PTitleVec, std::vector<std::string> &MoflexVec, std::vector<std::string> &MBannerVec, uint8_t &splitPos, int &BannerPreviewIndex) {
 	std::string outstr = "";
 	uint32_t outrealint = 0;
 	bool good = true;
@@ -195,15 +196,25 @@ int loadParameters(std::string parampath, int &mode, std::string &banner, std::s
 			good = false;
 			std::cout << ErrorText << ' ' << MissingVariableError << '\n' << FailedToFindVar << ' ' << StrMoflexParam << '(' << std::to_string(y) << ")" << std::endl;
 		}
-		if (mode) {
-			if (parseLines(outstr, filelines, StrMBannerParam + '(' + std::to_string(y) + ')')) {
-				MBannerVec.at(y) = outstr;
-			}
-			else {
-				good = false;
-				std::cout << ErrorText << ' ' << MissingVariableError << '\n' << FailedToFindVar << ' ' << StrMBannerParam << '(' << std::to_string(y) << ")" << std::endl;
-			}
+		if (parseLines(outstr, filelines, StrMBannerParam + '(' + std::to_string(y) + ')')) {
+			MBannerVec.at(y) = outstr;
 		}
+		else {
+			good = false;
+			std::cout << ErrorText << ' ' << MissingVariableError << '\n' << FailedToFindVar << ' ' << StrMBannerParam << '(' << std::to_string(y) << ")" << std::endl;
+		}
+	}
+	if (parseLines(outstr, filelines, IntSplitPatchParam)) {
+		if (!stoul_s(outrealint, outstr)) {
+			std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << outstr << ")\n" << IntSplitPatchParam << ' ' << BeANumber << std::endl;
+			outrealint = 0;
+			good = false;
+		}
+		splitPos = (splitPos < rows) ? outrealint & 0xFF : rows - 1;
+	}
+	else {
+		good = false;
+		std::cout << ErrorText << ' ' << MissingVariableError << '\n' << FailedToFindVar << ' ' << IntSplitPatchParam << '\n' << ValueNoChange << '.' << std::endl;
 	}
 	if (parseLines(outstr, filelines, IntPreIndexParam)) {
 		if (!stoul_s(outrealint, outstr)) {
@@ -238,9 +249,10 @@ int setParameter(std::string inpath, int number, std::string newValue, std::stri
 	std::vector<std::string> PTitleVec = std::vector<std::string>(1, "");
 	std::vector<std::string> MoflexVec = std::vector<std::string>(1, "");
 	std::vector<std::string> MBannerVec = std::vector<std::string>(1, "");
+	uint8_t splitPos = 0;
 	int BannerPreviewIndex = 0;
 	
-	int res = loadParameters(inpath, mode, banner, icon, iconBorder, Sname, Lname, publisher, copycheck, copyrightInfo, FFrewind, FadeOpt, rows, PTitleVec, MoflexVec, MBannerVec, BannerPreviewIndex);
+	int res = loadParameters(inpath, mode, banner, icon, iconBorder, Sname, Lname, publisher, copycheck, copyrightInfo, FFrewind, FadeOpt, rows, PTitleVec, MoflexVec, MBannerVec, splitPos, BannerPreviewIndex);
 	uint32_t outrealint = 0;
 	switch(number) {
 		case 0: {
@@ -293,7 +305,7 @@ int setParameter(std::string inpath, int number, std::string newValue, std::stri
 		}
 		case 9: {
 			if (!stoul_s(outrealint, newValue)) {
-				std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << newValue << ")\n" << IntCopycheckParam << ' ' << BeANumber << std::endl;
+				std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << newValue << ")\n" << IntFFrewindParam << ' ' << BeANumber << std::endl;
 				return 7;
 			}
 			FFrewind = outrealint ? 1 : 0;
@@ -301,15 +313,23 @@ int setParameter(std::string inpath, int number, std::string newValue, std::stri
 		}
 		case 10: {
 			if (!stoul_s(outrealint, newValue)) {
-				std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << newValue << ")\n" << IntCopycheckParam << ' ' << BeANumber << std::endl;
+				std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << newValue << ")\n" << IntFadeOptParam << ' ' << BeANumber << std::endl;
 				return 8;
 			}
 			FadeOpt = outrealint ? 1 : 0;
 			break;
 		}
+		case 11: {
+			if (!stoul_s(outrealint, newValue)) {
+				std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << newValue << ")\n" << IntSplitPatchParam << ' ' << BeANumber << std::endl;
+				return 8;
+			}
+			splitPos = (rows > 1) ? (outrealint < rows ? outrealint : 1) : 0;
+			break;
+		}
 	}
 	//beware of incoming jank
-	int rowcase = 11;
+	int rowcase = 12;
 	for(auto &row : PTitleVec) {
 		if(number == rowcase) {
 			row = newValue;
@@ -317,7 +337,7 @@ int setParameter(std::string inpath, int number, std::string newValue, std::stri
 		}
 		rowcase++;
 	}
-	rowcase = 11 + rows;
+	rowcase = 12 + rows;
 	for(auto &row : MoflexVec) {
 		if(number == rowcase) {
 			row = newValue;
@@ -325,7 +345,7 @@ int setParameter(std::string inpath, int number, std::string newValue, std::stri
 		}
 		rowcase++;
 	}
-	rowcase = 11 + (rows * 2);
+	rowcase = 12 + (rows * 2);
 	for(auto &row : MBannerVec) {
 		if(number == rowcase) {
 			row = newValue;
@@ -333,7 +353,7 @@ int setParameter(std::string inpath, int number, std::string newValue, std::stri
 		}
 		rowcase++;
 	}
-	saveParameters(outpath, mode, banner, icon, iconBorder, Sname, Lname, publisher, copycheck, copyrightInfo, FFrewind, FadeOpt, rows, PTitleVec, MoflexVec, MBannerVec);
+	saveParameters(outpath, mode, banner, icon, iconBorder, Sname, Lname, publisher, copycheck, copyrightInfo, FFrewind, FadeOpt, rows, PTitleVec, MoflexVec, MBannerVec, splitPos);
 	return res;
 }
 
@@ -353,9 +373,10 @@ int printParameter(std::string inpath) {
 	std::vector<std::string> PTitleVec = std::vector<std::string>(1, "");
 	std::vector<std::string> MoflexVec = std::vector<std::string>(1, "");
 	std::vector<std::string> MBannerVec = std::vector<std::string>(1, "");
+	uint8_t splitPos = 0;
 	int BannerPreviewIndex = 0;
 	
-	int res = loadParameters(inpath, mode, banner, icon, iconBorder, Sname, Lname, publisher, copycheck, copyrightInfo, FFrewind, FadeOpt, rows, PTitleVec, MoflexVec, MBannerVec, BannerPreviewIndex);
+	int res = loadParameters(inpath, mode, banner, icon, iconBorder, Sname, Lname, publisher, copycheck, copyrightInfo, FFrewind, FadeOpt, rows, PTitleVec, MoflexVec, MBannerVec, splitPos, BannerPreviewIndex);
 	std::cout << "[ 0] " << IntMultiParam << "=\"" << std::to_string(mode) << "\"\n" <<
 				 "[ 1] " << StrBannerParam << "=\"" << banner << "\"\n" <<
 				 "[ 2] " << StrIconParam << "=\"" << icon << "\"\n" <<
@@ -366,23 +387,24 @@ int printParameter(std::string inpath) {
 				 "[ 7] " << IntCopycheckParam << "=\"" << std::to_string(copycheck) << "\"\n" <<
 				 "[ 8] " << StrCopyrightParam << "=\"" << copyrightInfo << "\"\n" <<
 				 "[ 9] " << IntFFrewindParam << "=\"" << std::to_string(FFrewind) << "\"\n" <<
-				 "[10] " << IntFadeOptParam << "=\"" << std::to_string(FadeOpt) << "\"" << std::endl;
+				 "[10] " << IntFadeOptParam << "=\"" << std::to_string(FadeOpt) << "\"\n" <<
+				 "[11] " << IntSplitPatchParam << "=\"" << std::to_string(splitPos) << "\"" << std::endl;
 	//beware of incoming jank
-	size_t rowcase = 11;
+	size_t rowcase = 12;
 	uint8_t rowcount = 0;
 	for(auto &row : PTitleVec) {
 		std::cout << '[' << rowcase << "] " << StrPTitleParam << '(' << std::to_string(rowcount) << ')' << "=\"" << row << "\"" << std::endl;
 		rowcount++;
 		rowcase++;
 	}
-	rowcase = 11 + rows;
+	rowcase = 12 + rows;
 	rowcount = 0;
 	for(auto &row : MoflexVec) {
 		std::cout << '[' << rowcase << "] " << StrMoflexParam << '(' << std::to_string(rowcount) << ')' << "=\"" << row << "\"" << std::endl;
 		rowcount++;
 		rowcase++;
 	}
-	rowcase = 11 + (rows * 2);
+	rowcase = 12 + (rows * 2);
 	rowcount = 0;
 	for(auto &row : MBannerVec) {
 		std::cout << '[' << rowcase << "] " << StrMBannerParam << '(' << std::to_string(rowcount) << ')' << "=\"" << row << "\"" << std::endl;
@@ -408,9 +430,10 @@ int add_row(std::string inpath, std::string outpath) {
 	std::vector<std::string> PTitleVec = std::vector<std::string>(1, "");
 	std::vector<std::string> MoflexVec = std::vector<std::string>(1, "");
 	std::vector<std::string> MBannerVec = std::vector<std::string>(1, "");
+	uint8_t splitPos = 0;
 	int BannerPreviewIndex = 0;
 	
-	int res = loadParameters(inpath, mode, banner, icon, iconBorder, Sname, Lname, publisher, copycheck, copyrightInfo, FFrewind, FadeOpt, rows, PTitleVec, MoflexVec, MBannerVec, BannerPreviewIndex);
+	int res = loadParameters(inpath, mode, banner, icon, iconBorder, Sname, Lname, publisher, copycheck, copyrightInfo, FFrewind, FadeOpt, rows, PTitleVec, MoflexVec, MBannerVec, splitPos, BannerPreviewIndex);
 	
 	//mode = 1;//this shouldn't really be done here
 	if(rows == MAX_ROWS) {
@@ -422,7 +445,7 @@ int add_row(std::string inpath, std::string outpath) {
 	MoflexVec.push_back("");
 	MBannerVec.push_back("");
 	
-	saveParameters(outpath, mode, banner, icon, iconBorder, Sname, Lname, publisher, copycheck, copyrightInfo, FFrewind, FadeOpt, rows, PTitleVec, MoflexVec, MBannerVec);
+	saveParameters(outpath, mode, banner, icon, iconBorder, Sname, Lname, publisher, copycheck, copyrightInfo, FFrewind, FadeOpt, rows, PTitleVec, MoflexVec, MBannerVec, splitPos);
 	return res;
 }
 
@@ -442,9 +465,10 @@ int sub_row(std::string inpath, std::string outpath) {
 	std::vector<std::string> PTitleVec = std::vector<std::string>(1, "");
 	std::vector<std::string> MoflexVec = std::vector<std::string>(1, "");
 	std::vector<std::string> MBannerVec = std::vector<std::string>(1, "");
+	uint8_t splitPos = 0;
 	int BannerPreviewIndex = 0;
 	
-	int res = loadParameters(inpath, mode, banner, icon, iconBorder, Sname, Lname, publisher, copycheck, copyrightInfo, FFrewind, FadeOpt, rows, PTitleVec, MoflexVec, MBannerVec, BannerPreviewIndex);
+	int res = loadParameters(inpath, mode, banner, icon, iconBorder, Sname, Lname, publisher, copycheck, copyrightInfo, FFrewind, FadeOpt, rows, PTitleVec, MoflexVec, MBannerVec, splitPos, BannerPreviewIndex);
 	
 	if(rows == 1) {
 		return 6;//6 because we used loadParameters
@@ -454,6 +478,6 @@ int sub_row(std::string inpath, std::string outpath) {
 	MoflexVec.pop_back();
 	MBannerVec.pop_back();
 	
-	saveParameters(outpath, mode, banner, icon, iconBorder, Sname, Lname, publisher, copycheck, copyrightInfo, FFrewind, FadeOpt, rows, PTitleVec, MoflexVec, MBannerVec);
+	saveParameters(outpath, mode, banner, icon, iconBorder, Sname, Lname, publisher, copycheck, copyrightInfo, FFrewind, FadeOpt, rows, PTitleVec, MoflexVec, MBannerVec, splitPos);
 	return res;
 }

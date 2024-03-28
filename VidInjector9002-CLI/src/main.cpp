@@ -7,7 +7,7 @@
 #include "strings.hpp"
 #include "vi9p.hpp"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char** argv) {
 	for(int i = 1; i < argc; i++) {
 		if(strcmp(argv[i], HArg.c_str()) == 0 || strcmp(argv[i], HArgShort.c_str()) == 0) {
 			std::cout << LogoASCII << '\n' << ProgramName << '\n' << ByMeText << "\n(" << Version << ")\n" << InfoText << '\n' << UsageText << ' ' << argv[0] << ' ' << ExampleText << std::endl << ArgumentText << '\n' << HArg << " | " << HArgShort << '\n' << NArg << " | " << NArgShort << '\n' << SpArg << " | " << SpArgShort << '\n' << PpArg << " | " << PpArgShort << '\n' << ArArg << " | " << ArArgShort << '\n' << SrArg << " | " << SrArgShort << '\n' << BcArg << " | " << BcArgShort << '\n' << EcArg << " | " << EcArgShort << std::endl;
@@ -65,7 +65,10 @@ int main(int argc, char *argv[]) {
 		}
 		else if(strcmp(argv[i], BcArg.c_str()) == 0 || strcmp(argv[i], BcArgShort.c_str()) == 0) {
 			if(argc == 4) {
-				return build_cia(argv[2], argv[3]);
+				return build_archive(argv[2], argv[3]);
+			}
+			else if(argc == 5) {
+				return build_archive(argv[2], argv[3], argv[4]);
 			}
 			else if(argc == 7) {
 				uint32_t inNumber = 0;
@@ -77,11 +80,25 @@ int main(int argc, char *argv[]) {
 					std::cout << ErrorText << " <" << number << "> " << '\n' << BadValue << " \"" << argv[3] << '\"' << std::endl;
 					return 2;
 				}
-				return build_cia(argv[2], argv[6], inNumber, argv[4], argv[5]);
+				return build_archive(argv[2], argv[6], "", inNumber, argv[4], argv[5]);
+			}
+			else if(argc == 8) {
+				uint32_t inNumber = 0;
+				if(!stoul_s(inNumber, argv[3], true)) {
+					std::cout << ErrorText << " <" << number << "> " << '\n' << BadValue << " \"" << argv[3] << '\"' << std::endl;
+					return 1;
+				}
+				if(!TIDisValid(inNumber)) {
+					std::cout << ErrorText << " <" << number << "> " << '\n' << BadValue << " \"" << argv[3] << '\"' << std::endl;
+					return 2;
+				}
+				return build_archive(argv[2], argv[6], argv[7], inNumber, argv[4], argv[5]);
 			}
 			else {
 				std::cout << BcArg << " | " << BcArgShort << " : " << BuildCInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << BcArg << " <" << InVi9pFile << "> <" << UniqueIDText << "> <" << AppTitleText << "> <" << ProdCodeLatt << "> <" << OutCiaFile << ">\n\n----\n" << std::endl;
-				std::cout << BcArg << " | " << BcArgShort << " : " << BuildC2InfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << BcArg << " <" << InVi9pFile << "> <" << OutCiaFile << ">" << std::endl;
+				std::cout << BcArg << " | " << BcArgShort << " : " << BuildC3InfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << BcArg << " <" << InVi9pFile << "> <" << UniqueIDText << "> <" << AppTitleText << "> <" << ProdCodeLatt << "> <" << OutCiaFile << "> <" << OutTarFile << ">\n\n----\n" << std::endl;
+				std::cout << BcArg << " | " << BcArgShort << " : " << BuildC2InfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << BcArg << " <" << InVi9pFile << "> <" << OutCiaFile << ">\n\n----\n" << std::endl;
+				std::cout << BcArg << " | " << BcArgShort << " : " << BuildC3InfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << BcArg << " <" << InVi9pFile << "> <" << OutCiaFile << "> <" << OutTarFile << ">" << std::endl;
 			}
 			return 1;
 		}
@@ -98,6 +115,7 @@ int main(int argc, char *argv[]) {
 			}
 			return 1;
 		}
+		//TODO: extract patch
 		else {
 			if(argc == 2) {
 				std::cout << ErrorText << ' ' << UnknownArgText << '"' << argv[1] << "\"\n" << std::endl;
