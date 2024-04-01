@@ -1349,12 +1349,12 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 		/* Open archive for reading */
 		ret = mtar_open(&tar, inArc.c_str(), "rb");//doesnt work with unicode
 		if (ret) {
-			//xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", filepath, mtar_strerror(ret)), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+			std::cout << ErrorText << ' ' << inArc << '\n' << mtar_strerror(ret) << std::endl;
 			return 2;
 		}
 		ret = extract_content(&tar, inArc, exportsPath, 30000000);
 		if (ret) {
-			//xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", filepath, mtar_strerror(ret)), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+			std::cout << ErrorText << ' ' << inArc << '\n' << mtar_strerror(ret) << std::endl;
 			mtar_close(&tar);
 			return 3;
 		}
@@ -1380,7 +1380,7 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 			if (std::filesystem::is_directory(filename, error)) {
 				std::filesystem::create_directory(std::filesystem::path((const char8_t*)&*outdir.c_str()), error);
 				if (error) {
-					//xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", filename, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+					std::cout << ErrorText << ' ' << filename << '\n' << error.message() << std::endl;
 					return 4;
 				}
 			}
@@ -1390,13 +1390,13 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 
 			if (std::filesystem::is_regular_file(entry, error)) {
 				if (error) {
-					//xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", filename, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+					std::cout << ErrorText << ' ' << filename << '\n' << error.message() << std::endl;
 				}
 			}
 		}
 		std::filesystem::remove_all(exportsPath.c_str(), error);//lol
 		if (error) {
-			//xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", exportsPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+			std::cout << ErrorText << ' ' << exportsPath << '\n' << error.message() << std::endl;
 		}
 	}
 	//information_buttons.csv
