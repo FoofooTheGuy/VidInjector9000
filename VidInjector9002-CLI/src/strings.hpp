@@ -21,6 +21,8 @@ extern std::string BcArg;
 extern std::string BcArgShort;
 extern std::string EcArg;
 extern std::string EcArgShort;
+extern std::string EtArg;
+extern std::string EtArgShort;
 
 extern std::string Languagedir;
 
@@ -67,8 +69,10 @@ extern std::string BuildC2InfoText;
 extern std::string BuildC3InfoText;
 extern std::string ExCInfoText;
 extern std::string ExC2InfoText;
+extern std::string EtInfoText;
 extern std::string InVi9pFile;
 extern std::string InCiaFile;
+extern std::string InTarFile;
 extern std::string OutVi9pFile;
 extern std::string OutCiaFile;
 extern std::string OutTarFile;

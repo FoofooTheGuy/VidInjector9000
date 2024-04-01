@@ -61,7 +61,7 @@ void* cbmd_build_data(uint32_t* size, CBMD cbmd);
 
 int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR = "", uint32_t uniqueID = RandomTID(), std::string ApplicationName = "video", std::string ProductCode = "VDIJ");
 
-int extract_cia(std::string inCia, std::string outDir, std::string seedpath = "");
+int extract_archive(std::string inArc, std::string outDir, bool dopatch = false, std::string seedpath = "");
 
 /*path: input path to text file containing utf16 text
 outVec: output vector containing each line per element

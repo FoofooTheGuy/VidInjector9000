@@ -1149,7 +1149,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 	return res;
 }
 
-int extract_cia(std::string inCia, std::string outDir, std::string seedpath) {
+int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::string seedpath) {
 	int mode = 0;
 	std::string banner = "";
 	std::string icon = "";
@@ -1165,16 +1165,21 @@ int extract_cia(std::string inCia, std::string outDir, std::string seedpath) {
 	std::vector<std::string> PTitleVec;
 	std::vector<std::string> MoflexVec;
 	std::vector<std::string> MBannerVec;
+	uint8_t splitPos = 0;
 	//int BannerPreviewIndex = 0;
 	
+	if (std::filesystem::path((const char8_t*)&*outDir.c_str()).is_relative())
+		outDir = std::filesystem::absolute(std::filesystem::path((const char8_t*)&*outDir.c_str())).string();
+	
 	std::string tempPath = resourcesPath + "/temp";
+	std::string exportsPath = resourcesPath + "/temp/exports";
 	std::string romfspath = outDir + "/romfs";
 	std::string exefspath = outDir + "/exefs";
 	std::vector<std::string> trimmed;
 	
 	static nnc_result res;
 	std::error_code error;
-	/*std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*outDir.c_str()), error);//probably dont delete this because people might have other stuff in here for some reason
+	/*std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*outDir.c_str()), error);//probably dont delete outDir because people might have other stuff in here for some reason
 	if (error) {
 		std::cout << ErrorText << ' ' << outDir << '\n' << error.message() << std::endl;
 		return 1;
@@ -1185,7 +1190,7 @@ int extract_cia(std::string inCia, std::string outDir, std::string seedpath) {
 		return 1;
 	}
 	//extract important files from the romfs and exefs of cia
-	{
+	if(!dopatch) {
 		#define CUREC_SIZE 1024
 
 		std::string extractErr = "";
@@ -1209,7 +1214,7 @@ int extract_cia(std::string inCia, std::string outDir, std::string seedpath) {
 		sdb.size = 1;
 		nnc_file f;
 
-		res = nnc_file_open(&f, inCia.c_str());
+		res = nnc_file_open(&f, inArc.c_str());
 		if (res != NNC_R_OK)
 			goto end;
 
@@ -1337,6 +1342,63 @@ int extract_cia(std::string inCia, std::string outDir, std::string seedpath) {
 			}
 			nnc_free_seeddb(&sdb);
 	}
+	else {
+		int ret = 0;
+		mtar_t tar;
+
+		/* Open archive for reading */
+		ret = mtar_open(&tar, inArc.c_str(), "rb");//doesnt work with unicode
+		if (ret) {
+			//xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", filepath, mtar_strerror(ret)), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+			return 2;
+		}
+		ret = extract_content(&tar, inArc, exportsPath, 30000000);
+		if (ret) {
+			//xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", filepath, mtar_strerror(ret)), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+			mtar_close(&tar);
+			return 3;
+		}
+		mtar_close(&tar);
+		std::filesystem::create_directory(std::filesystem::path((const char8_t*)&*romfspath.c_str()), error);
+		std::string lumaromfs = "";
+		for (const auto& entry : std::filesystem::recursive_directory_iterator(std::filesystem::path((const char8_t*)&*std::string(exportsPath + "/luma").c_str()), error)) {//do this because we dont know the title ID
+			auto filename = std::filesystem::canonical(entry);
+			if (std::filesystem::is_directory(entry, error) && filename.string().rfind("romfs") != std::string::npos) {//this only works because we know there isnt gonna be a "romfs" subdir
+				lumaromfs = filename.string();
+				break;
+			}
+		}
+		for (int i = 0; i < MAX_ROWS; i++)//uh probably better than checking the string
+			if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(lumaromfs + "/movie/movie_" + std::to_string(i) + ".moflex").c_str()))) {
+				splitPos = i & 0xFF;
+				break;
+			}
+		for (const auto& entry : std::filesystem::recursive_directory_iterator(std::filesystem::path((const char8_t*)&*lumaromfs.c_str()), error)) {
+			auto filename = std::filesystem::canonical(entry);
+			std::string outdir = std::string(outDir + "/romfs/");
+			outdir += std::filesystem::relative(filename, std::filesystem::path((const char8_t*)&*lumaromfs.c_str())).string();
+			if (std::filesystem::is_directory(filename, error)) {
+				std::filesystem::create_directory(std::filesystem::path((const char8_t*)&*outdir.c_str()), error);
+				if (error) {
+					//xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", filename, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+					return 4;
+				}
+			}
+			else if (std::filesystem::is_regular_file(filename, error)) {
+				std::filesystem::rename(filename, std::filesystem::path((const char8_t*)&*outdir.c_str()), error);
+			}
+
+			if (std::filesystem::is_regular_file(entry, error)) {
+				if (error) {
+					//xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", filename, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+				}
+			}
+		}
+		std::filesystem::remove_all(exportsPath.c_str(), error);//lol
+		if (error) {
+			//xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", exportsPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+		}
+	}
 	//information_buttons.csv
 	{
 		uint8_t ret;
@@ -1363,7 +1425,7 @@ int extract_cia(std::string inCia, std::string outDir, std::string seedpath) {
 			input.open(std::filesystem::path((const char8_t*)&*std::string(romfspath + "/settings/copyright.txt").c_str()), std::ios_base::in | std::ios_base::binary);
 			if (!input) {
 				std::cout << ErrorText << ' ' << FailedToReadFile << '\n' << romfspath + "/settings/copyright.txt" << std::endl;
-				return 3;
+				return 5;
 			}
 
 			char Byte;
@@ -1376,7 +1438,7 @@ int extract_cia(std::string inCia, std::string outDir, std::string seedpath) {
 			input.close();
 			if (output[0] == 0xFE && output[1] == 0xFF) {//if little endian (they should be in big endian anyway and i dont want to convert it)
 				std::cout << ErrorText << ' ' << FailedToReadFile << '\n' << romfspath + "/settings/copyright.txt" << std::endl;
-				return 4;
+				return 6;
 			}
 			output.erase(output.begin(), output.begin() + 2);//delete byte order mask
 			outputUTF8 = UTF16toUTF8(output);
@@ -1504,15 +1566,14 @@ int extract_cia(std::string inCia, std::string outDir, std::string seedpath) {
 				MoflexVec.push_back(std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfspath + "/movie/movie_" + std::to_string(i) + ".moflex").c_str())) ? std::string(romfspath + "/movie/movie_" + std::to_string(i) + ".moflex") : "");
 		}
 	}
-	
 	if (res != NNC_R_OK)
 		good = false;
-	if(good) std::cout << ParametersLoaded << '\n' << SuccessfullyLoaded << ' ' << inCia.substr(inCia.find_last_of("/\\") + 1) << '.' << std::endl;
-	else std::cout << ParametersLoaded << '\n' << FailedToLoad << ' ' << inCia.substr(inCia.find_last_of("/\\") + 1) << ".\n" << ValidStillLoaded << std::endl;
+	if(good) std::cout << ParametersLoaded << '\n' << SuccessfullyLoaded << ' ' << inArc.substr(inArc.find_last_of("/\\") + 1) << '.' << std::endl;
+	else std::cout << ParametersLoaded << '\n' << FailedToLoad << ' ' << inArc.substr(inArc.find_last_of("/\\") + 1) << ".\n" << ValidStillLoaded << std::endl;
 
 	std::cout << CreatingFile << " \"" << outDir + "/parameters.vi9p\"" << std::endl;
 	
-	saveParameters(std::string(outDir + "/parameters.vi9p"), mode, banner, icon, iconBorder, Sname, Lname, publisher, copycheck, copyrightInfo, FFrewind, FadeOpt, rows, PTitleVec, MoflexVec, MBannerVec);
+	saveParameters(std::string(outDir + "/parameters.vi9p"), mode, banner, icon, iconBorder, Sname, Lname, publisher, copycheck, copyrightInfo, FFrewind, FadeOpt, rows, PTitleVec, MoflexVec, MBannerVec, splitPos);
 	
 	return 0;
 }
