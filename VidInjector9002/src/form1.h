@@ -1032,7 +1032,9 @@ namespace VidInjector9002 {
                 IntFormWidth << "=\"" << width() << "\"\n" <<
                 IntFormHeight << "=\"" << height() << "\"\n" <<
                 IntDarkMode << "=\"" << LightDark.checked() << "\"\n" <<
-                StrParamsPath << "=\"" << parampath << "\"\n";
+                StrParamsPath << "=\"" << parampath << "\"\n" <<
+                StrImagesPath << "=\"" << ImagesPath << "\"\n" <<
+                StrVideosPath << "=\"" << VideosPath << "\"\n";
             settingsfile.close();
         }
 
@@ -1052,7 +1054,9 @@ namespace VidInjector9002 {
                     IntFormWidth << "=\"1000\"\n" <<
                     IntFormHeight << "=\"700\"\n" <<
                     IntDarkMode << "=\"0\"\n" <<
-                    StrParamsPath << "=\"\"\n";
+                    StrParamsPath << "=\"\"\n" <<
+                    StrImagesPath << "=\"" << xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures) << "\"\n" <<
+                    StrVideosPath << "=\"" << xtd::environment::get_folder_path(xtd::environment::special_folder::my_videos) << "\"\n";
                 settingsfile.close();
             }
             std::vector<xtd::ustring> filelines = fileRead(xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, settingsPath));
@@ -1179,6 +1183,22 @@ namespace VidInjector9002 {
                 good = false;
                 xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, StrParamsPath, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
             }
+            if (parseLines(outstr, filelines, StrImagesPath)) {
+                ImagesPath = outstr;
+            }
+            else {
+                ImagesPath = xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures);
+                good = false;
+                xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, StrImagesPath, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+            }
+            if (parseLines(outstr, filelines, StrVideosPath)) {
+                VideosPath = outstr;
+            }
+            else {
+                VideosPath = xtd::environment::get_folder_path(xtd::environment::special_folder::my_videos);
+                good = false;
+                xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, StrVideosPath, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+            }
             return good;
         }
 
@@ -1228,6 +1248,8 @@ namespace VidInjector9002 {
         xtd::ustring tempPath = xtd::ustring::format("{}/{}/temp", ProgramDir, resourcesPath);
         xtd::ustring exportsPath = xtd::ustring::format("{}/{}/exports", ProgramDir, resourcesPath);
         std::vector<xtd::ustring> LanguageVec;
+        xtd::ustring ImagesPath;//xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures)
+        xtd::ustring VideosPath;//xtd::environment::get_folder_path(xtd::environment::special_folder::my_videos)
 
         bool loaded = false;
         xtd::ustring parampath;

@@ -137,6 +137,8 @@ extern xtd::ustring IntFormWidth;
 extern xtd::ustring IntFormHeight;
 extern xtd::ustring IntDarkMode;
 extern xtd::ustring StrParamsPath;
+extern xtd::ustring StrImagesPath;
+extern xtd::ustring StrVideosPath;
 
 //strings for input from language files
 extern xtd::ustring inLangErrorText;

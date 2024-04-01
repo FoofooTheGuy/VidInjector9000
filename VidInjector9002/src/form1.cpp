@@ -71,7 +71,7 @@ form1::form1() {
     bannerbrowse.location({ parameters.width() - 597, bannerbox.location().y() - (bannerbrowse.height() / 2 - bannerbox.height() / 2) });//tether to bannerbox (this is here because the stuff that doesnt move is reliant on it)
     bannerbrowse.text(Browse);
     bannerbrowse.click += [&] {
-        xtd::ustring filepath = load_file(xtd::ustring::format("{} {}{}{}", SupportedImage200x120, SupportedImageListBanner, CGFXList, AllFilesList), bannerbox.text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
+        xtd::ustring filepath = load_file(xtd::ustring::format("{} {}{}{}", SupportedImage200x120, SupportedImageListBanner, CGFXList, AllFilesList), bannerbox.text(), ImagesPath);
         if (!filepath.empty()) bannerbox.text(filepath);
     };
 
@@ -298,7 +298,7 @@ form1::form1() {
     iconbrowse.location({ iconbox.location().x() + iconbox.width() + 1, iconbox.location().y() - (iconbrowse.height() / 2 - iconbox.height() / 2) });//tether to iconbox
     iconbrowse.text(Browse);
     iconbrowse.click += [&] {
-        xtd::ustring filepath = load_file(xtd::ustring::format("{} {}{}{}", SupportedImage48x48, SupportedImageList, SMDHList, AllFilesList), iconbox.text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
+        xtd::ustring filepath = load_file(xtd::ustring::format("{} {}{}{}", SupportedImage48x48, SupportedImageList, SMDHList, AllFilesList), iconbox.text(), ImagesPath);
         if (!filepath.empty()) iconbox.text(filepath);
     };
 
@@ -576,9 +576,9 @@ form1::form1() {
             }
             xtd::ustring filepath = "";
             if(text_box_array.at(bannerpreviewindex * columns + 2)->text().empty())
-                filepath = load_file(xtd::ustring::format("{} {}", SupportedImage200x120, SupportedImageListBanner), text_box_array.at((emptyRow - 1 < 0 ? 0 : emptyRow - 1) * columns + 2)->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
+                filepath = load_file(xtd::ustring::format("{} {}", SupportedImage200x120, SupportedImageListBanner), text_box_array.at((emptyRow - 1 < 0 ? 0 : emptyRow - 1) * columns + 2)->text(), ImagesPath);
             else 
-                filepath = load_file(xtd::ustring::format("{} {}", SupportedImage200x120, SupportedImageListBanner), text_box_array.at(bannerpreviewindex * columns + 2)->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
+                filepath = load_file(xtd::ustring::format("{} {}", SupportedImage200x120, SupportedImageListBanner), text_box_array.at(bannerpreviewindex * columns + 2)->text(), ImagesPath);
             if (!filepath.empty()) text_box_array.at(bannerpreviewindex * columns + 2)->text(filepath);
             setMultiBannerPreview(bannerpreviewindex);
         }
@@ -793,7 +793,7 @@ form1::form1() {
     moflexbrowse.click += [&] {
         //disabled because it doesnt put the full path for some reason, only file name, and idk how to fix, if it's even possible for me to fix it
         /*if (mode.selected_index()) {
-            std::vector<xtd::ustring> files = load_files(MoflexFilesList, text_box_array[(rows - 1) * columns + 1]->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_videos));
+            std::vector<xtd::ustring> files = load_files(MoflexFilesList, text_box_array[(rows - 1) * columns + 1]->text(), VideosPath);
             if (files.size() == 1 && !files.empty()) text_box_array[(rows - 1) * columns + 1]->text(files.at(0));
             else {
                 for (size_t i = 0; i < files.size(); i++) {
@@ -813,9 +813,9 @@ form1::form1() {
         }
         xtd::ustring filepath = "";
         if(!text_box_array[(emptyRow - 1 < 0 ? 0 : emptyRow - 1) * columns + 1]->text().empty())
-            filepath = load_file(MoflexFilesList, text_box_array[(emptyRow - 1 < 0 ? 0 : emptyRow - 1) * columns + 1]->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_videos));
+            filepath = load_file(MoflexFilesList, text_box_array[(emptyRow - 1 < 0 ? 0 : emptyRow - 1) * columns + 1]->text(), VideosPath);
         else
-            filepath = load_file(MoflexFilesList, text_box_array[(rows - 1) * columns + 1]->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_videos));
+            filepath = load_file(MoflexFilesList, text_box_array[(rows - 1) * columns + 1]->text(), VideosPath);
         if (filepath.empty()) return;//big brain time
 
         text_box_array[emptyRow * columns + 1]->text(filepath);
@@ -844,11 +844,11 @@ form1::form1() {
             }
         }
         xtd::ustring filepath = "";
-        //xtd::ustring filepath = load_file(xtd::ustring::format("{} {}", SupportedImage200x120, SupportedImageListBanner), text_box_array.at((rows - 1) * columns + 2)->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
+        //xtd::ustring filepath = load_file(xtd::ustring::format("{} {}", SupportedImage200x120, SupportedImageListBanner), text_box_array.at((rows - 1) * columns + 2)->text(), ImagesPath);
         if (!text_box_array[(emptyRow - 1 < 0 ? 0 : emptyRow - 1) * columns + 2]->text().empty())
-            filepath = load_file(xtd::ustring::format("{} {}", SupportedImage200x120, SupportedImageListBanner), text_box_array[(emptyRow - 1 < 0 ? 0 : emptyRow - 1) * columns + 2]->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
+            filepath = load_file(xtd::ustring::format("{} {}", SupportedImage200x120, SupportedImageListBanner), text_box_array[(emptyRow - 1 < 0 ? 0 : emptyRow - 1) * columns + 2]->text(), ImagesPath);
         else
-            filepath = load_file(xtd::ustring::format("{} {}", SupportedImage200x120, SupportedImageListBanner), text_box_array[(rows - 1) * columns + 2]->text(), xtd::environment::get_folder_path(xtd::environment::special_folder::my_pictures));
+            filepath = load_file(xtd::ustring::format("{} {}", SupportedImage200x120, SupportedImageListBanner), text_box_array[(rows - 1) * columns + 2]->text(), ImagesPath);
         if (filepath.empty()) return;
 
         text_box_array.at(emptyRow * columns + 2)->text(filepath);
@@ -1186,7 +1186,7 @@ form1::form1() {
                     std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*tempPath.c_str()), error);
                     if (error) {
                         xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", tempPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
-                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, dopatch ? patchfile : outfile)), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+                        xtd::forms::message_box::show(*this, xtd::ustring::format("{} \"{}\"", FailedToCreateFile, dopatch ? patchfile : outfile), ErrorText, xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
                         return;
                     }
                 }

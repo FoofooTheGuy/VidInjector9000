@@ -133,6 +133,8 @@ xtd::ustring IntFormWidth = "INT:FORM WIDTH";
 xtd::ustring IntFormHeight = "INT:FORM HEIGHT";
 xtd::ustring IntDarkMode = "INT:DARK MODE";
 xtd::ustring StrParamsPath = "STR:PARAMETERS PATH";
+xtd::ustring StrImagesPath = "STR:IMAGES PATH";
+xtd::ustring StrVideosPath = "STR:VIDEOS PATH";
 
 xtd::ustring inLangErrorText = "ErrorText";
 xtd::ustring inLangMissingVariableError = "MissingVariableError";
