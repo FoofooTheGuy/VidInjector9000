@@ -122,11 +122,27 @@ VidInjector9002-CLI -build_cia \<input .vi9p file\> \<unique ID\> \<application 
 
 ----
 
-The same as the previous one, except with the following defaults where the argument parameters are missing: (random unique ID) 'video' 'VDIJ'
+The same as the previous one, except with an output .tar which will contain a luma game patch. (Only use this if INT:SPLITPATCH is set in the input .vi9p)
+
+Usage:
+
+VidInjector9002-CLI -build_cia \<input .vi9p file\> \<unique ID\> \<application title\> \<product code latter\> \<output .cia file\> \<output .tar file\>
+
+----
+
+The same as the first one, except with the following defaults where the argument parameters are missing: (random unique ID) 'video' 'VDIJ'
 
 Usage:
 
 VidInjector9002-CLI -build_cia \<input .vi9p file\> \<output .cia file\>
+
+----
+
+The same as the previous one, except with an output .tar which will contain a luma game patch. (Only use this if INT:SPLITPATCH is set in the input .vi9p)
+
+Usage:
+
+VidInjector9002-CLI -build_cia \<input .vi9p file\> \<output .cia file\> \<output .tar file\>
 
 </details>
 
@@ -135,7 +151,7 @@ VidInjector9002-CLI -build_cia \<input .vi9p file\> \<output .cia file\>
 <details>
 <summary>-extract_cia | -ec</summary>
 
-Extract parameters from a .cia to a directory which will contain the romfs directory, exefs directory, and .vi9p file. Note that \<output directory\> must be a complete path like "C:/dir/dir" and unnecessary files will not be extracted.
+Extract parameters from a .cia to a directory which will contain the romfs directory, exefs directory, and .vi9p file. Note that unnecessary files will not be extracted.
 
 Usage:
 
@@ -148,5 +164,18 @@ The same as the previous one, except with the seed to decrypt the content.
 Usage:
 
 VidInjector9002-CLI -extract_cia \<input .cia file\> \<seed file\> \<output directory\>
+
+</details>
+
+
+
+<details>
+<summary>-extract_tar | -et</summary>
+
+Extract patch parameters from a .tar to a directory which will contain the romfs directory and .vi9p file. Set <output directory> to the directory of an extracted .cia to combine it all.
+
+Usage:
+
+VidInjector9002-CLI -extract_tar \<input .tar file\> \<output directory\>
 
 </details>
