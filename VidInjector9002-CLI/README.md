@@ -122,7 +122,7 @@ VidInjector9002-CLI -build_cia \<input .vi9p file\> \<unique ID\> \<application 
 
 ----
 
-The same as the previous one, except with an output .tar which will contain a luma game patch. (Only use this if INT:SPLITPATCH is set in the input .vi9p)
+The same as the previous one, except with an output .tar which will contain a Luma LayeredFS game patch. (Only use this if INT:SPLITPATCH is set in the input .vi9p)
 
 Usage:
 
@@ -138,7 +138,7 @@ VidInjector9002-CLI -build_cia \<input .vi9p file\> \<output .cia file\>
 
 ----
 
-The same as the previous one, except with an output .tar which will contain a luma game patch. (Only use this if INT:SPLITPATCH is set in the input .vi9p)
+The same as the previous one, except with an output .tar which will contain a Luma LayeredFS game patch. (Only use this if INT:SPLITPATCH is set in the input .vi9p)
 
 Usage:
 
