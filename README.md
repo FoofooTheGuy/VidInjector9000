@@ -24,11 +24,14 @@ Video
 <details>
 <summary>Windows 8.1</summary>
 
-### Light Mode
-![light](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/2e9f0305-65b4-4183-93a5-22dd2d0705d5)
+### Light Mode (Wide Window Mode)
+![light wide](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/679c76ad-7094-4299-af70-1e054a5b408e)
 
-### Dark Mode
-![dark](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/7774cb6a-b5f1-458a-8d04-ebce25f92cbf)
+### Dark Mode (Wide Window Mode)
+![dark wide](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/c19934d7-332f-496f-9333-dd2e922638f0)
+
+### Classic (Wide Window Mode Disabled)
+![light classic](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/f06e2b69-2a16-4350-b28b-b2d2e2db9275)
 </details>
 
 <details>
