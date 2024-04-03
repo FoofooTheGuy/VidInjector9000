@@ -31,7 +31,7 @@ Video
 ![dark wide](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/c19934d7-332f-496f-9333-dd2e922638f0)
 
 ### Classic (Wide Window Mode Disabled)
-![light classic](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/f06e2b69-2a16-4350-b28b-b2d2e2db9275)
+![light classic](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/0b33efff-6d55-446e-b7f3-bb58b5daff63)
 </details>
 
 <details>
