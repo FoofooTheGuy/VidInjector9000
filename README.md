@@ -37,31 +37,14 @@ Video
 <details>
 <summary>Windows 10</summary>
 
-### Light Mode
-![win10 white](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/b5ebedd1-4dd0-4d8f-8b6e-05e88061efec)
+### Light Mode (Wide Window Mode)
+![win10 light wide](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/c848a2fd-5f7c-4211-9218-7ba8fbed2e97)
 
-### Dark Mode
-![win10 black](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/4e95c791-76a6-4e73-859b-37451f861baf)
-</details>
+### Dark Mode (Wide Window Mode)
+![win10 dark wide](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/153a284b-c71a-496e-b43e-299ec709982f)
 
-<details>
-<summary>Manjaro gnome 23.0-230903</summary>
-
-### Light Mode
-![manjaro white](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/5981cedb-e2a4-4f85-a71f-bdd07d58110a)
-
-### Dark Mode
-![manjaro black](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/5ddfeda4-86f0-4fbc-b660-4d5821c32fdd)
-</details>
-
-<details>
-<summary>Wine (Manjaro gnome 23.0-230903)</summary>
-
-### Light Mode
-![wine white](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/c74ac568-cef4-4ad6-9065-1efd1e8a3566)
-
-### Dark Mode
-![wine black](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/065a2f42-1040-41e4-a6cd-e4bd06b7edcb)
+### Classic (Wide Window Mode Disabled)
+![win10 light classic](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/562eef4e-178b-46e1-af3e-4b1b73b434c7)
 </details>
 
 VidInjector9002 can...
@@ -80,6 +63,7 @@ VidInjector9002 can...
 - Click the multi video banner preview to choose file!
 - Click the logo in the options menu to find to the latest release!
 - If an image doesn't fit in, it will be resized and cropped!
+- If your multi video project is too big, click the "Split into a patch" button to split the parameters into a Luma LayeredFS game patch when building the .cia! (Extract the contents of the final .tar to the root of your SD card to install the patch)
 
 You may ask...
 --
@@ -99,7 +83,7 @@ A: This is simple and gives you much control over your video injections. Plus, V
 Known Issues
 --
 #### Sometimes UTF-8 file paths are not supported on Windows/Wine
-Most things work with UTF-8 file paths but certain things don't. (the location of the program, SMDH reading, CIA reading, CIA writing) These should work on other platforms though.
+Most things work with UTF-8 file paths but certain things don't. (the location of the program, SMDH reading, CIA reading, CIA writing, TAR reading, TAR writing) These should work on other platforms though.
 
 #### Multi Video injects do not work on the regions China, Taiwan and Korea because there are no language files for those.
 I am unable to add them myself because I don't know those languages and this isn't really in my "jurisdiction" so I would appreciate it if someone would translate the files and contribute the following:
