@@ -61,8 +61,9 @@ static int twrite(mtar_t* tar, const void* data, size_t size) {
 }
 
 
-static int write_null_bytes(mtar_t* tar, int n) {
-    int i, err;
+static int write_null_bytes(mtar_t* tar, size_t n) {
+    size_t i;
+    int err;
     char nul = '\0';
     for (i = 0; i < n; i++) {
         err = twrite(tar, &nul, 1);
@@ -84,16 +85,16 @@ static int raw_to_header(mtar_header_t* h, const mtar_raw_header_t* rh) {
 
     /* Build and compare checksum */
     chksum1 = checksum(rh);
-    sscanf(rh->checksum, "%o", &chksum2);
+    (void)sscanf(rh->checksum, "%o", &chksum2);
     if (chksum1 != chksum2) {
         return MTAR_EBADCHKSUM;
     }
 
     /* Load raw header into header */
-    sscanf(rh->mode, "%o", &h->mode);
-    sscanf(rh->owner, "%o", &h->owner);
-    sscanf(rh->size, "%llo", &h->size);
-    sscanf(rh->mtime, "%o", &h->mtime);
+    (void)sscanf(rh->mode, "%o", &h->mode);
+    (void)sscanf(rh->owner, "%o", &h->owner);
+    (void)sscanf(rh->size, "%zo", &h->size);
+    (void)sscanf(rh->mtime, "%o", &h->mtime);
     h->type = rh->type;
     strcpy(h->name, rh->name);
     strcpy(h->linkname, rh->linkname);
@@ -109,7 +110,7 @@ static int header_to_raw(mtar_raw_header_t* rh, const mtar_header_t* h) {
     memset(rh, 0, sizeof(*rh));
     sprintf(rh->mode, "%o", h->mode);
     sprintf(rh->owner, "%o", h->owner);
-    sprintf(rh->size, "%llo", h->size);
+    sprintf(rh->size, "%zo", h->size);
     sprintf(rh->mtime, "%o", h->mtime);
     rh->type = h->type ? h->type : (int)MTAR_TREG;
     strcpy(rh->name, h->name);
@@ -150,7 +151,7 @@ static int file_read(mtar_t* tar, void* data, size_t size) {
     return (res == size) ? MTAR_ESUCCESS : MTAR_EREADFAIL;
 }
 
-static int file_seek(mtar_t* tar, uint64_t offset) {
+static int file_seek(mtar_t* tar, size_t offset) {
 #if defined(_WIN32)
     int res = _fseeki64(tar->stream, offset, SEEK_SET);
 #elif NNC_PLATFORM_UNIX
@@ -159,7 +160,7 @@ static int file_seek(mtar_t* tar, uint64_t offset) {
     /* ugly hack */
     int res = fseek(tar->stream, INT32_MAX, SEEK_SET);
     if (res == 0)
-        res = fseek(file, offset - INT32_MAX, SEEK_CUR);
+        res = fseek(tar->stream, offset - INT32_MAX, SEEK_CUR);
 #endif
     return (res == 0) ? MTAR_ESUCCESS : MTAR_ESEEKFAIL;
 }
@@ -205,7 +206,7 @@ int mtar_close(mtar_t* tar) {
 }
 
 
-int mtar_seek(mtar_t* tar, uint64_t pos) {
+int mtar_seek(mtar_t* tar, size_t pos) {
     int err = tar->seek(tar, pos);
     tar->pos = pos;
     return err;
@@ -220,7 +221,8 @@ int mtar_rewind(mtar_t* tar) {
 
 
 int mtar_next(mtar_t* tar) {
-    size_t err, n;
+    int err;
+    size_t n;
     mtar_header_t h;
     /* Load header */
     err = mtar_read_header(tar, &h);

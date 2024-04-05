@@ -47,7 +47,7 @@ extern "C"
 		unsigned owner;
 		size_t size;
 		unsigned mtime;
-		unsigned type;
+		char type;
 		char name[100];
 		char linkname[100];
 	} mtar_header_t;
