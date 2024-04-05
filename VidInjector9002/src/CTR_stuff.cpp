@@ -247,7 +247,7 @@ uint8_t convertToIcon(const std::string input, std::string output, std::string s
 		stbir_resize_uint8(large_4c.data(), largeWH, largeWH, 0, scaled.data(), largeWH - 10, largeWH - 10, 0, ch);//scale it down
 		layer_pixels(large_4c.data(), icon_border48, scaled.data(), largeWH, largeWH, ch, largeWH - 10, largeWH - 10, ch, 5, 5);
 	}*/
-	
+
 	small_4c = std::vector<uint8_t>(smallWH * smallWH * 4);
 	stbir_resize_uint8(large_4c.data(), largeWH, largeWH, 0, small_4c.data(), smallWH, smallWH, 0, 4);//make the small icon
 
