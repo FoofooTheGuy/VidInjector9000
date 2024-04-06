@@ -20,6 +20,7 @@ size_t chrcount(const std::string& str);
 
 std::string UTF8toUTF16(const std::string input);
 std::string UTF16toUTF8(const std::string& input);
+std::string to_UTF8(const nnc_u16* UTF16, const size_t UTF16size);
 
 std::string tolowerstr(std::string str);
 std::string toupperstr(std::string str);

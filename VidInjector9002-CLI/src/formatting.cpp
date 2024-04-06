@@ -37,6 +37,14 @@ std::string UTF16toUTF8(const std::string& input) {
 	return output;
 }
 
+std::string to_UTF8(const nnc_u16* UTF16, const size_t UTF16size) {
+	size_t UTF8size = nnc_utf16_to_utf8(NULL, 0, UTF16, UTF16size) + 1;
+	std::vector<uint8_t> str = std::vector<uint8_t>(UTF8size);
+	size_t rlen = nnc_utf16_to_utf8(str.data(), UTF8size, UTF16, UTF16size);
+	std::string outstr(reinterpret_cast<char*>(str.data()), rlen);
+	return outstr;
+}
+
 void crop_pixels(const uint8_t* input, int width, int height, int channels, uint8_t* output, int x_offset, int y_offset, int out_w, int out_h) {
 	for (int y = 0; y < height; y++)
 		for (int x = 0; x < width; x++) {
