@@ -406,6 +406,7 @@ int extract_content(mtar_t* tar, std::string inputfile, std::string outputdir, s
 	int ret = 0;
 	mtar_header_t h;
 	//size_t pos = 0;
+	std::error_code error;
 
 	while ((mtar_read_header(tar, &h)) != MTAR_ENULLRECORD) {
 
@@ -415,7 +416,8 @@ int extract_content(mtar_t* tar, std::string inputfile, std::string outputdir, s
 		//printf("%s (%lli bytes), type: %i\n", h.name, h.size, h.type);
 
 		if (h.type == 53) {//directory
-			std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*(outputdir + '/' + std::string(h.name)).c_str()));
+			std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*(outputdir + '/' + std::string(h.name)).c_str()), error);
+			if (error) return -1;
 		}
 		else if (h.type == 48) {//file
 			if (read_record_data(tar, &h, inputfile, outputdir, buffersize))//0 (false) = good (this isnt bool)

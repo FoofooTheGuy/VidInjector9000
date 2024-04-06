@@ -164,6 +164,7 @@ namespace VidInjector9002 {
 
         //arg is which row to get the path from
         void setMultiBannerPreview(uint8_t y) {
+            std::error_code error;
             int w = 0, h = 0, ch = 0;
             int out_w = 200;
             int out_h = 120;
@@ -174,7 +175,7 @@ namespace VidInjector9002 {
                 if (extension.find_last_of(".") != std::string::npos)
                     extension.erase(extension.begin(), extension.begin() + extension.find_last_of("."));
                 if (extension == ".bimg") {
-                    if (std::filesystem::file_size(std::filesystem::path((const char8_t*)&*text_box_array.at(y * columns + 2)->text().c_str())) == 0x10020) {
+                    if (std::filesystem::file_size(std::filesystem::path((const char8_t*)&*text_box_array.at(y * columns + 2)->text().c_str()), error) == 0x10020) {
                         w = 256;
                         h = 128;
                         int ich = sizeof(nnc_u16);
@@ -199,6 +200,9 @@ namespace VidInjector9002 {
                         menubannerpreview.image(pixels_to_image(output_film.data(), film_w, film_h, 4));
                     }
                     else {
+                        setDefaultBannerPreview(menubannerpreview, nullptr);
+                    }
+                    if (error) {
                         setDefaultBannerPreview(menubannerpreview, nullptr);
                     }
                 }
@@ -379,10 +383,10 @@ namespace VidInjector9002 {
                 std::vector<uint32_t> Line = std::vector<uint32_t>(width * height * channels, (0xFF << 24) + (fore_color().r() << 16) + (fore_color().g() << 8) + fore_color().b());
 
                 //clear corners
-                Line.at(0) = Line.at(0) & mask;
-                Line.at(width - 1) = Line.at(width - 1) & mask;
-                Line.at(2 * width) = Line.at(2 * width) & mask;
-                Line.at(2 * width + (width - 1)) = Line.at(2 * width + (width - 1)) & mask;
+                Line.at(0) &= mask;
+                Line.at(width - 1) &= mask;
+                Line.at(2 * width) &= mask;
+                Line.at(2 * width + (width - 1)) &= mask;
 
                 for (int y = 0; y < height; y++)
                     for (int x = 0; x < width; x++)
@@ -992,8 +996,10 @@ namespace VidInjector9002 {
 
         bool loadLanguage(xtd::ustring Lang) {
             xtd::ustring outstr = "";
+            std::error_code error;
             if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/{}/language/{}/Language.txt", ProgramDir, resourcesPath, Lang).c_str()))) {
-                std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/{}/language/English", ProgramDir, resourcesPath).c_str()));
+                std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/{}/language/English", ProgramDir, resourcesPath).c_str()), error);
+                if (error) return false;
                 std::ofstream M_file(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/{}/language/English/M.bmp", ProgramDir, resourcesPath).c_str()), std::ios_base::out | std::ios_base::binary);
                 M_file.write(reinterpret_cast<const char*>(M_bmp), sizeof(M_bmp));
                 M_file.close();
@@ -1042,8 +1048,10 @@ namespace VidInjector9002 {
             xtd::ustring outstr = "";
             uint32_t outrealint = 0;
             bool good = true;
+            std::error_code error;
             if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, settingsPath).c_str()))) {
-                std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/{}", ProgramDir, resourcesPath).c_str()));
+                std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/{}", ProgramDir, resourcesPath).c_str()), error);
+                if (error) return false;
                 std::ofstream settingsfile(std::filesystem::path((const char8_t*)&*xtd::ustring::format("{}/{}/{}", ProgramDir, resourcesPath, settingsPath).c_str()), std::ios_base::out | std::ios_base::binary);
                 settingsfile <<
                     StrDefaultLanguage << "=\"English\"\n" <<

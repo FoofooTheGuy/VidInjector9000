@@ -1,15 +1,29 @@
 #include "CTR_stuff.hpp"
 
-void Generate_Files(std::string dir, bool Multi) {
-	if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*dir.c_str()))) std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*dir.c_str()));
+std::error_code Generate_Files(std::string dir, bool Multi) {
+	std::error_code error;
+	if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*dir.c_str()), error)) {
+		if (error) {
+			return error;
+		}
+		std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*dir.c_str()), error);
+	}
+	if (error) {
+		return error;
+	}
 	miniz_cpp::zip_file file;
 	file.load(Multi ? Multivid : Singlevid);
 	std::vector<std::string> list = file.namelist();
 	for (auto& member : list) {//plant seeds
-		if (member.find_last_of("/") == member.size() - 1)
-			std::filesystem::create_directory(std::filesystem::path((const char8_t*)&*std::string(dir + "/" + member).c_str()));
+		if (member.find_last_of("/") == member.size() - 1) {
+			std::filesystem::create_directory(std::filesystem::path((const char8_t*)&*std::string(dir + "/" + member).c_str()), error);
+			if (error) {
+				return error;
+			}
+		}
 	}
 	file.extractall(dir, list);//grow fruit (don't you mean grow tree?)
+	return error;
 }
 
 bool TIDisValid(uint32_t TID) {
@@ -97,11 +111,12 @@ uint8_t convertToBimg(const std::string input, uint8_t* outBuffer, bool writeHea
 	const int out_w = 200;
 	const int out_h = 120;
 	const uint8_t FF = 0xFF;
+	std::error_code error;
 	if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*input.c_str()))) {
 		std::string extension = input;
 		extension.erase(extension.begin(), extension.end() - 5);
 		if (extension == ".bimg") {
-			if (std::filesystem::file_size(std::filesystem::path((const char8_t*)&*input.c_str())) == 0x10020) {
+			if (std::filesystem::file_size(std::filesystem::path((const char8_t*)&*input.c_str()), error) == 0x10020) {
 				w = 256;
 				h = 128;
 				int ich = sizeof(nnc_u16);
@@ -724,7 +739,11 @@ uint8_t UTF16fileToUTF8str(const std::string path, std::vector<std::string>* out
 
 //stolen from NNC romfs test
 std::string extract_dir(nnc_romfs_ctx* ctx, nnc_romfs_info* info, const char* path, int baselen) {
-	std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*path));
+	std::error_code error;
+	std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*path), error);
+	if (error) {
+		return "create_directories failed";
+	}
 
 	nnc_result res = NNC_R_OK;
 	nnc_romfs_iterator it = nnc_romfs_mkit(ctx, info);
