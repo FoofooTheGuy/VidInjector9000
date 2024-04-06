@@ -154,7 +154,7 @@ static int file_read(mtar_t* tar, void* data, size_t size) {
 static int file_seek(mtar_t* tar, size_t offset) {
 #if defined(_WIN32)
     int res = _fseeki64(tar->stream, offset, SEEK_SET);
-#elif NNC_PLATFORM_UNIX
+#elif defined(__unix__) || defined(__linux__) || defined(__APPLE__)
     int res = lseek64(tar->stream, offset, SEEK_SET);
 #else
     /* ugly hack */
