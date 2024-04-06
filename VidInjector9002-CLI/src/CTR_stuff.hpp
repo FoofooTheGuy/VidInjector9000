@@ -20,7 +20,7 @@
 #include <nnc/cia.h>
 
 //only put the name of the dir (not / at the end)
-void Generate_Files(std::string dir, bool Multi);
+std::error_code Generate_Files(std::string dir, bool Multi);
 
 bool TIDisValid(uint32_t TID);
 
