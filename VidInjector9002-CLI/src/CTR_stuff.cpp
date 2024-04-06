@@ -216,7 +216,7 @@ uint8_t convertToIcon(const std::string input, std::string output, std::string s
 		stbir_resize_uint8(large_4c.data(), largeWH, largeWH, 0, scaled.data(), largeWH - 10, largeWH - 10, 0, ch);//scale it down
 		layer_pixels(large_4c.data(), icon_border48, scaled.data(), largeWH, largeWH, ch, largeWH - 10, largeWH - 10, ch, 5, 5);
 	}*/
-	
+
 	small_4c = std::vector<uint8_t>(smallWH * smallWH * 4);
 	stbir_resize_uint8(large_4c.data(), largeWH, largeWH, 0, small_4c.data(), smallWH, smallWH, 0, 4);//make the small icon
 
@@ -231,9 +231,9 @@ uint8_t convertToIcon(const std::string input, std::string output, std::string s
 		layer_pixels(small_4c.data(), icon_border24, scaled.data(), smallWH, smallWH, 4, smallWH - 6, smallWH - 6, 4, 3, 3);
 
 		scaled.clear();
-		scaled = std::vector<uint8_t>((largeWH - 10) * (largeWH - 10) * ch);
-		stbir_resize_uint8(large_4c.data(), largeWH, largeWH, 0, scaled.data(), largeWH - 10, largeWH - 10, 0, ch);//scale it down
-		layer_pixels(large_4c.data(), icon_border48, scaled.data(), largeWH, largeWH, ch, largeWH - 10, largeWH - 10, ch, 5, 5);
+		scaled = std::vector<uint8_t>((largeWH - 10) * (largeWH - 10) * 4);
+		stbir_resize_uint8(large_4c.data(), largeWH, largeWH, 0, scaled.data(), largeWH - 10, largeWH - 10, 0, 4);//scale it down
+		layer_pixels(large_4c.data(), icon_border48, scaled.data(), largeWH, largeWH, 4, largeWH - 10, largeWH - 10, 4, 5, 5);
 	}
 
 	uint8_t tiledsmall[smallWH * smallWH * sizeof(nnc_u16)];
@@ -1452,6 +1452,34 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 	{
 		banner = std::string(exefspath + "/banner.bin");//do it like this because the vi9p is in outDir
 		icon = std::string(exefspath + "/icon.bin");
+		bool smdhinput = true;
+
+		while(smdhinput)
+		{
+			nnc_smdh smdh;
+			nnc_file f;
+
+			if (nnc_file_open(&f, std::string(exefspath + "/icon.bin").c_str()) != NNC_R_OK) {
+				smdhinput = false;
+				break;
+			}
+
+			if (nnc_read_smdh(NNC_RSP(&f), &smdh) != NNC_R_OK) {
+				smdhinput = false;
+			}
+
+			if (smdhinput) {
+				for (int i = 0; i < NNC_SMDH_TITLES; i++) {
+					Sname = to_UTF8(smdh.titles[i].short_desc, sizeof(smdh.titles[i].short_desc) / 2);
+					Lname = to_UTF8(smdh.titles[i].long_desc, sizeof(smdh.titles[i].long_desc) / 2);
+					publisher = to_UTF8(smdh.titles[i].publisher, sizeof(smdh.titles[i].publisher) / 2);
+					if (!Sname.empty() && !Lname.empty() && !publisher.empty())
+						break;
+				}
+			}
+			NNC_RS_CALL0(f, close);
+			break;
+		}
 	}
 	//settingTL.csv
 	{
