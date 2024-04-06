@@ -85,7 +85,7 @@ uint8_t convertToBimg(const std::string input, uint8_t* outBuffer, bool writeHea
 		std::string extension = input;
 		extension.erase(extension.begin(), extension.end() - 5);
 		if (extension == ".bimg") {
-			if (std::filesystem::file_size(std::filesystem::path((const char8_t*)&*input.c_str())) == 0x10020, error) {
+			if (std::filesystem::file_size(std::filesystem::path((const char8_t*)&*input.c_str()), error) == 0x10020) {
 				w = 256;
 				h = 128;
 				int ich = sizeof(nnc_u16);
@@ -1186,7 +1186,6 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			dopatch = false;
 		}
 	} while (dopatch);
-	std::error_code error;
 	std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*tempPath.c_str()), error);
 	if (error) {
 		std::cout << ErrorText << ' ' << tempPath << '\n' << error.message() << std::endl;
@@ -1690,6 +1689,7 @@ uint8_t UTF16fileToUTF8str(const std::string path, std::vector<std::string>* out
 
 //stolen from NNC romfs test
 std::string extract_dir(nnc_romfs_ctx* ctx, nnc_romfs_info* info, const char* path, int baselen) {
+	std::error_code error;
 	std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*path), error);
 	if (error) {
 		std::cout << ErrorText << ' ' << path << '\n' << error.message() << std::endl;
