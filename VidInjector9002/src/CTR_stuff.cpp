@@ -262,9 +262,9 @@ uint8_t convertToIcon(const std::string input, std::string output, std::string s
 		layer_pixels(small_4c.data(), icon_border24, scaled.data(), smallWH, smallWH, 4, smallWH - 6, smallWH - 6, 4, 3, 3);
 
 		scaled.clear();
-		scaled = std::vector<uint8_t>((largeWH - 10) * (largeWH - 10) * ch);
-		stbir_resize_uint8(large_4c.data(), largeWH, largeWH, 0, scaled.data(), largeWH - 10, largeWH - 10, 0, ch);//scale it down
-		layer_pixels(large_4c.data(), icon_border48, scaled.data(), largeWH, largeWH, ch, largeWH - 10, largeWH - 10, ch, 5, 5);
+		scaled = std::vector<uint8_t>((largeWH - 10) * (largeWH - 10) * 4);
+		stbir_resize_uint8(large_4c.data(), largeWH, largeWH, 0, scaled.data(), largeWH - 10, largeWH - 10, 0, 4);//scale it down
+		layer_pixels(large_4c.data(), icon_border48, scaled.data(), largeWH, largeWH, 4, largeWH - 10, largeWH - 10, 4, 5, 5);
 	}
 
 	uint8_t tiledsmall[smallWH * smallWH * sizeof(nnc_u16)];
