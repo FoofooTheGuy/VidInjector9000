@@ -34,6 +34,8 @@ Video
 ![light classic](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/0b33efff-6d55-446e-b7f3-bb58b5daff63)
 </details>
 
+
+
 <details>
 <summary>Windows 10</summary>
 
@@ -45,6 +47,36 @@ Video
 
 ### Classic (Wide Window Mode Disabled)
 ![win10 light classic](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/562eef4e-178b-46e1-af3e-4b1b73b434c7)
+</details>
+
+
+
+<details>
+<summary>Manjaro gnome 23.0-230903</summary>
+
+### Light Mode (Wide Window Mode)
+![manjaro wide light](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/602314c2-4c01-4baa-9e48-cd0d34084f68)
+
+### Dark Mode (Wide Window Mode)
+![manjaro wide dark](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/384d12d7-8f8c-4daa-b9f8-69902d3b0c7c)
+
+### Classic (Wide Window Mode Disabled)
+![manjaro classic light](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/dec24a87-9b7b-4253-ac48-65ac36ddad1b)
+</details>
+
+
+
+<details>
+<summary>Wine (Manjaro gnome 23.0-230903)</summary>
+
+### Light Mode (Wide Window Mode)
+![wine wide light](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/dd1e809b-80ce-4830-aae0-4c5fa56c1c5f)
+
+### Dark Mode (Wide Window Mode)
+![wine wide dark](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/90d2410e-811b-454f-90b0-7e7a02a8aaa7)
+
+### Classic (Wide Window Mode Disabled)
+![wine classic light](https://github.com/FoofooTheGuy/VidInjector9000/assets/32585652/f7d4120a-4a0d-4cdb-996a-b205d351c3b8)
 </details>
 
 VidInjector9002 can...
@@ -135,7 +167,7 @@ Notes: The window is unstable.
 
 ![](https://img.shields.io/badge/xtd_0.1.1--beta-FFA500)
 
-Building CIA doesn't work for some reason
+Async doesn't work
 </details>
 
 <details>
