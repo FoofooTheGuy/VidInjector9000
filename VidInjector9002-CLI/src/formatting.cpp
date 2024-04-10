@@ -319,9 +319,9 @@ int extract_content(mtar_t* tar, std::string inputfile, std::string outputdir, s
 	while ((mtar_read_header(tar, &h)) != MTAR_ENULLRECORD) {
 
 		mtar_find(tar, h.name, &h);
-		//printf("mtar_find tar->pos: %lli\n", tar->pos);
+		//printf("mtar_find tar->pos: %zo\n", tar->pos);
 
-		//printf("%s (%lli bytes), type: %i\n", h.name, h.size, h.type);
+		//printf("%s (%zo bytes), type: %i\n", h.name, h.size, h.type);
 
 		if (h.type == 53) {//directory
 			std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*(outputdir + '/' + std::string(h.name)).c_str()), error);
