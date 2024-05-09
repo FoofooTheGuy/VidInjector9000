@@ -67,6 +67,70 @@ uint32_t lz11_get_occurence_length(uint8_t* newPtr, uint32_t newLength, uint8_t*
 void* lz11_compress(uint32_t* size, void* input, uint32_t inputSize);
 void* cbmd_build_data(uint32_t* size, CBMD cbmd);
 
+/*//https://www.3dbrew.org/wiki/CGFX
+struct CGFXHeader {
+	char Magic[4];//Magic "CGFX"
+	uint16_t BOM;//Byte order mark: FFFE (little endian) or FEFF (big endian)
+	uint16_t Header_size;//CGFX header size
+	uint32_t Revision;
+	uint32_t File_size;//File size (bytes)
+	uint32_t Entries;//Number of entries
+};
+
+struct DICTReference {
+	uint32_t DICT_entry;//Number of entries in DICT N
+	uint32_t DICT_offset;//Offset (self-relative) to DICT N
+};
+
+struct DATA {
+	char Magic[4];//Magic "DATA"
+	uint32_t DATA_size;//DATA Size (in bytes)
+	DICTReference* DICTrefs[15];//DATA contains a list of DICT references.
+};
+
+struct DICTHeader {
+	char Magic[4];//Magic "DICT"
+	uint32_t DICT_size;//DICT size (in bytes)
+	uint32_t Entries;//Number of entries
+	uint32_t Unk1;//?
+	uint16_t Unk2;//Unknown. Seems to be shifted left by 4 bits in the source.
+	uint8_t* Unk3[0xA];//?
+};
+
+struct DICTEntry {
+	uint32_t Unk1;//?
+	uint16_t Unk2;//?
+	uint16_t Unk3;//?
+	uint32_t Symbol_offset;//Offset (self-relative) to symbol
+	uint32_t Object_offset;//Offset (self-relative) to object
+};
+
+struct CMDL {
+	uint32_t Flags;//Flags (bit 7: hasSkeletonSobj)
+	char Magic[4];//Magic "CMDL"
+	uint32_t Unk1;//?
+	uint32_t Name_offset;//Offset (self-relative) to model name
+	uint8_t* Unk2[0x18];//?
+	uint32_t AnimTypesDICT_entries;//Number of entries in Animation Types DICT
+	uint32_t AnimTypesDICT_offset;//Offset (self-relative) to Animation Types DICT
+	float* Global_scale[3];//Global scale vector (3 floats : x, y, z)
+	uint8_t* Unk3[0x18];//?
+	uint8_t* Matrix1[0x30];//Matrix 1//this is probably 0xC floats but im not even gonna use this so meh
+	uint8_t* Matrix2[0x30];//Matrix 2//^
+	uint32_t VSOBJinfo_entries1;//Number of Vertex Info SOBJ entries
+	uint32_t VSOBJinfo_offset1;//Offset (self-relative) to Vertex Info SOBJ list
+	uint32_t MTOBDICT_entries;//Number of MTOB DICT entries
+	uint32_t MTOBDICT_offset;//Offset (self-relative) to MTOB DICT
+	uint32_t VSOBJinfo_entries2;//Number of Vertex Info SOBJ entries
+	uint32_t VSOBJinfo_offset2;//Offset (self-relative) to Vertex Info SOBJ list
+	uint32_t UnkDICT_entries;//Number of Unknown DICT entries
+	uint32_t UnkDICT_offset;//Offset (self-relative) to Unknown DICT
+	uint8_t* Unk4[0xC];//?
+	uint32_t SSOBJinfo_offset;//Skeleton Info SOBJ offset (self-relative) [only present if flag bit 7 is set]
+	//I stopped here because I dont know what they mean by "only present" like is it just 00 or is it not there at all? I need to find an example with bit 7 unset
+};*/
+
+
 /*
 CGFX: array containing the uncompressed CGFX
 symbol: name of the texture you want to get info of
