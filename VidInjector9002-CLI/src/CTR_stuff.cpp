@@ -26,7 +26,7 @@ std::error_code Generate_Files(std::string dir, bool Multi) {
 	return error;
 }
 
-bool TIDisValid(uint32_t TID) {
+bool TIDisValid(uint32_t TID) {//https://github.com/ihaveamac/videoinject/blob/master/videoinject.py#L9
 	uint32_t min = 0xC0000;
 	uint32_t max = 0xEFFFF;
 	switch (TID)
