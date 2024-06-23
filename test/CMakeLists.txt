@@ -1,0 +1,11 @@
+file(GLOB TEST_SOURCES CONFIGURE_DEPENDS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.c")
+
+set(TESTNAME main)
+
+add_executable(${TESTNAME} ${TEST_SOURCES})
+
+target_link_libraries(${TESTNAME} PRIVATE nnc::nnc)
+
+add_test(NAME ${TESTNAME}
+         COMMAND $<TARGET_FILE:${TESTNAME}>)
