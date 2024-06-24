@@ -1,7 +1,16 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.15)
 
 # Project
 project(VidInjector9002)
+option(ENABLE_STATIC_BUILD "" ON)
+
+if (ENABLE_STATIC_BUILD)
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+        message(STATUS "Enabling static build")
+        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" CACHE INTERNAL "" FORCE)
+    endif()
+endif()
+
 find_package(xtd REQUIRED)
 
 file(GLOB VidInjector9002_SRC
