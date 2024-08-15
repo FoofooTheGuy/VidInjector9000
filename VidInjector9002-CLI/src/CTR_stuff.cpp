@@ -480,6 +480,201 @@ void* cbmd_build_data(uint32_t* size, CBMD cbmd) {//this is here because it has 
 	return output;
 }
 
+uint32_t Get_Decompressed_size(const uint8_t* in) {
+	uint32_t decompressed_size;
+	memcpy(&decompressed_size, in, sizeof(uint32_t));
+	in += 4;
+
+	uint8_t type = decompressed_size & 0xFF;
+	if (type != 0x11) return 0xFFFFFFFF;
+	decompressed_size >>= 8;
+	return decompressed_size;
+}
+
+uint32_t DecompressLZ11(const uint8_t* in, uint8_t* out) {//https://github.com/citra-emu/citra/blob/bfb6a5b5de1e7a89ceebabe33e792d5c03a2cf46/src/core/hle/service/apt/apt.cpp#L135
+	uint32_t decompressed_size;
+	memcpy(&decompressed_size, in, sizeof(uint32_t));
+	in += 4;
+
+	uint8_t type = decompressed_size & 0xFF;
+	if (type != 0x11) return 0xFFFFFFFF;
+	decompressed_size >>= 8;
+
+	uint32_t current_out_size = 0;
+	uint8_t flags = 0, mask = 1;
+	while (current_out_size < decompressed_size) {
+		if (mask == 1) {
+			flags = *(in++);
+			mask = 0x80;
+		}
+		else {
+			mask >>= 1;
+		}
+
+		if (flags & mask) {
+			uint8_t byte1 = *(in++);
+			uint32_t length = byte1 >> 4;
+			uint32_t offset;
+			if (length == 0) {
+				uint8_t byte2 = *(in++);
+				uint8_t byte3 = *(in++);
+				length = (((byte1 & 0x0F) << 4) | (byte2 >> 4)) + 0x11;
+				offset = (((byte2 & 0x0F) << 8) | byte3) + 0x1;
+			}
+			else if (length == 1) {
+				uint8_t byte2 = *(in++);
+				uint8_t byte3 = *(in++);
+				uint8_t byte4 = *(in++);
+				length = (((byte1 & 0x0F) << 12) | (byte2 << 4) | (byte3 >> 4)) + 0x111;
+				offset = (((byte3 & 0x0F) << 8) | byte4) + 0x1;
+			}
+			else {
+				uint8_t byte2 = *(in++);
+				length = (byte1 >> 4) + 0x1;
+				offset = (((byte1 & 0x0F) << 8) | byte2) + 0x1;
+			}
+
+			for (uint32_t i = 0; i < length; i++) {
+				*out = *(out - offset);
+				++out;
+			}
+
+			current_out_size += length;
+		}
+		else {
+			*(out++) = *(in++);
+			current_out_size++;
+		}
+	}
+	return decompressed_size;
+}
+
+uint8_t getCGFXtextureInfo(uint8_t* CGFX, const std::string symbol, uint32_t& dataOffset, uint32_t& height, uint32_t& width, uint32_t& mipmap, uint32_t& formatID, uint32_t& size) {
+	uint32_t* CGFXmagic = reinterpret_cast<uint32_t*>(&CGFX[0]);
+	if (*CGFXmagic != 0x58464743) {//CGFX
+		return 1;
+	}
+
+	uint16_t* CGFXheaderSize = reinterpret_cast<uint16_t*>(&CGFX[0x6]);
+	for (uint32_t N = 0; N < *reinterpret_cast<uint32_t*>(&CGFX[0x10]); N++) {//loop through Number of Dicts
+		uint32_t DICToffset = *reinterpret_cast<uint32_t*>(&CGFX[*CGFXheaderSize + 0xC + (N * 8)]);
+		DICToffset += (*CGFXheaderSize + 0xC + (N * 8));//since it's self-relative, do this
+		for (uint32_t i = 0; i < *reinterpret_cast<uint32_t*>(&CGFX[DICToffset + 0x8]); i++) {//loop through entries in DICT N
+			uint32_t symbolOffset = *reinterpret_cast<uint32_t*>(&CGFX[DICToffset + 0x1C + (0x10 * i) + 0x8]);
+			symbolOffset += (DICToffset + 0x1C + (0x10 * i) + 0x8);//self-relative
+			uint32_t objectOffset = *reinterpret_cast<uint32_t*>(&CGFX[DICToffset + 0x1C + (0x10 * i) + 0xC]);
+			objectOffset += (DICToffset + 0x1C + (0x10 * i) + 0xC);//self-relative
+			std::string isymbol = "";
+			const auto* ch = &CGFX[symbolOffset];
+			while (*ch)
+				isymbol += *ch++;
+			if (strcmp(isymbol.c_str(), symbol.c_str()) == 0) {
+				height = *reinterpret_cast<uint32_t*>(&CGFX[objectOffset + 0x18]);
+				width = *reinterpret_cast<uint32_t*>(&CGFX[objectOffset + 0x1C]);
+				mipmap = *reinterpret_cast<uint32_t*>(&CGFX[objectOffset + 0x28]);
+				formatID = *reinterpret_cast<uint32_t*>(&CGFX[objectOffset + 0x34]);
+				size = *reinterpret_cast<uint32_t*>(&CGFX[objectOffset + 0x44]);
+				dataOffset = *reinterpret_cast<uint32_t*>(&CGFX[objectOffset + 0x48]);
+				dataOffset += (objectOffset + 0x48);//self-relative
+				return 0;
+			}
+		}
+	}
+	return 2;
+}
+
+uint8_t getCBMDInfo(const std::string inpath, uint32_t* compressedSize, uint32_t* decompressedSize, uint32_t* CGFXoffset) {
+	std::ifstream CBMD;
+	CBMD.open(std::filesystem::path((const char8_t*)&*inpath.c_str()), std::ios_base::in | std::ios_base::binary);
+	uint32_t CBMDmagic = 0;
+	CBMD.seekg(0);
+	CBMD.read(reinterpret_cast<char*>(&CBMDmagic), 0x4);
+	if (CBMDmagic != 0x444D4243) {
+		return 1;
+	}
+	//Offset for common CGFX
+	uint32_t _CGFXoffset = 0;
+	CBMD.seekg(0x8);
+	CBMD.read(reinterpret_cast<char*>(&_CGFXoffset), 0x4);
+	//BCWAV offset
+	uint32_t BCWAVoffset = 0;
+	CBMD.seekg(0x84);
+	CBMD.read(reinterpret_cast<char*>(&BCWAVoffset), 0x4);
+	uint8_t* CGFX = new uint8_t[BCWAVoffset - _CGFXoffset];
+	//get stuff and decompress that stuff
+	CBMD.seekg(_CGFXoffset);
+	CBMD.read(reinterpret_cast<char*>(CGFX), BCWAVoffset - _CGFXoffset);
+
+	uint32_t decompressedSize_ = Get_Decompressed_size(CGFX);
+	if (decompressedSize_ > 0x80000) {
+		delete[] CGFX;
+		return 2;
+	}
+	*decompressedSize = decompressedSize_;
+	*compressedSize = BCWAVoffset - _CGFXoffset;
+	*CGFXoffset = _CGFXoffset;
+	delete[] CGFX;
+	return 0;
+}
+
+uint8_t CBMDgetCommonCGFX(const std::string inpath, const uint32_t compressedSize, const uint32_t decompressedSize, const uint32_t CGFXoffset, uint8_t* outbuff) {
+	std::ifstream CBMD;
+	CBMD.open(std::filesystem::path((const char8_t*)&*inpath.c_str()), std::ios_base::in | std::ios_base::binary);
+	uint32_t CBMDmagic = 0;
+	CBMD.seekg(0);
+	CBMD.read(reinterpret_cast<char*>(&CBMDmagic), 0x4);
+	if (CBMDmagic != 0x444D4243) {
+		return 3;
+	}
+	uint8_t* CGFX = new uint8_t[compressedSize];
+	//get stuff and decompress that stuff
+	CBMD.seekg(CGFXoffset);
+	CBMD.read(reinterpret_cast<char*>(CGFX), compressedSize);
+
+	if (DecompressLZ11(CGFX, outbuff) == 0) {
+		delete[] CGFX;
+		return 4;
+	}
+	delete[] CGFX;
+
+	uint32_t* CGFXmagic = reinterpret_cast<uint32_t*>(&outbuff[0]);
+	if (*CGFXmagic != 0x58464743) {//CGFX
+		return 5;
+	}
+	return 0;
+}
+
+uint8_t getCBMDTexture(const std::string inpath, const std::string symbol, uint8_t* outbuff) {
+	uint32_t decompressedSize = 0;
+	uint32_t compressedSize = 0;
+	uint32_t CGFXoffset = 0;
+	uint8_t ret = getCBMDInfo(inpath, &compressedSize, &decompressedSize, &CGFXoffset);
+	if (ret > 0) {
+		return ret;
+	}
+	uint8_t* CGFXdecomp = new uint8_t[decompressedSize];
+	ret = CBMDgetCommonCGFX(inpath, compressedSize, decompressedSize, CGFXoffset, CGFXdecomp);
+	if (ret > 0) {
+		delete[] CGFXdecomp;
+		return ret;
+	}
+
+	uint32_t dataOffset;
+	uint32_t height;
+	uint32_t width;
+	uint32_t mipmap;
+	uint32_t formatID;
+	uint32_t size;
+	ret = getCGFXtextureInfo(CGFXdecomp, symbol, dataOffset, height, width, mipmap, formatID, size);
+	if (ret == 0) {
+		memcpy(outbuff, &CGFXdecomp[dataOffset], size);
+		delete[] CGFXdecomp;
+		return ret;
+	}
+	delete[] CGFXdecomp;
+	return ret;
+}
+
 int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, uint32_t uniqueID, std::string ApplicationName, std::string ProductCode) {
 	//default finalization stuff
 	/*uint32_t uniqueID = RandomTID();
