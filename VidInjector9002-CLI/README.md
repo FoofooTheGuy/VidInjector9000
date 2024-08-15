@@ -185,7 +185,7 @@ VidInjector9002-CLI -extract_tar \<input .tar file\> \<output directory\>
 <details>
 <summary>-generate_preview | -gp</summary>
 
-Generate a preview image for the banner or icon that matches \<number\>. (do -pp to see a list of possible numbers)
+Generate a preview image for the banner or icon that matches \<number\>. (Do -pp to see a list of possible numbers)
 
 Usage:
 
