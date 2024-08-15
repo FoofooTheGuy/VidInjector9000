@@ -179,3 +179,18 @@ Usage:
 VidInjector9002-CLI -extract_tar \<input .tar file\> \<output directory\>
 
 </details>
+
+
+
+<details>
+<summary>-generate_preview | -gp</summary>
+
+Generate a preview image for the banner or icon that matches \<number\>. (do -pp to see a list of possible numbers)
+
+Usage:
+
+Vidinjector9002-CLI -generate_preview \<input .vi9p file\> \<number\> \<output .png file\>
+
+</details>
+
+---
