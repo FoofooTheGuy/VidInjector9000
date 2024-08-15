@@ -600,20 +600,20 @@ uint8_t getCBMDInfo(const std::string inpath, uint32_t* compressedSize, uint32_t
 	uint32_t BCWAVoffset = 0;
 	CBMD.seekg(0x84);
 	CBMD.read(reinterpret_cast<char*>(&BCWAVoffset), 0x4);
-	uint8_t* CGFX = new uint8_t[BCWAVoffset - _CGFXoffset];
+	std::vector<uint8_t> CGFX = std::vector<uint8_t>(BCWAVoffset - _CGFXoffset);
 	//get stuff and decompress that stuff
 	CBMD.seekg(_CGFXoffset);
-	CBMD.read(reinterpret_cast<char*>(CGFX), BCWAVoffset - _CGFXoffset);
+	CBMD.read(reinterpret_cast<char*>(CGFX.data()), BCWAVoffset - _CGFXoffset);
 
-	uint32_t decompressedSize_ = Get_Decompressed_size(CGFX);
+	uint32_t decompressedSize_ = Get_Decompressed_size(CGFX.data());
 	if (decompressedSize_ > 0x80000) {
-		delete[] CGFX;
+		//delete[] CGFX;
 		return 2;
 	}
 	*decompressedSize = decompressedSize_;
 	*compressedSize = BCWAVoffset - _CGFXoffset;
 	*CGFXoffset = _CGFXoffset;
-	delete[] CGFX;
+	//delete[] CGFX;
 	return 0;
 }
 
@@ -626,16 +626,16 @@ uint8_t CBMDgetCommonCGFX(const std::string inpath, const uint32_t compressedSiz
 	if (CBMDmagic != 0x444D4243) {
 		return 3;
 	}
-	uint8_t* CGFX = new uint8_t[compressedSize];
+	std::vector<uint8_t> CGFX = std::vector<uint8_t>(compressedSize);
 	//get stuff and decompress that stuff
 	CBMD.seekg(CGFXoffset);
-	CBMD.read(reinterpret_cast<char*>(CGFX), compressedSize);
+	CBMD.read(reinterpret_cast<char*>(CGFX.data()), compressedSize);
 
-	if (DecompressLZ11(CGFX, outbuff) == 0) {
-		delete[] CGFX;
+	if (DecompressLZ11(CGFX.data(), outbuff) == 0) {
+		//delete[] CGFX;
 		return 4;
 	}
-	delete[] CGFX;
+	//delete[] CGFX;
 
 	uint32_t* CGFXmagic = reinterpret_cast<uint32_t*>(&outbuff[0]);
 	if (*CGFXmagic != 0x58464743) {//CGFX
@@ -652,10 +652,10 @@ uint8_t getCBMDTexture(const std::string inpath, const std::string symbol, uint8
 	if (ret > 0) {
 		return ret;
 	}
-	uint8_t* CGFXdecomp = new uint8_t[decompressedSize];
-	ret = CBMDgetCommonCGFX(inpath, compressedSize, decompressedSize, CGFXoffset, CGFXdecomp);
+	std::vector<uint8_t> CGFXdecomp = std::vector<uint8_t>(decompressedSize);
+	ret = CBMDgetCommonCGFX(inpath, compressedSize, decompressedSize, CGFXoffset, CGFXdecomp.data());
 	if (ret > 0) {
-		delete[] CGFXdecomp;
+		//delete[] CGFXdecomp;
 		return ret;
 	}
 
@@ -665,13 +665,13 @@ uint8_t getCBMDTexture(const std::string inpath, const std::string symbol, uint8
 	uint32_t mipmap;
 	uint32_t formatID;
 	uint32_t size;
-	ret = getCGFXtextureInfo(CGFXdecomp, symbol, dataOffset, height, width, mipmap, formatID, size);
+	ret = getCGFXtextureInfo(CGFXdecomp.data(), symbol, dataOffset, height, width, mipmap, formatID, size);
 	if (ret == 0) {
 		memcpy(outbuff, &CGFXdecomp[dataOffset], size);
-		delete[] CGFXdecomp;
+		//delete[] CGFXdecomp;
 		return ret;
 	}
-	delete[] CGFXdecomp;
+	//delete[] CGFXdecomp;
 	return ret;
 }
 
