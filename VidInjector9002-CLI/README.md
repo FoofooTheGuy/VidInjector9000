@@ -55,6 +55,8 @@ Usage:
 
 VidInjector9002-CLI -new \<output .vi9p file\>
 
+---
+
 </details>
 
 
@@ -67,6 +69,23 @@ Set a parameter based on which number of parameter to set (Output file can be th
 Usage:
 
 VidInjector9002-CLI -set_parameter \<input .vi9p file\> \<number\> \<new value\> \<output .vi9p file\>
+
+---
+
+</details>
+
+
+
+<details>
+<summary>-set_smdh | -ss</summary>
+
+Similar to -sp, this reads the titles from an SMDH and sets them to short name, long name, and publisher in the output .vi9p file. Useful for when first using an SMDH for the icon (Output file can be the same as input file)
+
+Usage:
+
+VidInjector9002-CLI -set_smdh \<input .vi9p file\> \<new value\> \<output .vi9p file\>
+
+---
 
 </details>
 
@@ -81,6 +100,8 @@ Usage:
 
 VidInjector9002-CLI -print_parameters \<input .vi9p file\>
 
+---
+
 </details>
 
 
@@ -93,6 +114,8 @@ Add parameters for a row and increment the INT:ROWS parameter (Output file can b
 Usage:
 
 VidInjector9002-CLI -add_row \<input .vi9p file\> \<output .vi9p file\>
+
+---
 
 </details>
 
@@ -107,6 +130,8 @@ Usage:
 
 VidInjector9002-CLI -subtract_row \<input .vi9p file\> \<output .vi9p file\>
 
+---
+
 </details>
 
 
@@ -120,7 +145,7 @@ Usage:
 
 VidInjector9002-CLI -build_cia \<input .vi9p file\> \<unique ID\> \<application title\> \<product code latter\> \<output .cia file\>
 
-----
+---
 
 The same as the previous one, except with an output .tar which will contain a Luma LayeredFS game patch. (Only use this if INT:SPLITPATCH is set in the input .vi9p)
 
@@ -128,7 +153,7 @@ Usage:
 
 VidInjector9002-CLI -build_cia \<input .vi9p file\> \<unique ID\> \<application title\> \<product code latter\> \<output .cia file\> \<output .tar file\>
 
-----
+---
 
 The same as the first one, except with the following defaults where the argument parameters are missing: (random unique ID) 'video' 'VDIJ'
 
@@ -136,13 +161,15 @@ Usage:
 
 VidInjector9002-CLI -build_cia \<input .vi9p file\> \<output .cia file\>
 
-----
+---
 
 The same as the previous one, except with an output .tar which will contain a Luma LayeredFS game patch. (Only use this if INT:SPLITPATCH is set in the input .vi9p)
 
 Usage:
 
 VidInjector9002-CLI -build_cia \<input .vi9p file\> \<output .cia file\> \<output .tar file\>
+
+---
 
 </details>
 
@@ -157,13 +184,15 @@ Usage:
 
 VidInjector9002-CLI -extract_cia \<input .cia file\> \<output directory\>
 
-----
+---
 
 The same as the previous one, except with the seed to decrypt the content.
 
 Usage:
 
 VidInjector9002-CLI -extract_cia \<input .cia file\> \<seed file\> \<output directory\>
+
+---
 
 </details>
 
@@ -178,6 +207,8 @@ Usage:
 
 VidInjector9002-CLI -extract_tar \<input .tar file\> \<output directory\>
 
+---
+
 </details>
 
 
@@ -190,6 +221,8 @@ Generate a preview image for the banner or icon that matches \<number\>. (Do -pp
 Usage:
 
 Vidinjector9002-CLI -generate_preview \<input .vi9p file\> \<number\> \<output .png file\>
+
+---
 
 </details>
 
