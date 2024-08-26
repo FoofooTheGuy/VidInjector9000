@@ -230,7 +230,9 @@ int loadParameters(std::string parampath, int &mode, std::string &banner, std::s
 	}
 	if(good == true) std::cout << ParametersLoaded << '\n' << SuccessfullyLoaded << ' ' << parampath.substr(parampath.find_last_of("/\\") + 1) << '.' << std::endl;
 	else std::cout << ParametersLoaded << '\n' << FailedToLoad << ' ' << parampath.substr(parampath.find_last_of("/\\") + 1) << ".\n" << ValidStillLoaded << std::endl;
-	return !good;//because 0 is good for us
+	if(!good)
+		return 6;
+	return 0;
 }
 
 int setParameter(std::string inpath, int number, std::string newValue, std::string outpath) {
@@ -258,7 +260,7 @@ int setParameter(std::string inpath, int number, std::string newValue, std::stri
 		case 0: {
 			if (!stoul_s(outrealint, newValue)) {
 				std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << newValue << ")\n" << IntMultiParam << ' ' << BeANumber << std::endl;
-				return 4;
+				return 7;
 			}
 			mode = outrealint;
 			break;
@@ -274,7 +276,7 @@ int setParameter(std::string inpath, int number, std::string newValue, std::stri
 		case 3: {
 			if (!stoul_s(outrealint, newValue)) {
 				std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << newValue << ")\n" << IntIconBorderParam << ' ' << BeANumber << std::endl;
-				return 5;
+				return 8;
 			}
 			iconBorder = ((outrealint & 0xFF) > 2 ? 2 : (outrealint & 0xFF));
 			break;
@@ -294,7 +296,7 @@ int setParameter(std::string inpath, int number, std::string newValue, std::stri
 		case 7: {
 			if (!stoul_s(outrealint, newValue)) {
 				std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << newValue << ")\n" << IntCopycheckParam << ' ' << BeANumber << std::endl;
-				return 6;
+				return 9;
 			}
 			copycheck = outrealint ? 1 : 0;
 			break;
@@ -306,7 +308,7 @@ int setParameter(std::string inpath, int number, std::string newValue, std::stri
 		case 9: {
 			if (!stoul_s(outrealint, newValue)) {
 				std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << newValue << ")\n" << IntFFrewindParam << ' ' << BeANumber << std::endl;
-				return 7;
+				return 10;
 			}
 			FFrewind = outrealint ? 1 : 0;
 			break;
@@ -314,7 +316,7 @@ int setParameter(std::string inpath, int number, std::string newValue, std::stri
 		case 10: {
 			if (!stoul_s(outrealint, newValue)) {
 				std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << newValue << ")\n" << IntFadeOptParam << ' ' << BeANumber << std::endl;
-				return 8;
+				return 11;
 			}
 			FadeOpt = outrealint ? 1 : 0;
 			break;
@@ -322,7 +324,7 @@ int setParameter(std::string inpath, int number, std::string newValue, std::stri
 		case 11: {
 			if (!stoul_s(outrealint, newValue)) {
 				std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << newValue << ")\n" << IntSplitPatchParam << ' ' << BeANumber << std::endl;
-				return 8;
+				return 12;
 			}
 			splitPos = (rows > 1) ? (outrealint < rows ? outrealint : 1) : 0;
 			break;
@@ -353,7 +355,8 @@ int setParameter(std::string inpath, int number, std::string newValue, std::stri
 		}
 		rowcase++;
 	}
-	saveParameters(outpath, mode, banner, icon, iconBorder, Sname, Lname, publisher, copycheck, copyrightInfo, FFrewind, FadeOpt, rows, PTitleVec, MoflexVec, MBannerVec, splitPos);
+	if(saveParameters(outpath, mode, banner, icon, iconBorder, Sname, Lname, publisher, copycheck, copyrightInfo, FFrewind, FadeOpt, rows, PTitleVec, MoflexVec, MBannerVec, splitPos) == 1)
+		return 1;
 	return res;
 }
 
@@ -438,7 +441,7 @@ int add_row(std::string inpath, std::string outpath) {
 	//mode = 1;//this shouldn't really be done here
 	if(rows == MAX_ROWS) {
 		std::cout << ErrorText << ' ' << noMoreThan27 << std::endl;
-		return 6;//6 because we used loadParameters
+		return 7;//7 because we used loadParameters
 	}
 	rows++;
 	PTitleVec.push_back("");
@@ -471,7 +474,7 @@ int sub_row(std::string inpath, std::string outpath) {
 	int res = loadParameters(inpath, mode, banner, icon, iconBorder, Sname, Lname, publisher, copycheck, copyrightInfo, FFrewind, FadeOpt, rows, PTitleVec, MoflexVec, MBannerVec, splitPos, BannerPreviewIndex);
 	
 	if(rows == 1) {
-		return 6;//6 because we used loadParameters
+		return 7;//7 because we used loadParameters
 	}
 	rows--;
 	PTitleVec.pop_back();

@@ -34,12 +34,13 @@ larger or equal size background than forground recommended
 out: 4 channel pixels the same size as the largest one*/
 void layer_pixels(uint8_t* out, const uint8_t* foreground, const uint8_t* background, int forewidth, int foreheight, int forechannels, int backwidth, int backheight, int backchannels, int x_offset, int y_offset);
 
-/*this only exists for generating a preview of what the banner could look like
+/*this only exists for generating a preview of what the banner or icon could look like
 parampath: vi9p file
 number: index of which thing to generate (do -pp to see list)
 outpath: output .png file.
 return values:
 17: custom banner, (cant make a preview)
-28, 29, 16, 44, 45, 18, 46, 47, 24: failed to read input
+28, 29, 16, 44, 45, 18, 46, 47, 24: failed to read input (banner)
+30, 31, 32: failed to read input (icon)
 ect.*/
 int generate_preview(std::string parampath, int number, std::string outpath);

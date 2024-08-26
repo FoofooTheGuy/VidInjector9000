@@ -675,6 +675,69 @@ uint8_t getCBMDTexture(const std::string inpath, const std::string symbol, uint8
 	return ret;
 }
 
+int setIcon(std::string inpath, std::string &Sname, std::string &Lname, std::string &Publisher) {
+	bool smdhinput = true;
+	
+	while(smdhinput)
+	{
+		nnc_smdh smdh;
+		nnc_file f;
+
+		if (nnc_file_open(&f, inpath.c_str()) != NNC_R_OK) {
+			smdhinput = false;
+			return 7;
+		}
+
+		if (nnc_read_smdh(NNC_RSP(&f), &smdh) != NNC_R_OK) {
+			smdhinput = false;
+		}
+
+		if (smdhinput) {
+			for (int i = 0; i < NNC_SMDH_TITLES; i++) {
+				Sname = to_UTF8(smdh.titles[i].short_desc, sizeof(smdh.titles[i].short_desc) / 2);
+				Lname = to_UTF8(smdh.titles[i].long_desc, sizeof(smdh.titles[i].long_desc) / 2);
+				Publisher = to_UTF8(smdh.titles[i].publisher, sizeof(smdh.titles[i].publisher) / 2);
+				if (!Sname.empty() && !Lname.empty() && !Publisher.empty())
+					break;
+			}
+		}
+		NNC_RS_CALL0(f, close);
+		return 0;
+	}
+	return 8;
+}
+
+int SetSMDH(std::string inpath, std::string Newicon, std::string outpath) {
+	int mode = 0;
+	std::string banner = "";
+	std::string icon = "";
+	int iconBorder = 2;
+	std::string Sname = "";
+	std::string Lname = "";
+	std::string publisher = "";
+	int copycheck = 0;
+	std::string copyrightInfo = "";
+	int FFrewind = 1;
+	int FadeOpt = 1;
+	uint8_t rows = 1;
+	std::vector<std::string> PTitleVec = std::vector<std::string>(1, "");
+	std::vector<std::string> MoflexVec = std::vector<std::string>(1, "");
+	std::vector<std::string> MBannerVec = std::vector<std::string>(1, "");
+	uint8_t splitPos = 0;
+	int BannerPreviewIndex = 0;
+	
+	int res = loadParameters(inpath, mode, banner, icon, iconBorder, Sname, Lname, publisher, copycheck, copyrightInfo, FFrewind, FadeOpt, rows, PTitleVec, MoflexVec, MBannerVec, splitPos, BannerPreviewIndex);
+	
+	icon = Newicon;
+	
+	res = setIcon(icon, Sname, Lname, publisher);
+	if(res) return res;
+	
+	saveParameters(outpath, mode, banner, icon, iconBorder, Sname, Lname, publisher, copycheck, copyrightInfo, FFrewind, FadeOpt, rows, PTitleVec, MoflexVec, MBannerVec, splitPos);
+	
+	return 0;
+}
+
 int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, uint32_t uniqueID, std::string ApplicationName, std::string ProductCode) {
 	//default finalization stuff
 	/*uint32_t uniqueID = RandomTID();
@@ -724,7 +787,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			if (error) {
 				std::cout << ErrorText << ' ' << tempPath << '\n' << error.message() << std::endl;
 				std::cout << ErrorText << ' ' << FailedToCreateFile << " \"" << (dopatch ? outTAR : outCIA) << '\"' << std::endl;
-				return 6;
+				return 7;
 			}
 		}
 		if(!dopatch)
@@ -738,7 +801,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			if (error) {
 				std::cout << ErrorText << ' ' << romfsPath + "/movie" << '\n' << error.message() << std::endl;
 				std::cout << ErrorText << ' ' << FailedToCreateFile << " \"" << (dopatch ? outTAR : outCIA) << '\"' << std::endl;
-				return 7;
+				return 8;
 			}
 			//if(dopatch) return 0;
 			std::ofstream movie_title(std::string(romfsPath + "/movie/movie_title.csv").c_str(), std::ios_base::out | std::ios_base::binary);
@@ -771,7 +834,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			movie_title.close();
 			if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie/movie_title.csv").c_str()))) {
 				std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/movie/movie_title.csv" << std::endl;
-				return 8;
+				return 9;
 			}
 		}
 		//make settingsTL.csv (menu title and stuff)
@@ -782,7 +845,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			if (error) {
 				std::cout << ErrorText << ' ' << romfsPath + "/settings" << '\n' << error.message() << std::endl;
 				std::cout << ErrorText << ' ' << FailedToCreateFile << " \"" << (dopatch ? outTAR : outCIA) << '\"' << std::endl;
-				return 9;
+				return 10;
 			}
 			std::ofstream settingsTL(std::string(romfsPath + "/settings/settingsTL.csv").c_str(), std::ios_base::out | std::ios_base::binary);
 
@@ -999,7 +1062,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			settingsTL.close();
 			if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/settings/settingsTL.csv").c_str()))) {
 				std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/settings/settingsTL.csv" << std::endl;
-				return 10;
+				return 11;
 			}
 		}
 		//make copyright stuff (multi vid only)
@@ -1010,14 +1073,14 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			if (error) {
 				std::cout << ErrorText << ' ' << romfsPath + "/settings" << '\n' << error.message() << std::endl;
 				std::cout << ErrorText << ' ' << FailedToCreateFile << " \"" << (dopatch ? outTAR : outCIA) << '\"' << std::endl;
-				return 11;
+				return 12;
 			}
 			std::ofstream information_buttons(std::string(romfsPath + "/settings/information_buttons.csv").c_str(), std::ios_base::out | std::ios_base::binary);
 			information_buttons << (copycheck ? ("\xFF\xFE" + UTF8toUTF16("Copyright")) : "\xFF\xFE");
 			information_buttons.close();
 			if (!std::filesystem::exists(std::string(romfsPath + "/settings/information_buttons.csv").c_str())) {
 				std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/settings/information_buttons.csv" << std::endl;
-				return 12;
+				return 13;
 			}
 
 			if (copycheck) {
@@ -1028,7 +1091,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 				copyrighttxt.close();
 				if (!std::filesystem::exists(std::string(romfsPath + "/settings/copyright.txt").c_str())) {
 					std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/settings/copyright.txt" << std::endl;
-					return 13;
+					return 14;
 				}
 			}
 		}
@@ -1038,7 +1101,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			for (int i = dopatch ? splitPos : 0; i < (mode ? ((splitPos && !dopatch) ? splitPos : rows) : 1); i++) {
 				if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*MoflexVec.at(i).c_str()))) {
 					std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << MoflexVec.at(i) << std::endl;
-					return 14;
+					return 15;
 				}
 				std::string extension = MoflexVec.at(i).c_str();
 				if (extension.find_last_of(".") != std::string::npos)
@@ -1048,14 +1111,14 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 					inmoflex >> Checker[j];//https://stackoverflow.com/a/2974735
 					if (extension != ".moflex" || Checker[j] != moflexMagic[j]) {
 						std::cout << ErrorText << ' ' << BadValue << "\n\"" << MoflexVec.at(i) << "\" " << MoflexError << std::endl;
-						return 15;
+						return 16;
 					}
 				}
 				std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie").c_str()), error);
 				if (error) {
 					std::cout << ErrorText << ' ' << romfsPath + "/movie" << '\n' << error.message() << std::endl;
 					std::cout << ErrorText << ' ' << FailedToCreateFile << " \"" << (dopatch ? outTAR : outCIA) << '\"' << std::endl;
-					return 16;
+					return 17;
 				}
 				if (mode) {
 					std::cout << CopyingMoflex << ' ' << std::to_string(i + 1) << '/' << std::to_string(rows) << std::endl;
@@ -1064,11 +1127,11 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 					if (error) {
 						std::cout << ErrorText << ' ' << FailedToCopyFile << "\n\"" << MoflexVec.at(i) << "\" -> \"" << romfsPath << "/movie/movie_" << std::to_string(i) << ".moflex\"\n" << error.message() << std::endl;
 						std::cout << ErrorText << ' ' << FailedToCreateFile << ' ' << romfsPath << "/movie/movie_" << std::to_string(i) << ".moflex" << std::endl;
-						return 17;
+						return 18;
 					}
 					if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie/movie_" + std::to_string(i) + ".moflex").c_str()))) {//this probably only happens if there's no disk space
 						std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/movie/movie_" << std::to_string(i) << ".moflex" << std::endl;
-						return 18;
+						return 19;
 					}
 				}
 				else {
@@ -1078,11 +1141,11 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 					if (error) {
 						std::cout << ErrorText << ' ' << FailedToCopyFile << "\n\"" << MoflexVec.at(i) << "\" -> \"" << romfsPath << "/movie/movie.moflex\"\n" << error.message() << std::endl;
 						std::cout << ErrorText << ' ' << FailedToCreateFile << ' ' << romfsPath << "/movie/movie.moflex" << std::endl;
-						return 19;
+						return 20;
 					}
 					if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie/movie.moflex").c_str()))) {//this probably only happens if there's no disk space
 						std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/movie/movie.moflex" << std::endl;
-						return 20;
+						return 21;
 					}
 				}
 			}
@@ -1097,13 +1160,13 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 				uint8_t ret = convertToBimg(MBannerVec.at(i), bimg.data(), true);
 				if (ret > 0) {
 					std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/movie/movie_" << std::to_string(i) << ".bimg\n(" << std::to_string(ret) << ')' << std::endl;
-					return 21;
+					return 22;
 				}
 				std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie").c_str()), error);
 				if (error) {
 					std::cout << ErrorText << ' ' << romfsPath + "/movie" << '\n' << error.message() << std::endl;
 					std::cout << ErrorText << ' ' << FailedToCreateFile << " \"" << (dopatch ? outTAR : outCIA) << '\"' << std::endl;
-					return 22;
+					return 23;
 				}
 				std::ofstream bimgfile(std::string(romfsPath + "/movie/movie_" + std::to_string(i) + ".bimg").c_str(), std::ios_base::out | std::ios_base::binary);
 				bimgfile.write(reinterpret_cast<const char*>(bimg.data()), bimg.size());
@@ -1114,7 +1177,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			if (error) {
 				std::cout << ErrorText << ' ' << romfsPath + "/settings" << '\n' << error.message() << std::endl;
 				std::cout << ErrorText << ' ' << FailedToCreateFile << " \"" << (dopatch ? outTAR : outCIA) << '\"' << std::endl;
-				return 23;
+				return 24;
 			}
 			std::ofstream movie_bnrname(std::string(romfsPath + "/settings/movie_bnrname.csv").c_str(), std::ios_base::out | std::ios_base::binary);
 			movie_bnrname << "\xFF\xFE" + UTF8toUTF16(std::to_string(rows) + "\x0D\x0A");
@@ -1124,7 +1187,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			movie_bnrname.close();
 			if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/settings/movie_bnrname.csv").c_str()))) {
 				std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/settings/movie_bnrname.csv" << std::endl;
-				return 24;
+				return 25;
 			}
 		}
 		//do exefs (icon and banner)
@@ -1134,7 +1197,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			ret = convertToIcon(icon, std::string(tempPath + "/exefs/icon"), UTF8toUTF16(Sname), UTF8toUTF16(Lname), UTF8toUTF16(publisher), iconBorder);
 			if (ret > 0) {
 				std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << tempPath << "/exefs/icon\n(" << std::to_string(ret) << ')' << std::endl;
-				return 25;
+				return 26;
 			}
 			if (mode) {//multi vid needs an icon here so that it can make ext data or something (the game crashes if it isnt here)
 				std::cout << CreatingFile << " romfs/icon.icn" << std::endl;
@@ -1143,11 +1206,11 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 				if (error) {
 					std::cout << ErrorText << ' ' << FailedToCopyFile << "\n\"" << tempPath << "/exefs/icon\" -> \"" << romfsPath << "/icon.icn\"\n" << error.message() << std::endl;
 					std::cout << ErrorText << ' ' << FailedToCreateFile << ' ' << romfsPath << "/icon.icn" << std::endl;
-					return 26;
+					return 27;
 				}
 				if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/icon.icn").c_str()))) {
 					std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/icon.icn" << std::endl;
-					return 27;
+					return 28;
 				}
 			}
 			//make banner
@@ -1173,7 +1236,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 				if (error) {
 					std::cout << ErrorText << ' ' << FailedToCopyFile << "\n\"" << banner << "\" -> \"" << tempPath << "/exefs/banner\"\n" << error.message() << std::endl;
 					std::cout << ErrorText << ' ' << FailedToCreateFile << ' ' << tempPath << "/exefs/banner" << std::endl;
-					return 28;
+					return 29;
 				}
 			}
 			else if (!bannerbool) {
@@ -1181,7 +1244,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 				ret = convertToBimg(banner, buffer, false);
 				if (ret > 0) {
 					std::cout << ErrorText << ' ' << BadValue << '\n' << FailedToConvertImage << " \"" << banner << "\"\n(" << std::to_string(ret) << ')' << std::endl;
-					return 29;
+					return 30;
 				}
 
 				//create bcmdl
@@ -1211,7 +1274,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			}
 			if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(tempPath + "/exefs/banner").c_str()))) {
 				std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << tempPath << "/exefs/banner" << std::endl;
-				return 30;
+				return 31;
 			}
 		}
 		//modify exheader
@@ -1696,9 +1759,10 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 	{
 		banner = std::string(exefspath + "/banner.bin");//do it like this because the vi9p is in outDir
 		icon = std::string(exefspath + "/icon.bin");
-		bool smdhinput = true;
-
-		while(smdhinput)
+		//bool smdhinput = true;
+		
+		(void)setIcon(std::string(exefspath + "/icon.bin").c_str(), Sname, Lname, publisher);
+		/*while(smdhinput)
 		{
 			nnc_smdh smdh;
 			nnc_file f;
@@ -1723,7 +1787,7 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 			}
 			NNC_RS_CALL0(f, close);
 			break;
-		}
+		}*/
 	}
 	//settingTL.csv
 	{

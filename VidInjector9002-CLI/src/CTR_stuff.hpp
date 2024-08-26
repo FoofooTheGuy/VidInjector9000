@@ -86,6 +86,55 @@ return true if succeed, false if fail
 */
 uint8_t getCBMDTexture(const std::string inpath, const std::string symbol, uint8_t* outbuff);
 
+/*
+gets the short name, long name, and publisher from an smdh.
+returns: false for fail (not an smdh?) true for complete
+*/
+int setIcon(std::string inpath, std::string &Sname, std::string &Lname, std::string &Publisher);
+
+/*
+this is here because this file already includes vi9p.hpp
+inpath: in vi9p
+Newicon: path to smdh
+outpath: out vi9p
+return:
+0 good
+2 failed to load (loadParameters)
+3 failed to read param (loadParameters)
+4 Bad version (loadParameters)
+5 failed to find StrVerParam (loadParameters)
+6 failed to load something from parameters (loadParameters)
+7 failed to open file
+8 not an smdh
+*/
+int SetSMDH(std::string inpath, std::string Newicon, std::string outpath);
+/*
+return:
+0 good
+2 failed to load (loadParameters)
+3 failed to read param (loadParameters)
+4 Bad version (loadParameters)
+5 failed to find StrVerParam (loadParameters)
+6 failed to load something from parameters (loadParameters)
+7 temppath error
+8, 17, 23 failed to create movie dir
+9 failed to create movie_title.csv
+10, 12, 24 failed to create settings dir
+11 failed to create settingsTL.csv
+13 failed to create information_buttons.csv
+14 failed to create copyright.txt
+15 failed to find moflex to copy
+16 input for moflex is not moflex
+18, 19, 20, 21 failed to copy moflex
+22 failed to create bimg
+25 failed to create movie_bnrname.csv
+26 failed to create icon
+27, 28 failed to copy icon
+29 failed to copy banner
+30 failed to convert banner image
+31 failed to create banner
+NNC errors ?
+*/
 int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR = "", uint32_t uniqueID = RandomTID(), std::string ApplicationName = "video", std::string ProductCode = "VDIJ");
 
 int extract_archive(std::string inArc, std::string outDir, bool dopatch = false, std::string seedpath = "");

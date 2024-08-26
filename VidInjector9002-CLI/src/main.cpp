@@ -17,6 +17,7 @@ int main(int argc, char** argv) {
 			HArg << " | " << HArgShort << '\n' <<
 			NArg << " | " << NArgShort << '\n' <<
 			SpArg << " | " << SpArgShort << '\n' <<
+			SsArg << " | " << SsArgShort << '\n' <<
 			PpArg << " | " << PpArgShort << '\n' <<
 			ArArg << " | " << ArArgShort << '\n' <<
 			SrArg << " | " << SrArgShort << '\n' <<
@@ -46,6 +47,15 @@ int main(int argc, char** argv) {
 			}
 			else {
 				std::cout << SpArg << " | " << SpArgShort << " : " << SetPInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << SpArg << " <" << InVi9pFile << "> <" << number << "> <" << NewValueText << "> <" << OutVi9pFile << ">" << std::endl;
+			}
+			return 1;
+		}
+		else if(strcmp(argv[i], SsArg.c_str()) == 0 || strcmp(argv[i], SsArgShort.c_str()) == 0) {
+			if(argc == 5) {
+				return SetSMDH(argv[2], argv[3], argv[4]);
+			}
+			else {
+				std::cout << SsArg << " | " << SsArgShort << " : " << SetSInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << SsArg << " <" << InVi9pFile << "> <" << NewValueText << "> <" << OutVi9pFile << ">" << std::endl;
 			}
 			return 1;
 		}
@@ -162,6 +172,7 @@ int main(int argc, char** argv) {
 	HArg << " | " << HArgShort << '\n' <<
 	NArg << " | " << NArgShort << '\n' <<
 	SpArg << " | " << SpArgShort << '\n' <<
+	SsArg << " | " << SsArgShort << '\n' <<
 	PpArg << " | " << PpArgShort << '\n' <<
 	ArArg << " | " << ArArgShort << '\n' <<
 	SrArg << " | " << SrArgShort << '\n' <<
