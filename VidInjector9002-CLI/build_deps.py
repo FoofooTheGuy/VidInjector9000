@@ -15,7 +15,7 @@ subprocess.call(["make", "-C", "library"])
 shutil.copyfile("library/libmbedcrypto.a", "../libmbedcrypto.a")
 os.chdir("../nnc")
 subprocess.call(["make"])
-shutil.copyfile("libnnc.a", "../1libnnc.a")
+shutil.copyfile("libnnc.a", "../libnnc.a")
 
 try:
     raw_input("Press Enter to finish...")

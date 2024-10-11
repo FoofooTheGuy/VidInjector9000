@@ -43,10 +43,12 @@ for s in os.listdir("src"):
                 os.remove("obj/" + s.rsplit('.', 1)[0] + ".o")
             subprocess.call(["g++", "-Wall", "-c", "src/" + s, "-std=" + cpp, "-Innc/include", "-Imbedtls-3.4.0/include", "-o", "obj/" + s.rsplit('.', 1)[0] + ".o"])
         command.append("obj/" + s.rsplit('.', 1)[0] + ".o")
-for s in os.listdir("."):
-    if s.find(".a") != -1:
-        print(s)
-        command.append(s)
+
+print('libnnc.a')
+command.append('libnnc.a')
+print('libmbedcrypto.a')
+command.append('libmbedcrypto.a')
+        
 subprocess.call(command)
 try:
     raw_input("Press Enter to finish...")
