@@ -59,7 +59,7 @@ std::string StrPTitleParam = "STR:PTITLE";
 std::string StrMoflexParam = "STR:MOFLEX";
 std::string StrMBannerParam = "STR:MBANNER";
 std::string IntSplitPatchParam = "INT:SPLITPATCH";
-std::string IntPreIndexParam = "INT:PREINDEX";
+//std::string IntPreIndexParam = "INT:PREINDEX";
 
 std::string ProgramName = "VidInjector9002 CLI Edition";
 std::string ByMeText = "by FoofooTheGuy";

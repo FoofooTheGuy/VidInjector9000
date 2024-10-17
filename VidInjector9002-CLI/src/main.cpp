@@ -29,7 +29,8 @@ int main(int argc, char** argv) {
 		}
 		else if(strcmp(argv[i], NArg.c_str()) == 0 || strcmp(argv[i], NArgShort.c_str()) == 0) {
 			if(argc == 3) {
-				return saveParameters(argv[2]);
+				VI9Pparameters parameters;
+				return saveParameters(argv[2], parameters);
 			}
 			else {
 				std::cout << NArg << " | " << NArgShort << " : " << NewInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << NArg << " <" << OutVi9pFile << ">" << std::endl;

@@ -505,25 +505,9 @@ int generateIconPreview(std::string infile, int borderMode, std::string outfile)
 }
 
 int generate_preview(std::string inpath, int number, std::string outpath) {
-	int mode = 0;
-	std::string banner = "";
-	std::string icon = "";
-	int iconBorder = 2;
-	std::string Sname = "";
-	std::string Lname = "";
-	std::string publisher = "";
-	int copycheck = 0;
-	std::string copyrightInfo = "";
-	int FFrewind = 1;
-	int FadeOpt = 1;
-	uint8_t rows = 1;
-	std::vector<std::string> PTitleVec = std::vector<std::string>(1, "");
-	std::vector<std::string> MoflexVec = std::vector<std::string>(1, "");
-	std::vector<std::string> MBannerVec = std::vector<std::string>(1, "");
-	uint8_t splitPos = 0;
-	int BannerPreviewIndex = 0;
+	VI9Pparameters parameters;
 	
-	int res = loadParameters(inpath, mode, banner, icon, iconBorder, Sname, Lname, publisher, copycheck, copyrightInfo, FFrewind, FadeOpt, rows, PTitleVec, MoflexVec, MBannerVec, splitPos, BannerPreviewIndex);
+	int res = loadParameters(inpath, &parameters);
 	//uint32_t outrealint = 0;
 	switch(number) {
 		case 0: {
@@ -531,12 +515,12 @@ int generate_preview(std::string inpath, int number, std::string outpath) {
 			return 7;
 		}
 		case 1: {
-			res = generateBannerPreview(banner, outpath);
+			res = generateBannerPreview(parameters.banner, outpath);
 			//std::cout << banner << std::endl;
 			return res;
 		}
 		case 2: {
-			res = generateIconPreview(icon, iconBorder, outpath);
+			res = generateIconPreview(parameters.icon, parameters.iconBorder, outpath);
 			//std::cout << icon << std::endl;
 			break;
 		}
@@ -588,21 +572,21 @@ int generate_preview(std::string inpath, int number, std::string outpath) {
 	}
 	//beware of incoming jank. tread lightly...
 	int rowcase = 12;
-	for((void)rowcase; rowcase < PTitleVec.size(); rowcase++) {
+	for((void)rowcase; rowcase < parameters.PTitleVec.size(); rowcase++) {
 		if(number == rowcase) {
 			std::cout << ErrorText << ' ' << BadValue << " (" << number << " -> " << StrPTitleParam << ")\n" << NothingToDo << std::endl;
 			return 17;
 		}
 	}
-	rowcase = 12 + rows;
-	for((void)rowcase; rowcase < MoflexVec.size(); rowcase++) {
+	rowcase = 12 + parameters.rows;
+	for((void)rowcase; rowcase < parameters.MoflexVec.size(); rowcase++) {
 		if(number == rowcase) {
 			std::cout << ErrorText << ' ' << BadValue << " (" << number << " -> " << StrMoflexParam << ")\n" << NothingToDo << std::endl;
 			return 18;
 		}
 	}
-	rowcase = 12 + (rows * 2);
-	for(auto &row : MBannerVec) {
+	rowcase = 12 + (parameters.rows * 2);
+	for(auto &row : parameters.MBannerVec) {
 		if(number == rowcase) {
 			res = generateBannerPreview(row, outpath, true);
 			//std::cout << row << std::endl;

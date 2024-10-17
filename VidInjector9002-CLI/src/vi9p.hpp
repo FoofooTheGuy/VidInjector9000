@@ -10,9 +10,28 @@
 
 #define MAX_ROWS 27
 
+struct VI9Pparameters {
+	std::string ver = VI9PVER;
+	int mode = 0;
+	std::string banner = "";
+	std::string icon = "";
+	int iconBorder = 2;
+	std::string Sname = "";
+	std::string Lname = "";
+	std::string publisher = "";
+	int copycheck = 0;
+	std::string copyrightInfo = "";
+	int FFrewind = 1;
+	int FadeOpt = 1;
+	uint8_t rows = 1;
+	std::vector<std::string> PTitleVec = std::vector<std::string>(1, "");
+	std::vector<std::string> MoflexVec = std::vector<std::string>(1, "");
+	std::vector<std::string> MBannerVec = std::vector<std::string>(1, "");
+	uint8_t splitPos = 0;
+};
 
-int saveParameters(std::string parampath, int mode = 0, std::string banner = "", std::string icon = "", int iconBorder = 2, std::string Sname = "", std::string Lname = "", std::string publisher = "", int copycheck = 0, std::string copyrightInfo = "", int FFrewind = 1, int FadeOpt = 1, uint8_t rows = 1, std::vector<std::string> PTitleVec = std::vector<std::string>(1, ""), std::vector<std::string> MoflexVec = std::vector<std::string>(1, ""), std::vector<std::string> MBannerVec = std::vector<std::string>(1, ""), uint8_t splitPos = 0);
-int loadParameters(std::string parampath, int &mode, std::string &banner, std::string &icon, int &iconBorder, std::string &Sname, std::string &Lname, std::string &publisher, int &copycheck, std::string &copyrightInfo, int &FFrewind, int &FadeOpt, uint8_t &rows, std::vector<std::string> &PTitleVec, std::vector<std::string> &MoflexVec, std::vector<std::string> &MBannerVec, uint8_t &splitPos, int &BannerPreviewIndex);
+int saveParameters(std::string parampath, VI9Pparameters parameters);
+int loadParameters(std::string parampath, VI9Pparameters* parameters);
 /*
 return:
 0 good

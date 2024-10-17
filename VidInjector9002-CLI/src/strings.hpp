@@ -50,7 +50,7 @@ extern std::string StrPTitleParam;
 extern std::string StrMoflexParam;
 extern std::string StrMBannerParam;
 extern std::string IntSplitPatchParam;
-extern std::string IntPreIndexParam;
+//extern std::string IntPreIndexParam;
 
 //stuff you change
 extern std::string ProgramName;
