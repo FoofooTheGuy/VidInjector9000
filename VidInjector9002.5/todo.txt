@@ -1,0 +1,5 @@
+Main menu:
+New - If unsaved, ask to save and do that or just save to the last used project
+blah
+
+finish mediapanel (split patch line)
