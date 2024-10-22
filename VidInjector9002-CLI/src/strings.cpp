@@ -37,6 +37,8 @@ std::string EtArg = "-extract_tar";
 std::string EtArgShort = "-et";
 std::string GpArg = "-generate_preview";
 std::string GpArgShort = "-gp";
+std::string RrArg = "-return_rows";
+std::string RrArgShort = "-rr";
 
 std::string Languagedir = "English";
 
@@ -84,6 +86,7 @@ std::string ExCInfoText = "Extract parameters from a .cia to a directory which w
 std::string ExC2InfoText = "The same as the previous one, except with the seed to decrypt the content.";
 std::string EtInfoText = "Extract patch parameters from a .tar to a directory which will contain the romfs directory and .vi9p file. Set <output directory> to the directory of an extracted .cia to combine it all.";
 std::string GpInfoText = "Generate a preview image for the banner or icon that matches <number>. (Do -pp to see a list of possible numbers.)";
+std::string RrInfoText = "Return the value of INT:ROWS from <input .vi9p file>. Note: This is only for reading purposes. Use -ar or -sr to change the amount of rows.";
 std::string InVi9pFile = "input .vi9p file";
 std::string InCiaFile = "input .cia file";
 std::string InTarFile = "input .tar file";

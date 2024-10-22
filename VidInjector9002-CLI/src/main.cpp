@@ -24,7 +24,8 @@ int main(int argc, char** argv) {
 			BcArg << " | " << BcArgShort << '\n' <<
 			EcArg << " | " << EcArgShort << '\n' <<
 			EtArg << " | " << EtArgShort << '\n' <<
-			GpArg << " | " << GpArgShort << std::endl;
+			GpArg << " | " << GpArgShort << '\n' <<
+			RrArg << " | " << RrArgShort << std::endl;
 			return 0;
 		}
 		else if(strcmp(argv[i], NArg.c_str()) == 0 || strcmp(argv[i], NArgShort.c_str()) == 0) {
@@ -162,6 +163,15 @@ int main(int argc, char** argv) {
 			}
 			return 1;
 		}
+		else if(strcmp(argv[i], RrArg.c_str()) == 0 || strcmp(argv[i], RrArgShort.c_str()) == 0) {
+			if(argc == 3) {
+				return return_rows(argv[2]);
+			}
+			else {
+				std::cout << RrArg << " | " << RrArgShort << " : " << RrInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << RrArg << " <" << InVi9pFile << ">" << std::endl;
+			}
+			return -1;
+		}
 		else {
 			if(argc == 2) {
 				std::cout << ErrorText << ' ' << UnknownArgText << '"' << argv[1] << "\"\n" << std::endl;
@@ -180,6 +190,7 @@ int main(int argc, char** argv) {
 	BcArg << " | " << BcArgShort << '\n' <<
 	EcArg << " | " << EcArgShort << '\n' <<
 	EtArg << " | " << EtArgShort << '\n' <<
-	GpArg << " | " << GpArgShort << std::endl;
+	GpArg << " | " << GpArgShort << '\n' <<
+	RrArg << " | " << RrArgShort << std::endl;
 	return 1;
 }

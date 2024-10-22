@@ -27,6 +27,8 @@ extern std::string EtArg;
 extern std::string EtArgShort;
 extern std::string GpArg;
 extern std::string GpArgShort;
+extern std::string RrArg;
+extern std::string RrArgShort;
 
 extern std::string Languagedir;
 
@@ -76,6 +78,7 @@ extern std::string ExCInfoText;
 extern std::string ExC2InfoText;
 extern std::string EtInfoText;
 extern std::string GpInfoText;
+extern std::string RrInfoText;
 extern std::string InVi9pFile;
 extern std::string InCiaFile;
 extern std::string InTarFile;

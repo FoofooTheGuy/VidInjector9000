@@ -81,3 +81,10 @@ return:
 7 no more rows to remove
 */
 int sub_row(std::string inpath, std::string outpath);
+
+/*
+returns:
+the value of the vi9p INT ROWS param
+-2, -3, -4, -5, -6: fail (negated output of loadParameters)
+*/
+int return_rows(std::string inpath);

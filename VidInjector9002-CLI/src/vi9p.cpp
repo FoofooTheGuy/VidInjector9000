@@ -345,23 +345,6 @@ int setParameter(std::string inpath, int number, std::string newValue, std::stri
 }
 
 int printParameter(std::string inpath) {
-	/*int mode = 0;
-	std::string banner = "";
-	std::string icon = "";
-	int iconBorder = 2;
-	std::string Sname = "";
-	std::string Lname = "";
-	std::string publisher = "";
-	int copycheck = 0;
-	std::string copyrightInfo = "";
-	int FFrewind = 1;
-	int FadeOpt = 1;
-	uint8_t rows = 1;
-	std::vector<std::string> PTitleVec = std::vector<std::string>(1, "");
-	std::vector<std::string> MoflexVec = std::vector<std::string>(1, "");
-	std::vector<std::string> MBannerVec = std::vector<std::string>(1, "");
-	uint8_t splitPos = 0;
-	//int BannerPreviewIndex = 0;*/
 	VI9Pparameters parameters;
 	
 	int res = loadParameters(inpath, &parameters);
@@ -403,23 +386,6 @@ int printParameter(std::string inpath) {
 }
 
 int add_row(std::string inpath, std::string outpath) {
-	/*int mode = 0;
-	std::string banner = "";
-	std::string icon = "";
-	int iconBorder = 2;
-	std::string Sname = "";
-	std::string Lname = "";
-	std::string publisher = "";
-	int copycheck = 0;
-	std::string copyrightInfo = "";
-	int FFrewind = 1;
-	int FadeOpt = 1;
-	uint8_t rows = 1;
-	std::vector<std::string> PTitleVec = std::vector<std::string>(1, "");
-	std::vector<std::string> MoflexVec = std::vector<std::string>(1, "");
-	std::vector<std::string> MBannerVec = std::vector<std::string>(1, "");
-	uint8_t splitPos = 0;
-	//int BannerPreviewIndex = 0;*/
 	VI9Pparameters parameters;
 	
 	int res = loadParameters(inpath, &parameters);
@@ -439,23 +405,6 @@ int add_row(std::string inpath, std::string outpath) {
 }
 
 int sub_row(std::string inpath, std::string outpath) {
-	/*int mode = 0;
-	std::string banner = "";
-	std::string icon = "";
-	int iconBorder = 2;
-	std::string Sname = "";
-	std::string Lname = "";
-	std::string publisher = "";
-	int copycheck = 0;
-	std::string copyrightInfo = "";
-	int FFrewind = 1;
-	int FadeOpt = 1;
-	uint8_t rows = 1;
-	std::vector<std::string> PTitleVec = std::vector<std::string>(1, "");
-	std::vector<std::string> MoflexVec = std::vector<std::string>(1, "");
-	std::vector<std::string> MBannerVec = std::vector<std::string>(1, "");
-	uint8_t splitPos = 0;
-	//int BannerPreviewIndex = 0;*/
 	VI9Pparameters parameters;
 	
 	int res = loadParameters(inpath, &parameters);
@@ -470,4 +419,18 @@ int sub_row(std::string inpath, std::string outpath) {
 	
 	saveParameters(outpath, parameters);
 	return res;
+}
+
+int return_rows(std::string inpath) {
+	VI9Pparameters parameters;
+	
+	int res = loadParameters(inpath, &parameters);
+	
+	if(res) {
+		std::cout << res*(-1) << std::endl;
+		return res*(-1);
+	}
+	
+	std::cout << parameters.rows << std::endl;
+	return parameters.rows;
 }
