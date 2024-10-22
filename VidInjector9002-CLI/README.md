@@ -226,4 +226,18 @@ Vidinjector9002-CLI -generate_preview \<input .vi9p file\> \<number\> \<output .
 
 </details>
 
+
+<details>
+<summary>-return_rows | -rr</summary>
+
+Return the value of INT:ROWS from \<input .vi9p file\>. Note: This is only for reading purposes. Use -ar or -sr to change the amount of rows.
+
+Usage:
+
+Vidinjector9002-CLI -generate_preview \<input .vi9p file\>
+
+---
+
+</details>
+
 ---
