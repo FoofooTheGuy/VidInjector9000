@@ -427,10 +427,10 @@ int return_rows(std::string inpath) {
 	int res = loadParameters(inpath, &parameters);
 	
 	if(res) {
-		std::cout << res*(-1) << std::endl;
+		std::cout << std::to_string(res*(-1)) << std::endl;
 		return res*(-1);
 	}
 	
-	std::cout << parameters.rows << std::endl;
+	std::cout << std::to_string(parameters.rows) << std::endl;
 	return parameters.rows;
 }
