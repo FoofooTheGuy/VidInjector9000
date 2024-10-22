@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include "strings.hpp"
 
 #define MAX_ROWS 27
@@ -32,4 +33,4 @@ class VI9P
 };
 
 //todo: delete this and parse cli output for -pp in order to get parameters
-int loadParameters(std::string parampath, VI9Pparameters* parameters);
+//int loadParameters(std::string parampath, VI9Pparameters* parameters);
