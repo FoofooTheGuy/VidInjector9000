@@ -15,7 +15,7 @@ void saveSettings() {
 
 std::vector<int> loadSettings() {
 	std::string outstr = "";
-	uint32_t outrealint = 0;
+	int outrealint = 0;
 	std::vector<int> ret;
 	std::error_code error;
 	if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + settingsFile).c_str()))) {
@@ -41,7 +41,7 @@ std::vector<int> loadSettings() {
 		//xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, StrDefaultLanguage, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
 	}
 	if (parseLines(outstr, filelines, IntShowLog)) {
-		if (!stoul_s(outrealint, outstr)) {
+		if (!ASCII2number<int>(&outrealint, outstr)) {
 			outrealint = 0;
 			ret.push_back(4);
 		}
@@ -51,7 +51,7 @@ std::vector<int> loadSettings() {
 		ret.push_back(5);
 	}
 	if (parseLines(outstr, filelines, IntColorMode)) {
-		if (!stoul_s(outrealint, outstr)) {
+		if (!ASCII2number<int>(&outrealint, outstr)) {
 			outrealint = 2;
 			ret.push_back(6);
 		}

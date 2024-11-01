@@ -13,8 +13,10 @@
 #include <wx/colour.h>
 #include <wx/wx.h>
 
+#include "formatting.hpp"
 #include "settings.hpp"
 #include "strings.hpp"
+#include "vi9p.hpp"
 
 enum wxOwnedID {
 	ID_LOGBOOL,
@@ -55,12 +57,12 @@ struct InitWidgets {
 	
 	wxStaticText* bannerText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(BannerText));
 	wxTextCtrl* bannerBox = new wxTextCtrl(panel, wxID_ANY, wxEmptyString);
-	wxButton* bannerBrowse = new wxButton(panel, wxID_ANY, wxString::FromUTF8(Browse), wxDefaultPosition, {120, 35});
+	wxButton* bannerBrowse = new wxButton(panel, wxID_ANY, wxString::FromUTF8(Browse));
 	wxStaticText* bannerError = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(ErrorText + ' ' + ImageInfoError));
 	
 	wxStaticText* iconText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(IconText));
 	wxTextCtrl* iconBox = new wxTextCtrl(panel, wxID_ANY, wxEmptyString);
-	wxButton* iconBrowse = new wxButton(panel, wxID_ANY, wxString::FromUTF8(Browse), wxDefaultPosition, {120, 35});
+	wxButton* iconBrowse = new wxButton(panel, wxID_ANY, wxString::FromUTF8(Browse));
 	wxStaticText* iconError = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(ErrorText + ' ' + ImageInfoError));
 	
 	wxStaticText* shortnameText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(ShortNameText));
@@ -81,7 +83,7 @@ struct InitWidgets {
 	wxStaticBitmap* bannerPreview = new wxStaticBitmap(panel, wxID_ANY, wxNullBitmap, wxDefaultPosition, {264, 154}, wxBORDER_NONE);
 	wxStaticText* bannerPreviewText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(BannerPreviewText));
 	
-	wxButton* iconPreview = new wxButton(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, {52, 52});
+	wxButton* iconPreview = new wxButton(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, {48, 48}, wxBORDER_NONE);
 	
 	wxCheckBox* ffRewindCheck = new wxCheckBox(panel, wxID_ANY, wxString::FromUTF8(FFrewindCheckText));
 	
@@ -107,8 +109,8 @@ struct InitWidgets {
 	std::vector<wxButton*> MultiUp;
 	std::vector<wxButton*> MultiDown;
 	
-	wxButton* moflexBrowse = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8(Browse), wxDefaultPosition, {120, 35});
-	wxButton* multiBannerBrowse = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8(Browse), wxDefaultPosition, {120, 35});
+	wxButton* moflexBrowse = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8(Browse));
+	wxButton* multiBannerBrowse = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8(Browse));
 	
 	wxButton* removeRow = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8("-"));
 	wxButton* appendRow = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8("+"));
@@ -219,3 +221,8 @@ void getAppearance(InitWidgets* wid);
 //set all widgets on panel to color mode
 //0 light 1 dark 2 system
 void setAppearance(InitWidgets* wid, int Mode);
+
+//send Vi9P::WorkingFile to cli -pp to get parameters from the file
+int loadParameters(InitWidgets* wid, VI9Pparameters* parameters);
+
+void applyParameters(InitWidgets* wid, VI9Pparameters* parameters);

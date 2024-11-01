@@ -82,6 +82,26 @@ extern std::string tempPath;
 extern std::string resourcesPath;
 extern std::string CLIFile;
 extern std::string settingsFile;
+extern std::string vi9pFile;
+
+//vi9p parameters
+extern std::string StrVerParam;
+extern std::string IntMultiParam;
+extern std::string StrBannerParam;
+extern std::string StrIconParam;
+extern std::string IntIconBorderParam;
+extern std::string StrSNameParam;
+extern std::string StrLNameParam;
+extern std::string StrPublisherParam;
+extern std::string IntCopycheckParam;
+extern std::string StrCopyrightParam;
+extern std::string IntFFrewindParam;
+extern std::string IntFadeOptParam;
+extern std::string IntRowsParam;
+extern std::string StrPTitleParam;
+extern std::string StrMoflexParam;
+extern std::string StrMBannerParam;
+extern std::string IntSplitPatchParam;
 
 //settings stuff
 extern std::string StrDefaultLanguage;

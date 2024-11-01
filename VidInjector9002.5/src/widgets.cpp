@@ -35,6 +35,18 @@ void initAllWidgets(InitWidgets* wid) {
 		wid->bannerText->GetTextExtent(wid->bannerText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->bannerText->SetSize(w, h);
 	}
+	{//bannerBrowse
+		int w, buttwidth, h, buttheight;
+		wxFont f;
+		
+		wid->bannerBrowse->GetSize(&buttwidth, &buttheight);
+		f = wid->bannerBrowse->GetFont();
+		wid->bannerBrowse->GetTextExtent(wid->bannerBrowse->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		buttwidth = buttwidth - w;
+		buttheight = buttheight - h;
+
+		wid->bannerBrowse->SetSize(w + (buttwidth * 2), h + (buttheight * 1.6F));
+	}
 	{//bannerError
 		int w, h;
 		wxFont f;
@@ -58,6 +70,18 @@ void initAllWidgets(InitWidgets* wid) {
 		f = wid->iconText->GetFont();
 		wid->iconText->GetTextExtent(wid->iconText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->iconText->SetSize(w, h);
+	}
+	{//iconBrowse
+		int w, buttwidth, h, buttheight;
+		wxFont f;
+		
+		wid->iconBrowse->GetSize(&buttwidth, &buttheight);
+		f = wid->iconBrowse->GetFont();
+		wid->iconBrowse->GetTextExtent(wid->iconBrowse->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		buttwidth = buttwidth - w;
+		buttheight = buttheight - h;
+
+		wid->iconBrowse->SetSize(w + (buttwidth * 2), h + (buttheight * 1.6F));
 	}
 	{//iconError
 		int w, h;
@@ -285,6 +309,31 @@ void initAllWidgets(InitWidgets* wid) {
 			
 			wid->MultiDown.push_back(button);
 		}
+	}
+	
+	{//moflexBrowse
+		int w, buttwidth, h, buttheight;
+		wxFont f;
+		
+		wid->moflexBrowse->GetSize(&buttwidth, &buttheight);
+		f = wid->moflexBrowse->GetFont();
+		wid->moflexBrowse->GetTextExtent(wid->moflexBrowse->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		buttwidth = buttwidth - w;
+		buttheight = buttheight - h;
+
+		wid->moflexBrowse->SetSize(w + (buttwidth * 2), h + (buttheight * 1.6F));
+	}
+	{//multiBannerBrowse
+		int w, buttwidth, h, buttheight;
+		wxFont f;
+		
+		wid->multiBannerBrowse->GetSize(&buttwidth, &buttheight);
+		f = wid->multiBannerBrowse->GetFont();
+		wid->multiBannerBrowse->GetTextExtent(wid->multiBannerBrowse->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		buttwidth = buttwidth - w;
+		buttheight = buttheight - h;
+
+		wid->multiBannerBrowse->SetSize(w + (buttwidth * 2), h + (buttheight * 1.6F));
 	}
 	
 	{//removeRow
@@ -1356,4 +1405,209 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		}
 	}
 	wid->panel->Refresh();
+}
+
+int loadParameters(InitWidgets* wid, VI9Pparameters* parameters) {
+	int ret = 0;
+	{//-rr
+		wxArrayString output;
+		wxArrayString errors;
+		wxString command = wxString::FromUTF8(resourcesPath + '/' + CLIFile + " -rr " + VI9P::WorkingFile);
+		ret = wxExecute(command, output, errors);
+
+		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+		for (auto &s : output) {
+			wid->consoleLog->LogTextAtLevel(0, s);
+		}
+		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret)));
+		
+		if(ret > -1) {
+			parameters->rows = ret & 0xFF;
+		}
+		else return ret;
+	}
+	{//-pp
+		wxArrayString output;
+		wxArrayString errors;
+		wxString command = wxString::FromUTF8(resourcesPath + '/' + CLIFile + " -pp " + VI9P::WorkingFile);
+		ret = wxExecute(command, output, errors);
+		std::string pp;
+
+		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+		for (auto &s : output) {
+			wid->consoleLog->LogTextAtLevel(0, s);
+			pp += std::string(s.ToUTF8()) + '\n';
+		}
+		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret)));
+		
+		if(ret == 0) {
+			{//mode
+				std::string value = "";
+				int outnum = 0;
+				parsePP(pp.c_str(), IntMultiParam, &value);
+				if(!ASCII2number<int>(&outnum, value)) {
+					//tbh this should never ever happen
+					parameters->mode = 0;
+				}
+				else {
+					parameters->mode = (outnum ? 1 : 0);
+				}
+			}
+			{//banner
+				std::string value = "";
+				parsePP(pp.c_str(), StrBannerParam, &value);
+				parameters->banner = value;
+			}
+			{//icon
+				std::string value = "";
+				parsePP(pp.c_str(), StrIconParam, &value);
+				parameters->icon = value;
+			}
+			{//iconBorder
+				std::string value = "";
+				int outnum = 0;
+				parsePP(pp.c_str(), IntIconBorderParam, &value);
+				if(!ASCII2number<int>(&outnum, value)) {
+					//tbh this should never ever happen
+					parameters->iconBorder = 0;
+				}
+				else {
+					parameters->iconBorder = ((outnum > 2) ? 0 : outnum);
+				}
+			}
+			{//Sname
+				std::string value = "";
+				parsePP(pp.c_str(), StrSNameParam, &value);
+				parameters->Sname = value;
+			}
+			{//Lname
+				std::string value = "";
+				parsePP(pp.c_str(), StrLNameParam, &value);
+				parameters->Lname = value;
+			}
+			{//publisher
+				std::string value = "";
+				parsePP(pp.c_str(), StrPublisherParam, &value);
+				parameters->publisher = value;
+			}
+			{//copycheck
+				std::string value = "";
+				int outnum = 0;
+				parsePP(pp.c_str(), IntCopycheckParam, &value);
+				if(!ASCII2number<int>(&outnum, value)) {
+					//tbh this should never ever happen
+					parameters->copycheck = 0;
+				}
+				else {
+					parameters->copycheck = (outnum ? 1 : 0);
+				}
+			}
+			{//copyrightInfo
+				std::string value = "";
+				parsePP(pp.c_str(), StrCopyrightParam, &value);
+				parameters->copyrightInfo = value;
+			}
+			{//FFrewind
+				std::string value = "";
+				int outnum = 0;
+				parsePP(pp.c_str(), IntFFrewindParam, &value);
+				if(!ASCII2number<int>(&outnum, value)) {
+					//tbh this should never ever happen
+					parameters->FFrewind = 0;
+				}
+				else {
+					parameters->FFrewind = (outnum ? 1 : 0);
+				}
+			}
+			{//FadeOpt
+				std::string value = "";
+				int outnum = 0;
+				parsePP(pp.c_str(), IntFadeOptParam, &value);
+				if(!ASCII2number<int>(&outnum, value)) {
+					//tbh this should never ever happen
+					parameters->FadeOpt = 0;
+				}
+				else {
+					parameters->FadeOpt = (outnum ? 1 : 0);
+				}
+			}
+			{//PTitleVec
+				parameters->PTitleVec.clear();
+				for(uint8_t i = 0; i < parameters->rows; i++) {
+					std::string value = "";
+					parsePP(pp.c_str(), StrPTitleParam + '(' + std::to_string(i) + ')', &value);
+					parameters->PTitleVec.push_back(value);
+				}
+			}
+			{//StrMoflexParam
+				parameters->MoflexVec.clear();
+				for(uint8_t i = 0; i < parameters->rows; i++) {
+					std::string value = "";
+					parsePP(pp.c_str(), StrMoflexParam + '(' + std::to_string(i) + ')', &value);
+					parameters->MoflexVec.push_back(value);
+				}
+			}
+			{//StrMBannerParam
+				parameters->MBannerVec.clear();
+				for(uint8_t i = 0; i < parameters->rows; i++) {
+					std::string value = "";
+					parsePP(pp.c_str(), StrMBannerParam + '(' + std::to_string(i) + ')', &value);
+					parameters->MBannerVec.push_back(value);
+				}
+			}
+		}
+		else return ret;
+	}
+	applyParameters(wid, parameters);
+	return ret;
+}
+
+void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
+	wid->modeChoiceBox->SetSelection(parameters->mode);
+
+	wid->bannerBox->SetValue(wxString::FromUTF8(parameters->banner));
+	{//-gp banner
+		std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + tempPath + '/' + "bannerpreview.png";
+		wxArrayString output;
+		wxArrayString errors;
+		wxString command = wxString::FromUTF8(resourcesPath + '/' + CLIFile + " -gp " + VI9P::WorkingFile + " 1 " + imagePath);
+		int ret = wxExecute(command, output, errors);
+
+		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+		for (auto &s : output) {
+			wid->consoleLog->LogTextAtLevel(0, s);
+		}
+		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret)));
+		
+		wid->bannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(imagePath), wxBITMAP_TYPE_ANY));
+	}
+
+	wid->iconBox->SetValue(wxString::FromUTF8(parameters->icon));
+	{//-gp icon
+		std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + tempPath + '/' + "iconpreview.png";
+		wxArrayString output;
+		wxArrayString errors;
+		wxString command = wxString::FromUTF8(resourcesPath + '/' + CLIFile + " -gp " + VI9P::WorkingFile + " 2 " + imagePath);
+		int ret = wxExecute(command, output, errors);
+
+		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+		for (auto &s : output) {
+			wid->consoleLog->LogTextAtLevel(0, s);
+		}
+		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret)));
+		
+		wid->iconPreview->SetBitmap(wxBitmap(wxString::FromUTF8(imagePath), wxBITMAP_TYPE_ANY));
+	}
+
+	wid->shortnameBox->SetValue(wxString::FromUTF8(parameters->Sname));
+	wid->longnameBox->SetValue(wxString::FromUTF8(parameters->Lname));
+	wid->publisherBox->SetValue(wxString::FromUTF8(parameters->publisher));
+
+	wid->copyCheck->SetValue(parameters->copycheck);
+	wid->copyBox->SetValue(wxString::FromUTF8(parameters->copyrightInfo));
+
+	wid->ffRewindCheck->SetValue(parameters->FFrewind);
+	wid->dimCheck->SetValue(parameters->FadeOpt);
+
+	//TODO: mediaPanel stuff
 }

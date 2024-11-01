@@ -67,6 +67,24 @@ std::string CLIFile = "VidInjector9002-CLI";
 std::string settingsFile = "settings.txt";
 std::string vi9pFile = "parameters.vi9p";
 
+std::string StrVerParam = "STR:VER";
+std::string IntMultiParam = "INT:MULTI";
+std::string StrBannerParam = "STR:BANNER";
+std::string StrIconParam = "STR:ICON";
+std::string IntIconBorderParam = "INT:ICONBORDER";
+std::string StrSNameParam = "STR:SNAME";
+std::string StrLNameParam = "STR:LNAME";
+std::string StrPublisherParam = "STR:PUBLISHER";
+std::string IntCopycheckParam = "INT:COPYCHECK";
+std::string StrCopyrightParam = "STR:COPYRIGHT";
+std::string IntFFrewindParam = "INT:FFREWIND";
+std::string IntFadeOptParam = "INT:FADEOPT";
+std::string IntRowsParam = "INT:ROWS";
+std::string StrPTitleParam = "STR:PTITLE";
+std::string StrMoflexParam = "STR:MOFLEX";
+std::string StrMBannerParam = "STR:MBANNER";
+std::string IntSplitPatchParam = "INT:SPLITPATCH";
+
 std::string StrDefaultLanguage = "STR:DEFAULT LANGUAGE";
 std::string IntShowLog = "INT:SHOW LOG";
 std::string IntColorMode = "INT:COLOR MODE";
