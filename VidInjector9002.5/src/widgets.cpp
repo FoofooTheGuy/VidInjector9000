@@ -1413,13 +1413,13 @@ int loadParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 		wxArrayString output;
 		wxArrayString errors;
 		wxString command = wxString::FromUTF8(resourcesPath + '/' + CLIFile + " -rr " + VI9P::WorkingFile);
-		ret = wxExecute(command, output, errors);
+		ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 
 		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
 		for (auto &s : output) {
 			wid->consoleLog->LogTextAtLevel(0, s);
 		}
-		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret)));
+		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 		
 		if(ret > -1) {
 			parameters->rows = ret & 0xFF;
@@ -1430,7 +1430,7 @@ int loadParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 		wxArrayString output;
 		wxArrayString errors;
 		wxString command = wxString::FromUTF8(resourcesPath + '/' + CLIFile + " -pp " + VI9P::WorkingFile);
-		ret = wxExecute(command, output, errors);
+		ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 		std::string pp;
 
 		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
@@ -1438,125 +1438,122 @@ int loadParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 			wid->consoleLog->LogTextAtLevel(0, s);
 			pp += std::string(s.ToUTF8()) + '\n';
 		}
-		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret)));
-		
-		if(ret == 0) {
-			{//mode
-				std::string value = "";
-				int outnum = 0;
-				parsePP(pp.c_str(), IntMultiParam, &value);
-				if(!ASCII2number<int>(&outnum, value)) {
-					//tbh this should never ever happen
-					parameters->mode = 0;
-				}
-				else {
-					parameters->mode = (outnum ? 1 : 0);
-				}
+		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+
+		{//mode
+			std::string value = "";
+			int outnum = 0;
+			parsePP(pp.c_str(), IntMultiParam, &value);
+			if(!ASCII2number<int>(&outnum, value)) {
+				//tbh this should never ever happen
+				parameters->mode = 0;
 			}
-			{//banner
-				std::string value = "";
-				parsePP(pp.c_str(), StrBannerParam, &value);
-				parameters->banner = value;
-			}
-			{//icon
-				std::string value = "";
-				parsePP(pp.c_str(), StrIconParam, &value);
-				parameters->icon = value;
-			}
-			{//iconBorder
-				std::string value = "";
-				int outnum = 0;
-				parsePP(pp.c_str(), IntIconBorderParam, &value);
-				if(!ASCII2number<int>(&outnum, value)) {
-					//tbh this should never ever happen
-					parameters->iconBorder = 0;
-				}
-				else {
-					parameters->iconBorder = ((outnum > 2) ? 0 : outnum);
-				}
-			}
-			{//Sname
-				std::string value = "";
-				parsePP(pp.c_str(), StrSNameParam, &value);
-				parameters->Sname = value;
-			}
-			{//Lname
-				std::string value = "";
-				parsePP(pp.c_str(), StrLNameParam, &value);
-				parameters->Lname = value;
-			}
-			{//publisher
-				std::string value = "";
-				parsePP(pp.c_str(), StrPublisherParam, &value);
-				parameters->publisher = value;
-			}
-			{//copycheck
-				std::string value = "";
-				int outnum = 0;
-				parsePP(pp.c_str(), IntCopycheckParam, &value);
-				if(!ASCII2number<int>(&outnum, value)) {
-					//tbh this should never ever happen
-					parameters->copycheck = 0;
-				}
-				else {
-					parameters->copycheck = (outnum ? 1 : 0);
-				}
-			}
-			{//copyrightInfo
-				std::string value = "";
-				parsePP(pp.c_str(), StrCopyrightParam, &value);
-				parameters->copyrightInfo = value;
-			}
-			{//FFrewind
-				std::string value = "";
-				int outnum = 0;
-				parsePP(pp.c_str(), IntFFrewindParam, &value);
-				if(!ASCII2number<int>(&outnum, value)) {
-					//tbh this should never ever happen
-					parameters->FFrewind = 0;
-				}
-				else {
-					parameters->FFrewind = (outnum ? 1 : 0);
-				}
-			}
-			{//FadeOpt
-				std::string value = "";
-				int outnum = 0;
-				parsePP(pp.c_str(), IntFadeOptParam, &value);
-				if(!ASCII2number<int>(&outnum, value)) {
-					//tbh this should never ever happen
-					parameters->FadeOpt = 0;
-				}
-				else {
-					parameters->FadeOpt = (outnum ? 1 : 0);
-				}
-			}
-			{//PTitleVec
-				parameters->PTitleVec.clear();
-				for(uint8_t i = 0; i < parameters->rows; i++) {
-					std::string value = "";
-					parsePP(pp.c_str(), StrPTitleParam + '(' + std::to_string(i) + ')', &value);
-					parameters->PTitleVec.push_back(value);
-				}
-			}
-			{//StrMoflexParam
-				parameters->MoflexVec.clear();
-				for(uint8_t i = 0; i < parameters->rows; i++) {
-					std::string value = "";
-					parsePP(pp.c_str(), StrMoflexParam + '(' + std::to_string(i) + ')', &value);
-					parameters->MoflexVec.push_back(value);
-				}
-			}
-			{//StrMBannerParam
-				parameters->MBannerVec.clear();
-				for(uint8_t i = 0; i < parameters->rows; i++) {
-					std::string value = "";
-					parsePP(pp.c_str(), StrMBannerParam + '(' + std::to_string(i) + ')', &value);
-					parameters->MBannerVec.push_back(value);
-				}
+			else {
+				parameters->mode = (outnum ? 1 : 0);
 			}
 		}
-		else return ret;
+		{//banner
+			std::string value = "";
+			parsePP(pp.c_str(), StrBannerParam, &value);
+			parameters->banner = value;
+		}
+		{//icon
+			std::string value = "";
+			parsePP(pp.c_str(), StrIconParam, &value);
+			parameters->icon = value;
+		}
+		{//iconBorder
+			std::string value = "";
+			int outnum = 0;
+			parsePP(pp.c_str(), IntIconBorderParam, &value);
+			if(!ASCII2number<int>(&outnum, value)) {
+				//tbh this should never ever happen
+				parameters->iconBorder = 2;
+			}
+			else {
+				parameters->iconBorder = ((outnum > 2) ? 0 : outnum);
+			}
+		}
+		{//Sname
+			std::string value = "";
+			parsePP(pp.c_str(), StrSNameParam, &value);
+			parameters->Sname = value;
+		}
+		{//Lname
+			std::string value = "";
+			parsePP(pp.c_str(), StrLNameParam, &value);
+			parameters->Lname = value;
+		}
+		{//publisher
+			std::string value = "";
+			parsePP(pp.c_str(), StrPublisherParam, &value);
+			parameters->publisher = value;
+		}
+		{//copycheck
+			std::string value = "";
+			int outnum = 0;
+			parsePP(pp.c_str(), IntCopycheckParam, &value);
+			if(!ASCII2number<int>(&outnum, value)) {
+				//tbh this should never ever happen
+				parameters->copycheck = 0;
+			}
+			else {
+				parameters->copycheck = (outnum ? 1 : 0);
+			}
+		}
+		{//copyrightInfo
+			std::string value = "";
+			parsePP(pp.c_str(), StrCopyrightParam, &value);
+			parameters->copyrightInfo = value;
+		}
+		{//FFrewind
+			std::string value = "";
+			int outnum = 0;
+			parsePP(pp.c_str(), IntFFrewindParam, &value);
+			if(!ASCII2number<int>(&outnum, value)) {
+				//tbh this should never ever happen
+				parameters->FFrewind = 1;
+			}
+			else {
+				parameters->FFrewind = (outnum ? 1 : 0);
+			}
+		}
+		{//FadeOpt
+			std::string value = "";
+			int outnum = 0;
+			parsePP(pp.c_str(), IntFadeOptParam, &value);
+			if(!ASCII2number<int>(&outnum, value)) {
+				//tbh this should never ever happen
+				parameters->FadeOpt = 1;
+			}
+			else {
+				parameters->FadeOpt = (outnum ? 1 : 0);
+			}
+		}
+		{//PTitleVec
+			parameters->PTitleVec.clear();
+			for(uint8_t i = 0; i < parameters->rows; i++) {
+				std::string value = "";
+				parsePP(pp.c_str(), StrPTitleParam + '(' + std::to_string(i) + ')', &value);
+				parameters->PTitleVec.push_back(value);
+			}
+		}
+		{//StrMoflexParam
+			parameters->MoflexVec.clear();
+			for(uint8_t i = 0; i < parameters->rows; i++) {
+				std::string value = "";
+				parsePP(pp.c_str(), StrMoflexParam + '(' + std::to_string(i) + ')', &value);
+				parameters->MoflexVec.push_back(value);
+			}
+		}
+		{//StrMBannerParam
+			parameters->MBannerVec.clear();
+			for(uint8_t i = 0; i < parameters->rows; i++) {
+				std::string value = "";
+				parsePP(pp.c_str(), StrMBannerParam + '(' + std::to_string(i) + ')', &value);
+				parameters->MBannerVec.push_back(value);
+			}
+		}
 	}
 	applyParameters(wid, parameters);
 	return ret;
@@ -1566,13 +1563,14 @@ void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 	wid->modeChoiceBox->SetSelection(parameters->mode);
 
 	wid->bannerBox->SetValue(wxString::FromUTF8(parameters->banner));
-	{//-gp banner
-		std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + tempPath + '/' + "bannerpreview.png";
+	//this is done in the bind so dont do it here
+	/*{//-gp banner
+		std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + tempPath + "/bannerpreview.png";
 		wxArrayString output;
 		wxArrayString errors;
-		wxString command = wxString::FromUTF8(resourcesPath + '/' + CLIFile + " -gp " + VI9P::WorkingFile + " 1 " + imagePath);
-		int ret = wxExecute(command, output, errors);
-
+		wxString command = wxString::FromUTF8('\"' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 1 \"" + imagePath + '\"');
+		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+		
 		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
 		for (auto &s : output) {
 			wid->consoleLog->LogTextAtLevel(0, s);
@@ -1580,16 +1578,16 @@ void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret)));
 		
 		wid->bannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(imagePath), wxBITMAP_TYPE_ANY));
-	}
+	}*/
 
 	wid->iconBox->SetValue(wxString::FromUTF8(parameters->icon));
-	{//-gp icon
+	/*{//-gp icon
 		std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + tempPath + '/' + "iconpreview.png";
 		wxArrayString output;
 		wxArrayString errors;
-		wxString command = wxString::FromUTF8(resourcesPath + '/' + CLIFile + " -gp " + VI9P::WorkingFile + " 2 " + imagePath);
-		int ret = wxExecute(command, output, errors);
-
+		wxString command = wxString::FromUTF8('\"' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 2 \"" + imagePath + '\"');
+		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+		
 		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
 		for (auto &s : output) {
 			wid->consoleLog->LogTextAtLevel(0, s);
@@ -1597,7 +1595,7 @@ void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret)));
 		
 		wid->iconPreview->SetBitmap(wxBitmap(wxString::FromUTF8(imagePath), wxBITMAP_TYPE_ANY));
-	}
+	}*/
 
 	wid->shortnameBox->SetValue(wxString::FromUTF8(parameters->Sname));
 	wid->longnameBox->SetValue(wxString::FromUTF8(parameters->Lname));

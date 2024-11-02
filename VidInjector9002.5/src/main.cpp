@@ -89,23 +89,21 @@ int main(int argc, char* argv[]) {
 	}
 	
 	if(VI9P::WorkingFile.empty())
-		VI9P::WorkingFile = std::string(ProgramDir.ToUTF8()) + '/' + tempPath + '/' + "parameters.vi9p";
+		VI9P::WorkingFile = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "parameters.vi9p";
 	VI9Pparameters parameters;
 
-	{//-sp
+	{//-n (for temp dir)
 		wxArrayString output;
 		wxArrayString errors;
-		wxString command = wxString::FromUTF8(resourcesPath + '/' + CLIFile + " -n " + VI9P::WorkingFile);
-		int ret = wxExecute(command, output, errors);
+		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -n \"" + VI9P::WorkingFile + '\"');
+		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 
 		wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
 		for (auto &s : output) {
 			wid.consoleLog->LogTextAtLevel(0, s);
 		}
-		wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret)));
+		wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 	}
-
-	loadParameters(&wid, &parameters);
 	
 	//apply settings
 	if(Settings::ShowLog) {
@@ -205,27 +203,27 @@ int main(int argc, char* argv[]) {
 		{//-sp
 			wxArrayString output;
 			wxArrayString errors;
-			wxString command = wxString::FromUTF8(resourcesPath + '/' + CLIFile + " -sp " + VI9P::WorkingFile + " 1 " + parameters.banner + ' ' + VI9P::WorkingFile);
-			int ret = wxExecute(command, output, errors);
+			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 1 \"" + parameters.banner + "\" \"" + VI9P::WorkingFile + '\"');
+			int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 
 			wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
 			for (auto &s : output) {
 				wid.consoleLog->LogTextAtLevel(0, s);
 			}
-			wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret)));
+			wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 		}
 		{//-gp
-			std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + tempPath + '/' + "bannerpreview.png";
+			std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/bannerpreview.png";
 			wxArrayString output;
 			wxArrayString errors;
-			wxString command = wxString::FromUTF8(resourcesPath + '/' + CLIFile + " -gp " + VI9P::WorkingFile + " 1 " + imagePath);
-			int ret = wxExecute(command, output, errors);
-
+			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 1 \"" + imagePath + '\"');
+			int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+			
 			wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
 			for (auto &s : output) {
 				wid.consoleLog->LogTextAtLevel(0, s);
 			}
-			wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret)));
+			wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 			
 			wid.bannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(imagePath), wxBITMAP_TYPE_ANY));
 		}
@@ -244,30 +242,114 @@ int main(int argc, char* argv[]) {
 	wid.iconBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
 		parameters.icon = std::string(wid.iconBox->GetValue().ToUTF8());
 		
-		{//-sp
+		//we can just use ss since if you give that a normal image it will work like normal
+		{//-ss
 			wxArrayString output;
 			wxArrayString errors;
-			wxString command = wxString::FromUTF8(resourcesPath + '/' + CLIFile + " -sp " + VI9P::WorkingFile + " 2 " + parameters.icon + ' ' + VI9P::WorkingFile);
-			int ret = wxExecute(command, output, errors);
+			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -ss \"" + VI9P::WorkingFile + "\" \"" + parameters.icon + "\" \"" + VI9P::WorkingFile + '\"');
+			int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 
 			wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
 			for (auto &s : output) {
 				wid.consoleLog->LogTextAtLevel(0, s);
 			}
-			wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret)));
+			wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+			
+			//if smdh (we dont want to keep that border)
+			if(ret == 0) {
+				parameters.iconBorder = 0;
+				{//-sp
+					wxArrayString output;
+					wxArrayString errors;
+					wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 3 " + std::to_string(parameters.iconBorder) + " \"" + VI9P::WorkingFile + '\"');
+					int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);//overshadow?
+					
+					wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+					for (auto &s : output) {
+						wid.consoleLog->LogTextAtLevel(0, s);
+					}
+					wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+				}
+			}
+		}
+		//this causes an infinite loop for some reason, probably because it changes the text of this box
+		//loadParameters(&wid, &parameters);
+		
+		//do this in case of smdh
+		{//-pp
+			wxArrayString output;
+			wxArrayString errors;
+			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -pp \"" + VI9P::WorkingFile + '\"');
+			int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+			std::string pp;
+
+			wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+			for (auto &s : output) {
+				wid.consoleLog->LogTextAtLevel(0, s);
+				pp += std::string(s.ToUTF8()) + '\n';
+			}
+			wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+
+			{//iconBorder
+				std::string value = "";
+				int outnum = 0;
+				parsePP(pp.c_str(), IntIconBorderParam, &value);
+				if(!ASCII2number<int>(&outnum, value)) {
+					//tbh this should never ever happen
+					parameters.iconBorder = 2;
+				}
+				else {
+					parameters.iconBorder = ((outnum > 2) ? 0 : outnum);
+				}
+			}
+			{//Sname
+				std::string value = "";
+				parsePP(pp.c_str(), StrSNameParam, &value);
+				parameters.Sname = value;
+			}
+			{//Lname
+				std::string value = "";
+				parsePP(pp.c_str(), StrLNameParam, &value);
+				parameters.Lname = value;
+			}
+			{//publisher
+				std::string value = "";
+				parsePP(pp.c_str(), StrPublisherParam, &value);
+				parameters.publisher = value;
+			}
+			
+			wid.shortnameBox->SetValue(wxString::FromUTF8(parameters.Sname));
+			wid.longnameBox->SetValue(wxString::FromUTF8(parameters.Lname));
+			wid.publisherBox->SetValue(wxString::FromUTF8(parameters.publisher));
+			{//iconBorder
+				if(parameters.iconBorder > 2) parameters.iconBorder = 0;//why?
+		
+				{//-sp
+					wxArrayString output;
+					wxArrayString errors;
+					wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 3 " + std::to_string(parameters.iconBorder) + " \"" + VI9P::WorkingFile + '\"');
+					ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+					
+					wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+					for (auto &s : output) {
+						wid.consoleLog->LogTextAtLevel(0, s);
+					}
+					wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+				}
+			}
 		}
 		{//-gp
-			std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + tempPath + '/' + "iconpreview.png";
+			std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "iconpreview.png";
 			wxArrayString output;
 			wxArrayString errors;
-			wxString command = wxString::FromUTF8(resourcesPath + '/' + CLIFile + " -gp " + VI9P::WorkingFile + " 2 " + imagePath);
-			int ret = wxExecute(command, output, errors);
-
+			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 2 \"" + imagePath + '\"');
+			int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+			
 			wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
 			for (auto &s : output) {
 				wid.consoleLog->LogTextAtLevel(0, s);
 			}
-			wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret)));
+			wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 			
 			wid.iconPreview->SetBitmap(wxBitmap(wxString::FromUTF8(imagePath), wxBITMAP_TYPE_ANY));
 		}
@@ -280,27 +362,27 @@ int main(int argc, char* argv[]) {
 		{//-sp
 			wxArrayString output;
 			wxArrayString errors;
-			wxString command = wxString::FromUTF8(resourcesPath + '/' + CLIFile + " -sp " + VI9P::WorkingFile + " 3 " + std::to_string(parameters.iconBorder) + ' ' + VI9P::WorkingFile);
-			int ret = wxExecute(command, output, errors);
+			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 3 " + std::to_string(parameters.iconBorder) + " \"" + VI9P::WorkingFile + '\"');
+			int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 
 			wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
 			for (auto &s : output) {
 				wid.consoleLog->LogTextAtLevel(0, s);
 			}
-			wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret)));
+			wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 		}
 		{//-gp
-			std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + tempPath + '/' + "iconpreview.png";
+			std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "iconpreview.png";
 			wxArrayString output;
 			wxArrayString errors;
-			wxString command = wxString::FromUTF8(resourcesPath + '/' + CLIFile + " -gp " + VI9P::WorkingFile + " 2 " + imagePath);
-			int ret = wxExecute(command, output, errors);
+			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 2 \"" + imagePath + '\"');
+			int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 
 			wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
 			for (auto &s : output) {
 				wid.consoleLog->LogTextAtLevel(0, s);
 			}
-			wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret)));
+			wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 			
 			wid.iconPreview->SetBitmap(wxBitmap(wxString::FromUTF8(imagePath), wxBITMAP_TYPE_ANY));
 		}
@@ -398,7 +480,10 @@ int main(int argc, char* argv[]) {
   
 	//staticText1->SetFont({PointsToNativeFontGraphicsUntit(32), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_BOLD});
 	//staticText1->SetForegroundColour({0, 139, 0});
-  
+	
+	//plz call this last
+	loadParameters(&wid, &parameters);
+	
 	wid.frame->Show();
 	wxTheApp->OnRun();
 }
