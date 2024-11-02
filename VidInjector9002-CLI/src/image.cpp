@@ -110,6 +110,7 @@ int generateBlankBanner(std::string &outfile) {
 	std::vector<uint8_t> output_film = std::vector<uint8_t>(film_w * film_h * 4);
 	layer_pixels(output_film.data(), film_overlay, output_4c.data(), film_w, film_h, 2, out_w, out_h, ch, 32, 11);
 	
+	std::cout << CreatingFile << ' ' << std::filesystem::absolute(outfile.c_str()) << std::endl;
 	stbi_write_png(outfile.c_str(), film_w, film_h, 4, output_film.data(), 0);
 	std::error_code error;
 	if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*outfile.c_str()), error)) {
@@ -354,7 +355,7 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 	return 0;
 }
 
-//TODO: write small icon
+//TODO: write small icon?
 int generateIconPreview(std::string infile, int borderMode, std::string outfile) {
 	//first fix the outfile extension if needed
 	{

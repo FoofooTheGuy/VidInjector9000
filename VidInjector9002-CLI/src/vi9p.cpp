@@ -54,6 +54,7 @@ int loadParameters(std::string parampath, VI9Pparameters* parameters) {
 			std::cout << ErrorText << ' ' << BadValue << '\n' << BadVersion << ": (" << outstr << ")\n" << SupportedVersion << ' ' << VI9PVER << std::endl;
 			return 4;
 		}
+		parameters->ver = outstr;
 	}
 	else {
 		good = false;
@@ -348,7 +349,8 @@ int printParameter(std::string inpath) {
 	VI9Pparameters parameters;
 	
 	int res = loadParameters(inpath, &parameters);
-	std::cout << "[ 0] " << IntMultiParam << "=\"" << std::to_string(parameters.mode) << "\"\n" <<
+	std::cout << "[  ] " << StrVerParam << "=\"" << parameters.ver << "\"\n" <<
+				 "[ 0] " << IntMultiParam << "=\"" << std::to_string(parameters.mode) << "\"\n" <<
 				 "[ 1] " << StrBannerParam << "=\"" << parameters.banner << "\"\n" <<
 				 "[ 2] " << StrIconParam << "=\"" << parameters.icon << "\"\n" <<
 				 "[ 3] " << IntIconBorderParam << "=\"" << std::to_string(parameters.iconBorder) << "\"\n" <<

@@ -690,6 +690,8 @@ int setIcon(std::string inpath, std::string &Sname, std::string &Lname, std::str
 
 		if (nnc_read_smdh(NNC_RSP(&f), &smdh) != NNC_R_OK) {
 			smdhinput = false;
+			NNC_RS_CALL0(f, close);
+			return 8;
 		}
 
 		if (smdhinput) {
@@ -715,11 +717,10 @@ int SetSMDH(std::string inpath, std::string Newicon, std::string outpath) {
 	parameters.icon = Newicon;
 	
 	res = setIcon(parameters.icon, parameters.Sname, parameters.Lname, parameters.publisher);
-	if(res) return res;
 	
 	saveParameters(outpath, parameters);
 	
-	return 0;
+	return res;
 }
 
 int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, uint32_t uniqueID, std::string ApplicationName, std::string ProductCode) {
