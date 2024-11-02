@@ -397,6 +397,57 @@ int main(int argc, char* argv[]) {
 			}
 		}
 	});
+	
+	wid.shortnameBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
+		parameters.Sname = std::string(wid.shortnameBox->GetValue().ToUTF8());
+		
+		{//-sp
+			wxArrayString output;
+			wxArrayString errors;
+			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 4 \"" + parameters.Sname + "\" \"" + VI9P::WorkingFile + '\"');
+			int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+
+			wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+			for (auto &s : output) {
+				wid.consoleLog->LogTextAtLevel(0, s);
+			}
+			wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		}
+	});
+
+	wid.longnameBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
+		parameters.Lname = std::string(wid.longnameBox->GetValue().ToUTF8());
+		
+		{//-sp
+			wxArrayString output;
+			wxArrayString errors;
+			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 5 \"" + parameters.Lname + "\" \"" + VI9P::WorkingFile + '\"');
+			int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+
+			wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+			for (auto &s : output) {
+				wid.consoleLog->LogTextAtLevel(0, s);
+			}
+			wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		}
+	});
+	
+	wid.publisherBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
+		parameters.publisher = std::string(wid.publisherBox->GetValue().ToUTF8());
+		
+		{//-sp
+			wxArrayString output;
+			wxArrayString errors;
+			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 6 \"" + parameters.publisher + "\" \"" + VI9P::WorkingFile + '\"');
+			int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+
+			wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+			for (auto &s : output) {
+				wid.consoleLog->LogTextAtLevel(0, s);
+			}
+			wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		}
+	});
 
 	
 	for(auto &row : wid.PlayerTitles) {
