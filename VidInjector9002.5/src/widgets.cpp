@@ -45,7 +45,7 @@ void initAllWidgets(InitWidgets* wid) {
 		buttwidth = buttwidth - w;
 		buttheight = buttheight - h;
 
-		wid->bannerBrowse->SetSize(w + (buttwidth * 2), h + (buttheight * 1.6F));
+		wid->bannerBrowse->SetSize(w + (buttwidth * 2), h + (buttheight * 2));
 	}
 	{//bannerError
 		int w, h;
@@ -81,7 +81,7 @@ void initAllWidgets(InitWidgets* wid) {
 		buttwidth = buttwidth - w;
 		buttheight = buttheight - h;
 
-		wid->iconBrowse->SetSize(w + (buttwidth * 2), h + (buttheight * 1.6F));
+		wid->iconBrowse->SetSize(w + (buttwidth * 2), h + (buttheight * 2));
 	}
 	{//iconError
 		int w, h;
@@ -321,7 +321,7 @@ void initAllWidgets(InitWidgets* wid) {
 		buttwidth = buttwidth - w;
 		buttheight = buttheight - h;
 
-		wid->moflexBrowse->SetSize(w + (buttwidth * 2), h + (buttheight * 1.6F));
+		wid->moflexBrowse->SetSize(w + (buttwidth * 2), h + (buttheight * 2));
 	}
 	{//multiBannerBrowse
 		int w, buttwidth, h, buttheight;
@@ -333,7 +333,7 @@ void initAllWidgets(InitWidgets* wid) {
 		buttwidth = buttwidth - w;
 		buttheight = buttheight - h;
 
-		wid->multiBannerBrowse->SetSize(w + (buttwidth * 2), h + (buttheight * 1.6F));
+		wid->multiBannerBrowse->SetSize(w + (buttwidth * 2), h + (buttheight * 2));
 	}
 	
 	{//removeRow
