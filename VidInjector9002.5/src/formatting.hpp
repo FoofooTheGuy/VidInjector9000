@@ -6,6 +6,9 @@
 #include <fstream>
 #include <filesystem>
 
+//return: number of code points in a utf8 string as opposed to number of bytes the string takes up
+size_t chrcount(const std::string& str);
+
 std::string tolowerstr(std::string str);
 std::string toupperstr(std::string str);
 

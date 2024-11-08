@@ -3,13 +3,17 @@
 std::string Settings::DefaultLanguage = "English";
 bool Settings::ShowLog = 0;
 int Settings::ColorMode = 2;
+int Settings::FrameWidth = 1000;
+int Settings::FrameHeight = 700;
 
 void saveSettings() {
 	std::ofstream settingsfile(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + settingsFile).c_str()), std::ios_base::out | std::ios_base::binary);
 	settingsfile <<
 		StrDefaultLanguage << "=\"" << Settings::DefaultLanguage << "\"\n" <<
 		IntShowLog << "=\"" << Settings::ShowLog << "\"\n" <<
-		IntColorMode << "=\"" << Settings::ColorMode << "\"\n";
+		IntColorMode << "=\"" << Settings::ColorMode << "\"\n" <<
+		IntFrameWidth << "=\"" << Settings::FrameWidth << "\"\n" <<
+		IntFrameHeight << "=\"" << Settings::FrameHeight << "\"\n";
 	settingsfile.close();
 }
 
@@ -59,6 +63,26 @@ std::vector<int> loadSettings() {
 	}
 	else {
 		ret.push_back(7);
+	}
+	if (parseLines(outstr, filelines, IntFrameWidth)) {
+		if (!ASCII2number<int>(&outrealint, outstr)) {
+			outrealint = 2;
+			ret.push_back(8);
+		}
+		Settings::FrameWidth = outrealint;
+	}
+	else {
+		ret.push_back(9);
+	}
+	if (parseLines(outstr, filelines, IntFrameHeight)) {
+		if (!ASCII2number<int>(&outrealint, outstr)) {
+			outrealint = 2;
+			ret.push_back(10);
+		}
+		Settings::FrameHeight = outrealint;
+	}
+	else {
+		ret.push_back(11);
 	}
 	ret.push_back(0);
 	return ret;

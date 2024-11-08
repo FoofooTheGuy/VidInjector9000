@@ -14,6 +14,8 @@ class Settings
     static std::string DefaultLanguage;
     static bool ShowLog;
     static int ColorMode;
+    static int FrameWidth;
+    static int FrameHeight;
 };
 
 void saveSettings();

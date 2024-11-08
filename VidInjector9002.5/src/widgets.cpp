@@ -93,6 +93,8 @@ void initAllWidgets(InitWidgets* wid) {
 		f = wid->iconError->GetFont();
 		wid->iconError->GetTextExtent(wid->iconError->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->iconError->SetSize(w, h);
+		
+		//wid->iconError->Show(false);
 	}
 
 	{//shortnameText

@@ -67,6 +67,26 @@ int main(int argc, char* argv[]) {
 						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + IntColorMode + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
 					}
 					break;
+				case 8:
+					{
+						//bad value
+					}
+					break;
+				case 9:
+					{
+						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + IntFrameWidth + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
+					}
+					break;
+				case 10:
+					{
+						//bad value
+					}
+					break;
+				case 11:
+					{
+						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + IntFrameHeight + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
+					}
+					break;
 			}
 			
 		}
@@ -194,17 +214,41 @@ int main(int argc, char* argv[]) {
 	
 	wid.panel->Bind(wxEVT_SIZE, [&](wxSizeEvent& event) {
 		//wxMessageBox(wxString::FromUTF8(std::to_string(event.GetSize().GetWidth()) + ", " + std::to_string(event.GetSize().GetHeight())));
+		int width, height;
+		wid.frame->GetSize(&width, &height);
+		Settings::FrameWidth = width;
+		Settings::FrameHeight = height;
+		saveSettings();
 		positionWidgets(&wid);
+	});
+	
+	wid.modeChoiceBox->Bind(wxEVT_CHOICE, [&](wxCommandEvent& event) {
+		int selection = wid.modeChoiceBox->GetSelection();
+		if(selection != wxNOT_FOUND)
+			parameters.mode = selection;
+		{//-sp
+			wxArrayString output;
+			wxArrayString errors;
+			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 0 \"" + std::to_string(parameters.mode) + "\" \"" + VI9P::WorkingFile + '\"');
+			int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+
+			wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+			for (auto &s : output) {
+				wid.consoleLog->LogTextAtLevel(0, s);
+			}
+			wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		}
 	});
 	
 	wid.bannerBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
 		parameters.banner = std::string(wid.bannerBox->GetValue().ToUTF8());
+		int ret = 0;
 		
 		{//-sp
 			wxArrayString output;
 			wxArrayString errors;
 			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 1 \"" + parameters.banner + "\" \"" + VI9P::WorkingFile + '\"');
-			int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+			ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 
 			wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
 			for (auto &s : output) {
@@ -217,7 +261,7 @@ int main(int argc, char* argv[]) {
 			wxArrayString output;
 			wxArrayString errors;
 			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 1 \"" + imagePath + '\"');
-			int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+			ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 			
 			wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
 			for (auto &s : output) {
@@ -227,6 +271,11 @@ int main(int argc, char* argv[]) {
 			
 			wid.bannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(imagePath), wxBITMAP_TYPE_ANY));
 		}
+		if(ret && !parameters.banner.empty()) {
+			wid.bannerError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + ImageInfoError + " (" + std::to_string(ret) + ") " + SeeLog));
+			wid.bannerError->Show(true);
+		}
+		else wid.bannerError->Show(false);
 	});
 	
 	wid.bannerBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
@@ -241,13 +290,14 @@ int main(int argc, char* argv[]) {
 
 	wid.iconBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
 		parameters.icon = std::string(wid.iconBox->GetValue().ToUTF8());
+		int ret = 0;
 		
 		//we can just use ss since if you give that a normal image it will work like normal
 		{//-ss
 			wxArrayString output;
 			wxArrayString errors;
 			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -ss \"" + VI9P::WorkingFile + "\" \"" + parameters.icon + "\" \"" + VI9P::WorkingFile + '\"');
-			int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+			ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 
 			wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
 			for (auto &s : output) {
@@ -262,7 +312,7 @@ int main(int argc, char* argv[]) {
 					wxArrayString output;
 					wxArrayString errors;
 					wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 3 " + std::to_string(parameters.iconBorder) + " \"" + VI9P::WorkingFile + '\"');
-					int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);//overshadow?
+					ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);//overshadow?
 					
 					wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
 					for (auto &s : output) {
@@ -280,7 +330,7 @@ int main(int argc, char* argv[]) {
 			wxArrayString output;
 			wxArrayString errors;
 			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -pp \"" + VI9P::WorkingFile + '\"');
-			int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+			ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 			std::string pp;
 
 			wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
@@ -343,7 +393,7 @@ int main(int argc, char* argv[]) {
 			wxArrayString output;
 			wxArrayString errors;
 			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 2 \"" + imagePath + '\"');
-			int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+			ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 			
 			wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
 			for (auto &s : output) {
@@ -353,6 +403,11 @@ int main(int argc, char* argv[]) {
 			
 			wid.iconPreview->SetBitmap(wxBitmap(wxString::FromUTF8(imagePath), wxBITMAP_TYPE_ANY));
 		}
+		if(ret && !parameters.icon.empty()) {
+			wid.iconError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + ImageInfoError + " (" + std::to_string(ret) + ") " + SeeLog));
+			wid.iconError->Show(true);
+		}
+		else wid.iconError->Show(false);
 	});
 	
 	wid.iconPreview->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
@@ -389,12 +444,10 @@ int main(int argc, char* argv[]) {
 	});
 
 	wid.iconBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
-		{
-			wxFileDialog openFileDialog(wid.frame, wxEmptyString, wxEmptyString, wxEmptyString, "All Files (*.*)|*.*", wxFD_OPEN|wxFD_FILE_MUST_EXIST);
-			openFileDialog.SetFilterIndex(0);
-			if (openFileDialog.ShowModal() == wxID_OK) {
-				wid.iconBox->SetValue(openFileDialog.GetPath());
-			}
+		wxFileDialog openFileDialog(wid.frame, wxEmptyString, wxEmptyString, wxEmptyString, "All Files (*.*)|*.*", wxFD_OPEN|wxFD_FILE_MUST_EXIST);
+		openFileDialog.SetFilterIndex(0);
+		if (openFileDialog.ShowModal() == wxID_OK) {
+			wid.iconBox->SetValue(openFileDialog.GetPath());
 		}
 	});
 	
@@ -413,6 +466,11 @@ int main(int argc, char* argv[]) {
 			}
 			wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 		}
+		size_t UTF16Len = chrcount(parameters.Sname);//should this have null terminator?
+		if(UTF16Len > 64) {//0x80/2=0x40=64
+			wid.shortnameError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + TextTooLongError + " (" + std::to_string(UTF16Len) + "/64)"));
+			wid.shortnameError->Show(true);
+		} else wid.shortnameError->Show(false);
 	});
 
 	wid.longnameBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
@@ -430,6 +488,11 @@ int main(int argc, char* argv[]) {
 			}
 			wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 		}
+		size_t UTF16Len = chrcount(parameters.Lname);
+		if(UTF16Len > 128) {//0x100/2=0x80=128
+			wid.longnameError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + TextTooLongError + " (" + std::to_string(UTF16Len) + "/128)"));
+			wid.longnameError->Show(true);
+		} else wid.longnameError->Show(false);
 	});
 	
 	wid.publisherBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
@@ -447,6 +510,11 @@ int main(int argc, char* argv[]) {
 			}
 			wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 		}
+		size_t UTF16Len = chrcount(parameters.publisher);
+		if(UTF16Len > 64) {//0x80/2=0x40=64
+			wid.publisherError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + TextTooLongError + " (" + std::to_string(UTF16Len) + "/64)"));
+			wid.publisherError->Show(true);
+		} else wid.publisherError->Show(false);
 	});
 
 	
