@@ -517,10 +517,95 @@ int main(int argc, char* argv[]) {
 		} else wid.publisherError->Show(false);
 	});
 
+	wid.copyBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
+		parameters.copyrightInfo = std::string(wid.copyBox->GetValue().ToUTF8());
+		
+		{//-sp
+			wxArrayString output;
+			wxArrayString errors;
+			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 8 \"" + parameters.copyrightInfo + "\" \"" + VI9P::WorkingFile + '\"');
+			int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+
+			wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+			for (auto &s : output) {
+				wid.consoleLog->LogTextAtLevel(0, s);
+			}
+			wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		}
+	});
+
+	wid.copyCheck->Bind(wxEVT_CHECKBOX, [&](wxCommandEvent& event) {
+		parameters.copycheck = wid.copyCheck->GetValue();
+		
+		{//-sp
+			wxArrayString output;
+			wxArrayString errors;
+			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 7 \"" + std::to_string(parameters.copycheck) + "\" \"" + VI9P::WorkingFile + '\"');
+			int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+
+			wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+			for (auto &s : output) {
+				wid.consoleLog->LogTextAtLevel(0, s);
+			}
+			wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		}
+	});
+
+	wid.ffRewindCheck->Bind(wxEVT_CHECKBOX, [&](wxCommandEvent& event) {
+		parameters.FFrewind = wid.ffRewindCheck->GetValue();
+		
+		{//-sp
+			wxArrayString output;
+			wxArrayString errors;
+			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 9 \"" + std::to_string(parameters.FFrewind) + "\" \"" + VI9P::WorkingFile + '\"');
+			int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+
+			wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+			for (auto &s : output) {
+				wid.consoleLog->LogTextAtLevel(0, s);
+			}
+			wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		}
+	});
+
+	wid.dimCheck->Bind(wxEVT_CHECKBOX, [&](wxCommandEvent& event) {
+		parameters.FadeOpt = wid.dimCheck->GetValue();
+		
+		{//-sp
+			wxArrayString output;
+			wxArrayString errors;
+			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 9 \"" + std::to_string(parameters.FadeOpt) + "\" \"" + VI9P::WorkingFile + '\"');
+			int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+
+			wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+			for (auto &s : output) {
+				wid.consoleLog->LogTextAtLevel(0, s);
+			}
+			wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		}
+	});
 	
-	for(auto &row : wid.PlayerTitles) {
-		row->Bind(wxEVT_LEFT_UP, [&](wxMouseEvent& event) {//memory leak city???
-			wxMessageBox(wxString::FromUTF8(row->GetLineText(0)));
+	for(const auto &row : wid.PlayerTitles) {
+		row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
+			size_t rowReal;
+			for(rowReal = 0; rowReal < wid.PlayerTitles.size(); rowReal++) {//get row
+				if(reinterpret_cast<intptr_t>(wid.PlayerTitles.at(rowReal)) == reinterpret_cast<intptr_t>(row)) {//compare pointers
+					parameters.PTitleVec.at(rowReal) = std::string(row->GetValue().ToUTF8());
+					
+					{//-sp
+						wxArrayString output;
+						wxArrayString errors;
+						wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + rowReal) + " \"" + parameters.PTitleVec.at(rowReal) + "\" \"" + VI9P::WorkingFile + '\"');
+						int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+
+						wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+						for (auto &s : output) {
+							wid.consoleLog->LogTextAtLevel(0, s);
+						}
+						wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+					}
+				}
+			}
 		});
 	}
 	
