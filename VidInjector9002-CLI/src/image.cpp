@@ -351,8 +351,8 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 	//if we got here, something is wrong
 	int blankret = generateBlankBanner(outfile);
 	if(blankret)
-		return blankret;
-	return 0;
+		return 27 + blankret;
+	return 28;
 }
 
 //TODO: write small icon?
