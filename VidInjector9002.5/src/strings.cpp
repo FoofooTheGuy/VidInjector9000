@@ -60,6 +60,7 @@ std::string dimCheckTip = "Enable to let the bottom screen dim while playing a v
 std::string multiBannerPreviewTip = "Select the image to replace this banner";
 std::string multiBannerPreviewLeftTip = "Preview the previous banner";
 std::string multiBannerPreviewRightTip = "Preview the next banner";
+std::string moflexFiles = "MoFlex Files (*.moflex)|*.moflex";//file stuffs
 
 std::string tempPath = "temp";
 

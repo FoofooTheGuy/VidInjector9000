@@ -238,6 +238,13 @@ int main(int argc, char* argv[]) {
 			}
 			wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 		}
+		
+		if(parameters.mode) {
+			wid.rowText->Show(true);
+		}
+		else {
+			wid.rowText->Show(false);
+		}
 	});
 	
 	wid.bannerBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
@@ -608,6 +615,240 @@ int main(int argc, char* argv[]) {
 			}
 		});
 	}
+
+	for(const auto &row : wid.MoflexFiles) {
+		row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
+			size_t rowReal;
+			for(rowReal = 0; rowReal < wid.MoflexFiles.size(); rowReal++) {//get row
+				if(reinterpret_cast<intptr_t>(wid.MoflexFiles.at(rowReal)) == reinterpret_cast<intptr_t>(row)) {//compare pointers
+					parameters.MoflexVec.at(rowReal) = std::string(row->GetValue().ToUTF8());
+					
+					{//-sp
+						wxArrayString output;
+						wxArrayString errors;
+						wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + parameters.rows + rowReal) + " \"" + parameters.MoflexVec.at(rowReal) + "\" \"" + VI9P::WorkingFile + '\"');
+						int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+
+						wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+						for (auto &s : output) {
+							wid.consoleLog->LogTextAtLevel(0, s);
+						}
+						wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+					}
+				}
+			}
+		});
+	}
+	
+	for(const auto &row : wid.MenuBanners) {
+		row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
+			size_t rowReal;
+			for(rowReal = 0; rowReal < wid.MenuBanners.size(); rowReal++) {//get row
+				if(reinterpret_cast<intptr_t>(wid.MenuBanners.at(rowReal)) == reinterpret_cast<intptr_t>(row)) {//compare pointers
+					parameters.MBannerVec.at(rowReal) = std::string(row->GetValue().ToUTF8());
+					
+					{//-sp
+						wxArrayString output;
+						wxArrayString errors;
+						wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters.rows * 2) + rowReal) + " \"" + parameters.MBannerVec.at(rowReal) + "\" \"" + VI9P::WorkingFile + '\"');
+						int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+
+						wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+						for (auto &s : output) {
+							wid.consoleLog->LogTextAtLevel(0, s);
+						}
+						wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+					}
+					{//-gp
+						std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/bannerpreview" + std::to_string(rowReal) + ".png";
+						wxArrayString output;
+						wxArrayString errors;
+						wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters.rows * 2) + rowReal) + " \"" + imagePath + '\"');
+						int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+						
+						wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+						for (auto &s : output) {
+							wid.consoleLog->LogTextAtLevel(0, s);
+						}
+						wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+						
+						wid.multiBannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(imagePath), wxBITMAP_TYPE_ANY));
+					}
+				}
+			}
+		});
+	}
+	
+	wid.moflexBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		wxFileDialog openFileDialog(wid.frame, wxEmptyString, wxEmptyString, wxEmptyString, moflexFiles, wxFD_OPEN|wxFD_FILE_MUST_EXIST);
+		openFileDialog.SetFilterIndex(0);
+		if (openFileDialog.ShowModal() == wxID_OK) {
+			//wid.iconBox->SetValue(openFileDialog.GetPath());
+			for(const auto &row : wid.MoflexFiles) {
+				if(std::string(row->GetValue().ToUTF8()).empty()) {
+					row->SetValue(openFileDialog.GetPath());
+					break;
+				}
+			}
+		}
+	});
+
+	wid.multiBannerBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		wxFileDialog openFileDialog(wid.frame, wxEmptyString, wxEmptyString, wxEmptyString, "All Files (*.*)|*.*", wxFD_OPEN|wxFD_FILE_MUST_EXIST);
+		openFileDialog.SetFilterIndex(0);
+		if (openFileDialog.ShowModal() == wxID_OK) {
+			//wid.iconBox->SetValue(openFileDialog.GetPath());
+			bool dolast = false;
+			for(const auto &row : wid.MenuBanners) {
+				if(std::string(row->GetValue().ToUTF8()).empty()) {
+					row->SetValue(openFileDialog.GetPath());
+					dolast = false;
+					break;
+				}
+				dolast = true;
+			}
+			if(dolast) {
+				wid.MenuBanners.back()->SetValue((openFileDialog.GetPath()));
+			}
+		}
+	});
+	
+	wid.removeRow->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		if(wid.removeRow->IsEnabled()) {
+			wid.removeRow->Enable(false);//disable so you cant press it too much
+			wid.appendRow->Enable(false);
+		
+			removeRows(&wid, &parameters);
+			wid.rowText->SetLabel(wxString::FromUTF8(std::to_string(parameters.rows) + "/27"));
+		}
+		
+		if(parameters.mode) {
+			wid.rowText->Show(true);
+		}
+		else {
+			wid.rowText->Show(false);
+		}
+		
+		if(parameters.rows <= 1) {
+			wid.removeRow->Enable(false);
+		}
+		else wid.removeRow->Enable(true);
+		
+		wid.appendRow->Enable(true);
+	});
+
+	wid.appendRow->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//TODO: fix the why the hec it doesnt work the first time you click it
+		if(wid.removeRow->IsEnabled()) {
+			wid.removeRow->Enable(false);//disable so you cant press it too much
+			wid.appendRow->Enable(false);
+			
+			addRows(&wid, &parameters);
+			
+			//well what do you know... it worked
+			for(const auto &row : wid.PlayerTitles) {
+				row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
+					size_t rowReal;
+					for(rowReal = 0; rowReal < wid.PlayerTitles.size(); rowReal++) {//get row
+						if(reinterpret_cast<intptr_t>(wid.PlayerTitles.at(rowReal)) == reinterpret_cast<intptr_t>(row)) {//compare pointers
+							parameters.PTitleVec.at(rowReal) = std::string(row->GetValue().ToUTF8());
+							
+							{//-sp
+								wxArrayString output;
+								wxArrayString errors;
+								wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + rowReal) + " \"" + parameters.PTitleVec.at(rowReal) + "\" \"" + VI9P::WorkingFile + '\"');
+								int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+
+								wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+								for (auto &s : output) {
+									wid.consoleLog->LogTextAtLevel(0, s);
+								}
+								wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+							}
+						}
+					}
+				});
+			}
+			
+			for(const auto &row : wid.MoflexFiles) {
+				row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
+					size_t rowReal;
+					for(rowReal = 0; rowReal < wid.MoflexFiles.size(); rowReal++) {//get row
+						if(reinterpret_cast<intptr_t>(wid.MoflexFiles.at(rowReal)) == reinterpret_cast<intptr_t>(row)) {//compare pointers
+							parameters.MoflexVec.at(rowReal) = std::string(row->GetValue().ToUTF8());
+							
+							{//-sp
+								wxArrayString output;
+								wxArrayString errors;
+								wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + parameters.rows + rowReal) + " \"" + parameters.MoflexVec.at(rowReal) + "\" \"" + VI9P::WorkingFile + '\"');
+								int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+
+								wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+								for (auto &s : output) {
+									wid.consoleLog->LogTextAtLevel(0, s);
+								}
+								wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+							}
+						}
+					}
+				});
+			}
+			
+			for(const auto &row : wid.MenuBanners) {
+				row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
+					size_t rowReal;
+					for(rowReal = 0; rowReal < wid.MenuBanners.size(); rowReal++) {//get row
+						if(reinterpret_cast<intptr_t>(wid.MenuBanners.at(rowReal)) == reinterpret_cast<intptr_t>(row)) {//compare pointers
+							parameters.MBannerVec.at(rowReal) = std::string(row->GetValue().ToUTF8());
+							
+							{//-sp
+								wxArrayString output;
+								wxArrayString errors;
+								wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters.rows * 2) + rowReal) + " \"" + parameters.MBannerVec.at(rowReal) + "\" \"" + VI9P::WorkingFile + '\"');
+								int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+
+								wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+								for (auto &s : output) {
+									wid.consoleLog->LogTextAtLevel(0, s);
+								}
+								wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+							}
+							{//-gp
+								std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/bannerpreview" + std::to_string(rowReal) + ".png";
+								wxArrayString output;
+								wxArrayString errors;
+								wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters.rows * 2) + rowReal) + " \"" + imagePath + '\"');
+								int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+								
+								wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+								for (auto &s : output) {
+									wid.consoleLog->LogTextAtLevel(0, s);
+								}
+								wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+								
+								wid.multiBannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(imagePath), wxBITMAP_TYPE_ANY));
+							}
+						}
+					}
+				});
+			}
+			
+			wid.rowText->SetLabel(wxString::FromUTF8(std::to_string(parameters.rows) + "/27"));
+		}
+		
+		if(parameters.mode) {
+			wid.rowText->Show(true);
+		}
+		else {
+			wid.rowText->Show(false);
+		}
+		
+		if(parameters.rows >= 27) {
+			wid.appendRow->Enable(false);
+		}
+		else wid.appendRow->Enable(true);
+		
+		wid.removeRow->Enable(true);
+	});
 	
 	wid.mainMenu->Bind(wxEVT_MENU, [&](wxCommandEvent& event) {
 		switch(event.GetId()) {
@@ -620,6 +861,96 @@ int main(int argc, char* argv[]) {
 						//wxMessageBox(openFileDialog.GetPath(), "Placeholder");
 						VI9P::WorkingFile = std::string(openFileDialog.GetPath().ToUTF8());
 						loadParameters(&wid, &parameters);
+						positionWidgets(&wid);
+						
+						for(const auto &row : wid.PlayerTitles) {
+							row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
+								size_t rowReal;
+								for(rowReal = 0; rowReal < wid.PlayerTitles.size(); rowReal++) {//get row
+									if(reinterpret_cast<intptr_t>(wid.PlayerTitles.at(rowReal)) == reinterpret_cast<intptr_t>(row)) {//compare pointers
+										parameters.PTitleVec.at(rowReal) = std::string(row->GetValue().ToUTF8());
+										
+										{//-sp
+											wxArrayString output;
+											wxArrayString errors;
+											wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + rowReal) + " \"" + parameters.PTitleVec.at(rowReal) + "\" \"" + VI9P::WorkingFile + '\"');
+											int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+
+											wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+											for (auto &s : output) {
+												wid.consoleLog->LogTextAtLevel(0, s);
+											}
+											wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+										}
+									}
+								}
+							});
+						}
+						
+						for(const auto &row : wid.MoflexFiles) {
+							row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
+								size_t rowReal;
+								for(rowReal = 0; rowReal < wid.MoflexFiles.size(); rowReal++) {//get row
+									if(reinterpret_cast<intptr_t>(wid.MoflexFiles.at(rowReal)) == reinterpret_cast<intptr_t>(row)) {//compare pointers
+										parameters.MoflexVec.at(rowReal) = std::string(row->GetValue().ToUTF8());
+										
+										{//-sp
+											wxArrayString output;
+											wxArrayString errors;
+											wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + parameters.rows + rowReal) + " \"" + parameters.MoflexVec.at(rowReal) + "\" \"" + VI9P::WorkingFile + '\"');
+											int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+
+											wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+											for (auto &s : output) {
+												wid.consoleLog->LogTextAtLevel(0, s);
+											}
+											wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+										}
+									}
+								}
+							});
+						}
+						
+						for(const auto &row : wid.MenuBanners) {
+							row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
+								size_t rowReal;
+								for(rowReal = 0; rowReal < wid.MenuBanners.size(); rowReal++) {//get row
+									if(reinterpret_cast<intptr_t>(wid.MenuBanners.at(rowReal)) == reinterpret_cast<intptr_t>(row)) {//compare pointers
+										parameters.MBannerVec.at(rowReal) = std::string(row->GetValue().ToUTF8());
+										
+										{//-sp
+											wxArrayString output;
+											wxArrayString errors;
+											wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters.rows * 2) + rowReal) + " \"" + parameters.MBannerVec.at(rowReal) + "\" \"" + VI9P::WorkingFile + '\"');
+											int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+
+											wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+											for (auto &s : output) {
+												wid.consoleLog->LogTextAtLevel(0, s);
+											}
+											wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+										}
+										{//-gp
+											std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/bannerpreview" + std::to_string(rowReal) + ".png";
+											wxArrayString output;
+											wxArrayString errors;
+											wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters.rows * 2) + rowReal) + " \"" + imagePath + '\"');
+											int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+											
+											wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+											for (auto &s : output) {
+												wid.consoleLog->LogTextAtLevel(0, s);
+											}
+											wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+											
+											wid.multiBannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(imagePath), wxBITMAP_TYPE_ANY));
+										}
+									}
+								}
+							});
+						}
+					
+						wid.rowText->SetLabel(wxString::FromUTF8(std::to_string(parameters.rows) + "/27"));
 					}
 				}
 				break;

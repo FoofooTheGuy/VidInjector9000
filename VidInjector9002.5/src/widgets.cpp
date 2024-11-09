@@ -1565,39 +1565,8 @@ void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 	wid->modeChoiceBox->SetSelection(parameters->mode);
 
 	wid->bannerBox->SetValue(wxString::FromUTF8(parameters->banner));
-	//this is done in the bind so dont do it here
-	/*{//-gp banner
-		std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + tempPath + "/bannerpreview.png";
-		wxArrayString output;
-		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 1 \"" + imagePath + '\"');
-		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-		
-		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-		for (auto &s : output) {
-			wid->consoleLog->LogTextAtLevel(0, s);
-		}
-		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret)));
-		
-		wid->bannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(imagePath), wxBITMAP_TYPE_ANY));
-	}*/
 
 	wid->iconBox->SetValue(wxString::FromUTF8(parameters->icon));
-	/*{//-gp icon
-		std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + tempPath + '/' + "iconpreview.png";
-		wxArrayString output;
-		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 2 \"" + imagePath + '\"');
-		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-		
-		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-		for (auto &s : output) {
-			wid->consoleLog->LogTextAtLevel(0, s);
-		}
-		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret)));
-		
-		wid->iconPreview->SetBitmap(wxBitmap(wxString::FromUTF8(imagePath), wxBITMAP_TYPE_ANY));
-	}*/
 
 	wid->shortnameBox->SetValue(wxString::FromUTF8(parameters->Sname));
 	wid->longnameBox->SetValue(wxString::FromUTF8(parameters->Lname));
@@ -1609,5 +1578,315 @@ void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 	wid->ffRewindCheck->SetValue(parameters->FFrewind);
 	wid->dimCheck->SetValue(parameters->FadeOpt);
 
-	//TODO: mediaPanel stuff
+	//TODO: finish mediaPanel stuff
+	if(wid->PlayerTitles.size() < parameters->rows) {
+		int count = parameters->rows - wid->PlayerTitles.size();
+		if(parameters->rows + count <= 28) {//??????? im sure this makes sense in some other universe
+			for(uint8_t i = 0; i < count; i++) {
+				wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString);
+				wid->PlayerTitles.push_back(box);
+			}
+			for(uint8_t i = 0; i < count; i++) {
+				wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString);
+				wid->MoflexFiles.push_back(box);
+			}
+			for(uint8_t i = 0; i < count; i++) {
+				wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString);
+				wid->MenuBanners.push_back(box);
+			}
+			
+			for(int i = 0; i < count; i++) {
+				wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+				int width, height;
+				wxFont f;
+				
+				button->SetLabel(wxString::FromUTF8("↑"));
+				
+				button->GetTextExtent(button->GetLabel(), &width, &height, nullptr, nullptr, &f);
+				button->SetSize(width, height);
+				
+				wid->MultiUp.push_back(button);
+			}
+			for(int i = 0; i < count; i++) {
+				wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+				int width, height;
+				wxFont f;
+				
+				button->SetLabel(wxString::FromUTF8("↓"));
+				
+				button->GetTextExtent(button->GetLabel(), &width, &height, nullptr, nullptr, &f);
+				button->SetSize(width, height);
+				
+				wid->MultiDown.push_back(button);
+			}
+		}
+	}
+	else if(wid->PlayerTitles.size() > parameters->rows) {
+		int count = wid->PlayerTitles.size() - parameters->rows;
+		if(parameters->rows - count >= 0) {//???????????????????
+			for(uint8_t i = 0; i < count; i++) {
+				delete wid->PlayerTitles.back();
+				wid->PlayerTitles.pop_back();
+			}
+			for(uint8_t i = 0; i < count; i++) {
+				delete wid->MoflexFiles.back();
+				wid->MoflexFiles.pop_back();
+			}
+			for(uint8_t i = 0; i < count; i++) {
+				delete wid->MenuBanners.back();
+				wid->MenuBanners.pop_back();
+			}
+			for(uint8_t i = 0; i < count; i++) {
+				delete wid->MultiUp.back();
+				wid->MultiUp.pop_back();
+			}
+			for(uint8_t i = 0; i < count; i++) {
+				delete wid->MultiDown.back();
+				wid->MultiDown.pop_back();
+			}
+		}
+	}
+	
+	for(int row = 0; row < parameters->PTitleVec.size(); row++) {
+		wid->PlayerTitles.at(row)->SetValue(wxString::FromUTF8(parameters->PTitleVec.at(row)));
+	}
+	for(int row = 0; row < parameters->MoflexVec.size(); row++) {
+		wid->MoflexFiles.at(row)->SetValue(wxString::FromUTF8(parameters->MoflexVec.at(row)));
+	}
+	for(int row = 0; row < parameters->MBannerVec.size(); row++) {
+		wid->MenuBanners.at(row)->SetValue(wxString::FromUTF8(parameters->MBannerVec.at(row)));
+	}
+	
+	if(parameters->rows <= 1) {
+		wid->appendRow->Enable(true);
+		wid->removeRow->Enable(false);
+	}
+	else if(parameters->rows >= 27) {
+		wid->appendRow->Enable(false);
+		wid->removeRow->Enable(true);
+	}
+	
+	if(parameters->mode) {
+		wid->rowText->Show(true);
+	}
+	else {
+		wid->rowText->Show(false);
+	}
+}
+
+void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
+	if(parameters->rows + count <= 27) {
+		for(int i = 0; i < count; i++) {
+			{//-ar
+				wxArrayString output;
+				wxArrayString errors;
+				wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -ar \"" + VI9P::WorkingFile + "\" \"" + VI9P::WorkingFile + '\"');
+				int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+				
+				wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+				for (auto &s : output) {
+					wid->consoleLog->LogTextAtLevel(0, s);
+				}
+				wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+			}
+		}
+	}
+	//loadParameters(wid, parameters);//TODO: stop being lazy and only load what you need
+	int ret = 0;
+	{//-rr
+		wxArrayString output;
+		wxArrayString errors;
+		wxString command = wxString::FromUTF8(resourcesPath + '/' + CLIFile + " -rr " + VI9P::WorkingFile);
+		ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+
+		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+		for (auto &s : output) {
+			wid->consoleLog->LogTextAtLevel(0, s);
+		}
+		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		
+		if(ret > -1) {
+			parameters->rows = ret & 0xFF;
+		}
+		//else return ret;
+	}
+	{//-pp
+		wxArrayString output;
+		wxArrayString errors;
+		wxString command = wxString::FromUTF8(resourcesPath + '/' + CLIFile + " -pp " + VI9P::WorkingFile);
+		ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+		std::string pp;
+
+		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+		for (auto &s : output) {
+			wid->consoleLog->LogTextAtLevel(0, s);
+			pp += std::string(s.ToUTF8()) + '\n';
+		}
+		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		{//PTitleVec
+			parameters->PTitleVec.clear();
+			for(uint8_t i = 0; i < parameters->rows; i++) {
+				std::string value = "";
+				parsePP(pp.c_str(), StrPTitleParam + '(' + std::to_string(i) + ')', &value);
+				parameters->PTitleVec.push_back(value);
+			}
+		}
+		{//StrMoflexParam
+			parameters->MoflexVec.clear();
+			for(uint8_t i = 0; i < parameters->rows; i++) {
+				std::string value = "";
+				parsePP(pp.c_str(), StrMoflexParam + '(' + std::to_string(i) + ')', &value);
+				parameters->MoflexVec.push_back(value);
+			}
+		}
+		{//StrMBannerParam
+			parameters->MBannerVec.clear();
+			for(uint8_t i = 0; i < parameters->rows; i++) {
+				std::string value = "";
+				parsePP(pp.c_str(), StrMBannerParam + '(' + std::to_string(i) + ')', &value);
+				parameters->MBannerVec.push_back(value);
+			}
+		}
+		int count = parameters->rows - wid->PlayerTitles.size();
+		if(parameters->rows + count <= 28) {//??????? im sure this makes sense in some other universe
+			for(uint8_t i = 0; i < count; i++) {
+				wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString);
+				wid->PlayerTitles.push_back(box);
+			}
+			for(uint8_t i = 0; i < count; i++) {
+				wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString);
+				wid->MoflexFiles.push_back(box);
+			}
+			for(uint8_t i = 0; i < count; i++) {
+				wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString);
+				wid->MenuBanners.push_back(box);
+			}
+			
+			for(int i = 0; i < count; i++) {
+				wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+				int width, height;
+				wxFont f;
+				
+				button->SetLabel(wxString::FromUTF8("↑"));
+				
+				button->GetTextExtent(button->GetLabel(), &width, &height, nullptr, nullptr, &f);
+				button->SetSize(width, height);
+				
+				wid->MultiUp.push_back(button);
+			}
+			for(int i = 0; i < count; i++) {
+				wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+				int width, height;
+				wxFont f;
+				
+				button->SetLabel(wxString::FromUTF8("↓"));
+				
+				button->GetTextExtent(button->GetLabel(), &width, &height, nullptr, nullptr, &f);
+				button->SetSize(width, height);
+				
+				wid->MultiDown.push_back(button);
+			}
+		}
+	}
+	positionWidgets(wid);
+}
+
+void removeRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
+	if(parameters->rows - count >= 1) {
+		for(int i = 0; i < count; i++) {
+			{//-sr
+				wxArrayString output;
+				wxArrayString errors;
+				wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sr \"" + VI9P::WorkingFile + "\" \"" + VI9P::WorkingFile + '\"');
+				int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+				
+				wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+				for (auto &s : output) {
+					wid->consoleLog->LogTextAtLevel(0, s);
+				}
+				wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+			}
+		}
+	}
+	//loadParameters(wid, parameters);
+	int ret = 0;
+	{//-rr
+		wxArrayString output;
+		wxArrayString errors;
+		wxString command = wxString::FromUTF8(resourcesPath + '/' + CLIFile + " -rr " + VI9P::WorkingFile);
+		ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+
+		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+		for (auto &s : output) {
+			wid->consoleLog->LogTextAtLevel(0, s);
+		}
+		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		
+		if(ret > -1) {
+			parameters->rows = ret & 0xFF;
+		}
+		//else return ret;
+	}
+	{//-pp
+		wxArrayString output;
+		wxArrayString errors;
+		wxString command = wxString::FromUTF8(resourcesPath + '/' + CLIFile + " -pp " + VI9P::WorkingFile);
+		ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+		std::string pp;
+
+		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+		for (auto &s : output) {
+			wid->consoleLog->LogTextAtLevel(0, s);
+			pp += std::string(s.ToUTF8()) + '\n';
+		}
+		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		{//PTitleVec
+			parameters->PTitleVec.clear();
+			for(uint8_t i = 0; i < parameters->rows; i++) {
+				std::string value = "";
+				parsePP(pp.c_str(), StrPTitleParam + '(' + std::to_string(i) + ')', &value);
+				parameters->PTitleVec.push_back(value);
+			}
+		}
+		{//StrMoflexParam
+			parameters->MoflexVec.clear();
+			for(uint8_t i = 0; i < parameters->rows; i++) {
+				std::string value = "";
+				parsePP(pp.c_str(), StrMoflexParam + '(' + std::to_string(i) + ')', &value);
+				parameters->MoflexVec.push_back(value);
+			}
+		}
+		{//StrMBannerParam
+			parameters->MBannerVec.clear();
+			for(uint8_t i = 0; i < parameters->rows; i++) {
+				std::string value = "";
+				parsePP(pp.c_str(), StrMBannerParam + '(' + std::to_string(i) + ')', &value);
+				parameters->MBannerVec.push_back(value);
+			}
+		}
+		int count = wid->PlayerTitles.size() - parameters->rows;
+		if(parameters->rows - count >= 0) {//???????????????????
+			for(uint8_t i = 0; i < count; i++) {
+				delete wid->PlayerTitles.back();
+				wid->PlayerTitles.pop_back();
+			}
+			for(uint8_t i = 0; i < count; i++) {
+				delete wid->MoflexFiles.back();
+				wid->MoflexFiles.pop_back();
+			}
+			for(uint8_t i = 0; i < count; i++) {
+				delete wid->MenuBanners.back();
+				wid->MenuBanners.pop_back();
+			}
+			for(uint8_t i = 0; i < count; i++) {
+				delete wid->MultiUp.back();
+				wid->MultiUp.pop_back();
+			}
+			for(uint8_t i = 0; i < count; i++) {
+				delete wid->MultiDown.back();
+				wid->MultiDown.pop_back();
+			}
+		}
+	}
+	positionWidgets(wid);
 }

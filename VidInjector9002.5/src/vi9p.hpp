@@ -18,7 +18,7 @@ struct VI9Pparameters {
 	std::string copyrightInfo = "";//8
 	int FFrewind = 1;//9
 	int FadeOpt = 1;//10
-	uint8_t rows = 0;
+	uint8_t rows = 1;
 	std::vector<std::string> PTitleVec = std::vector<std::string>(1, "");//12
 	std::vector<std::string> MoflexVec = std::vector<std::string>(1, "");//12 + rows
 	std::vector<std::string> MBannerVec = std::vector<std::string>(1, "");//12 + rows * 2

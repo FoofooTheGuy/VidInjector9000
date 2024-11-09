@@ -76,6 +76,9 @@ extern std::string multiBannerPreviewTip;
 extern std::string multiBannerPreviewLeftTip;
 extern std::string multiBannerPreviewRightTip;
 
+//file stuffs
+extern std::string moflexFiles;
+
 //internal
 extern std::string tempPath;
 

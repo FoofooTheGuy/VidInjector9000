@@ -58,16 +58,16 @@ struct InitWidgets {
 	wxStaticText* bannerText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(BannerText));
 	wxTextCtrl* bannerBox = new wxTextCtrl(panel, wxID_ANY, wxEmptyString);
 	wxButton* bannerBrowse = new wxButton(panel, wxID_ANY, wxString::FromUTF8(Browse));
-	wxStaticText* bannerError = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8("a"));//like my place holder?
+	wxStaticText* bannerError = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(ErrorText + ' ' + ImageInfoError + " (0) " + SeeLog));
 	
 	wxStaticText* iconText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(IconText));
 	wxTextCtrl* iconBox = new wxTextCtrl(panel, wxID_ANY, wxEmptyString);
 	wxButton* iconBrowse = new wxButton(panel, wxID_ANY, wxString::FromUTF8(Browse));
-	wxStaticText* iconError = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8("a"));
+	wxStaticText* iconError = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(ErrorText + ' ' + ImageInfoError + " (0) " + SeeLog));
 	
 	wxStaticText* shortnameText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(ShortNameText));
 	wxTextCtrl* shortnameBox = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-	wxStaticText* shortnameError = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8("a"));
+	wxStaticText* shortnameError = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8("a"));//like my place holder?
 
 	wxStaticText* longnameText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(LongNameText));
 	wxTextCtrl* longnameBox = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
@@ -117,7 +117,7 @@ struct InitWidgets {
 	
 	wxButton* splitPatchButton = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8(SplitIntoAPatch));
 	
-	wxStaticText* rowText = new wxStaticText(scrolledPanel, wxID_ANY, wxString::FromUTF8("/"));
+	wxStaticText* rowText = new wxStaticText(scrolledPanel, wxID_ANY, wxString::FromUTF8("1/27"));
 };
 
 void initAllWidgets(InitWidgets* initwidgets);
@@ -222,7 +222,16 @@ void getAppearance(InitWidgets* wid);
 //0 light 1 dark 2 system
 void setAppearance(InitWidgets* wid, int Mode);
 
-//send Vi9P::WorkingFile to cli -pp to get parameters from the file
+//send VI9P::WorkingFile to cli -pp to get parameters from the file
 int loadParameters(InitWidgets* wid, VI9Pparameters* parameters);
 
 void applyParameters(InitWidgets* wid, VI9Pparameters* parameters);
+
+/*count: how many rows to add
+note that this also called -ar to the CLI to add rows to VI9P::WorkingFile
+27 is maximum because if there are more then your 3ds will crash when loading it
+hopefully this doesnt leak memory*/
+void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count = 1);
+
+//similar to addRows, this will delete the last element of the wid vectors and pop_back from the wid and parameters vectors
+void removeRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count = 1);
