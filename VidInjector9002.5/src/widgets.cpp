@@ -1657,21 +1657,30 @@ void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->MenuBanners.at(row)->SetValue(wxString::FromUTF8(parameters->MBannerVec.at(row)));
 	}
 	
-	if(parameters->rows <= 1) {
-		wid->appendRow->Enable(true);
-		wid->removeRow->Enable(false);
-	}
-	else if(parameters->rows >= 27) {
-		wid->appendRow->Enable(false);
-		wid->removeRow->Enable(true);
-	}
-	
-	if(parameters->mode) {
+	modeChoiceBox_wxEVT_CHOICE(wid, parameters);
+	/*if(parameters->mode) {
 		wid->rowText->Show(true);
+		wid->multiBannerPreviewIndex->Show(true);
+		if(parameters->rows <= 1) {
+			wid->appendRow->Enable(true);
+			wid->removeRow->Enable(false);
+		}
+		else if(parameters->rows >= 27) {
+			wid->appendRow->Enable(false);
+			wid->removeRow->Enable(true);
+		}
 	}
 	else {
 		wid->rowText->Show(false);
-	}
+		wid->multiBannerPreviewIndex->Show(false);
+		if(parameters->rows > 1) {
+			wid->removeRow->Enable(true);
+		}
+		else {
+			wid->removeRow->Enable(false);
+		}
+		wid->appendRow->Enable(false);
+	}*/
 }
 
 void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {

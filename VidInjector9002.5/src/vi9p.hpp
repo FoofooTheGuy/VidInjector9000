@@ -29,7 +29,7 @@ class VI9P
 {
 	public:
 	static std::string WorkingFile;
-	//static VI9Pparameters Parameters;//im not quite sure if we want this
+	static uint8_t MultiBannerIndex;
 };
 
 //todo: delete this and parse cli output for -pp in order to get parameters

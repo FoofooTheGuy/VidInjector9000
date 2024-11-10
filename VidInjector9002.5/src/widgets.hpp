@@ -235,3 +235,5 @@ void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count = 1);
 
 //similar to addRows, this will delete the last element of the wid vectors and pop_back from the wid and parameters vectors
 void removeRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count = 1);
+
+#include "events.hpp"
