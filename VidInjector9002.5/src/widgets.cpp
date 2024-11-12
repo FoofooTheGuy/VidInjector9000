@@ -222,7 +222,7 @@ void initAllWidgets(InitWidgets* wid) {
 		wid->dimCheck->GetTextExtent(wid->dimCheck->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->dimCheck->SetSize(w + boxwidth, h);
 	}
-	
+
 	{//multiBannerPreviewIndex
 		int w, h;
 		wxFont f;
@@ -416,6 +416,48 @@ void setToolTips(InitWidgets* wid) {
 	wid->multiBannerPreview->SetToolTip(wxString::FromUTF8(multiBannerPreviewTip));
 	wid->multiBannerPreviewLeft->SetToolTip(wxString::FromUTF8(multiBannerPreviewLeftTip));
 	wid->multiBannerPreviewRight->SetToolTip(wxString::FromUTF8(multiBannerPreviewRightTip));
+}
+
+void setCursors(InitWidgets* wid) {
+	wid->modeChoiceBox->SetCursor(wid->modeChoiceBox->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
+	wid->bannerBox->SetCursor(wid->bannerBox->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_ARROW);
+	wid->bannerBrowse->SetCursor(wid->bannerBrowse->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
+	wid->iconBox->SetCursor(wid->iconBox->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_ARROW);
+	wid->iconBrowse->SetCursor(wid->iconBrowse->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
+	wid->shortnameBox->SetCursor(wid->shortnameBox->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_ARROW);
+	wid->longnameBox->SetCursor(wid->longnameBox->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_ARROW);
+	wid->publisherBox->SetCursor(wid->publisherBox->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_ARROW);
+	wid->copyBox->SetCursor(wid->copyBox->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_ARROW);
+	wid->copyCheck->SetCursor(wid->copyCheck->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
+	wid->iconPreview->SetCursor(wid->iconPreview->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
+	wid->ffRewindCheck->SetCursor(wid->ffRewindCheck->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
+	wid->dimCheck->SetCursor(wid->dimCheck->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
+	wid->multiBannerPreview->SetCursor(wid->multiBannerPreview->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
+	wid->multiBannerPreviewLeft->SetCursor(wid->multiBannerPreviewLeft->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
+	wid->multiBannerPreviewRight->SetCursor(wid->multiBannerPreviewRight->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
+	for(const auto& row : wid->PlayerTitles) {
+		row->SetCursor(row->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_ARROW);
+	}
+	for(const auto& row : wid->MoflexFiles) {
+		row->SetCursor(row->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_ARROW);
+	}
+	for(const auto& row : wid->MenuBanners) {
+		row->SetCursor(row->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_ARROW);
+	}
+	for(const auto& row : wid->MultiUp) {
+		row->SetCursor(row->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
+	}
+	for(const auto& row : wid->MultiDown) {
+		row->SetCursor(row->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
+	}
+	wid->moflexBrowse->SetCursor(wid->moflexBrowse->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
+	wid->multiBannerBrowse->SetCursor(wid->multiBannerBrowse->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
+	wid->removeRow->SetCursor(wid->removeRow->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
+	wid->appendRow->SetCursor(wid->appendRow->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
+	wid->splitPatchButton->SetCursor(wid->splitPatchButton->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
+	wid->frame->SetCursor(wxCURSOR_ARROW);
+	wid->panel->SetCursor(wxCURSOR_ARROW);
+	wid->mediaPanel->SetCursor(wxCURSOR_ARROW);
 }
 
 void positionWidgets(InitWidgets* wid) {
@@ -1561,6 +1603,92 @@ int loadParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 	return ret;
 }
 
+void applyMode(InitWidgets* wid, VI9Pparameters* parameters) {
+	if(parameters->mode) {//the main stuff that changes base on what mode youre in
+		wid->copyBox->Enable(true);
+		wid->copyCheck->Enable(true);
+		wid->rowText->Show(true);
+		wid->multiBannerPreview->Enable(true);
+		wid->multiBannerPreviewIndex->Show(true);
+		if(wid->MenuBanners.size() != 1) {
+			if(VI9P::MultiBannerIndex > 0 && VI9P::MultiBannerIndex < wid->MenuBanners.size() - 1) {
+				wid->multiBannerPreviewLeft->Enable(true);
+				wid->multiBannerPreviewRight->Enable(true);
+			}
+			if(VI9P::MultiBannerIndex <= 0) {
+				wid->multiBannerPreviewLeft->Enable(false);
+				wid->multiBannerPreviewRight->Enable(true);
+			}
+			if(VI9P::MultiBannerIndex >= wid->MenuBanners.size() - 1) {
+				wid->multiBannerPreviewLeft->Enable(true);
+				wid->multiBannerPreviewRight->Enable(false);
+			}
+		}
+		else {
+			wid->multiBannerPreviewLeft->Enable(false);
+			wid->multiBannerPreviewRight->Enable(false);
+		}
+		
+		if(parameters->rows > 1 && parameters->rows < 27) {
+			wid->appendRow->Enable(true);
+			wid->removeRow->Enable(true);
+		}
+		if(parameters->rows <= 1) {
+			wid->appendRow->Enable(true);
+			wid->removeRow->Enable(false);
+		}
+		else if(parameters->rows >= 27) {
+			wid->appendRow->Enable(false);
+			wid->removeRow->Enable(true);
+		}
+		for(const auto &row : wid->PlayerTitles) {
+			row->Enable(true);
+		}
+		for(const auto &row : wid->MoflexFiles) {
+			row->Enable(true);
+		}
+		for(const auto &row : wid->MenuBanners) {
+			row->Enable(true);
+		}
+		wid->multiBannerBrowse->Enable(true);
+	}
+	else {
+		wid->copyBox->Enable(false);
+		wid->copyCheck->Enable(false);
+		wid->rowText->Show(false);
+		wid->multiBannerPreview->Enable(false);
+		wid->multiBannerPreviewIndex->Show(false);
+		wid->multiBannerPreviewLeft->Enable(false);
+		wid->multiBannerPreviewRight->Enable(false);
+		if(parameters->rows > 1) {
+			wid->removeRow->Enable(true);
+		}
+		else {
+			wid->removeRow->Enable(false);
+		}
+		wid->appendRow->Enable(false);
+		bool first = true;//lol
+		for(const auto &row : wid->PlayerTitles) {
+			if(!first) {
+				row->Enable(false);
+			}
+			first = false;
+		}
+		first = true;
+		for(const auto &row : wid->MoflexFiles) {
+			if(!first) {
+				row->Enable(false);
+			}
+			first = false;
+		}
+		for(const auto &row : wid->MenuBanners) {
+			row->Enable(false);
+		}
+		wid->multiBannerBrowse->Enable(false);
+	}
+	setCursors(wid);
+}
+
 void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 	wid->modeChoiceBox->SetSelection(parameters->mode);
 
@@ -1578,10 +1706,10 @@ void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 	wid->ffRewindCheck->SetValue(parameters->FFrewind);
 	wid->dimCheck->SetValue(parameters->FadeOpt);
 
-	//TODO: finish mediaPanel stuff
+	//TODO: finish mediaPanel stuff (split patch grrrr jk splitpatch is gonna be as easy as multibannerindex)
 	if(wid->PlayerTitles.size() < parameters->rows) {
 		int count = parameters->rows - wid->PlayerTitles.size();
-		if(parameters->rows + count <= 28) {//??????? im sure this makes sense in some other universe
+		if(wid->PlayerTitles.size() + count <= 28) {
 			for(uint8_t i = 0; i < count; i++) {
 				wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString);
 				wid->PlayerTitles.push_back(box);
@@ -1623,7 +1751,7 @@ void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 	}
 	else if(wid->PlayerTitles.size() > parameters->rows) {
 		int count = wid->PlayerTitles.size() - parameters->rows;
-		if(parameters->rows - count >= 0) {//???????????????????
+		if(wid->PlayerTitles.size() - count >= 0) {
 			for(uint8_t i = 0; i < count; i++) {
 				delete wid->PlayerTitles.back();
 				wid->PlayerTitles.pop_back();
@@ -1657,30 +1785,7 @@ void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->MenuBanners.at(row)->SetValue(wxString::FromUTF8(parameters->MBannerVec.at(row)));
 	}
 	
-	modeChoiceBox_wxEVT_CHOICE(wid, parameters);
-	/*if(parameters->mode) {
-		wid->rowText->Show(true);
-		wid->multiBannerPreviewIndex->Show(true);
-		if(parameters->rows <= 1) {
-			wid->appendRow->Enable(true);
-			wid->removeRow->Enable(false);
-		}
-		else if(parameters->rows >= 27) {
-			wid->appendRow->Enable(false);
-			wid->removeRow->Enable(true);
-		}
-	}
-	else {
-		wid->rowText->Show(false);
-		wid->multiBannerPreviewIndex->Show(false);
-		if(parameters->rows > 1) {
-			wid->removeRow->Enable(true);
-		}
-		else {
-			wid->removeRow->Enable(false);
-		}
-		wid->appendRow->Enable(false);
-	}*/
+	applyMode(wid, parameters);
 }
 
 void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
@@ -1897,5 +2002,44 @@ void removeRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 			}
 		}
 	}
+	
+	if(VI9P::MultiBannerIndex > wid->MenuBanners.size() - 1)
+		VI9P::MultiBannerIndex = wid->MenuBanners.size() - 1;
+	{//-gp
+		std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/bannerpreview" + std::to_string(VI9P::MultiBannerIndex) + ".png";
+		wxArrayString output;
+		wxArrayString errors;
+		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters->rows * 2) + VI9P::MultiBannerIndex) + " \"" + imagePath + '\"');
+		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+		
+		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+		for (auto &s : output) {
+			wid->consoleLog->LogTextAtLevel(0, s);
+		}
+		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		
+		wid->multiBannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(imagePath), wxBITMAP_TYPE_ANY));
+	}
+	if(wid->MenuBanners.size() != 1) {
+		if(VI9P::MultiBannerIndex > 0 && VI9P::MultiBannerIndex < wid->MenuBanners.size() - 1) {
+			wid->multiBannerPreviewLeft->Enable(true);
+			wid->multiBannerPreviewRight->Enable(true);
+		}
+		if(VI9P::MultiBannerIndex <= 0) {
+			wid->multiBannerPreviewLeft->Enable(false);
+			wid->multiBannerPreviewRight->Enable(true);
+		}
+		if(VI9P::MultiBannerIndex >= wid->MenuBanners.size() - 1) {
+			wid->multiBannerPreviewLeft->Enable(true);
+			wid->multiBannerPreviewRight->Enable(false);
+		}
+	}
+	else {
+		wid->multiBannerPreviewLeft->Enable(false);
+		wid->multiBannerPreviewRight->Enable(false);
+	}
+	wid->multiBannerPreviewLeft->SetCursor(wid->multiBannerPreviewLeft->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
+	wid->multiBannerPreviewRight->SetCursor(wid->multiBannerPreviewRight->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
+
 	positionWidgets(wid);
 }

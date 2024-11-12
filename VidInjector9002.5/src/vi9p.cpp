@@ -1,7 +1,7 @@
 #include "vi9p.hpp"
 
 std::string VI9P::WorkingFile = "";
-uint8_t VI9P::MultiBannerIndex = 0;
+uint8_t VI9P::MultiBannerIndex = 0;//0 to 26
 
 void parsePP(const std::string input, const std::string query, std::string* value) {
 	std::vector<std::string> lines;

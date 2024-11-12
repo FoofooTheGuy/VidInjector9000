@@ -61,6 +61,7 @@ std::string multiBannerPreviewTip = "Select the image to replace this banner";
 std::string multiBannerPreviewLeftTip = "Preview the previous banner";
 std::string multiBannerPreviewRightTip = "Preview the next banner";
 std::string moflexFiles = "MoFlex Files (*.moflex)|*.moflex";//file stuffs
+std::string vi9pFiles = "VI9P Files (*.vi9p)|*.vi9p";
 
 std::string tempPath = "temp";
 

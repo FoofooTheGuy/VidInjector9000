@@ -19,11 +19,14 @@ void copyBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters);
 void copyCheck_wxEVT_CHECKBOX(InitWidgets* wid, VI9Pparameters* parameters);
 void ffRewindCheck_wxEVT_CHECKBOX(InitWidgets* wid, VI9Pparameters* parameters);
 void dimCheck_wxEVT_CHECKBOX(InitWidgets* wid, VI9Pparameters* parameters);
+void multiBannerPreview_wxEVT_BUTTON(InitWidgets* wid);
+void multiBannerPreviewLeft_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters);
+void multiBannerPreviewRight_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters);
 void PlayerTitles_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxTextCtrl* row);
 void MoflexFiles_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxTextCtrl* row);
 void MenuBanners_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxTextCtrl* row);
-void moflexBrowse_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters);
-void multiBannerBrowse_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters);
+void moflexBrowse_wxEVT_BUTTON(InitWidgets* wid);
+void multiBannerBrowse_wxEVT_BUTTON(InitWidgets* wid);
 void removeRow_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters);
 
 //binds are in these binds so it cant be done outside of main

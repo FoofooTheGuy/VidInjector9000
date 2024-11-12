@@ -89,7 +89,7 @@ struct InitWidgets {
 	
 	wxCheckBox* dimCheck = new wxCheckBox(panel, wxID_ANY, wxString::FromUTF8(DimCheckText));
 	
-	wxStaticBitmap* multiBannerPreview = new wxStaticBitmap(panel, wxID_ANY, wxNullBitmap, wxDefaultPosition, {264, 154}, wxBORDER_NONE);
+	wxButton* multiBannerPreview = new wxButton(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, {264, 154}, wxBORDER_NONE);
 	
 	wxStaticText* multiBannerPreviewIndex = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8("/"));
 	wxButton* multiBannerPreviewLeft = new wxButton(panel, wxID_ANY, wxString::FromUTF8("←"));
@@ -99,6 +99,7 @@ struct InitWidgets {
 	wxStaticText* moflexFileText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(MoflexFileText));
 	wxStaticText* menuBannerText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(MenuBannerText));
 	
+	//mediaPanel
 	wxPanel* mediaPanel = new wxPanel(panel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL | wxBORDER_THEME);
 	wxScrolled<wxPanel>* scrolledPanel = new wxScrolled<wxPanel>(mediaPanel);
 	
@@ -122,6 +123,7 @@ struct InitWidgets {
 
 void initAllWidgets(InitWidgets* initwidgets);
 void setToolTips(InitWidgets* initwidgets);
+void setCursors(InitWidgets* wid);
 
 void positionWidgets(InitWidgets* wid);
 
@@ -224,6 +226,9 @@ void setAppearance(InitWidgets* wid, int Mode);
 
 //send VI9P::WorkingFile to cli -pp to get parameters from the file
 int loadParameters(InitWidgets* wid, VI9Pparameters* parameters);
+
+//enables or disables stuff based on parameters->mode
+void applyMode(InitWidgets* wid, VI9Pparameters* parameters);
 
 void applyParameters(InitWidgets* wid, VI9Pparameters* parameters);
 

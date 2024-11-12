@@ -152,6 +152,8 @@ int main(int argc, char* argv[]) {
 	
 	setAppearance(&wid, Settings::ColorMode);
 	
+	setCursors(&wid);
+	
 	wid.panel->Bind(wxEVT_SIZE, [&](wxSizeEvent& event) {
 		panel_wxEVT_SIZE(&wid);
 	});
@@ -208,6 +210,18 @@ int main(int argc, char* argv[]) {
 		dimCheck_wxEVT_CHECKBOX(&wid, &parameters);
 	});
 	
+	wid.multiBannerPreview->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		multiBannerPreview_wxEVT_BUTTON(&wid);
+	});
+
+	wid.multiBannerPreviewLeft->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		multiBannerPreviewLeft_wxEVT_BUTTON(&wid, &parameters);
+	});
+
+	wid.multiBannerPreviewRight->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		multiBannerPreviewRight_wxEVT_BUTTON(&wid, &parameters);
+	});
+	
 	for(const auto &row : wid.PlayerTitles) {
 		row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
 			PlayerTitles_wxEVT_TEXT(&wid, &parameters, row);
@@ -227,19 +241,19 @@ int main(int argc, char* argv[]) {
 	}
 	
 	wid.moflexBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
-		moflexBrowse_wxEVT_BUTTON(&wid, &parameters);
+		moflexBrowse_wxEVT_BUTTON(&wid);
 	});
 
 	wid.multiBannerBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
-		multiBannerBrowse_wxEVT_BUTTON(&wid, &parameters);
+		multiBannerBrowse_wxEVT_BUTTON(&wid);
 	});
 	
 	wid.removeRow->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		removeRow_wxEVT_BUTTON(&wid, &parameters);
 	});
 
-	wid.appendRow->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//TODO: fix the why the hec it doesnt work the first time you click it
-		if(wid.removeRow->IsEnabled()) {
+	wid.appendRow->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		if(wid.appendRow->IsEnabled()) {
 			wid.removeRow->Enable(false);//disable so you cant press it too much
 			wid.appendRow->Enable(false);
 			
@@ -266,9 +280,29 @@ int main(int argc, char* argv[]) {
 			setAppearance(&wid, Settings::ColorMode);
 			
 			wid.rowText->SetLabel(wxString::FromUTF8(std::to_string(parameters.rows) + "/27"));
+			wid.multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string(wid.MenuBanners.size())));
 		}
 		
 		if(parameters.mode) {
+			if(wid.MenuBanners.size() != 1) {
+				if(VI9P::MultiBannerIndex > 0 && VI9P::MultiBannerIndex < wid.MenuBanners.size() - 1) {
+					wid.multiBannerPreviewLeft->Enable(true);
+					wid.multiBannerPreviewRight->Enable(true);
+				}
+				if(VI9P::MultiBannerIndex <= 0) {
+					wid.multiBannerPreviewLeft->Enable(false);
+					wid.multiBannerPreviewRight->Enable(true);
+				}
+				if(VI9P::MultiBannerIndex >= wid.MenuBanners.size() - 1) {
+					wid.multiBannerPreviewLeft->Enable(true);
+					wid.multiBannerPreviewRight->Enable(false);
+				}
+			}
+			else {
+				wid.multiBannerPreviewLeft->Enable(false);
+				wid.multiBannerPreviewRight->Enable(false);
+			}
+		
 			wid.rowText->Show(true);
 			if(parameters.rows > 1 && parameters.rows < 27) {
 				wid.appendRow->Enable(true);
@@ -287,20 +321,25 @@ int main(int argc, char* argv[]) {
 			wid.rowText->Show(false);
 			wid.appendRow->Enable(false);
 		}
+		wid.multiBannerPreviewLeft->SetCursor(wid.multiBannerPreviewLeft->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
+		wid.multiBannerPreviewRight->SetCursor(wid.multiBannerPreviewRight->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
 		
 		wid.removeRow->Enable(true);
+		
+		setCursors(&wid);
 	});
 	
 	wid.mainMenu->Bind(wxEVT_MENU, [&](wxCommandEvent& event) {
 		switch(event.GetId()) {
 			case wxID_OPEN:
 				{
-					wxFileDialog openFileDialog(wid.frame, wxEmptyString, wxEmptyString, wxEmptyString, "VI9P Files (*.vi9p)|*.vi9p", wxFD_OPEN|wxFD_FILE_MUST_EXIST);
+					wxFileDialog openFileDialog(wid.frame, wxEmptyString, wxEmptyString, wxEmptyString, vi9pFiles, wxFD_OPEN|wxFD_FILE_MUST_EXIST);
 					openFileDialog.SetFilterIndex(0);
 					if (openFileDialog.ShowModal() == wxID_OK) {
 						//label->SetLabelText(wxString::Format("File = %s",  openFileDialog.GetPath()));
 						//wxMessageBox(openFileDialog.GetPath(), "Placeholder");
 						VI9P::WorkingFile = std::string(openFileDialog.GetPath().ToUTF8());
+						VI9P::MultiBannerIndex = 0;
 						loadParameters(&wid, &parameters);
 						positionWidgets(&wid);
 						
@@ -323,8 +362,10 @@ int main(int argc, char* argv[]) {
 							});
 						}
 						setAppearance(&wid, Settings::ColorMode);
+						setCursors(&wid);
 						
 						wid.rowText->SetLabel(wxString::FromUTF8(std::to_string(parameters.rows) + "/27"));
+						wid.multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string(wid.MenuBanners.size())));
 					}
 				}
 				break;
