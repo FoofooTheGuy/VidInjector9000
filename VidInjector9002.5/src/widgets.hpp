@@ -158,6 +158,7 @@ class ForeColor
 	static wxColour iconPreview;
 	static wxColour ffRewindCheck;
 	static wxColour dimCheck;
+	static wxColour multiBannerPreview;
 	static wxColour multiBannerPreviewIndex;
 	static wxColour multiBannerPreviewLeft;
 	static wxColour multiBannerPreviewRight;
@@ -203,6 +204,7 @@ class BackColor
 	static wxColour iconPreview;
 	static wxColour ffRewindCheck;
 	static wxColour dimCheck;
+	static wxColour multiBannerPreview;
 	static wxColour multiBannerPreviewIndex;
 	static wxColour multiBannerPreviewLeft;
 	static wxColour multiBannerPreviewRight;

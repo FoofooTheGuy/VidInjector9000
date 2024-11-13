@@ -1046,6 +1046,7 @@ wxColour BackColor::bannerPreviewText;
 wxColour BackColor::iconPreview;
 wxColour BackColor::ffRewindCheck;
 wxColour BackColor::dimCheck;
+wxColour BackColor::multiBannerPreview;
 wxColour BackColor::multiBannerPreviewIndex;
 wxColour BackColor::multiBannerPreviewLeft;
 wxColour BackColor::multiBannerPreviewRight;
@@ -1087,6 +1088,7 @@ wxColour ForeColor::bannerPreviewText;
 wxColour ForeColor::iconPreview;
 wxColour ForeColor::ffRewindCheck;
 wxColour ForeColor::dimCheck;
+wxColour ForeColor::multiBannerPreview;
 wxColour ForeColor::multiBannerPreviewIndex;
 wxColour ForeColor::multiBannerPreviewLeft;
 wxColour ForeColor::multiBannerPreviewRight;
@@ -1129,6 +1131,7 @@ void getAppearance(InitWidgets* wid) {
 	BackColor::iconPreview = wid->iconPreview->GetBackgroundColour();
 	BackColor::ffRewindCheck = wid->ffRewindCheck->GetBackgroundColour();
 	BackColor::dimCheck = wid->dimCheck->GetBackgroundColour();
+	BackColor::multiBannerPreview = wid->multiBannerPreview->GetBackgroundColour();
 	BackColor::multiBannerPreviewIndex = wid->multiBannerPreviewIndex->GetBackgroundColour();
 	BackColor::multiBannerPreviewLeft = wid->multiBannerPreviewLeft->GetBackgroundColour();
 	BackColor::multiBannerPreviewRight = wid->multiBannerPreviewRight->GetBackgroundColour();
@@ -1170,6 +1173,7 @@ void getAppearance(InitWidgets* wid) {
 	ForeColor::iconPreview = wid->iconPreview->GetForegroundColour();
 	ForeColor::ffRewindCheck = wid->ffRewindCheck->GetForegroundColour();
 	ForeColor::dimCheck = wid->dimCheck->GetForegroundColour();
+	ForeColor::multiBannerPreview = wid->multiBannerPreview->GetForegroundColour();
 	ForeColor::multiBannerPreviewIndex = wid->multiBannerPreviewIndex->GetForegroundColour();
 	ForeColor::multiBannerPreviewLeft = wid->multiBannerPreviewLeft->GetForegroundColour();
 	ForeColor::multiBannerPreviewRight = wid->multiBannerPreviewRight->GetForegroundColour();
@@ -1214,6 +1218,7 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->iconPreview->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->ffRewindCheck->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->dimCheck->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		wid->multiBannerPreview->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->multiBannerPreviewIndex->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->multiBannerPreviewLeft->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->multiBannerPreviewRight->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
@@ -1255,6 +1260,7 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->iconPreview->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->ffRewindCheck->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->dimCheck->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		wid->multiBannerPreview->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->multiBannerPreviewIndex->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->multiBannerPreviewLeft->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->multiBannerPreviewRight->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
@@ -1345,6 +1351,7 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->iconPreview->SetBackgroundColour(BackColor::iconPreview);
 		wid->ffRewindCheck->SetBackgroundColour(BackColor::ffRewindCheck);
 		wid->dimCheck->SetBackgroundColour(BackColor::dimCheck);
+		wid->multiBannerPreview->SetBackgroundColour(BackColor::multiBannerPreview);
 		wid->multiBannerPreviewIndex->SetBackgroundColour(BackColor::multiBannerPreviewIndex);
 		wid->multiBannerPreviewLeft->SetBackgroundColour(BackColor::multiBannerPreviewLeft);
 		wid->multiBannerPreviewRight->SetBackgroundColour(BackColor::multiBannerPreviewRight);
@@ -1386,6 +1393,7 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->iconPreview->SetForegroundColour(ForeColor::iconPreview);
 		wid->ffRewindCheck->SetForegroundColour(ForeColor::ffRewindCheck);
 		wid->dimCheck->SetForegroundColour(ForeColor::dimCheck);
+		wid->multiBannerPreview->SetForegroundColour(ForeColor::multiBannerPreview);
 		wid->multiBannerPreviewIndex->SetForegroundColour(ForeColor::multiBannerPreviewIndex);
 		wid->multiBannerPreviewLeft->SetForegroundColour(ForeColor::multiBannerPreviewLeft);
 		wid->multiBannerPreviewRight->SetForegroundColour(ForeColor::multiBannerPreviewRight);
