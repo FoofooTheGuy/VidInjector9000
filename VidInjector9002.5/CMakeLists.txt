@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 project(VidInjector9002.5)
 
+set(wxWidgets_ROOT_DIR ./wxWidgets-3.2.6)
 find_package(wxWidgets REQUIRED)
 include(${wxWidgets_USE_FILE})
 link_libraries(${wxWidgets_LIBRARIES})
