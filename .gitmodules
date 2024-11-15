@@ -1,0 +1,3 @@
+[submodule "VidInjector9002.5/wxWidgets-3.2.6"]
+	path = VidInjector9002.5/wxWidgets-3.2.6
+	url = https://github.com/wxWidgets/wxWidgets
