@@ -27,8 +27,8 @@ A console program that interfaces with a VidInjector9002 parameters file.
 
 **Linux**
 1. Install `make`, `python` or `python3`, and `perl` with your package manager if you don't already have them
-2. Run `python(3) build_deps.py`
-3. Run `python(3) build.py`
+2. Run `python build_deps.py`
+3. Run `python build.py`
 
 **Troubleshooting**
 
