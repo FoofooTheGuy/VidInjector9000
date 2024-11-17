@@ -20,7 +20,7 @@ A console program that interfaces with a VidInjector9002 parameters file.
 # Compiling
 **Windows (MSYS2)**
 1. Download and install [MSYS2](https://www.msys2.org/)
-3. Start MSYS2 and run `pacman -S make mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-python mingw-w64-ucrt-x86_64-python-jsonschema mingw-w64-ucrt-x86_64-python-jinja`
+3. Start MSYS2 and run `pacman -Syyu make mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-python mingw-w64-ucrt-x86_64-python-jsonschema mingw-w64-ucrt-x86_64-python-jinja`
 4. Run `cd </Path/to/VidInjector9002-CLI/directory>` (Hint: `\` in the path must be changed to `/` or `\\`)
 5. Run `build_deps.py`
 6. Run `build.py`
