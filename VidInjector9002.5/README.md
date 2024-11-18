@@ -21,3 +21,5 @@ A GUI wrapper for VidInjector9002-CLI
 2. Run `VidInjector9002.5.exe`
 
 **Linux**
+
+It is best to compile from source if you are using Linux. See [Compiling](https://github.com/FoofooTheGuy/VidInjector9000/tree/main/VidInjector9002.5#compiling).
