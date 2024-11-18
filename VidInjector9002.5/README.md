@@ -1,7 +1,7 @@
 # VidInjector9002.5
 A GUI wrapper for VidInjector9002-CLI
 
-#Compiling
+# Compiling
 **Windows**
 1. Download and install [CMake](https://cmake.org/) and [Microsoft Visual Studio](https://visualstudio.microsoft.com/) with the `Desktop development with C++` workload
 2. Open `wxWidgets-3.2.6/build/msw/wx_vc17.sln` in Visual Studio
@@ -12,3 +12,10 @@ A GUI wrapper for VidInjector9002-CLI
 1. Download `cmake` with your package manager
 2. Run `install-wxwidgets.sh`
 3. Run `build.sh`
+
+# Installation
+**Windows**
+1. Install the [Microsoft Visual C++ Redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads)
+2. Run `VidInjector9002.5.exe`
+
+**Linux**
