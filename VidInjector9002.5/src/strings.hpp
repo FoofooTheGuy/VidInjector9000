@@ -52,6 +52,8 @@ extern std::string FFrewindCheckText;
 extern std::string DimCheckText;
 extern std::string TextTooLongError;
 extern std::string ImageInfoError;
+extern std::string CLIError;
+extern std::string CLIHelp;
 extern std::string SeeLog;
 extern std::string PlayerTitleText;
 extern std::string MoflexFileText;

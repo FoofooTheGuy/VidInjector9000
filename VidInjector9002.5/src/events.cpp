@@ -518,6 +518,58 @@ void MenuBanners_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxText
 	}
 }
 
+void MultiUp_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters, wxButton* row) {
+	size_t rowReal;
+	for(rowReal = 0; rowReal < wid->MultiUp.size(); rowReal++) {//get row
+		if(reinterpret_cast<intptr_t>(wid->MultiUp.at(rowReal)) == reinterpret_cast<intptr_t>(row)) {//compare pointers
+			if(rowReal > 0) {
+				//the stuff will get saved if the text in the boxes changes so dont save here
+				{//PlayerTitles
+					wxString tempStr(wid->PlayerTitles.at(rowReal)->GetValue());
+					wid->PlayerTitles.at(rowReal)->SetValue(wid->PlayerTitles.at(rowReal - 1)->GetValue());
+					wid->PlayerTitles.at(rowReal - 1)->SetValue(tempStr);
+				}
+				{//MoflexFiles
+					wxString tempStr(wid->MoflexFiles.at(rowReal)->GetValue());
+					wid->MoflexFiles.at(rowReal)->SetValue(wid->MoflexFiles.at(rowReal - 1)->GetValue());
+					wid->MoflexFiles.at(rowReal - 1)->SetValue(tempStr);
+				}
+				{//MenuBanners
+					wxString tempStr(wid->MenuBanners.at(rowReal)->GetValue());
+					wid->MenuBanners.at(rowReal)->SetValue(wid->MenuBanners.at(rowReal - 1)->GetValue());
+					wid->MenuBanners.at(rowReal - 1)->SetValue(tempStr);
+				}
+			}
+		}
+	}
+}
+
+void MultiDown_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters, wxButton* row) {
+	size_t rowReal;
+	for(rowReal = 0; rowReal < wid->MultiDown.size(); rowReal++) {//get row
+		if(reinterpret_cast<intptr_t>(wid->MultiDown.at(rowReal)) == reinterpret_cast<intptr_t>(row)) {//compare pointers
+			if(rowReal < wid->MultiDown.size()) {
+				//the stuff will get saved if the text in the boxes changes so dont save here
+				{//PlayerTitles
+					wxString tempStr(wid->PlayerTitles.at(rowReal)->GetValue());
+					wid->PlayerTitles.at(rowReal)->SetValue(wid->PlayerTitles.at(rowReal + 1)->GetValue());
+					wid->PlayerTitles.at(rowReal + 1)->SetValue(tempStr);
+				}
+				{//MoflexFiles
+					wxString tempStr(wid->MoflexFiles.at(rowReal)->GetValue());
+					wid->MoflexFiles.at(rowReal)->SetValue(wid->MoflexFiles.at(rowReal + 1)->GetValue());
+					wid->MoflexFiles.at(rowReal + 1)->SetValue(tempStr);
+				}
+				{//MenuBanners
+					wxString tempStr(wid->MenuBanners.at(rowReal)->GetValue());
+					wid->MenuBanners.at(rowReal)->SetValue(wid->MenuBanners.at(rowReal + 1)->GetValue());
+					wid->MenuBanners.at(rowReal + 1)->SetValue(tempStr);
+				}
+			}
+		}
+	}
+}
+
 void moflexBrowse_wxEVT_BUTTON(InitWidgets* wid) {
 	wxFileDialog openFileDialog(wid->frame, wxEmptyString, wxEmptyString, wxEmptyString, moflexFiles, wxFD_OPEN|wxFD_FILE_MUST_EXIST);
 	openFileDialog.SetFilterIndex(0);

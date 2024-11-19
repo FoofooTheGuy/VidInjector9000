@@ -22,6 +22,8 @@ int main(int argc, char* argv[]) {
 	wxFileName f(wxStandardPaths::Get().GetExecutablePath());
 	ProgramDir = f.GetPath();
 	
+	//TODO: load language
+	
 	//load settings
 	{
 		std::vector<int> ret = loadSettings();
@@ -107,6 +109,23 @@ int main(int argc, char* argv[]) {
 		std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath).c_str()), error);
 		if (error)
 			wxMessageBox(wxString::FromUTF8(std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '\n' + error.message())), wxString::FromUTF8(ErrorText));
+	}
+	
+	{//test CLI
+		wxArrayString output;
+		wxArrayString errors;
+		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + '\"');
+		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+
+		wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+		for (auto &s : output) {
+			wid.consoleLog->LogTextAtLevel(0, s);
+		}
+		wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		
+		if(ret != 1) {//1 is the expected return value of that command
+			wxMessageBox(wxString::FromUTF8(CLIError), wxString::FromUTF8(ErrorText), wxICON_ERROR);
+		}
 	}
 	
 	if(VI9P::WorkingFile.empty())
@@ -239,6 +258,18 @@ int main(int argc, char* argv[]) {
 			MenuBanners_wxEVT_TEXT(&wid, &parameters, row);
 		});
 	}
+
+	for(const auto &row : wid.MultiUp) {
+		row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
+			MultiUp_wxEVT_BUTTON(&wid, &parameters, row);
+		});
+	}
+
+	for(const auto &row : wid.MultiDown) {
+		row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
+			MultiDown_wxEVT_BUTTON(&wid, &parameters, row);
+		});
+	}
 	
 	wid.moflexBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		moflexBrowse_wxEVT_BUTTON(&wid);
@@ -265,16 +296,24 @@ int main(int argc, char* argv[]) {
 					PlayerTitles_wxEVT_TEXT(&wid, &parameters, row);
 				});
 			}
-
 			for(const auto &row : wid.MoflexFiles) {
 				row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
 					MoflexFiles_wxEVT_TEXT(&wid, &parameters, row);
 				});
 			}
-			
 			for(const auto &row : wid.MenuBanners) {
 				row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
 					MenuBanners_wxEVT_TEXT(&wid, &parameters, row);
+				});
+			}
+			for(const auto &row : wid.MultiUp) {
+				row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
+					MultiUp_wxEVT_BUTTON(&wid, &parameters, row);
+				});
+			}
+			for(const auto &row : wid.MultiDown) {
+				row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
+					MultiDown_wxEVT_BUTTON(&wid, &parameters, row);
 				});
 			}
 			setAppearance(&wid, Settings::ColorMode);
@@ -329,6 +368,10 @@ int main(int argc, char* argv[]) {
 		setCursors(&wid);
 	});
 	
+	wid.splitPatchButton->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		
+	});
+	
 	wid.mainMenu->Bind(wxEVT_MENU, [&](wxCommandEvent& event) {
 		switch(event.GetId()) {
 			case wxID_OPEN:
@@ -349,16 +392,24 @@ int main(int argc, char* argv[]) {
 								PlayerTitles_wxEVT_TEXT(&wid, &parameters, row);
 							});
 						}
-
 						for(const auto &row : wid.MoflexFiles) {
 							row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
 								MoflexFiles_wxEVT_TEXT(&wid, &parameters, row);
 							});
 						}
-						
 						for(const auto &row : wid.MenuBanners) {
 							row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
 								MenuBanners_wxEVT_TEXT(&wid, &parameters, row);
+							});
+						}
+						for(const auto &row : wid.MultiUp) {
+							row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
+								MultiUp_wxEVT_BUTTON(&wid, &parameters, row);
+							});
+						}
+						for(const auto &row : wid.MultiDown) {
+							row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
+								MultiDown_wxEVT_BUTTON(&wid, &parameters, row);
 							});
 						}
 						setAppearance(&wid, Settings::ColorMode);

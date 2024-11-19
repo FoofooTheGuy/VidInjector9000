@@ -11,6 +11,7 @@
 #include <wx/fontdlg.h>
 #include <wx/process.h>
 #include <wx/colour.h>
+#include <wx/tglbtn.h>
 #include <wx/wx.h>
 
 #include "formatting.hpp"
@@ -67,15 +68,15 @@ struct InitWidgets {
 	
 	wxStaticText* shortnameText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(ShortNameText));
 	wxTextCtrl* shortnameBox = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-	wxStaticText* shortnameError = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8("a"));//like my place holder?
+	wxStaticText* shortnameError = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(ErrorText + ' ' + TextTooLongError + " (0/64)"));
 
 	wxStaticText* longnameText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(LongNameText));
 	wxTextCtrl* longnameBox = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-	wxStaticText* longnameError = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8("a"));
+	wxStaticText* longnameError = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(ErrorText + ' ' + TextTooLongError + " (0/128)"));
 
 	wxStaticText* publisherText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(PublisherText));
 	wxTextCtrl* publisherBox = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-	wxStaticText* publisherError = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8("a"));
+	wxStaticText* publisherError = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(ErrorText + ' ' + TextTooLongError + " (0/64)"));
 
 	wxTextCtrl* copyBox = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, {300, 200}, wxTE_MULTILINE | wxTE_CENTRE);
 	wxCheckBox* copyCheck = new wxCheckBox(panel, wxID_ANY, wxString::FromUTF8(CopyrightCheckText));
@@ -116,7 +117,7 @@ struct InitWidgets {
 	wxButton* removeRow = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8("-"));
 	wxButton* appendRow = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8("+"));
 	
-	wxButton* splitPatchButton = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8(SplitIntoAPatch));
+	wxToggleButton* splitPatchButton = new wxToggleButton(scrolledPanel, wxID_ANY, wxString::FromUTF8(SplitIntoAPatch));
 	
 	wxStaticText* rowText = new wxStaticText(scrolledPanel, wxID_ANY, wxString::FromUTF8("1/27"));
 };

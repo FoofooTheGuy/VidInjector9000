@@ -39,6 +39,7 @@ std::string FFrewindCheckText = "Fast forward/Rewind buttons";
 std::string DimCheckText = "Dim after 5 seconds";
 std::string TextTooLongError = "Text is too long";
 std::string ImageInfoError = "Failed to get image info.";
+std::string CLIError = "Failed to access CLI.\nIs VidInjector9002-CLI(.exe) in \"VidInjector9000Resources/\"?";
 std::string SeeLog = "See log for details.";
 std::string PlayerTitleText = "Player title";
 std::string MoflexFileText = "Moflex file";
