@@ -123,6 +123,7 @@ struct InitWidgets {
 };
 
 void initAllWidgets(InitWidgets* initwidgets);
+void ShowUpDown(InitWidgets* wid);
 void setToolTips(InitWidgets* initwidgets);
 void setCursors(InitWidgets* wid);
 

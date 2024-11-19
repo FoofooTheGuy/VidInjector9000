@@ -340,6 +340,7 @@ void copyCheck_wxEVT_CHECKBOX(InitWidgets* wid, VI9Pparameters* parameters) {
 		}
 		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 	}
+	wid->copyBox->Enable(parameters->copycheck);
 }
 
 void ffRewindCheck_wxEVT_CHECKBOX(InitWidgets* wid, VI9Pparameters* parameters) {
@@ -681,5 +682,7 @@ void removeRow_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 		}
 		wid->appendRow->Enable(false);
 	}
+	ShowUpDown(wid);
+	setCursors(wid);
 }
 

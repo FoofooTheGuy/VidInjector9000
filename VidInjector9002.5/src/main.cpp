@@ -360,11 +360,9 @@ int main(int argc, char* argv[]) {
 			wid.rowText->Show(false);
 			wid.appendRow->Enable(false);
 		}
-		wid.multiBannerPreviewLeft->SetCursor(wid.multiBannerPreviewLeft->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
-		wid.multiBannerPreviewRight->SetCursor(wid.multiBannerPreviewRight->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
-		
 		wid.removeRow->Enable(true);
 		
+		ShowUpDown(&wid);
 		setCursors(&wid);
 	});
 	

@@ -190,6 +190,7 @@ void initAllWidgets(InitWidgets* wid) {
 		wid->copyCheck->GetTextExtent(wid->copyCheck->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->copyCheck->SetSize(w + boxwidth, h);
 	}
+	
 	{//ffRewindCheck
 		int w, width, mywidth, boxwidth, h;
 		wxFont f;
@@ -311,6 +312,7 @@ void initAllWidgets(InitWidgets* wid) {
 			
 			wid->MultiDown.push_back(button);
 		}
+		ShowUpDown(wid);
 	}
 	
 	{//moflexBrowse
@@ -397,6 +399,21 @@ void initAllWidgets(InitWidgets* wid) {
 		wid->rowText->GetTextExtent(wid->rowText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->rowText->SetSize(w, h);
 	}
+}
+
+void ShowUpDown(InitWidgets* wid) {
+	for(const auto &row : wid->MultiUp) {
+		row->Enable(true);
+		row->Show(true);
+	}
+	wid->MultiUp.front()->Enable(false);
+	wid->MultiUp.front()->Show(false);
+	for(const auto &row : wid->MultiDown) {
+		row->Enable(true);
+		row->Show(true);
+	}
+	wid->MultiDown.back()->Enable(false);
+	wid->MultiDown.back()->Show(false);
 }
 
 void setToolTips(InitWidgets* wid) {
@@ -819,7 +836,7 @@ void positionWidgets(InitWidgets* wid) {
 		wid->moflexBrowse->GetSize(&sizes[3], NULL);
 		wid->multiBannerBrowse->GetSize(&sizes[4], NULL);
 		std::vector<int>::iterator widestText = std::max_element(sizes.begin(), sizes.end());
-
+		
 		{//PlayerTitles
 			for(int row = 0; row < wid->PlayerTitles.size(); row++) {
 				int scrolledx, scrolledy, ppux, ppuy, previousy, width, upwidth, downwidth, height;
@@ -830,11 +847,21 @@ void positionWidgets(InitWidgets* wid) {
 				wid->MultiDown.at(0)->GetSize(&downwidth, NULL);
 				wid->PlayerTitles.at(row)->GetSize(NULL, &height);
 				
-				if((width - (upwidth + 3 + downwidth + (ppux * 2))) / 3 >= *widestText) {
-					wid->PlayerTitles.at(row)->SetSize((width - (upwidth + 3 + downwidth + (ppux * 2))) / 3, height);
+				if(wid->PlayerTitles.size() == 1) {
+					if((width - (ppux * 2)) / 3 >= *widestText) {
+						wid->PlayerTitles.at(row)->SetSize((width - (ppux * 2)) / 3, height);
+					}
+					else {
+						wid->PlayerTitles.at(row)->SetSize(*widestText, height);
+					}
 				}
 				else {
-					wid->PlayerTitles.at(row)->SetSize(*widestText, height);
+					if((width - (upwidth + 3 + downwidth + (ppux * 2))) / 3 >= *widestText) {
+						wid->PlayerTitles.at(row)->SetSize((width - (upwidth + 3 + downwidth + (ppux * 2))) / 3, height);
+					}
+					else {
+						wid->PlayerTitles.at(row)->SetSize(*widestText, height);
+					}
 				}
 				
 				if(row > 0) {
@@ -856,11 +883,21 @@ void positionWidgets(InitWidgets* wid) {
 				wid->MultiDown.at(0)->GetSize(&downwidth, NULL);
 				wid->MoflexFiles.at(row)->GetSize(NULL, &height);
 				
-				if((width - (upwidth + 3 + downwidth + (ppux * 2))) / 3 >= *widestText) {
-					wid->MoflexFiles.at(row)->SetSize((width - (upwidth + 3 + downwidth + (ppux * 2))) / 3, height);
+				if(wid->MoflexFiles.size() == 1) {
+					if((width - (ppux * 2)) / 3 >= *widestText) {
+						wid->MoflexFiles.at(row)->SetSize((width - (ppux * 2)) / 3, height);
+					}
+					else {
+						wid->MoflexFiles.at(row)->SetSize(*widestText, height);
+					}
 				}
 				else {
-					wid->MoflexFiles.at(row)->SetSize(*widestText, height);
+					if((width - (upwidth + 3 + downwidth + (ppux * 2))) / 3 >= *widestText) {
+						wid->MoflexFiles.at(row)->SetSize((width - (upwidth + 3 + downwidth + (ppux * 2))) / 3, height);
+					}
+					else {
+						wid->MoflexFiles.at(row)->SetSize(*widestText, height);
+					}
 				}
 				
 				wid->MoflexFiles.at(row)->GetSize(&width, NULL);
@@ -885,11 +922,21 @@ void positionWidgets(InitWidgets* wid) {
 				wid->MultiDown.at(0)->GetSize(&downwidth, NULL);
 				wid->MenuBanners.at(row)->GetSize(NULL, &height);
 				
-				if((width - (upwidth + 3 + downwidth + (ppux * 2))) / 3 >= *widestText) {
-					wid->MenuBanners.at(row)->SetSize((width - (upwidth + 3 + downwidth + (ppux * 2))) / 3, height);
+				if(wid->MenuBanners.size() == 1) {
+					if((width - (ppux * 2)) / 3 >= *widestText) {
+						wid->MenuBanners.at(row)->SetSize((width - (ppux * 2)) / 3, height);
+					}
+					else {
+						wid->MenuBanners.at(row)->SetSize(*widestText, height);
+					}
 				}
 				else {
-					wid->MenuBanners.at(row)->SetSize(*widestText, height);
+					if((width - (upwidth + 3 + downwidth + (ppux * 2))) / 3 >= *widestText) {
+						wid->MenuBanners.at(row)->SetSize((width - (upwidth + 3 + downwidth + (ppux * 2))) / 3, height);
+					}
+					else {
+						wid->MenuBanners.at(row)->SetSize(*widestText, height);
+					}
 				}
 				
 				wid->MenuBanners.at(row)->GetSize(&width, NULL);
@@ -1613,7 +1660,7 @@ int loadParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 
 void applyMode(InitWidgets* wid, VI9Pparameters* parameters) {
 	if(parameters->mode) {//the main stuff that changes base on what mode youre in
-		wid->copyBox->Enable(true);
+		wid->copyBox->Enable(wid->copyCheck->GetValue());
 		wid->copyCheck->Enable(true);
 		wid->rowText->Show(true);
 		wid->multiBannerPreview->Enable(true);
@@ -1658,6 +1705,7 @@ void applyMode(InitWidgets* wid, VI9Pparameters* parameters) {
 		for(const auto &row : wid->MenuBanners) {
 			row->Enable(true);
 		}
+
 		wid->multiBannerBrowse->Enable(true);
 	}
 	else {
@@ -2046,8 +2094,6 @@ void removeRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 		wid->multiBannerPreviewLeft->Enable(false);
 		wid->multiBannerPreviewRight->Enable(false);
 	}
-	wid->multiBannerPreviewLeft->SetCursor(wid->multiBannerPreviewLeft->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
-	wid->multiBannerPreviewRight->SetCursor(wid->multiBannerPreviewRight->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
 
 	positionWidgets(wid);
 }
