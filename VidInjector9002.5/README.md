@@ -11,7 +11,8 @@ A GUI wrapper for VidInjector9002-CLI
 
 **Linux**
 1. Install `cmake` and `git` with your package manager
-2. Install dependencies for wxWidgets. For example, on debian:
+2. Clone the entire repository `git clone --recurse-submodules -j8 https://github.com/FoofooTheGuy/VidInjector9000.git`
+3. Install dependencies for wxWidgets. For example, on debian:
 ```
 sudo apt install \
 lib-gtk3-dev \
@@ -27,8 +28,7 @@ libnotify-dev \
 libmspack-dev \
 libgspell-1-dev
 ```
-3. Clone the entire repository `git clone --recurse-submodules -j8 https://github.com/FoofooTheGuy/VidInjector9000.git`
-4. Run `install-wxwidgets.sh`
+4. Run `install-wxwidgets.sh` Note: Alternatively, you might be able to install `wxwidgets` with your package manager
 5. Run `build.sh`
 
 # Installation
@@ -38,4 +38,3 @@ libgspell-1-dev
 
 **Linux**
 
-It is best to compile from source if you are using Linux. See [Compiling](https://github.com/FoofooTheGuy/VidInjector9000/tree/main/VidInjector9002.5#compiling).
