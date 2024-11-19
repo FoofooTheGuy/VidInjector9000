@@ -30,7 +30,9 @@ std::vector<int> loadSettings() {
 		settingsfile <<
 			StrDefaultLanguage << "=\"" << "English" << "\"\n" <<
 			IntShowLog << "=\"" << 0 << "\"\n" <<
-			IntColorMode << "=\"" << 2 << "\"\n";
+			IntColorMode << "=\"" << 2 << "\"\n" <<
+			IntFrameWidth << "=\"" << 1000 << "\"\n" <<
+			IntFrameHeight << "=\"" << 700 << "\"\n";
 		settingsfile.close();
 	}
 	std::vector<std::string> filelines = fileRead(std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + settingsFile));
