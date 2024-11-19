@@ -10,10 +10,26 @@ A GUI wrapper for VidInjector9002-CLI
 5. Run `build.bat`
 
 **Linux**
-1. Download `cmake` and `git` with your package manager
-2. Clone the entire repository `git clone --recurse-submodules -j8 https://github.com/FoofooTheGuy/VidInjector9000.git`
-3. Run `install-wxwidgets.sh`
-4. Run `build.sh`
+1. Install `cmake` and `git` with your package manager
+2. Install dependencies for wxWidgets. For example, on debian:
+```
+sudo apt install \
+lib-gtk3-dev \
+libcurl4-openssl-dev \
+libsecret-1-dev \
+libwebkitgtk-6.0-dev \
+libwebkit2gtk-4.1-dev \
+libsoup-3.0-dev \
+libgstreamer-plugins-base1.0-dev \
+libsdl1.2-dev \
+libsdl2-dev \
+libnotify-dev \
+libmspack-dev \
+libgspell-1-dev
+```
+3. Clone the entire repository `git clone --recurse-submodules -j8 https://github.com/FoofooTheGuy/VidInjector9000.git`
+4. Run `install-wxwidgets.sh`
+5. Run `build.sh`
 
 # Installation
 **Windows**
