@@ -18,12 +18,11 @@ file(GLOB MY_SRC
     "src/*.h"
 )
 
+add_executable(${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${MY_SRC})
 IF(UNIX)
     find_package(X11)
     IF(X11_FOUND)
         target_link_libraries(${PROJECT_NAME} X11)
     ENDIF()
 ENDIF()
-
-add_executable(${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${MY_SRC})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Application")
