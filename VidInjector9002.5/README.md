@@ -1,7 +1,18 @@
 # VidInjector9002.5
 A GUI wrapper for VidInjector9002-CLI
 
-# Compiling
+# Installation
+**Windows**
+1. Install the [Microsoft Visual C++ Redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads)
+2. Run `VidInjector9002.5.exe`
+
+**Linux**
+
+**Arch**
+1. Install `gtk3` with your package manager
+2. Run `VidInjector9002.5`
+
+# Compiling from source
 **Windows**
 1. Download and install [CMake](https://cmake.org/), [Git](https://git-scm.com/downloads/win), and [Microsoft Visual Studio](https://visualstudio.microsoft.com/) with the `Desktop development with C++` workload
 2. Clone the entire repository `git clone --recurse-submodules -j8 https://github.com/FoofooTheGuy/VidInjector9000.git`
@@ -30,14 +41,3 @@ libgspell-1-dev
 ```
 4. Run `install-wxwidgets.sh` Note: Alternatively, you might be able to install `wxwidgets` with your package manager
 5. Run `build.sh`
-
-# Installation
-**Windows**
-1. Install the [Microsoft Visual C++ Redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads)
-2. Run `VidInjector9002.5.exe`
-
-**Linux**
-
-**Arch**
-1. Install `gtk3` with your package manager
-2. Run `VidInjector9002.5`
