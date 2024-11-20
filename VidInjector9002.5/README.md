@@ -15,7 +15,7 @@ A GUI wrapper for VidInjector9002-CLI
 3. Install dependencies for wxWidgets. For example, on debian:
 ```
 sudo apt install \
-lib-gtk3-dev \
+libgtk3-dev \
 libcurl4-openssl-dev \
 libsecret-1-dev \
 libwebkitgtk-6.0-dev \
@@ -38,3 +38,6 @@ libgspell-1-dev
 
 **Linux**
 
+**Arch**
+1. Install `gtk3` with your package manager
+2. Run `VidInjector9002.5`
