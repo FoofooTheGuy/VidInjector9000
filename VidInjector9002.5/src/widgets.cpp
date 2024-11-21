@@ -312,7 +312,7 @@ void initAllWidgets(InitWidgets* wid) {
 			
 			wid->MultiDown.push_back(button);
 		}
-		ShowUpDown(wid);
+		ShowMultiUpDown(wid);
 	}
 	
 	{//moflexBrowse
@@ -389,6 +389,30 @@ void initAllWidgets(InitWidgets* wid) {
 		wid->splitPatchButton->GetTextExtent(wid->splitPatchButton->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->splitPatchButton->SetSize(w + buttwidth, h + buttheight);
 	}
+	{//splitPatchLine
+	
+	}
+	{//splitPatchUp
+		int width, height;
+		wxFont f;
+		
+		wid->splitPatchUp->GetTextExtent(wid->splitPatchUp->GetLabel(), &width, &height, nullptr, nullptr, &f);
+		wid->splitPatchUp->SetSize(width, height);
+	}
+	{//splitPatchDown
+		int width, height;
+		wxFont f;
+		
+		wid->splitPatchDown->GetTextExtent(wid->splitPatchDown->GetLabel(), &width, &height, nullptr, nullptr, &f);
+		wid->splitPatchDown->SetSize(width, height);
+	}
+	{//splitPatchUp
+		int width, height;
+		wxFont f;
+		
+		wid->splitPatchDown->GetTextExtent(wid->splitPatchDown->GetLabel(), &width, &height, nullptr, nullptr, &f);
+		wid->splitPatchDown->SetSize(width, height);
+	}
 	{//rowText
 		int w, h;
 		wxFont f;
@@ -401,7 +425,7 @@ void initAllWidgets(InitWidgets* wid) {
 	}
 }
 
-void ShowUpDown(InitWidgets* wid) {
+void ShowMultiUpDown(InitWidgets* wid) {
 	for(const auto &row : wid->MultiUp) {
 		row->Enable(true);
 		row->Show(true);
@@ -414,6 +438,13 @@ void ShowUpDown(InitWidgets* wid) {
 	}
 	wid->MultiDown.back()->Enable(false);
 	wid->MultiDown.back()->Show(false);
+}
+
+void ShowPatchUpDown(InitWidgets* wid, VI9Pparameters* parameters) {
+	wid->splitPatchUp->Enable(parameters->splitPos > 1);
+	wid->splitPatchUp->Show(parameters->splitPos > 1);
+	wid->splitPatchDown->Enable(parameters->splitPos < parameters->rows - 1);
+	wid->splitPatchDown->Show(parameters->splitPos < parameters->rows - 1);
 }
 
 void setToolTips(InitWidgets* wid) {
@@ -472,12 +503,14 @@ void setCursors(InitWidgets* wid) {
 	wid->removeRow->SetCursor(wid->removeRow->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
 	wid->appendRow->SetCursor(wid->appendRow->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
 	wid->splitPatchButton->SetCursor(wid->splitPatchButton->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
+	wid->splitPatchUp->SetCursor(wid->splitPatchButton->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
+	wid->splitPatchDown->SetCursor(wid->splitPatchButton->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
 	wid->frame->SetCursor(wxCURSOR_ARROW);
 	wid->panel->SetCursor(wxCURSOR_ARROW);
 	wid->mediaPanel->SetCursor(wxCURSOR_ARROW);
 }
 
-void positionWidgets(InitWidgets* wid) {
+void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 	{//modeChoiceBox
 		int x, y, height;
 		wid->modeText->GetPosition(&x, &y);
@@ -839,7 +872,7 @@ void positionWidgets(InitWidgets* wid) {
 		
 		{//PlayerTitles
 			for(int row = 0; row < wid->PlayerTitles.size(); row++) {
-				int scrolledx, scrolledy, ppux, ppuy, previousy, width, upwidth, downwidth, height;
+				int scrolledx, scrolledy, ppux, ppuy, previousy, width, upwidth, downwidth, upheight, height;
 				wid->mediaPanel->GetSize(&width, NULL);
 				wid->scrolledPanel->GetViewStart(&scrolledx, &scrolledy);
 				wid->scrolledPanel->GetScrollPixelsPerUnit(&ppux, &ppuy);
@@ -866,7 +899,13 @@ void positionWidgets(InitWidgets* wid) {
 				
 				if(row > 0) {
 					wid->PlayerTitles.at(row - 1)->GetPosition(NULL, &previousy);
-					wid->PlayerTitles.at(row)->Move(0 - (scrolledx * ppux), (previousy + height));
+					if(row == parameters->splitPos) {
+						wid->splitPatchUp->GetSize(NULL, &upheight);
+						wid->PlayerTitles.at(row)->Move(0 - (scrolledx * ppux), (previousy + height + upheight));
+					}
+					else {
+						wid->PlayerTitles.at(row)->Move(0 - (scrolledx * ppux), (previousy + height));
+					}
 				}
 				else {
 					wid->PlayerTitles.at(row)->Move(0 - (scrolledx * ppux), (height * row) - (scrolledy * ppuy));
@@ -875,7 +914,7 @@ void positionWidgets(InitWidgets* wid) {
 		}
 		{//MoflexFiles
 			for(int row = 0; row < wid->MoflexFiles.size(); row++) {
-				int scrolledx, scrolledy, ppux, ppuy, previousy, width, upwidth, downwidth, height;
+				int scrolledx, scrolledy, ppux, ppuy, previousy, width, upwidth, downwidth, upheight, height;
 				wid->mediaPanel->GetSize(&width, NULL);
 				wid->scrolledPanel->GetViewStart(&scrolledx, &scrolledy);
 				wid->scrolledPanel->GetScrollPixelsPerUnit(&ppux, &ppuy);
@@ -905,7 +944,13 @@ void positionWidgets(InitWidgets* wid) {
 				//row->Move((width) - (scrolledx * ppux), (height * currentrow) - (scrolledy * ppuy));
 				if(row > 0) {
 					wid->MoflexFiles.at(row - 1)->GetPosition(NULL, &previousy);
-					wid->MoflexFiles.at(row)->Move((width) - (scrolledx * ppux), (previousy + height));
+					if(row == parameters->splitPos) {
+						wid->splitPatchUp->GetSize(NULL, &upheight);
+						wid->MoflexFiles.at(row)->Move((width) - (scrolledx * ppux), (previousy + height + upheight));
+					}
+					else {
+						wid->MoflexFiles.at(row)->Move((width) - (scrolledx * ppux), (previousy + height));
+					}
 				}
 				else {
 					wid->MoflexFiles.at(row)->Move((width) - (scrolledx * ppux), (height * row) - (scrolledy * ppuy));
@@ -914,7 +959,7 @@ void positionWidgets(InitWidgets* wid) {
 		}
 		{//MenuBanners
 			for(int row = 0; row < wid->MenuBanners.size(); row++) {
-				int scrolledx, scrolledy, ppux, ppuy, previousy, width, upwidth, downwidth, height;
+				int scrolledx, scrolledy, ppux, ppuy, previousy, width, upwidth, downwidth, upheight, height;
 				wid->mediaPanel->GetSize(&width, NULL);
 				wid->scrolledPanel->GetViewStart(&scrolledx, &scrolledy);
 				wid->scrolledPanel->GetScrollPixelsPerUnit(&ppux, &ppuy);
@@ -943,7 +988,13 @@ void positionWidgets(InitWidgets* wid) {
 				
 				if(row > 0) {
 					wid->MenuBanners.at(row - 1)->GetPosition(NULL, &previousy);
-					wid->MenuBanners.at(row)->Move((width * 2) - (scrolledx * ppux), (previousy + height));
+					if(row == parameters->splitPos) {
+						wid->splitPatchUp->GetSize(NULL, &upheight);
+						wid->MenuBanners.at(row)->Move((width * 2) - (scrolledx * ppux), (previousy + height + upheight));
+					}
+					else {
+						wid->MenuBanners.at(row)->Move((width * 2) - (scrolledx * ppux), (previousy + height));
+					}
 				}
 				else {
 					wid->MenuBanners.at(row)->Move((width * 2) - (scrolledx * ppux), (height * row) - (scrolledy * ppuy));
@@ -1042,6 +1093,31 @@ void positionWidgets(InitWidgets* wid) {
 		
 		wid->splitPatchButton->Move(x + (((width + 2 + appendrowwidth) - mywidth) / 2), y + height + 2);
 	}
+	{//splitPatchDown
+		int x, y, width, mywidth, myheight;
+		wid->MenuBanners.at(parameters->splitPos)->GetSize(&width, NULL);
+		wid->MenuBanners.at(parameters->splitPos)->GetPosition(&x, &y);
+		wid->splitPatchDown->GetSize(&mywidth, &myheight);
+		
+		wid->splitPatchDown->Move((x + width) - mywidth, y - myheight);
+	}
+	{//splitPatchUp
+		int x, y, mywidth;
+		wid->splitPatchDown->GetPosition(&x, &y);
+		wid->splitPatchUp->GetSize(&mywidth, NULL);
+		
+		wid->splitPatchUp->Move(x - 3 - mywidth, y);
+	}
+	{//splitPatchLine
+		int x, upx, upy, mywidth, downwidth, upwidth, upheight;
+		wid->PlayerTitles.at(parameters->splitPos)->GetPosition(&x, NULL);
+		wid->splitPatchUp->GetPosition(&upx, &upy);
+		wid->splitPatchUp->GetSize(&upwidth, &upheight);
+		wid->splitPatchDown->GetSize(&downwidth, NULL);
+		
+		wid->splitPatchLine->Move(x + upwidth + 3 + downwidth + 3, upy + ((upheight - 3) / 2));
+		wid->splitPatchLine->SetSize(upx - 3 - x - upwidth - 3 - downwidth - 3, 3);
+	}
 	{//rowText
 		int x, y, width, mywidth, height;
 		wid->splitPatchButton->GetSize(&width, &height);
@@ -1051,18 +1127,19 @@ void positionWidgets(InitWidgets* wid) {
 		wid->rowText->Move(x + ((width - mywidth) / 2), y + height + 2);
 	}
 	{//scrolledPanel
-		int width, boxwidth, upwidth, height, boxheight, browseheight, removeheight, splitpatchheight, rowtextheight;//todo: splitpatch line
+		int width, boxwidth, upwidth, height, boxheight, browseheight, removeheight, splitpatchheight, splitupheight, rowtextheight;//todo: splitpatch line
 		wid->mediaPanel->GetSize(&width, &height);
 		wid->PlayerTitles.at(0)->GetSize(&boxwidth, &boxheight);
 		wid->MultiUp.at(0)->GetSize(&upwidth, NULL);//up and down are the same size so just use this (or are they...?)
 		wid->moflexBrowse->GetSize(NULL, &browseheight);
 		wid->removeRow->GetSize(NULL, &removeheight);//- and + are the same size
 		wid->splitPatchButton->GetSize(NULL, &splitpatchheight);
+		wid->splitPatchUp->GetSize(NULL, &splitupheight);
 		wid->rowText->GetSize(NULL, &rowtextheight);
 		//wid->splitPatchButton->GetSize(NULL, &virtheight);
 
 		wid->scrolledPanel->SetSize(width, height);
-		wid->scrolledPanel->SetVirtualSize((boxwidth * 3) + upwidth + 3 + upwidth, boxheight * wid->PlayerTitles.size() + browseheight + 2 + removeheight + 2 + splitpatchheight + 2 + rowtextheight);//size to contain all widgets (dont use coordinates)
+		wid->scrolledPanel->SetVirtualSize((boxwidth * 3) + upwidth + 3 + upwidth, boxheight * wid->PlayerTitles.size() + splitupheight + browseheight + 2 + removeheight + 2 + splitpatchheight + 2 + rowtextheight);//size to contain all widgets (dont use coordinates)
 	}
 }
 
@@ -1238,6 +1315,8 @@ void getAppearance(InitWidgets* wid) {
 
 void setAppearance(InitWidgets* wid, int Mode) {
 	if(Mode < 2) {
+		wid->splitPatchLine->SetColour(*(Mode ? wxBLACK : wxWHITE));
+		
 		wid->panel->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->mainMenu->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->modeText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
@@ -1371,6 +1450,8 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		}
 	}
 	else if(Mode == 2) {
+		wid->splitPatchLine->SetColour(0xFFFFFF - BackColor::panel.GetRGB());
+		
 		wid->panel->SetBackgroundColour(BackColor::panel);
 		wid->mainMenu->SetBackgroundColour(BackColor::mainMenu);
 		wid->modeText->SetBackgroundColour(BackColor::modeText);
@@ -1629,6 +1710,18 @@ int loadParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 				parameters->FadeOpt = (outnum ? 1 : 0);
 			}
 		}
+		{//splitPos
+			std::string value = "";
+			int outnum = 0;
+			parsePP(pp.c_str(), IntSplitPatchParam, &value);
+			if(!ASCII2number<int>(&outnum, value)) {
+				//tbh this should never ever happen
+				parameters->splitPos = 0;
+			}
+			else {
+				parameters->splitPos = ((outnum < parameters->rows - 1) ? outnum : parameters->rows - 1);
+			}
+		}
 		{//PTitleVec
 			parameters->PTitleVec.clear();
 			for(uint8_t i = 0; i < parameters->rows; i++) {
@@ -1687,14 +1780,17 @@ void applyMode(InitWidgets* wid, VI9Pparameters* parameters) {
 		if(parameters->rows > 1 && parameters->rows < 27) {
 			wid->appendRow->Enable(true);
 			wid->removeRow->Enable(true);
+			wid->splitPatchButton->Enable(true);
 		}
 		if(parameters->rows <= 1) {
 			wid->appendRow->Enable(true);
 			wid->removeRow->Enable(false);
+			wid->splitPatchButton->Enable(false);
 		}
 		else if(parameters->rows >= 27) {
 			wid->appendRow->Enable(false);
 			wid->removeRow->Enable(true);
+			wid->splitPatchButton->Enable(true);
 		}
 		for(const auto &row : wid->PlayerTitles) {
 			row->Enable(true);
@@ -1718,9 +1814,11 @@ void applyMode(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->multiBannerPreviewRight->Enable(false);
 		if(parameters->rows > 1) {
 			wid->removeRow->Enable(true);
+			wid->splitPatchButton->Enable(true);
 		}
 		else {
 			wid->removeRow->Enable(false);
+			wid->splitPatchButton->Enable(false);
 		}
 		wid->appendRow->Enable(false);
 		bool first = true;//lol
@@ -1762,7 +1860,6 @@ void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 	wid->ffRewindCheck->SetValue(parameters->FFrewind);
 	wid->dimCheck->SetValue(parameters->FadeOpt);
 
-	//TODO: finish mediaPanel stuff (split patch grrrr jk splitpatch is gonna be as easy as multibannerindex)
 	if(wid->PlayerTitles.size() < parameters->rows) {
 		int count = parameters->rows - wid->PlayerTitles.size();
 		if(wid->PlayerTitles.size() + count <= 28) {
@@ -1840,6 +1937,8 @@ void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 	for(int row = 0; row < parameters->MBannerVec.size(); row++) {
 		wid->MenuBanners.at(row)->SetValue(wxString::FromUTF8(parameters->MBannerVec.at(row)));
 	}
+	
+	wid->splitPatchButton->SetValue(parameters->splitPos ? 1 : 0);
 	
 	applyMode(wid, parameters);
 }
@@ -1958,7 +2057,7 @@ void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 			}
 		}
 	}
-	positionWidgets(wid);
+	positionWidgets(wid, parameters);
 }
 
 void removeRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
@@ -2095,5 +2194,5 @@ void removeRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 		wid->multiBannerPreviewRight->Enable(false);
 	}
 
-	positionWidgets(wid);
+	positionWidgets(wid, parameters);
 }

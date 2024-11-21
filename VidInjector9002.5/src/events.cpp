@@ -1,13 +1,13 @@
 #include "events.hpp"
 
-void panel_wxEVT_SIZE(InitWidgets* wid) {
+void panel_wxEVT_SIZE(InitWidgets* wid, VI9Pparameters* parameters) {
 	//wxMessageBox(wxString::FromUTF8(std::to_string(event.GetSize().GetWidth()) + ", " + std::to_string(event.GetSize().GetHeight())));
 	int width, height;
 	wid->frame->GetSize(&width, &height);
 	Settings::FrameWidth = width;
 	Settings::FrameHeight = height;
 	saveSettings();
-	positionWidgets(wid);
+	positionWidgets(wid, parameters);
 }
 
 void modeChoiceBox_wxEVT_CHOICE(InitWidgets* wid, VI9Pparameters* parameters) {
@@ -627,6 +627,10 @@ void multiBannerBrowse_wxEVT_BUTTON(InitWidgets* wid) {
 }
 
 void removeRow_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
+	if(parameters->rows - 1 < parameters->splitPos) {
+		wid->splitPatchButton->SetValue(false);
+		splitPatchButton_wxEVT_TOGGLEBUTTON(wid, parameters);
+	}
 	if(wid->removeRow->IsEnabled()) {
 		wid->removeRow->Enable(false);//disable so you cant press it too much
 		wid->appendRow->Enable(false);
@@ -662,27 +666,92 @@ void removeRow_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 		if(parameters->rows > 1 && parameters->rows < 27) {
 			wid->appendRow->Enable(true);
 			wid->removeRow->Enable(true);
+			wid->splitPatchButton->Enable(true);
 		}
 		if(parameters->rows <= 1) {
 			wid->appendRow->Enable(true);
 			wid->removeRow->Enable(false);
+			wid->splitPatchButton->Enable(false);
 		}
 		else if(parameters->rows >= 27) {
 			wid->appendRow->Enable(false);
 			wid->removeRow->Enable(true);
+			wid->splitPatchButton->Enable(true);
 		}
 	}
 	else {
 		wid->rowText->Show(false);
 		if(parameters->rows > 1) {
 			wid->removeRow->Enable(true);
+			wid->splitPatchButton->Enable(true);
 		}
 		else {
 			wid->removeRow->Enable(false);
+			wid->splitPatchButton->Enable(false);
 		}
 		wid->appendRow->Enable(false);
 	}
-	ShowUpDown(wid);
+	ShowPatchUpDown(wid, parameters);
+	ShowMultiUpDown(wid);
 	setCursors(wid);
 }
 
+void splitPatchButton_wxEVT_TOGGLEBUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
+	parameters->splitPos = wid->splitPatchButton->GetValue();
+	
+	{//-sp
+		wxArrayString output;
+		wxArrayString errors;
+		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 11 \"" + std::to_string(parameters->splitPos) + "\" \"" + VI9P::WorkingFile + '\"');
+		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+		
+		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+		for (auto &s : output) {
+			wid->consoleLog->LogTextAtLevel(0, s);
+		}
+		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+	}
+	wid->splitPatchLine->Show(parameters->splitPos);
+	ShowPatchUpDown(wid, parameters);
+	positionWidgets(wid, parameters);
+}
+
+void splitPatchUp_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
+	--parameters->splitPos;
+	
+	{//-sp
+		wxArrayString output;
+		wxArrayString errors;
+		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 11 \"" + std::to_string(parameters->splitPos) + "\" \"" + VI9P::WorkingFile + '\"');
+		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+		
+		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+		for (auto &s : output) {
+			wid->consoleLog->LogTextAtLevel(0, s);
+		}
+		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+	}
+	
+	ShowPatchUpDown(wid, parameters);
+	positionWidgets(wid, parameters);
+}
+
+void splitPatchDown_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
+	++parameters->splitPos;
+	
+	{//-sp
+		wxArrayString output;
+		wxArrayString errors;
+		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 11 \"" + std::to_string(parameters->splitPos) + "\" \"" + VI9P::WorkingFile + '\"');
+		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+		
+		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+		for (auto &s : output) {
+			wid->consoleLog->LogTextAtLevel(0, s);
+		}
+		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+	}
+	
+	ShowPatchUpDown(wid, parameters);
+	positionWidgets(wid, parameters);
+}

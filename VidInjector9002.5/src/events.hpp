@@ -5,7 +5,7 @@
 #include "widgets.hpp"
 #include "vi9p.hpp"
 
-void panel_wxEVT_SIZE(InitWidgets* wid);
+void panel_wxEVT_SIZE(InitWidgets* wid, VI9Pparameters* parameters);
 void modeChoiceBox_wxEVT_CHOICE(InitWidgets* wid, VI9Pparameters* parameters);
 void bannerBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters);
 void bannerBrowse_wxEVT_BUTTON(InitWidgets* wid);
@@ -30,6 +30,9 @@ void MultiDown_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters, wxButt
 void moflexBrowse_wxEVT_BUTTON(InitWidgets* wid);
 void multiBannerBrowse_wxEVT_BUTTON(InitWidgets* wid);
 void removeRow_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters);
+void splitPatchButton_wxEVT_TOGGLEBUTTON(InitWidgets* wid, VI9Pparameters* parameters);
+void splitPatchUp_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters);
+void splitPatchDown_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters);
 
 //binds are in these binds so it cant be done outside of main
 //void appendRow_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters);

@@ -163,7 +163,7 @@ int main(int argc, char* argv[]) {
 	
 	initAllWidgets(&wid);
 
-	positionWidgets(&wid);
+	positionWidgets(&wid, &parameters);
 	
 	setToolTips(&wid);
 	
@@ -174,7 +174,7 @@ int main(int argc, char* argv[]) {
 	setCursors(&wid);
 	
 	wid.panel->Bind(wxEVT_SIZE, [&](wxSizeEvent& event) {
-		panel_wxEVT_SIZE(&wid);
+		panel_wxEVT_SIZE(&wid, &parameters);
 	});
 	
 	wid.modeChoiceBox->Bind(wxEVT_CHOICE, [&](wxCommandEvent& event) {
@@ -323,6 +323,7 @@ int main(int argc, char* argv[]) {
 		}
 		
 		if(parameters.mode) {
+			wid.splitPatchButton->Enable((parameters.rows > 1));
 			if(wid.MenuBanners.size() != 1) {
 				if(VI9P::MultiBannerIndex > 0 && VI9P::MultiBannerIndex < wid.MenuBanners.size() - 1) {
 					wid.multiBannerPreviewLeft->Enable(true);
@@ -357,17 +358,27 @@ int main(int argc, char* argv[]) {
 			}
 		}
 		else {
+			wid.splitPatchButton->Enable(false);
 			wid.rowText->Show(false);
 			wid.appendRow->Enable(false);
 		}
 		wid.removeRow->Enable(true);
 		
-		ShowUpDown(&wid);
+		ShowPatchUpDown(&wid, &parameters);
+		ShowMultiUpDown(&wid);
 		setCursors(&wid);
 	});
 	
-	wid.splitPatchButton->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
-		
+	wid.splitPatchButton->Bind(wxEVT_TOGGLEBUTTON, [&](wxCommandEvent& event) {
+		splitPatchButton_wxEVT_TOGGLEBUTTON(&wid, &parameters);
+	});
+	
+	wid.splitPatchUp->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		splitPatchUp_wxEVT_BUTTON(&wid, &parameters);
+	});
+
+	wid.splitPatchDown->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		splitPatchDown_wxEVT_BUTTON(&wid, &parameters);
 	});
 	
 	wid.mainMenu->Bind(wxEVT_MENU, [&](wxCommandEvent& event) {
@@ -382,7 +393,7 @@ int main(int argc, char* argv[]) {
 						VI9P::WorkingFile = std::string(openFileDialog.GetPath().ToUTF8());
 						VI9P::MultiBannerIndex = 0;
 						loadParameters(&wid, &parameters);
-						positionWidgets(&wid);
+						positionWidgets(&wid, &parameters);
 						
 						//well what do you know... it worked
 						for(const auto &row : wid.PlayerTitles) {
@@ -410,6 +421,8 @@ int main(int argc, char* argv[]) {
 								MultiDown_wxEVT_BUTTON(&wid, &parameters, row);
 							});
 						}
+						ShowPatchUpDown(&wid, &parameters);
+						ShowMultiUpDown(&wid);
 						setAppearance(&wid, Settings::ColorMode);
 						setCursors(&wid);
 						

@@ -31,6 +31,17 @@ enum wxOwnedID {
 	wxTextCtrl* box;
 };*/
 
+//https://github.com/gammasoft71/Examples_wxWidgets/blob/0337d5a59aaf5753d9a2f11bc39198f7875c9677/wxCore/UserControls/Line/Line.cpp#L5
+class wxColouredLine : public wxPanel {
+public:
+	wxColouredLine(wxWindow* parent, const wxColour& colour, const wxPoint& position = wxDefaultPosition, const wxSize& size = wxDefaultSize) : wxPanel {parent, wxID_ANY, position, size} {
+		SetColour(colour);
+	}
+	
+	void SetColour(const wxColour& colour) {SetBackgroundColour(colour);}
+	wxColour GetColour() const {return GetBackgroundColour();}
+};
+
 struct InitWidgets {
 	wxFrame* frame = new wxFrame(nullptr, wxID_ANY, wxString::FromUTF8(frameText), wxDefaultPosition, {Settings::FrameWidth, Settings::FrameHeight});
 	wxPanel* panel = new wxPanel(frame);
@@ -118,16 +129,20 @@ struct InitWidgets {
 	wxButton* appendRow = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8("+"));
 	
 	wxToggleButton* splitPatchButton = new wxToggleButton(scrolledPanel, wxID_ANY, wxString::FromUTF8(SplitIntoAPatch));
+	wxColouredLine* splitPatchLine = new wxColouredLine(scrolledPanel, {0, 0, 0});
+	wxButton* splitPatchUp = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8("↑"), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+	wxButton* splitPatchDown = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8("↓"), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	
 	wxStaticText* rowText = new wxStaticText(scrolledPanel, wxID_ANY, wxString::FromUTF8("1/27"));
 };
 
 void initAllWidgets(InitWidgets* initwidgets);
-void ShowUpDown(InitWidgets* wid);
+void ShowMultiUpDown(InitWidgets* wid);
+void ShowPatchUpDown(InitWidgets* wid, VI9Pparameters* parameters);
 void setToolTips(InitWidgets* initwidgets);
 void setCursors(InitWidgets* wid);
 
-void positionWidgets(InitWidgets* wid);
+void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters);
 
 //dumb?
 class ForeColor
