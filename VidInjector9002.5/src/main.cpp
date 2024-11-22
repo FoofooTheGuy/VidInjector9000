@@ -128,6 +128,7 @@ int main(int argc, char* argv[]) {
 		}
 	}
 	
+	//todo: load vi9p from arg
 	if(VI9P::WorkingFile.empty())
 		VI9P::WorkingFile = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "parameters.vi9p";
 	VI9Pparameters parameters;
@@ -383,60 +384,164 @@ int main(int argc, char* argv[]) {
 	
 	wid.mainMenu->Bind(wxEVT_MENU, [&](wxCommandEvent& event) {
 		switch(event.GetId()) {
+			case wxID_NEW:
+				{
+					{//clear temp
+						std::error_code error;
+						
+						std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath).c_str()), error);
+						if (error)
+							wxMessageBox(wxString::FromUTF8(std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '\n' + error.message())), wxString::FromUTF8(ErrorText));
+
+						std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath).c_str()), error);
+						if (error)
+							wxMessageBox(wxString::FromUTF8(std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '\n' + error.message())), wxString::FromUTF8(ErrorText));
+					}
+					
+					VI9P::WorkingFile = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "parameters.vi9p";
+					
+					{//-n
+						wxArrayString output;
+						wxArrayString errors;
+						wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -n \"" + VI9P::WorkingFile + '\"');
+						int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+
+						wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+						for (auto &s : output) {
+							wid.consoleLog->LogTextAtLevel(0, s);
+						}
+						wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+					}
+					
+					VI9P::MultiBannerIndex = 0;
+					loadParameters(&wid, &parameters);
+					positionWidgets(&wid, &parameters);
+					
+					//well what do you know... it worked
+					for(const auto &row : wid.PlayerTitles) {
+						row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
+							PlayerTitles_wxEVT_TEXT(&wid, &parameters, row);
+						});
+					}
+					for(const auto &row : wid.MoflexFiles) {
+						row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
+							MoflexFiles_wxEVT_TEXT(&wid, &parameters, row);
+						});
+					}
+					for(const auto &row : wid.MenuBanners) {
+						row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
+							MenuBanners_wxEVT_TEXT(&wid, &parameters, row);
+						});
+					}
+					for(const auto &row : wid.MultiUp) {
+						row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
+							MultiUp_wxEVT_BUTTON(&wid, &parameters, row);
+						});
+					}
+					for(const auto &row : wid.MultiDown) {
+						row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
+							MultiDown_wxEVT_BUTTON(&wid, &parameters, row);
+						});
+					}
+					ShowPatchUpDown(&wid, &parameters);
+					ShowMultiUpDown(&wid);
+					setAppearance(&wid, Settings::ColorMode);
+					setCursors(&wid);
+					
+					wid.rowText->SetLabel(wxString::FromUTF8(std::to_string(parameters.rows) + "/27"));
+					wid.multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string(wid.MenuBanners.size())));
+				}
+				break;
 			case wxID_OPEN:
 				{
-					wxFileDialog openFileDialog(wid.frame, wxEmptyString, wxEmptyString, wxEmptyString, vi9pFiles, wxFD_OPEN|wxFD_FILE_MUST_EXIST);
+					wxFileDialog openFileDialog(wid.frame, wxEmptyString, wxEmptyString, wxEmptyString, wxString::FromUTF8(vi9pFiles), wxFD_OPEN|wxFD_FILE_MUST_EXIST);
 					openFileDialog.SetFilterIndex(0);
 					if (openFileDialog.ShowModal() == wxID_OK) {
-						//label->SetLabelText(wxString::Format("File = %s",  openFileDialog.GetPath()));
-						//wxMessageBox(openFileDialog.GetPath(), "Placeholder");
-						VI9P::WorkingFile = std::string(openFileDialog.GetPath().ToUTF8());
-						VI9P::MultiBannerIndex = 0;
-						loadParameters(&wid, &parameters);
-						positionWidgets(&wid, &parameters);
-						
-						//well what do you know... it worked
-						for(const auto &row : wid.PlayerTitles) {
-							row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
-								PlayerTitles_wxEVT_TEXT(&wid, &parameters, row);
-							});
+						VI9P::WorkingFile = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "parameters.vi9p";
+						std::error_code error;
+						error = copyfile(std::string(openFileDialog.GetPath().ToUTF8()).c_str(), VI9P::WorkingFile.c_str());//copy chosen file to temp
+						if (error) {
+							wxMessageBox(wxString::FromUTF8(CopyFileError + '\n' + std::string(openFileDialog.GetPath().ToUTF8()) + " -> " +  VI9P::WorkingFile), wxString::FromUTF8(ErrorText));
 						}
-						for(const auto &row : wid.MoflexFiles) {
-							row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
-								MoflexFiles_wxEVT_TEXT(&wid, &parameters, row);
-							});
+						else {
+							VI9P::MultiBannerIndex = 0;
+							loadParameters(&wid, &parameters);
+							positionWidgets(&wid, &parameters);
+							
+							//well what do you know... it worked
+							for(const auto &row : wid.PlayerTitles) {
+								row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
+									PlayerTitles_wxEVT_TEXT(&wid, &parameters, row);
+								});
+							}
+							for(const auto &row : wid.MoflexFiles) {
+								row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
+									MoflexFiles_wxEVT_TEXT(&wid, &parameters, row);
+								});
+							}
+							for(const auto &row : wid.MenuBanners) {
+								row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
+									MenuBanners_wxEVT_TEXT(&wid, &parameters, row);
+								});
+							}
+							for(const auto &row : wid.MultiUp) {
+								row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
+									MultiUp_wxEVT_BUTTON(&wid, &parameters, row);
+								});
+							}
+							for(const auto &row : wid.MultiDown) {
+								row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
+									MultiDown_wxEVT_BUTTON(&wid, &parameters, row);
+								});
+							}
+							ShowPatchUpDown(&wid, &parameters);
+							ShowMultiUpDown(&wid);
+							setAppearance(&wid, Settings::ColorMode);
+							setCursors(&wid);
+							
+							wid.rowText->SetLabel(wxString::FromUTF8(std::to_string(parameters.rows) + "/27"));
+							wid.multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string(wid.MenuBanners.size())));
 						}
-						for(const auto &row : wid.MenuBanners) {
-							row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
-								MenuBanners_wxEVT_TEXT(&wid, &parameters, row);
-							});
-						}
-						for(const auto &row : wid.MultiUp) {
-							row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
-								MultiUp_wxEVT_BUTTON(&wid, &parameters, row);
-							});
-						}
-						for(const auto &row : wid.MultiDown) {
-							row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
-								MultiDown_wxEVT_BUTTON(&wid, &parameters, row);
-							});
-						}
-						ShowPatchUpDown(&wid, &parameters);
-						ShowMultiUpDown(&wid);
-						setAppearance(&wid, Settings::ColorMode);
-						setCursors(&wid);
-						
-						wid.rowText->SetLabel(wxString::FromUTF8(std::to_string(parameters.rows) + "/27"));
-						wid.multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string(wid.MenuBanners.size())));
 					}
+				}
+				break;
+			case wxID_SAVE:
+				{
+					if(strcmp(VI9P::WorkingFile.c_str(), std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "parameters.vi9p").c_str()) == 0) {
+						wxFileDialog saveFileDialog(wid.frame, wxEmptyString, wxEmptyString, wxEmptyString, wxString::FromUTF8(vi9pFiles), wxFD_SAVE);
+						if (saveFileDialog.ShowModal() == wxID_OK) {
+							//wxMessageBox(saveFileDialog.GetPath(), "Placeholder");
+							std::error_code error;
+							error = copyfile(VI9P::WorkingFile.c_str(), std::string(saveFileDialog.GetPath().ToUTF8()).c_str());
+							if (error) {
+								wxMessageBox(wxString::FromUTF8(CopyFileError + '\n' + VI9P::WorkingFile + " -> " + std::string(saveFileDialog.GetPath().ToUTF8())), wxString::FromUTF8(ErrorText));
+							}
+							else {
+								VI9P::WorkingFile = std::string(saveFileDialog.GetPath().ToUTF8());
+								wxMessageBox(wxString::FromUTF8(FileSaved + '\n' + VI9P::WorkingFile));
+							}
+						}
+					}
+					else {
+						wxMessageBox(wxString::FromUTF8(FileSaved + '\n' + VI9P::WorkingFile));
+					}
+					//idk how to make this useful since we auto save
 				}
 				break;
 			case wxID_SAVEAS:
 				{
-					wxFileDialog saveFileDialog(wid.frame, wxEmptyString, "", "MyFile.txt", "Text Files (*.txt)|*.txt|All Files (*.*)|*.*", wxFD_SAVE);
+					wxFileDialog saveFileDialog(wid.frame, wxEmptyString, wxEmptyString, wxEmptyString, wxString::FromUTF8(vi9pFiles), wxFD_SAVE);
 					if (saveFileDialog.ShowModal() == wxID_OK) {
-						//label->SetLabelText(wxString::Format("File = %s", saveFileDialog.GetPath()));
-						wxMessageBox(saveFileDialog.GetPath(), "Placeholder");
+						//wxMessageBox(saveFileDialog.GetPath(), "Placeholder");
+						std::error_code error;
+						error = copyfile(VI9P::WorkingFile.c_str(), std::string(saveFileDialog.GetPath().ToUTF8()).c_str());
+						if (error) {
+							wxMessageBox(wxString::FromUTF8(CopyFileError + '\n' + std::string(saveFileDialog.GetPath().ToUTF8()) + " -> " +  VI9P::WorkingFile), wxString::FromUTF8(ErrorText));
+						}
+						else {
+							VI9P::WorkingFile = std::string(saveFileDialog.GetPath().ToUTF8());
+							wxMessageBox(wxString::FromUTF8(FileSaved + '\n' + VI9P::WorkingFile));
+						}
 					}
 				}
 				break;

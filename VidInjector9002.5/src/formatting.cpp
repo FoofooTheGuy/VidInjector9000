@@ -21,3 +21,11 @@ std::string toupperstr(std::string str) {
 		i = toupper(i) & 0xFF;
 	return str;
 }
+
+std::error_code copyfile(std::string inpath, std::string outpath) {//also works with directories
+	std::error_code error;
+	std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*outpath.c_str()), error);
+	if (error) return error;
+	std::filesystem::copy(std::filesystem::path((const char8_t*)&*inpath.c_str()), std::filesystem::path((const char8_t*)&*outpath.c_str()), std::filesystem::copy_options::recursive, error);
+	return error;
+}

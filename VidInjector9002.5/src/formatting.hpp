@@ -12,6 +12,8 @@ size_t chrcount(const std::string& str);
 std::string tolowerstr(std::string str);
 std::string toupperstr(std::string str);
 
+std::error_code copyfile(std::string inpath, std::string outpath);
+
 template<class T> bool ASCII2number(T* outnum, const std::string& str, bool isHex = false) {
 	if (str.find_first_of("-abcdefABCDEF1234567890") == std::string::npos)
 		return false;
