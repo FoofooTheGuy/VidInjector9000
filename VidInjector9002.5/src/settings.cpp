@@ -9,11 +9,11 @@ int Settings::FrameHeight = 700;
 void saveSettings() {
 	std::ofstream settingsfile(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + settingsFile).c_str()), std::ios_base::out | std::ios_base::binary);
 	settingsfile <<
-		StrDefaultLanguage << "=\"" << Settings::DefaultLanguage << "\"\n" <<
-		IntShowLog << "=\"" << Settings::ShowLog << "\"\n" <<
-		IntColorMode << "=\"" << Settings::ColorMode << "\"\n" <<
-		IntFrameWidth << "=\"" << Settings::FrameWidth << "\"\n" <<
-		IntFrameHeight << "=\"" << Settings::FrameHeight << "\"\n";
+		StrDefaultLanguage << "=" << "\x1F" << Settings::DefaultLanguage << "\x1F" << "\n" <<
+		IntShowLog << "=" << "\x1F" << Settings::ShowLog << "\x1F" << "\n" <<
+		IntColorMode << "=" << "\x1F" << Settings::ColorMode << "\x1F" << "\n" <<
+		IntFrameWidth << "=" << "\x1F" << Settings::FrameWidth << "\x1F" << "\n" <<
+		IntFrameHeight << "=" << "\x1F" << Settings::FrameHeight << "\x1F" << std::endl;
 	settingsfile.close();
 }
 
@@ -26,14 +26,13 @@ std::vector<int> loadSettings() {
 		std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath).c_str()), error);
 		if (error)
 			return std::vector<int>(1, 1);
-		std::ofstream settingsfile(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + settingsFile).c_str()), std::ios_base::out | std::ios_base::binary);//save defaults
-		settingsfile <<
-			StrDefaultLanguage << "=\"" << "English" << "\"\n" <<
-			IntShowLog << "=\"" << 0 << "\"\n" <<
-			IntColorMode << "=\"" << 2 << "\"\n" <<
-			IntFrameWidth << "=\"" << 1000 << "\"\n" <<
-			IntFrameHeight << "=\"" << 700 << "\"\n";
-		settingsfile.close();
+		
+		Settings::DefaultLanguage = "English";
+		Settings::ShowLog = 0;
+		Settings::ColorMode = 2;
+		Settings::FrameWidth = 1000;
+		Settings::FrameHeight = 700;
+		saveSettings();
 	}
 	std::vector<std::string> filelines = fileRead(std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + settingsFile));
 	if (filelines.empty())

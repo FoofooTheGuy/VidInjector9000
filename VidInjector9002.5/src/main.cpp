@@ -399,6 +399,7 @@ int main(int argc, char* argv[]) {
 					}
 					
 					VI9P::WorkingFile = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "parameters.vi9p";
+					VI9P::OutFile = VI9P::WorkingFile;
 					
 					{//-n
 						wxArrayString output;
@@ -458,12 +459,14 @@ int main(int argc, char* argv[]) {
 					openFileDialog.SetFilterIndex(0);
 					if (openFileDialog.ShowModal() == wxID_OK) {
 						VI9P::WorkingFile = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "parameters.vi9p";
+						
 						std::error_code error;
 						error = copyfile(std::string(openFileDialog.GetPath().ToUTF8()).c_str(), VI9P::WorkingFile.c_str());//copy chosen file to temp
 						if (error) {
 							wxMessageBox(wxString::FromUTF8(CopyFileError + '\n' + std::string(openFileDialog.GetPath().ToUTF8()) + " -> " +  VI9P::WorkingFile), wxString::FromUTF8(ErrorText));
 						}
 						else {
+							VI9P::OutFile = std::string(openFileDialog.GetPath().ToUTF8());
 							VI9P::MultiBannerIndex = 0;
 							loadParameters(&wid, &parameters);
 							positionWidgets(&wid, &parameters);
@@ -507,25 +510,31 @@ int main(int argc, char* argv[]) {
 				break;
 			case wxID_SAVE:
 				{
-					if(strcmp(VI9P::WorkingFile.c_str(), std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "parameters.vi9p").c_str()) == 0) {
+					if(strcmp(VI9P::OutFile.c_str(), std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "parameters.vi9p").c_str()) == 0 || VI9P::OutFile.empty()) {
 						wxFileDialog saveFileDialog(wid.frame, wxEmptyString, wxEmptyString, wxEmptyString, wxString::FromUTF8(vi9pFiles), wxFD_SAVE);
 						if (saveFileDialog.ShowModal() == wxID_OK) {
 							//wxMessageBox(saveFileDialog.GetPath(), "Placeholder");
+							VI9P::OutFile = std::string(saveFileDialog.GetPath().ToUTF8());
 							std::error_code error;
-							error = copyfile(VI9P::WorkingFile.c_str(), std::string(saveFileDialog.GetPath().ToUTF8()).c_str());
+							error = copyfile(VI9P::WorkingFile.c_str(), VI9P::OutFile.c_str());
 							if (error) {
-								wxMessageBox(wxString::FromUTF8(CopyFileError + '\n' + VI9P::WorkingFile + " -> " + std::string(saveFileDialog.GetPath().ToUTF8())), wxString::FromUTF8(ErrorText));
+								wxMessageBox(wxString::FromUTF8(CopyFileError + '\n' + VI9P::WorkingFile + " -> " + VI9P::OutFile), wxString::FromUTF8(ErrorText));
 							}
 							else {
-								VI9P::WorkingFile = std::string(saveFileDialog.GetPath().ToUTF8());
-								wxMessageBox(wxString::FromUTF8(FileSaved + '\n' + VI9P::WorkingFile));
+								wxMessageBox(wxString::FromUTF8(FileSaved + '\n' + VI9P::OutFile));
 							}
 						}
 					}
 					else {
-						wxMessageBox(wxString::FromUTF8(FileSaved + '\n' + VI9P::WorkingFile));
+						std::error_code error;
+						error = copyfile(VI9P::WorkingFile.c_str(), VI9P::OutFile.c_str());
+						if (error) {
+							wxMessageBox(wxString::FromUTF8(CopyFileError + '\n' + VI9P::WorkingFile + " -> " + VI9P::OutFile), wxString::FromUTF8(ErrorText));
+						}
+						else {
+							wxMessageBox(wxString::FromUTF8(FileSaved + '\n' + VI9P::OutFile));
+						}
 					}
-					//idk how to make this useful since we auto save
 				}
 				break;
 			case wxID_SAVEAS:
@@ -533,14 +542,14 @@ int main(int argc, char* argv[]) {
 					wxFileDialog saveFileDialog(wid.frame, wxEmptyString, wxEmptyString, wxEmptyString, wxString::FromUTF8(vi9pFiles), wxFD_SAVE);
 					if (saveFileDialog.ShowModal() == wxID_OK) {
 						//wxMessageBox(saveFileDialog.GetPath(), "Placeholder");
+						VI9P::OutFile = std::string(saveFileDialog.GetPath().ToUTF8());
 						std::error_code error;
-						error = copyfile(VI9P::WorkingFile.c_str(), std::string(saveFileDialog.GetPath().ToUTF8()).c_str());
+						error = copyfile(VI9P::WorkingFile.c_str(), VI9P::OutFile.c_str());
 						if (error) {
-							wxMessageBox(wxString::FromUTF8(CopyFileError + '\n' + std::string(saveFileDialog.GetPath().ToUTF8()) + " -> " +  VI9P::WorkingFile), wxString::FromUTF8(ErrorText));
+							wxMessageBox(wxString::FromUTF8(CopyFileError + '\n' + VI9P::WorkingFile + " -> " +  VI9P::OutFile), wxString::FromUTF8(ErrorText));
 						}
 						else {
-							VI9P::WorkingFile = std::string(saveFileDialog.GetPath().ToUTF8());
-							wxMessageBox(wxString::FromUTF8(FileSaved + '\n' + VI9P::WorkingFile));
+							wxMessageBox(wxString::FromUTF8(FileSaved + '\n' + VI9P::OutFile));
 						}
 					}
 				}

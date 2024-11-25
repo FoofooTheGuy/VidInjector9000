@@ -366,7 +366,7 @@ void dimCheck_wxEVT_CHECKBOX(InitWidgets* wid, VI9Pparameters* parameters) {
 	{//-sp
 		wxArrayString output;
 		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 9 \"" + std::to_string(parameters->FadeOpt) + "\" \"" + VI9P::WorkingFile + '\"');
+		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 10 \"" + std::to_string(parameters->FadeOpt) + "\" \"" + VI9P::WorkingFile + '\"');
 		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 		
 		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
