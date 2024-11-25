@@ -9,27 +9,27 @@ int saveParameters(std::string parampath, VI9Pparameters parameters) {
 		parameters.MBannerVec = std::vector<std::string>(parameters.rows, "");
 	std::ofstream outparams(std::filesystem::path((const char8_t*)&*parampath.c_str()), std::ios_base::out | std::ios_base::binary);
 	outparams <<
-		StrVerParam << "=\"" << VI9PVER << "\"\n" <<
-		IntMultiParam << "=\"" << std::to_string(parameters.mode) << "\"\n" <<
-		StrBannerParam << "=\"" << parameters.banner << "\"\n" <<
-		StrIconParam << "=\"" << parameters.icon << "\"\n" <<
-		IntIconBorderParam << "=\"" << std::to_string(parameters.iconBorder) << "\"\n" <<
-		StrSNameParam << "=\"" << parameters.Sname << "\"\n" <<
-		StrLNameParam << "=\"" << parameters.Lname << "\"\n" <<
-		StrPublisherParam << "=\"" << parameters.publisher << "\"\n" <<
-		IntCopycheckParam << "=\"" << std::to_string(parameters.copycheck) << "\"\n" <<
-		StrCopyrightParam << "=\"" << parameters.copyrightInfo << "\"\n" <<
-		IntFFrewindParam << "=\"" << std::to_string(parameters.FFrewind) << "\"\n" <<
-		IntFadeOptParam << "=\"" << std::to_string(parameters.FadeOpt) << "\"\n" <<
-		IntRowsParam << "=\"" << std::to_string(parameters.rows) << "\"\n";
+		StrVerParam << "=" << "\x1F" << VI9PVER << "\x1F" << "\n" <<
+		IntMultiParam << "=" << "\x1F" << std::to_string(parameters.mode) << "\x1F" << "\n" <<
+		StrBannerParam << "=" << "\x1F" << parameters.banner << "\x1F" << "\n" <<
+		StrIconParam << "=" << "\x1F" << parameters.icon << "\x1F" << "\n" <<
+		IntIconBorderParam << "=" << "\x1F" << std::to_string(parameters.iconBorder) << "\x1F" << "\n" <<
+		StrSNameParam << "=" << "\x1F" << parameters.Sname << "\x1F" << "\n" <<
+		StrLNameParam << "=" << "\x1F" << parameters.Lname << "\x1F" << "\n" <<
+		StrPublisherParam << "=" << "\x1F" << parameters.publisher << "\x1F" << "\n" <<
+		IntCopycheckParam << "=" << "\x1F" << std::to_string(parameters.copycheck) << "\x1F" << "\n" <<
+		StrCopyrightParam << "=" << "\x1F" << parameters.copyrightInfo << "\x1F" << "\n" <<
+		IntFFrewindParam << "=" << "\x1F" << std::to_string(parameters.FFrewind) << "\x1F" << "\n" <<
+		IntFadeOptParam << "=" << "\x1F" << std::to_string(parameters.FadeOpt) << "\x1F" << "\n" <<
+		IntRowsParam << "=" << "\x1F" << std::to_string(parameters.rows) << "\x1F" << "\n";
 	for (uint8_t y = 0; y < parameters.rows; y++) {
 		outparams <<
-			StrPTitleParam << "(" << std::to_string(y) << ")=\"" << parameters.PTitleVec.at(y) << "\"\n" <<
-			StrMoflexParam << "(" << std::to_string(y) << ")=\"" << parameters.MoflexVec.at(y) << "\"\n" <<
-			StrMBannerParam << "(" << std::to_string(y) << ")=\"" << parameters.MBannerVec.at(y) << "\"\n";
+			StrPTitleParam << "(" << std::to_string(y) << ")=" << "\x1F" << parameters.PTitleVec.at(y) << "\x1F" << "\n" <<
+			StrMoflexParam << "(" << std::to_string(y) << ")=" << "\x1F" << parameters.MoflexVec.at(y) << "\x1F" << "\n" <<
+			StrMBannerParam << "(" << std::to_string(y) << ")=" << "\x1F" << parameters.MBannerVec.at(y) << "\x1F" << "\n";
 	}
 	outparams <<
-		IntSplitPatchParam << "=\"" << std::to_string(parameters.splitPos) << "\"\n";
+		IntSplitPatchParam << "=" << "\x1F" << std::to_string(parameters.splitPos) << "\x1F" << "\n";
 		//IntPreIndexParam << "=\"" << std::to_string(parameters.BannerPreviewIndex) << "\"\n";
 	outparams.close();
 	if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*parampath.c_str()))) {
@@ -47,6 +47,8 @@ int loadParameters(std::string parampath, VI9Pparameters* parameters) {
 		return 2;
 	}
 	std::vector<std::string> filelines = fileRead(parampath);
+	//for(const auto &str : filelines)
+		//std::cout << str;
 	if (filelines.empty())
 		return 3;
 	if (parseLines(outstr, filelines, StrVerParam)) {
@@ -349,38 +351,38 @@ int printParameter(std::string inpath) {
 	VI9Pparameters parameters;
 	
 	int res = loadParameters(inpath, &parameters);
-	std::cout << "[  ] " << StrVerParam << "=\"" << parameters.ver << "\"\n" <<
-				 "[ 0] " << IntMultiParam << "=\"" << std::to_string(parameters.mode) << "\"\n" <<
-				 "[ 1] " << StrBannerParam << "=\"" << parameters.banner << "\"\n" <<
-				 "[ 2] " << StrIconParam << "=\"" << parameters.icon << "\"\n" <<
-				 "[ 3] " << IntIconBorderParam << "=\"" << std::to_string(parameters.iconBorder) << "\"\n" <<
-				 "[ 4] " << StrSNameParam << "=\"" << parameters.Sname << "\"\n" <<
-				 "[ 5] " << StrLNameParam << "=\"" << parameters.Lname << "\"\n" <<
-				 "[ 6] " << StrPublisherParam << "=\"" << parameters.publisher << "\"\n" <<
-				 "[ 7] " << IntCopycheckParam << "=\"" << std::to_string(parameters.copycheck) << "\"\n" <<
-				 "[ 8] " << StrCopyrightParam << "=\"" << parameters.copyrightInfo << "\"\n" <<
-				 "[ 9] " << IntFFrewindParam << "=\"" << std::to_string(parameters.FFrewind) << "\"\n" <<
-				 "[10] " << IntFadeOptParam << "=\"" << std::to_string(parameters.FadeOpt) << "\"\n" <<
-				 "[11] " << IntSplitPatchParam << "=\"" << std::to_string(parameters.splitPos) << "\"" << std::endl;
+	std::cout << "[  ] " << StrVerParam << "=" << "\x1F" << parameters.ver << "\x1F" << "\n" <<
+				 "[ 0] " << IntMultiParam << "=" << "\x1F" << std::to_string(parameters.mode) << "\x1F" << "\n" <<
+				 "[ 1] " << StrBannerParam << "=" << "\x1F" << parameters.banner << "\x1F" << "\n" <<
+				 "[ 2] " << StrIconParam << "=" << "\x1F" << parameters.icon << "\x1F" << "\n" <<
+				 "[ 3] " << IntIconBorderParam << "=" << "\x1F" << std::to_string(parameters.iconBorder) << "\x1F" << "\n" <<
+				 "[ 4] " << StrSNameParam << "=" << "\x1F" << parameters.Sname << "\x1F" << "\n" <<
+				 "[ 5] " << StrLNameParam << "=" << "\x1F" << parameters.Lname << "\x1F" << "\n" <<
+				 "[ 6] " << StrPublisherParam << "=" << "\x1F" << parameters.publisher << "\x1F" << "\n" <<
+				 "[ 7] " << IntCopycheckParam << "=" << "\x1F" << std::to_string(parameters.copycheck) << "\x1F" << "\n" <<
+				 "[ 8] " << StrCopyrightParam << "=" << "\x1F" << parameters.copyrightInfo << "\x1F" << "\n" <<
+				 "[ 9] " << IntFFrewindParam << "=" << "\x1F" << std::to_string(parameters.FFrewind) << "\x1F" << "\n" <<
+				 "[10] " << IntFadeOptParam << "=" << "\x1F" << std::to_string(parameters.FadeOpt) << "\x1F" << "\n" <<
+				 "[11] " << IntSplitPatchParam << "=" << "\x1F" << std::to_string(parameters.splitPos) << "\x1F" << std::endl;
 	//beware of incoming jank
 	size_t rowcase = 12;
 	uint8_t rowcount = 0;
 	for(auto &row : parameters.PTitleVec) {
-		std::cout << '[' << rowcase << "] " << StrPTitleParam << '(' << std::to_string(rowcount) << ')' << "=\"" << row << "\"" << std::endl;
+		std::cout << '[' << rowcase << "] " << StrPTitleParam << '(' << std::to_string(rowcount) << ')' << "=" << "\x1F" << row << "\x1F" << std::endl;
 		rowcount++;
 		rowcase++;
 	}
 	rowcase = 12 + parameters.rows;
 	rowcount = 0;
 	for(auto &row : parameters.MoflexVec) {
-		std::cout << '[' << rowcase << "] " << StrMoflexParam << '(' << std::to_string(rowcount) << ')' << "=\"" << row << "\"" << std::endl;
+		std::cout << '[' << rowcase << "] " << StrMoflexParam << '(' << std::to_string(rowcount) << ')' << "=" << "\x1F" << row << "\x1F" << std::endl;
 		rowcount++;
 		rowcase++;
 	}
 	rowcase = 12 + (parameters.rows * 2);
 	rowcount = 0;
 	for(auto &row : parameters.MBannerVec) {
-		std::cout << '[' << rowcase << "] " << StrMBannerParam << '(' << std::to_string(rowcount) << ')' << "=\"" << row << "\"" << std::endl;
+		std::cout << '[' << rowcase << "] " << StrMBannerParam << '(' << std::to_string(rowcount) << ')' << "=" << "\x1F" << row << "\x1F" << std::endl;
 		rowcount++;
 		rowcase++;
 	}

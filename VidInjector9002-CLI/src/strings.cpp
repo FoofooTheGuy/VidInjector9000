@@ -43,7 +43,7 @@ std::string RrArgShort = "-rr";
 std::string Languagedir = "English";
 
 std::string resourcesPath = "Vidinjector9000Resources";
-std::string VI9PVER = "VI9P100";
+std::string VI9PVER = "VI9P101";
 std::string StrVerParam = "STR:VER";
 std::string IntMultiParam = "INT:MULTI";
 std::string StrBannerParam = "STR:BANNER";
