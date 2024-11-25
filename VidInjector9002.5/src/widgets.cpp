@@ -1184,6 +1184,8 @@ wxColour BackColor::removeRow;
 wxColour BackColor::appendRow;
 wxColour BackColor::splitPatchButton;
 wxColour BackColor::rowText;
+wxColour BackColor::splitPatchUp;
+wxColour BackColor::splitPatchDown;
 
 wxColour ForeColor::panel;
 wxColour ForeColor::mainMenu;
@@ -1226,6 +1228,8 @@ wxColour ForeColor::removeRow;
 wxColour ForeColor::appendRow;
 wxColour ForeColor::splitPatchButton;
 wxColour ForeColor::rowText;
+wxColour ForeColor::splitPatchUp;
+wxColour ForeColor::splitPatchDown;
 
 void getAppearance(InitWidgets* wid) {
 	BackColor::panel = wid->panel->GetBackgroundColour();
@@ -1269,6 +1273,8 @@ void getAppearance(InitWidgets* wid) {
 	BackColor::appendRow = wid->appendRow->GetBackgroundColour();
 	BackColor::splitPatchButton = wid->splitPatchButton->GetBackgroundColour();
 	BackColor::rowText = wid->rowText->GetBackgroundColour();
+	BackColor::splitPatchUp = wid->splitPatchUp->GetBackgroundColour();
+	BackColor::splitPatchDown = wid->splitPatchDown->GetBackgroundColour();
 	
 	ForeColor::panel = wid->panel->GetForegroundColour();
 	ForeColor::mainMenu = wid->mainMenu->GetForegroundColour();
@@ -1311,12 +1317,12 @@ void getAppearance(InitWidgets* wid) {
 	ForeColor::appendRow = wid->appendRow->GetForegroundColour();
 	ForeColor::splitPatchButton = wid->splitPatchButton->GetForegroundColour();
 	ForeColor::rowText = wid->rowText->GetForegroundColour();
+	ForeColor::splitPatchUp = wid->splitPatchUp->GetForegroundColour();
+	ForeColor::splitPatchDown = wid->splitPatchDown->GetForegroundColour();
 }
 
 void setAppearance(InitWidgets* wid, int Mode) {
 	if(Mode < 2) {
-		wid->splitPatchLine->SetColour(*(Mode ? wxBLACK : wxWHITE));
-		
 		wid->panel->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->mainMenu->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->modeText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
@@ -1358,7 +1364,10 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->appendRow->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->splitPatchButton->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->rowText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		wid->splitPatchUp->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		wid->splitPatchDown->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		
+		wid->splitPatchLine->SetColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->panel->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->mainMenu->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->modeText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
@@ -1400,6 +1409,8 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->appendRow->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->splitPatchButton->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->rowText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		wid->splitPatchUp->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		wid->splitPatchDown->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		
 		{
 			wxColor LightBlack = wxBLACK->GetRGB() + 0x141414;
@@ -1450,8 +1461,6 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		}
 	}
 	else if(Mode == 2) {
-		wid->splitPatchLine->SetColour(0xFFFFFF - BackColor::panel.GetRGB());
-		
 		wid->panel->SetBackgroundColour(BackColor::panel);
 		wid->mainMenu->SetBackgroundColour(BackColor::mainMenu);
 		wid->modeText->SetBackgroundColour(BackColor::modeText);
@@ -1493,6 +1502,8 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->appendRow->SetBackgroundColour(BackColor::appendRow);
 		wid->splitPatchButton->SetBackgroundColour(BackColor::splitPatchButton);
 		wid->rowText->SetBackgroundColour(BackColor::rowText);
+		wid->splitPatchUp->SetBackgroundColour(BackColor::splitPatchUp);
+		wid->splitPatchDown->SetBackgroundColour(BackColor::splitPatchDown);
 		
 		wid->panel->SetForegroundColour(ForeColor::panel);
 		wid->mainMenu->SetForegroundColour(ForeColor::mainMenu);
@@ -1535,6 +1546,9 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->appendRow->SetForegroundColour(ForeColor::appendRow);
 		wid->splitPatchButton->SetForegroundColour(ForeColor::splitPatchButton);
 		wid->rowText->SetForegroundColour(ForeColor::rowText);
+		wid->splitPatchLine->SetColour(ForeColor::panel);
+		wid->splitPatchUp->SetForegroundColour(ForeColor::splitPatchUp);
+		wid->splitPatchDown->SetForegroundColour(ForeColor::splitPatchDown);
 		
 		{
 			wxColor BackOdd = (BackColor::bannerBox.GetRGB() < 0x7F7F7F) ? (BackColor::bannerBox.GetRGB() + 0x141414) : (BackColor::bannerBox.GetRGB() - 0x141414);//FF/2=7F
@@ -1576,12 +1590,12 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		}
 		
 		for(auto &row : wid->MultiUp) {
-			row->SetBackgroundColour(BackColor::bannerBrowse);
-			row->SetForegroundColour(ForeColor::bannerBrowse);
+			row->SetBackgroundColour(BackColor::splitPatchUp);
+			row->SetForegroundColour(ForeColor::splitPatchUp);
 		}
 		for(auto &row : wid->MultiDown) {
-			row->SetBackgroundColour(BackColor::bannerBrowse);
-			row->SetForegroundColour(ForeColor::bannerBrowse);
+			row->SetBackgroundColour(BackColor::splitPatchDown);
+			row->SetForegroundColour(ForeColor::splitPatchDown);
 		}
 	}
 	wid->panel->Refresh();

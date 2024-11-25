@@ -22,6 +22,7 @@ extern std::string BeANumber;
 //frame text
 extern std::string frameText;
 extern std::string logFrameText;
+extern std::string buildFrameText;
 
 //main menu
 extern std::string file;
@@ -29,6 +30,7 @@ extern std::string fileNew;
 extern std::string fileOpen;
 extern std::string fileSave;
 extern std::string fileSaveAs;
+extern std::string fileExport;
 extern std::string options;
 extern std::string optionsShowLog;
 extern std::string optionsSystemMode;
@@ -60,6 +62,7 @@ extern std::string PlayerTitleText;
 extern std::string MoflexFileText;
 extern std::string MenuBannerText;
 extern std::string SplitIntoAPatch;
+extern std::string Build;
 
 //tool tips
 extern std::string modeChoiceBoxTip;
@@ -79,9 +82,11 @@ extern std::string multiBannerPreviewTip;
 extern std::string multiBannerPreviewLeftTip;
 extern std::string multiBannerPreviewRightTip;
 
-//file stuffs
+//file stuffs (todo: image files)
 extern std::string moflexFiles;
 extern std::string vi9pFiles;
+extern std::string ciaFiles;
+extern std::string tarFiles;
 
 //internal
 extern std::string tempPath;

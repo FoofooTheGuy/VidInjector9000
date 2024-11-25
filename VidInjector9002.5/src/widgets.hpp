@@ -20,6 +20,7 @@
 #include "vi9p.hpp"
 
 enum wxOwnedID {
+	ID_EXPORT,
 	ID_LOGBOOL,
 	ID_SYSTEM,
 	ID_LIGHT,
@@ -54,6 +55,7 @@ struct InitWidgets {
 	wxMenuItem* menuItemFileOpen = menuFile->Append(wxID_OPEN, wxString::FromUTF8(fileOpen + "\tCtrl+O"));
 	wxMenuItem* menuItemFileSave = menuFile->Append(wxID_SAVE, wxString::FromUTF8(fileSave + "\tCtrl+S"));
 	wxMenuItem* menuItemFileSaveAs = menuFile->Append(wxID_SAVEAS, wxString::FromUTF8(fileSaveAs + "\tCtrl+Shift+S"));
+	wxMenuItem* menuItemFileExport = menuFile->Append(ID_EXPORT, wxString::FromUTF8(fileExport + "\tCtrl+E"));
 	wxMenu* menuOptions = new wxMenu();
 	wxMenuItem* menuItemOptionsLog = menuOptions->Append(ID_LOGBOOL, wxString::FromUTF8(optionsShowLog), "", wxITEM_CHECK);
 	wxMenuItem* menuItemOptionsSystem = menuOptions->Append(ID_SYSTEM, wxString::FromUTF8(optionsSystemMode), "", wxITEM_RADIO);
@@ -134,6 +136,12 @@ struct InitWidgets {
 	wxButton* splitPatchDown = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8("↓"), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	
 	wxStaticText* rowText = new wxStaticText(scrolledPanel, wxID_ANY, wxString::FromUTF8("1/27"));
+	
+	wxFrame* buildframe = new wxFrame(frame, wxID_ANY, wxString::FromUTF8(buildFrameText), wxDefaultPosition, {500, 400}, wxCAPTION|wxCLOSE_BOX|wxRESIZE_BORDER|wxFRAME_FLOAT_ON_PARENT|wxCLIP_CHILDREN);
+	wxPanel* buildpanel = new wxPanel(buildframe);
+	
+	wxButton* buildButt = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8(Build));
+
 };
 
 void initAllWidgets(InitWidgets* initwidgets);
@@ -189,6 +197,8 @@ class ForeColor
 	static wxColour appendRow;
 	static wxColour splitPatchButton;
 	static wxColour rowText;
+	static wxColour splitPatchUp;
+	static wxColour splitPatchDown;
 };
 
 class BackColor
@@ -235,6 +245,8 @@ class BackColor
 	static wxColour appendRow;
 	static wxColour splitPatchButton;
 	static wxColour rowText;
+	static wxColour splitPatchUp;
+	static wxColour splitPatchDown;
 };
 
 void getAppearance(InitWidgets* wid);

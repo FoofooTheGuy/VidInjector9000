@@ -382,6 +382,10 @@ int main(int argc, char* argv[]) {
 		splitPatchDown_wxEVT_BUTTON(&wid, &parameters);
 	});
 	
+	wid.buildframe->Bind(wxEVT_CLOSE_WINDOW, [&](wxCloseEvent& event) {
+		buildframe_wxEVT_CLOSE_WINDOW(&wid, &event);
+	});
+	
 	wid.mainMenu->Bind(wxEVT_MENU, [&](wxCommandEvent& event) {
 		switch(event.GetId()) {
 			case wxID_NEW:
@@ -552,6 +556,25 @@ int main(int argc, char* argv[]) {
 							wxMessageBox(wxString::FromUTF8(FileSaved + '\n' + VI9P::OutFile));
 						}
 					}
+				}
+				break;
+			case ID_EXPORT:
+				{
+					std::string CIAfile = "";
+					std::string TARfile = "";
+					wxFileDialog saveCIADialog(wid.frame, wxEmptyString, wxEmptyString, wxEmptyString, wxString::FromUTF8(ciaFiles), wxFD_SAVE);
+					if (saveCIADialog.ShowModal() != wxID_OK) {
+						break;
+					}
+					CIAfile = std::string(saveCIADialog.GetPath().ToUTF8());
+					if(parameters.mode && parameters.splitPos) {
+						wxFileDialog saveTARDialog(wid.frame, wxEmptyString, wxEmptyString, wxEmptyString, wxString::FromUTF8(tarFiles), wxFD_SAVE);
+						if (saveTARDialog.ShowModal() == wxID_OK) {
+							TARfile = std::string(saveTARDialog.GetPath().ToUTF8());
+						}
+					}
+					if(!CIAfile.empty())//just make sure
+						wid.buildframe->Show();
 				}
 				break;
 			case ID_LOGBOOL:
