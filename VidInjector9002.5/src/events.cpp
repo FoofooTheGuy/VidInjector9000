@@ -694,6 +694,7 @@ void removeRow_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 	ShowPatchUpDown(wid, parameters);
 	ShowMultiUpDown(wid);
 	setCursors(wid);
+	setToolTips(wid);
 }
 
 void splitPatchButton_wxEVT_TOGGLEBUTTON(InitWidgets* wid, VI9Pparameters* parameters) {

@@ -368,6 +368,7 @@ int main(int argc, char* argv[]) {
 		ShowPatchUpDown(&wid, &parameters);
 		ShowMultiUpDown(&wid);
 		setCursors(&wid);
+		setToolTips(&wid);
 	});
 	
 	wid.splitPatchButton->Bind(wxEVT_TOGGLEBUTTON, [&](wxCommandEvent& event) {

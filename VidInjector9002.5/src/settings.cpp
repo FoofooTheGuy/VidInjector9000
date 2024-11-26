@@ -3,7 +3,7 @@
 std::string Settings::DefaultLanguage = "English";
 bool Settings::ShowLog = 0;
 int Settings::ColorMode = 2;
-int Settings::FrameWidth = 1000;
+int Settings::FrameWidth = 1150;
 int Settings::FrameHeight = 700;
 
 void saveSettings() {

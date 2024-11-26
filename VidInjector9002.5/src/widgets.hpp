@@ -137,11 +137,13 @@ struct InitWidgets {
 	
 	wxStaticText* rowText = new wxStaticText(scrolledPanel, wxID_ANY, wxString::FromUTF8("1/27"));
 	
-	wxFrame* buildframe = new wxFrame(frame, wxID_ANY, wxString::FromUTF8(buildFrameText), wxDefaultPosition, {500, 400}, wxCAPTION|wxCLOSE_BOX|wxRESIZE_BORDER|wxFRAME_FLOAT_ON_PARENT|wxCLIP_CHILDREN);
+	wxFrame* buildframe = new wxFrame(frame, wxID_ANY, wxString::FromUTF8(buildFrameText), wxDefaultPosition, {450, 500}, wxCAPTION|wxCLOSE_BOX|wxRESIZE_BORDER|wxFRAME_FLOAT_ON_PARENT|wxCLIP_CHILDREN);
 	wxPanel* buildpanel = new wxPanel(buildframe);
 	
-	wxButton* buildButt = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8(Build));
-
+	wxStaticText* titleIDText = new wxStaticText(buildpanel, wxID_ANY, wxString::FromUTF8(TitleID));
+	//wxTextCtrl* titleIDBox = new wxTextCtrl(buildpanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+	//wxStaticText* zerozero = new wxStaticText(buildpanel, wxID_ANY, wxString::FromUTF8("00"));
+	//wxButton* buildButt = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8(Build));
 };
 
 void initAllWidgets(InitWidgets* initwidgets);
@@ -199,6 +201,7 @@ class ForeColor
 	static wxColour rowText;
 	static wxColour splitPatchUp;
 	static wxColour splitPatchDown;
+	static wxColour buildpanel;
 };
 
 class BackColor
@@ -247,6 +250,7 @@ class BackColor
 	static wxColour rowText;
 	static wxColour splitPatchUp;
 	static wxColour splitPatchDown;
+	static wxColour buildpanel;
 };
 
 void getAppearance(InitWidgets* wid);

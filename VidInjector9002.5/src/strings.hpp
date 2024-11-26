@@ -62,9 +62,11 @@ extern std::string PlayerTitleText;
 extern std::string MoflexFileText;
 extern std::string MenuBannerText;
 extern std::string SplitIntoAPatch;
+extern std::string TitleID;
 extern std::string Build;
 
 //tool tips
+extern std::string onlyMultiVideo;
 extern std::string modeChoiceBoxTip;
 extern std::string bannerBoxTip;
 extern std::string bannerBrowseTip;
@@ -81,6 +83,19 @@ extern std::string dimCheckTip;
 extern std::string multiBannerPreviewTip;
 extern std::string multiBannerPreviewLeftTip;
 extern std::string multiBannerPreviewRightTip;
+extern std::string moflexFileTip;
+extern std::string playerTitlesTip;
+extern std::string moflexFilesTip;
+extern std::string menuBannersTip;
+extern std::string multiUpTip;
+extern std::string multiDownTip;
+extern std::string moflexBrowseTip;
+extern std::string multiBannerBrowseTip;
+extern std::string removeRowTip;
+extern std::string appendRowTip;
+extern std::string splitPatchTip;
+extern std::string splitPatchUpTip;
+extern std::string splitPatchDownTip;
 
 //file stuffs (todo: image files)
 extern std::string moflexFiles;

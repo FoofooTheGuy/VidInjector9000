@@ -389,9 +389,9 @@ void initAllWidgets(InitWidgets* wid) {
 		wid->splitPatchButton->GetTextExtent(wid->splitPatchButton->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->splitPatchButton->SetSize(w + buttwidth, h + buttheight);
 	}
-	{//splitPatchLine
+	/*{//splitPatchLine
 	
-	}
+	}*/
 	{//splitPatchUp
 		int width, height;
 		wxFont f;
@@ -457,13 +457,36 @@ void setToolTips(InitWidgets* wid) {
 	wid->longnameBox->SetToolTip(wxString::FromUTF8(longnameBoxTip));
 	wid->publisherBox->SetToolTip(wxString::FromUTF8(publisherBoxTip));
 	wid->copyBox->SetToolTip(wxString::FromUTF8(copyBoxTip));
-	wid->copyCheck->SetToolTip(wxString::FromUTF8(copyCheckTip));
+	wid->copyCheck->SetToolTip(wxString::FromUTF8(copyCheckTip + '\n' + onlyMultiVideo));
 	wid->iconPreview->SetToolTip(wxString::FromUTF8(iconPreviewTip));
 	wid->ffRewindCheck->SetToolTip(wxString::FromUTF8(ffRewindCheckTip));
 	wid->dimCheck->SetToolTip(wxString::FromUTF8(dimCheckTip));
-	wid->multiBannerPreview->SetToolTip(wxString::FromUTF8(multiBannerPreviewTip));
+	wid->multiBannerPreview->SetToolTip(wxString::FromUTF8(multiBannerPreviewTip + '\n' + onlyMultiVideo));
 	wid->multiBannerPreviewLeft->SetToolTip(wxString::FromUTF8(multiBannerPreviewLeftTip));
 	wid->multiBannerPreviewRight->SetToolTip(wxString::FromUTF8(multiBannerPreviewRightTip));
+	wid->moflexFileText->SetToolTip(wxString::FromUTF8(moflexFileTip));
+	for(size_t row = 0; row < wid->PlayerTitles.size(); row++) {
+		wid->PlayerTitles.at(row)->SetToolTip(wxString::FromUTF8(playerTitlesTip + " (" + std::to_string(row + 1) + ')'));
+	}
+	for(size_t row = 0; row < wid->MoflexFiles.size(); row++) {
+		wid->MoflexFiles.at(row)->SetToolTip(wxString::FromUTF8(moflexFilesTip + " (" + std::to_string(row + 1) + ')'));
+	}
+	for(size_t row = 0; row < wid->MenuBanners.size(); row++) {
+		wid->MenuBanners.at(row)->SetToolTip(wxString::FromUTF8(menuBannersTip + " (" + std::to_string(row + 1) + ")\n" + onlyMultiVideo));
+	}
+	for(size_t row = 0; row < wid->MultiUp.size(); row++) {
+		wid->MultiUp.at(row)->SetToolTip(wxString::FromUTF8(multiUpTip));
+	}
+	for(size_t row = 0; row < wid->MultiDown.size(); row++) {
+		wid->MultiDown.at(row)->SetToolTip(wxString::FromUTF8(multiDownTip));
+	}
+	wid->moflexBrowse->SetToolTip(wxString::FromUTF8(moflexBrowseTip));
+	wid->multiBannerBrowse->SetToolTip(wxString::FromUTF8(multiBannerBrowseTip));
+	wid->removeRow->SetToolTip(wxString::FromUTF8(removeRowTip));
+	wid->appendRow->SetToolTip(wxString::FromUTF8(appendRowTip + '\n' + onlyMultiVideo));
+	wid->splitPatchButton->SetToolTip(wxString::FromUTF8(splitPatchTip));
+	wid->splitPatchUp->SetToolTip(wxString::FromUTF8(splitPatchUpTip));
+	wid->splitPatchDown->SetToolTip(wxString::FromUTF8(splitPatchDownTip));
 }
 
 void setCursors(InitWidgets* wid) {
@@ -1139,7 +1162,12 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		//wid->splitPatchButton->GetSize(NULL, &virtheight);
 
 		wid->scrolledPanel->SetSize(width, height);
-		wid->scrolledPanel->SetVirtualSize((boxwidth * 3) + upwidth + 3 + upwidth, boxheight * wid->PlayerTitles.size() + splitupheight + browseheight + 2 + removeheight + 2 + splitpatchheight + 2 + rowtextheight);//size to contain all widgets (dont use coordinates)
+		if(wid->PlayerTitles.size() == 1) {
+			wid->scrolledPanel->SetVirtualSize(boxwidth * 3, boxheight * wid->PlayerTitles.size() + splitupheight + browseheight + 2 + removeheight + 2 + splitpatchheight + 2 + rowtextheight);//size to contain all widgets (dont use coordinates)
+		}
+		else {
+			wid->scrolledPanel->SetVirtualSize((boxwidth * 3) + upwidth + 3 + upwidth, boxheight * wid->PlayerTitles.size() + splitupheight + browseheight + 2 + removeheight + 2 + splitpatchheight + 2 + rowtextheight);//size to contain all widgets (dont use coordinates)
+		}
 	}
 }
 
@@ -1186,6 +1214,7 @@ wxColour BackColor::splitPatchButton;
 wxColour BackColor::rowText;
 wxColour BackColor::splitPatchUp;
 wxColour BackColor::splitPatchDown;
+wxColour BackColor::buildpanel;
 
 wxColour ForeColor::panel;
 wxColour ForeColor::mainMenu;
@@ -1230,6 +1259,7 @@ wxColour ForeColor::splitPatchButton;
 wxColour ForeColor::rowText;
 wxColour ForeColor::splitPatchUp;
 wxColour ForeColor::splitPatchDown;
+wxColour ForeColor::buildpanel;
 
 void getAppearance(InitWidgets* wid) {
 	BackColor::panel = wid->panel->GetBackgroundColour();
@@ -1275,6 +1305,7 @@ void getAppearance(InitWidgets* wid) {
 	BackColor::rowText = wid->rowText->GetBackgroundColour();
 	BackColor::splitPatchUp = wid->splitPatchUp->GetBackgroundColour();
 	BackColor::splitPatchDown = wid->splitPatchDown->GetBackgroundColour();
+	BackColor::buildpanel = wid->buildpanel->GetBackgroundColour();
 	
 	ForeColor::panel = wid->panel->GetForegroundColour();
 	ForeColor::mainMenu = wid->mainMenu->GetForegroundColour();
@@ -1319,6 +1350,7 @@ void getAppearance(InitWidgets* wid) {
 	ForeColor::rowText = wid->rowText->GetForegroundColour();
 	ForeColor::splitPatchUp = wid->splitPatchUp->GetForegroundColour();
 	ForeColor::splitPatchDown = wid->splitPatchDown->GetForegroundColour();
+	ForeColor::buildpanel = wid->buildpanel->GetForegroundColour();
 }
 
 void setAppearance(InitWidgets* wid, int Mode) {
@@ -1366,6 +1398,7 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->rowText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->splitPatchUp->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->splitPatchDown->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		wid->buildpanel->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		
 		wid->splitPatchLine->SetColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->panel->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
@@ -1411,6 +1444,7 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->rowText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->splitPatchUp->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->splitPatchDown->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		wid->buildpanel->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		
 		{
 			wxColor LightBlack = wxBLACK->GetRGB() + 0x141414;
@@ -1504,6 +1538,7 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->rowText->SetBackgroundColour(BackColor::rowText);
 		wid->splitPatchUp->SetBackgroundColour(BackColor::splitPatchUp);
 		wid->splitPatchDown->SetBackgroundColour(BackColor::splitPatchDown);
+		wid->buildpanel->SetBackgroundColour(BackColor::buildpanel);
 		
 		wid->panel->SetForegroundColour(ForeColor::panel);
 		wid->mainMenu->SetForegroundColour(ForeColor::mainMenu);
@@ -1549,6 +1584,7 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->splitPatchLine->SetColour(ForeColor::panel);
 		wid->splitPatchUp->SetForegroundColour(ForeColor::splitPatchUp);
 		wid->splitPatchDown->SetForegroundColour(ForeColor::splitPatchDown);
+		wid->buildpanel->SetForegroundColour(ForeColor::buildpanel);
 		
 		{
 			wxColor BackOdd = (BackColor::bannerBox.GetRGB() < 0x7F7F7F) ? (BackColor::bannerBox.GetRGB() + 0x141414) : (BackColor::bannerBox.GetRGB() - 0x141414);//FF/2=7F
