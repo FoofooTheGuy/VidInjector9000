@@ -30,7 +30,7 @@ std::vector<int> loadSettings() {
 		Settings::DefaultLanguage = "English";
 		Settings::ShowLog = 0;
 		Settings::ColorMode = 2;
-		Settings::FrameWidth = 1000;
+		Settings::FrameWidth = 1150;
 		Settings::FrameHeight = 700;
 		saveSettings();
 	}

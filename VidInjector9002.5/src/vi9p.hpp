@@ -26,6 +26,7 @@ struct VI9Pparameters {
 };
 
 /*
+Loading: bool to set while you are applying the parameters so it doesnt overwrite what we are loading, specifically when dealing with smdh
 WorkingFile: the vi9p to actually write to
 OutFile: the vi9p to copy the working file to when you choose to save it
 MultiBannerIndex: the number for which row of multi banner to preview 
@@ -33,6 +34,7 @@ MultiBannerIndex: the number for which row of multi banner to preview
 class VI9P
 {
 	public:
+	static bool Loading;
 	static std::string WorkingFile;
 	static std::string OutFile;
 	static uint8_t MultiBannerIndex;

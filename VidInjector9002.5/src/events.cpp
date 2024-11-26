@@ -114,7 +114,7 @@ void iconBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 	//loadParameters(&wid, &parameters);
 	
 	//do this in case of smdh
-	{//-pp
+	if(!VI9P::Loading) {//-pp
 		wxArrayString output;
 		wxArrayString errors;
 		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -pp \"" + VI9P::WorkingFile + '\"');

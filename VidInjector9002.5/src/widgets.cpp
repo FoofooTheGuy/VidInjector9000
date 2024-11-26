@@ -1662,14 +1662,14 @@ int loadParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 		wxString command = wxString::FromUTF8(resourcesPath + '/' + CLIFile + " -pp " + VI9P::WorkingFile);
 		ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 		std::string pp;
-
+		
 		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
 		for (auto &s : output) {
 			wid->consoleLog->LogTextAtLevel(0, s);
 			pp += std::string(s.ToUTF8()) + '\n';
 		}
 		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
-
+		
 		{//mode
 			std::string value = "";
 			int outnum = 0;
@@ -1894,6 +1894,7 @@ void applyMode(InitWidgets* wid, VI9Pparameters* parameters) {
 }
 
 void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
+	VI9P::Loading = true;
 	wid->modeChoiceBox->SetSelection(parameters->mode);
 
 	wid->bannerBox->SetValue(wxString::FromUTF8(parameters->banner));
@@ -1991,6 +1992,7 @@ void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 	wid->splitPatchButton->SetValue(parameters->splitPos ? 1 : 0);
 	
 	applyMode(wid, parameters);
+	VI9P::Loading = false;
 }
 
 void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {

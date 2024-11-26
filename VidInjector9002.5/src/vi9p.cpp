@@ -1,5 +1,6 @@
 #include "vi9p.hpp"
 
+bool VI9P::Loading = false;
 std::string VI9P::WorkingFile = "";
 std::string VI9P::OutFile = "";
 uint8_t VI9P::MultiBannerIndex = 0;//0 to 26
