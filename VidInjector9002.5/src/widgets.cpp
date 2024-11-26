@@ -1638,6 +1638,7 @@ void setAppearance(InitWidgets* wid, int Mode) {
 }
 
 int loadParameters(InitWidgets* wid, VI9Pparameters* parameters) {
+	VI9P::Loading = true;
 	int ret = 0;
 	{//-rr
 		wxArrayString output;
@@ -1798,6 +1799,7 @@ int loadParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 		}
 	}
 	applyParameters(wid, parameters);
+	VI9P::Loading = false;
 	return ret;
 }
 
@@ -1894,7 +1896,6 @@ void applyMode(InitWidgets* wid, VI9Pparameters* parameters) {
 }
 
 void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
-	VI9P::Loading = true;
 	wid->modeChoiceBox->SetSelection(parameters->mode);
 
 	wid->bannerBox->SetValue(wxString::FromUTF8(parameters->banner));
@@ -1992,7 +1993,6 @@ void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 	wid->splitPatchButton->SetValue(parameters->splitPos ? 1 : 0);
 	
 	applyMode(wid, parameters);
-	VI9P::Loading = false;
 }
 
 void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {

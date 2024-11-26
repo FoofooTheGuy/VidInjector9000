@@ -80,6 +80,30 @@ void iconBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 	parameters->icon = std::string(wid->iconBox->GetValue().ToUTF8());
 	int ret = 0;
 	
+	if(VI9P::Loading) {//so it doesnt mess up everything
+		{//-gp
+			std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "iconpreview.png";
+			wxArrayString output;
+			wxArrayString errors;
+			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 2 \"" + imagePath + '\"');
+			ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+			
+			wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+			for (auto &s : output) {
+				wid->consoleLog->LogTextAtLevel(0, s);
+			}
+			wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+			
+			wid->iconPreview->SetBitmap(wxBitmap(wxString::FromUTF8(imagePath), wxBITMAP_TYPE_ANY));
+		}
+		if(ret && !parameters->icon.empty()) {
+			wid->iconError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + ImageInfoError + " (" + std::to_string(ret) + ") " + SeeLog));
+			wid->iconError->Show(true);
+		}
+		else wid->iconError->Show(false);
+		return;
+	}
+	
 	//we can just use ss since if you give that a normal image it will work like normal
 	{//-ss
 		wxArrayString output;
@@ -114,7 +138,7 @@ void iconBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 	//loadParameters(&wid, &parameters);
 	
 	//do this in case of smdh
-	if(!VI9P::Loading) {//-pp
+	{//-pp
 		wxArrayString output;
 		wxArrayString errors;
 		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -pp \"" + VI9P::WorkingFile + '\"');
