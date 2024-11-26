@@ -1,3 +1,5 @@
+<img src="https://github.com/user-attachments/assets/e3abe8b2-2b8e-47c4-a434-f9c8330f135b" alt="drawing" width="225"/>
+
 # VidInjector9002.5
 A GUI wrapper for VidInjector9002-CLI
 
