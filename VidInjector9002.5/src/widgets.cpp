@@ -11,6 +11,7 @@ void initAllWidgets(InitWidgets* wid) {
 	wid->mainMenu->Append(wid->menuOptions, wxString::FromUTF8(options));
 	
 	wid->frame->SetMenuBar(wid->mainMenu);
+	wid->frame->SetIcon(wxString::FromUTF8(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + "/icon.png"));
 	
 	//panel
 	//set fonts
