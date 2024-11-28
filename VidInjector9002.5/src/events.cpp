@@ -784,5 +784,12 @@ void splitPatchDown_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 void buildframe_wxEVT_CLOSE_WINDOW(InitWidgets* wid, wxCloseEvent* event) {
 	event->Veto();
 	wid->buildframe->Show(false);
+	wid->buildframe->SetSize(450, 500);
+	wid->titleIDBox->SetValue(wxEmptyString);
+	wid->applicationTitleBox->SetValue(wxEmptyString);
 	//TODO: cancel build
+}
+
+void buildpanel_wxEVT_SIZE(InitWidgets* wid, VI9Pparameters* parameters) {
+	positionWidgets(wid, parameters);
 }

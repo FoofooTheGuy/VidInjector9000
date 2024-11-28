@@ -62,7 +62,8 @@ extern std::string PlayerTitleText;
 extern std::string MoflexFileText;
 extern std::string MenuBannerText;
 extern std::string SplitIntoAPatch;
-extern std::string TitleID;
+extern std::string TitleIDText;
+extern std::string ApplicationTitleText;
 extern std::string Build;
 
 //tool tips
@@ -96,6 +97,9 @@ extern std::string appendRowTip;
 extern std::string splitPatchTip;
 extern std::string splitPatchUpTip;
 extern std::string splitPatchDownTip;
+extern std::string leaveBlank;
+extern std::string Random;
+extern std::string titleIDBoxTip;
 
 //file stuffs (todo: image files)
 extern std::string moflexFiles;

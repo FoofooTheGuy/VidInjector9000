@@ -34,6 +34,8 @@ void splitPatchButton_wxEVT_TOGGLEBUTTON(InitWidgets* wid, VI9Pparameters* param
 void splitPatchUp_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters);
 void splitPatchDown_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters);
 void buildframe_wxEVT_CLOSE_WINDOW(InitWidgets* wid, wxCloseEvent* event);
+void buildpanel_wxEVT_SIZE(InitWidgets* wid, VI9Pparameters* parameters);
+
 
 //binds are in these binds so it cant be done outside of main
 //void appendRow_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters);

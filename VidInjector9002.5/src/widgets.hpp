@@ -140,9 +140,13 @@ struct InitWidgets {
 	wxFrame* buildframe = new wxFrame(frame, wxID_ANY, wxString::FromUTF8(buildFrameText), wxDefaultPosition, {450, 500}, wxCAPTION|wxCLOSE_BOX|wxRESIZE_BORDER|wxFRAME_FLOAT_ON_PARENT|wxCLIP_CHILDREN);
 	wxPanel* buildpanel = new wxPanel(buildframe);
 	
-	wxStaticText* titleIDText = new wxStaticText(buildpanel, wxID_ANY, wxString::FromUTF8(TitleID));
-	//wxTextCtrl* titleIDBox = new wxTextCtrl(buildpanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-	//wxStaticText* zerozero = new wxStaticText(buildpanel, wxID_ANY, wxString::FromUTF8("00"));
+	wxStaticText* titleIDText = new wxStaticText(buildpanel, wxID_ANY, wxString::FromUTF8(TitleIDText));
+	wxTextCtrl* titleIDBox = new wxTextCtrl(buildpanel, wxID_ANY, wxEmptyString);
+	wxStaticText* zerozero = new wxStaticText(buildpanel, wxID_ANY, wxString::FromUTF8("00"));
+	wxButton* titleIDButton = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8("⚄"), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+	
+	wxStaticText* applicationTitleText = new wxStaticText(buildpanel, wxID_ANY, wxString::FromUTF8(ApplicationTitleText));
+	wxTextCtrl* applicationTitleBox = new wxTextCtrl(buildpanel, wxID_ANY, wxEmptyString);
 	//wxButton* buildButt = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8(Build));
 };
 
@@ -202,6 +206,12 @@ class ForeColor
 	static wxColour splitPatchUp;
 	static wxColour splitPatchDown;
 	static wxColour buildpanel;
+	static wxColour titleIDText;
+	static wxColour titleIDBox;
+	static wxColour zerozero;
+	static wxColour titleIDButton;
+	static wxColour applicationTitleText;
+	static wxColour applicationTitleBox;
 };
 
 class BackColor
@@ -251,12 +261,21 @@ class BackColor
 	static wxColour splitPatchUp;
 	static wxColour splitPatchDown;
 	static wxColour buildpanel;
+	static wxColour titleIDText;
+	static wxColour titleIDBox;
+	static wxColour zerozero;
+	static wxColour titleIDButton;
+	static wxColour applicationTitleText;
+	static wxColour applicationTitleBox;
 };
 
 void getAppearance(InitWidgets* wid);
 
-//set all widgets on panel to color mode
-//0 light 1 dark 2 system
+/*
+set all widgets on panel to color mode
+0 light 1 dark 2 system
+wait a minute... why does the wxStaticText change automatically? oh well, i'll do it anyway
+*/
 void setAppearance(InitWidgets* wid, int Mode);
 
 //send VI9P::WorkingFile to cli -pp to get parameters from the file

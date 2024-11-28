@@ -383,10 +383,6 @@ int main(int argc, char* argv[]) {
 		splitPatchDown_wxEVT_BUTTON(&wid, &parameters);
 	});
 	
-	wid.buildframe->Bind(wxEVT_CLOSE_WINDOW, [&](wxCloseEvent& event) {
-		buildframe_wxEVT_CLOSE_WINDOW(&wid, &event);
-	});
-	
 	wid.mainMenu->Bind(wxEVT_MENU, [&](wxCommandEvent& event) {
 		switch(event.GetId()) {
 			case wxID_NEW:
@@ -614,6 +610,14 @@ int main(int argc, char* argv[]) {
 				}
 				break;
 		}
+	});
+	
+	wid.buildframe->Bind(wxEVT_CLOSE_WINDOW, [&](wxCloseEvent& event) {
+		buildframe_wxEVT_CLOSE_WINDOW(&wid, &event);
+	});
+	
+	wid.buildpanel->Bind(wxEVT_SIZE, [&](wxSizeEvent& event) {
+		buildpanel_wxEVT_SIZE(&wid, &parameters);
 	});
 	
 	//consoleLog->LogTextAtLevel(0, wxString::Format("OUTPUT: %s", s));

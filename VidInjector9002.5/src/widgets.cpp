@@ -19,9 +19,9 @@ void initAllWidgets(InitWidgets* wid) {
 		int w, h;
 		wxFont f;
 		
-		wid->modeText->SetFont(wid->modeText->GetFont().Scale(1.5F));
+		f = wid->modeText->GetFont().Scale(1.5F);
 		
-		f = wid->modeText->GetFont();
+		wid->modeText->SetFont(f);
 		wid->modeText->GetTextExtent(wid->modeText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->modeText->SetSize(w, h);
 	}
@@ -30,9 +30,9 @@ void initAllWidgets(InitWidgets* wid) {
 		int w, h;
 		wxFont f;
 		
-		wid->bannerText->SetFont(wid->modeText->GetFont());
+		f = wid->modeText->GetFont();
 		
-		f = wid->bannerText->GetFont();
+		wid->bannerText->SetFont(f);
 		wid->bannerText->GetTextExtent(wid->bannerText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->bannerText->SetSize(w, h);
 	}
@@ -52,10 +52,9 @@ void initAllWidgets(InitWidgets* wid) {
 		int w, h;
 		wxFont f;
 		
-		wid->bannerError->SetFont(wid->modeText->GetFont().Scale(0.666F));
-		wid->bannerError->SetFont(wid->bannerError->GetFont().Bold());
+		f = wid->modeText->GetFont().Scale(0.666F).Bold();
 		
-		f = wid->bannerError->GetFont();
+		wid->bannerError->SetFont(f);
 		wid->bannerError->GetTextExtent(wid->bannerError->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->bannerError->SetSize(w, h);
 		
@@ -66,9 +65,9 @@ void initAllWidgets(InitWidgets* wid) {
 		int w, h;
 		wxFont f;
 		
-		wid->iconText->SetFont(wid->modeText->GetFont());
+		f = wid->modeText->GetFont();
 		
-		f = wid->iconText->GetFont();
+		wid->iconText->SetFont(f);
 		wid->iconText->GetTextExtent(wid->iconText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->iconText->SetSize(w, h);
 	}
@@ -88,10 +87,9 @@ void initAllWidgets(InitWidgets* wid) {
 		int w, h;
 		wxFont f;
 		
-		wid->iconError->SetFont(wid->bannerError->GetFont());
-		wid->iconError->SetFont(wid->iconError->GetFont().Bold());
+		f = wid->bannerError->GetFont().Bold();
 		
-		f = wid->iconError->GetFont();
+		wid->iconError->SetFont(f);
 		wid->iconError->GetTextExtent(wid->iconError->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->iconError->SetSize(w, h);
 		
@@ -102,9 +100,9 @@ void initAllWidgets(InitWidgets* wid) {
 		int w, h;
 		wxFont f;
 		
-		wid->shortnameText->SetFont(wid->modeText->GetFont());
+		f = wid->modeText->GetFont();
 		
-		f = wid->shortnameText->GetFont();
+		wid->shortnameText->SetFont(f);
 		wid->shortnameText->GetTextExtent(wid->shortnameText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->shortnameText->SetSize(w, h);
 	}
@@ -112,10 +110,10 @@ void initAllWidgets(InitWidgets* wid) {
 		int w, h;
 		wxFont f;
 		
-		wid->shortnameError->SetFont(wid->bannerError->GetFont());
-		wid->shortnameError->SetFont(wid->shortnameError->GetFont().Bold());
+		f = wid->bannerError->GetFont();
+		f = f.Bold();
 		
-		f = wid->shortnameError->GetFont();
+		wid->shortnameError->SetFont(f);
 		wid->shortnameError->GetTextExtent(wid->shortnameError->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->shortnameError->SetSize(w, h);
 	}
@@ -124,9 +122,9 @@ void initAllWidgets(InitWidgets* wid) {
 		int w, h;
 		wxFont f;
 		
-		wid->longnameText->SetFont(wid->modeText->GetFont());
+		f = wid->modeText->GetFont();
 		
-		f = wid->longnameText->GetFont();
+		wid->longnameText->SetFont(f);
 		wid->longnameText->GetTextExtent(wid->longnameText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->longnameText->SetSize(w, h);
 	}
@@ -134,10 +132,9 @@ void initAllWidgets(InitWidgets* wid) {
 		int w, h;
 		wxFont f;
 		
-		wid->longnameError->SetFont(wid->bannerError->GetFont());
-		wid->longnameError->SetFont(wid->longnameError->GetFont().Bold());
+		f = wid->bannerError->GetFont().Bold();
 		
-		f = wid->longnameError->GetFont();
+		wid->longnameError->SetFont(f);
 		wid->longnameError->GetTextExtent(wid->longnameError->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->longnameError->SetSize(w, h);
 	}
@@ -146,9 +143,9 @@ void initAllWidgets(InitWidgets* wid) {
 		int w, h;
 		wxFont f;
 		
-		wid->publisherText->SetFont(wid->modeText->GetFont());
+		f = wid->modeText->GetFont();
 		
-		f = wid->publisherText->GetFont();
+		wid->publisherText->SetFont(f);
 		wid->publisherText->GetTextExtent(wid->publisherText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->publisherText->SetSize(w, h);
 	}
@@ -156,10 +153,9 @@ void initAllWidgets(InitWidgets* wid) {
 		int w, h;
 		wxFont f;
 		
-		wid->publisherError->SetFont(wid->bannerError->GetFont());
-		wid->publisherError->SetFont(wid->publisherError->GetFont().Bold());
-
-		f = wid->publisherError->GetFont();
+		f = wid->bannerError->GetFont().Bold();
+		
+		wid->publisherError->SetFont(f);
 		wid->publisherError->GetTextExtent(wid->publisherError->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->publisherError->SetSize(w, h);
 	}
@@ -168,9 +164,9 @@ void initAllWidgets(InitWidgets* wid) {
 		int w, h;
 		wxFont f;
 		
-		wid->bannerPreviewText->SetFont(wid->bannerError->GetFont().GetBaseFont());
+		f = wid->bannerError->GetFont().GetBaseFont();
 		
-		f = wid->bannerPreviewText->GetFont();
+		wid->bannerPreviewText->SetFont(f);
 		wid->bannerPreviewText->GetTextExtent(wid->bannerPreviewText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->bannerPreviewText->SetSize(w, h);
 	}
@@ -185,9 +181,9 @@ void initAllWidgets(InitWidgets* wid) {
 		
 		boxwidth = mywidth - width;
 		
-		wid->copyCheck->SetFont(wid->modeText->GetFont());
+		f = wid->modeText->GetFont();
 		
-		f = wid->copyCheck->GetFont();
+		wid->copyCheck->SetFont(f);
 		wid->copyCheck->GetTextExtent(wid->copyCheck->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->copyCheck->SetSize(w + boxwidth, h);
 	}
@@ -202,9 +198,9 @@ void initAllWidgets(InitWidgets* wid) {
 		
 		boxwidth = mywidth - width;
 		
-		wid->ffRewindCheck->SetFont(wid->modeText->GetFont().Scale(0.9F));
+		f = wid->modeText->GetFont().Scale(0.9F);
 		
-		f = wid->ffRewindCheck->GetFont();
+		wid->ffRewindCheck->SetFont(f);
 		wid->ffRewindCheck->GetTextExtent(wid->ffRewindCheck->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->ffRewindCheck->SetSize(w + boxwidth, h);
 	}
@@ -218,9 +214,9 @@ void initAllWidgets(InitWidgets* wid) {
 		
 		boxwidth = mywidth - width;
 		
-		wid->dimCheck->SetFont(wid->ffRewindCheck->GetFont());
+		f = wid->ffRewindCheck->GetFont();
 		
-		f = wid->dimCheck->GetFont();
+		wid->dimCheck->SetFont(f);
 		wid->dimCheck->GetTextExtent(wid->dimCheck->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->dimCheck->SetSize(w + boxwidth, h);
 	}
@@ -229,9 +225,9 @@ void initAllWidgets(InitWidgets* wid) {
 		int w, h;
 		wxFont f;
 		
-		wid->multiBannerPreviewIndex->SetFont(wid->bannerPreviewText->GetFont());
+		f = wid->bannerPreviewText->GetFont();
 		
-		f = wid->multiBannerPreviewIndex->GetFont();
+		wid->multiBannerPreviewIndex->SetFont(f);
 		wid->multiBannerPreviewIndex->GetTextExtent(wid->multiBannerPreviewIndex->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->multiBannerPreviewIndex->SetSize(w, h);
 	}
@@ -240,9 +236,9 @@ void initAllWidgets(InitWidgets* wid) {
 		int w, h;
 		wxFont f;
 		
-		wid->playerTitleText->SetFont(wid->modeText->GetFont());
+		f = wid->modeText->GetFont();
 		
-		f = wid->playerTitleText->GetFont();
+		wid->playerTitleText->SetFont(f);
 		wid->playerTitleText->GetTextExtent(wid->playerTitleText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->playerTitleText->SetSize(w, h);
 	}
@@ -250,9 +246,9 @@ void initAllWidgets(InitWidgets* wid) {
 		int w, h;
 		wxFont f;
 		
-		wid->moflexFileText->SetFont(wid->modeText->GetFont());
+		f = wid->modeText->GetFont();
 		
-		f = wid->moflexFileText->GetFont();
+		wid->moflexFileText->SetFont(f);
 		wid->moflexFileText->GetTextExtent(wid->moflexFileText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->moflexFileText->SetSize(w, h);
 	}
@@ -260,9 +256,9 @@ void initAllWidgets(InitWidgets* wid) {
 		int w, h;
 		wxFont f;
 		
-		wid->menuBannerText->SetFont(wid->modeText->GetFont());
+		f = wid->modeText->GetFont();
 		
-		f = wid->menuBannerText->GetFont();
+		wid->menuBannerText->SetFont(f);
 		wid->menuBannerText->GetTextExtent(wid->menuBannerText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->menuBannerText->SetSize(w, h);
 	}
@@ -351,9 +347,9 @@ void initAllWidgets(InitWidgets* wid) {
 		buttwidth = buttwidth - w;
 		buttheight = buttheight - h;
 		
-		wid->removeRow->SetFont(wid->modeText->GetFont().Scale(1.2F));
+		f = wid->modeText->GetFont().Scale(1.2F);
 		
-		f = wid->removeRow->GetFont();
+		wid->removeRow->SetFont(f);
 		wid->removeRow->GetTextExtent(wid->removeRow->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->removeRow->SetSize(w + buttwidth, h + buttheight);
 	}
@@ -367,9 +363,9 @@ void initAllWidgets(InitWidgets* wid) {
 		buttwidth = buttwidth - w;
 		buttheight = buttheight - h;
 		
-		wid->appendRow->SetFont(wid->removeRow->GetFont());
+		f = wid->removeRow->GetFont();
 		
-		f = wid->appendRow->GetFont();
+		wid->appendRow->SetFont(f);
 		wid->appendRow->GetTextExtent(wid->appendRow->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->appendRow->SetSize(w + buttwidth, h + buttheight);
 	}
@@ -384,9 +380,9 @@ void initAllWidgets(InitWidgets* wid) {
 		buttwidth = buttwidth - w;
 		buttheight = buttheight - h;
 		
-		wid->splitPatchButton->SetFont(wid->ffRewindCheck->GetFont());
+		f = wid->ffRewindCheck->GetFont();
 		
-		f = wid->splitPatchButton->GetFont();
+		wid->splitPatchButton->SetFont(f);
 		wid->splitPatchButton->GetTextExtent(wid->splitPatchButton->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->splitPatchButton->SetSize(w + buttwidth, h + buttheight);
 	}
@@ -418,11 +414,63 @@ void initAllWidgets(InitWidgets* wid) {
 		int w, h;
 		wxFont f;
 		
-		wid->rowText->SetFont(wid->bannerPreviewText->GetFont());
+		f = wid->bannerPreviewText->GetFont();
 		
-		f = wid->rowText->GetFont();
+		wid->rowText->SetFont(f);
 		wid->rowText->GetTextExtent(wid->rowText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->rowText->SetSize(w, h);
+	}
+	//buildpanel
+	{//titleIDText
+		int w, h;
+		wxFont f;
+		
+		f = wid->modeText->GetFont();
+		
+		wid->titleIDText->SetFont(f);
+		wid->titleIDText->GetTextExtent(wid->titleIDText->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		wid->titleIDText->SetSize(w, h);
+	}
+	{//titleIDBox
+		int w, h;
+		wxFont f;
+		
+		f = wid->titleIDBox->GetFont();
+		f.SetFamily(wxFONTFAMILY_TELETYPE);
+		
+		wid->titleIDBox->SetFont(f);
+		wid->titleIDBox->GetTextExtent(wxString::FromUTF8("12345"), &w, &h, nullptr, nullptr, &f);
+		wid->titleIDBox->SetSize(w + 20, h + 10);
+	}
+	{//zerozero
+		int w, h;
+		wxFont f;
+		
+		f = wid->modeText->GetFont();
+		
+		wid->zerozero->SetFont(f);
+		wid->zerozero->GetTextExtent(wid->zerozero->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		wid->zerozero->SetSize(w, h);
+	}
+	{//titleIDButton
+		int w, h;
+		wxFont f;
+		
+		f = wid->modeText->GetFont().Scale(2);
+		
+		wid->titleIDButton->SetFont(f);
+		wid->titleIDButton->GetTextExtent(wid->titleIDButton->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		wid->titleIDButton->SetSize(w, h);
+	}
+	{//applicationTitleText
+		int w, h;
+		wxFont f;
+		
+		f = wid->modeText->GetFont();
+		
+		wid->applicationTitleText->SetFont(f);
+		wid->applicationTitleText->GetTextExtent(wid->applicationTitleText->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		wid->applicationTitleText->SetSize(w, h);
 	}
 }
 
@@ -488,6 +536,8 @@ void setToolTips(InitWidgets* wid) {
 	wid->splitPatchButton->SetToolTip(wxString::FromUTF8(splitPatchTip));
 	wid->splitPatchUp->SetToolTip(wxString::FromUTF8(splitPatchUpTip));
 	wid->splitPatchDown->SetToolTip(wxString::FromUTF8(splitPatchDownTip));
+	
+	wid->titleIDBox->SetToolTip(wxString::FromUTF8(titleIDBoxTip));
 }
 
 void setCursors(InitWidgets* wid) {
@@ -532,6 +582,8 @@ void setCursors(InitWidgets* wid) {
 	wid->frame->SetCursor(wxCURSOR_ARROW);
 	wid->panel->SetCursor(wxCURSOR_ARROW);
 	wid->mediaPanel->SetCursor(wxCURSOR_ARROW);
+	
+	wid->titleIDButton->SetCursor(wid->titleIDButton->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
 }
 
 void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
@@ -1133,7 +1185,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->splitPatchUp->Move(x - 3 - mywidth, y);
 	}
 	{//splitPatchLine
-		int x, upx, upy, mywidth, downwidth, upwidth, upheight;
+		int x, upx, upy, downwidth, upwidth, upheight;
 		wid->PlayerTitles.at(parameters->splitPos)->GetPosition(&x, NULL);
 		wid->splitPatchUp->GetPosition(&upx, &upy);
 		wid->splitPatchUp->GetSize(&upwidth, &upheight);
@@ -1169,6 +1221,67 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		else {
 			wid->scrolledPanel->SetVirtualSize((boxwidth * 3) + upwidth + 3 + upwidth, boxheight * wid->PlayerTitles.size() + splitupheight + browseheight + 2 + removeheight + 2 + splitpatchheight + 2 + rowtextheight);//size to contain all widgets (dont use coordinates)
 		}
+	}
+	//buildpanel stuff
+	{//titleIDText
+		int x, y, panelwidth, mywidth, boxwidth, zzwidth, buttwidth, height;
+		wid->buildpanel->GetSize(&panelwidth, NULL);
+		wid->titleIDText->GetSize(&mywidth, NULL);
+		wid->titleIDBox->GetSize(&boxwidth, NULL);
+		wid->zerozero->GetSize(&zzwidth, NULL);
+		wid->titleIDButton->GetSize(&buttwidth, NULL);
+		
+		wid->titleIDText->Move((panelwidth - (mywidth + boxwidth + zzwidth + 3 + buttwidth)) / 2, 15);
+	}
+	{//titleIDBox
+		int x, y, width, height, myheight;
+		wid->titleIDText->GetPosition(&x, &y);
+		wid->titleIDText->GetSize(&width, &height);
+		wid->titleIDBox->GetSize(NULL, &myheight);
+		
+		wid->titleIDBox->Move(x + width, ((myheight > height) ? y - ((myheight - height) / 2) : y + ((height - myheight) / 2)));
+	}
+	{//zerozero
+		int x, y, width;
+		wid->titleIDText->GetPosition(NULL, &y);
+		wid->titleIDBox->GetPosition(&x, NULL);
+		wid->titleIDBox->GetSize(&width, NULL);
+		
+		wid->zerozero->Move(x + width, y);
+	}
+	{//titleIDButton
+		int x, y, width, height, myheight;
+		wid->zerozero->GetPosition(&x, &y);
+		wid->zerozero->GetSize(&width, &height);
+		wid->titleIDButton->GetSize(NULL, &myheight);
+		
+		wid->titleIDButton->Move(x + width + 3, ((myheight > height) ? y - ((myheight - height) / 2) : y + ((height - myheight) / 2)));
+	}
+	{//applicationTitleText
+		int x, y, height;
+		wid->titleIDText->GetSize(NULL, &height);
+		wid->titleIDText->GetPosition(&x, &y);
+		
+		wid->applicationTitleText->Move(x, y + height + 15);
+	}
+	{//applicationTitleBox
+		int x, y, width, height, myheight;
+		wid->applicationTitleText->GetPosition(&x, &y);
+		wid->applicationTitleText->GetSize(&width, &height);
+		wid->applicationTitleBox->GetSize(NULL, &myheight);
+		
+		wid->applicationTitleBox->Move(x + width + 5, ((myheight > height) ? y - ((myheight - height) / 2) : y + ((height - myheight) / 2)));
+	}
+	{//applicationTitleBox width
+		int y, tidwidth, boxwidth, zzwidth, buttwidth, textwidth, height, myheight;
+		wid->titleIDText->GetSize(&tidwidth, NULL);
+		wid->titleIDBox->GetSize(&boxwidth, NULL);
+		wid->zerozero->GetSize(&zzwidth, NULL);
+		wid->titleIDButton->GetSize(&buttwidth, NULL);
+		wid->applicationTitleText->GetSize(&textwidth, NULL);
+		wid->applicationTitleBox->GetSize(NULL, &myheight);
+		
+		wid->applicationTitleBox->SetSize((tidwidth + boxwidth + zzwidth + 3 + buttwidth) - textwidth, myheight);
 	}
 }
 
@@ -1216,6 +1329,12 @@ wxColour BackColor::rowText;
 wxColour BackColor::splitPatchUp;
 wxColour BackColor::splitPatchDown;
 wxColour BackColor::buildpanel;
+wxColour BackColor::titleIDText;
+wxColour BackColor::titleIDBox;
+wxColour BackColor::zerozero;
+wxColour BackColor::titleIDButton;
+wxColour BackColor::applicationTitleText;
+wxColour BackColor::applicationTitleBox;
 
 wxColour ForeColor::panel;
 wxColour ForeColor::mainMenu;
@@ -1261,6 +1380,12 @@ wxColour ForeColor::rowText;
 wxColour ForeColor::splitPatchUp;
 wxColour ForeColor::splitPatchDown;
 wxColour ForeColor::buildpanel;
+wxColour ForeColor::titleIDText;
+wxColour ForeColor::titleIDBox;
+wxColour ForeColor::zerozero;
+wxColour ForeColor::titleIDButton;
+wxColour ForeColor::applicationTitleText;
+wxColour ForeColor::applicationTitleBox;
 
 void getAppearance(InitWidgets* wid) {
 	BackColor::panel = wid->panel->GetBackgroundColour();
@@ -1307,6 +1432,12 @@ void getAppearance(InitWidgets* wid) {
 	BackColor::splitPatchUp = wid->splitPatchUp->GetBackgroundColour();
 	BackColor::splitPatchDown = wid->splitPatchDown->GetBackgroundColour();
 	BackColor::buildpanel = wid->buildpanel->GetBackgroundColour();
+	BackColor::titleIDText = wid->titleIDText->GetBackgroundColour();
+	BackColor::titleIDBox = wid->titleIDBox->GetBackgroundColour();
+	BackColor::zerozero = wid->zerozero->GetBackgroundColour();
+	BackColor::titleIDButton = wid->titleIDButton->GetBackgroundColour();
+	BackColor::applicationTitleText = wid->applicationTitleText->GetBackgroundColour();
+	BackColor::applicationTitleBox = wid->applicationTitleBox->GetBackgroundColour();
 	
 	ForeColor::panel = wid->panel->GetForegroundColour();
 	ForeColor::mainMenu = wid->mainMenu->GetForegroundColour();
@@ -1352,6 +1483,12 @@ void getAppearance(InitWidgets* wid) {
 	ForeColor::splitPatchUp = wid->splitPatchUp->GetForegroundColour();
 	ForeColor::splitPatchDown = wid->splitPatchDown->GetForegroundColour();
 	ForeColor::buildpanel = wid->buildpanel->GetForegroundColour();
+	ForeColor::titleIDText = wid->titleIDText->GetForegroundColour();
+	ForeColor::titleIDBox = wid->titleIDBox->GetForegroundColour();
+	ForeColor::zerozero = wid->zerozero->GetForegroundColour();
+	ForeColor::titleIDButton = wid->titleIDButton->GetForegroundColour();
+	ForeColor::applicationTitleText = wid->applicationTitleText->GetForegroundColour();
+	ForeColor::applicationTitleBox = wid->applicationTitleBox->GetForegroundColour();
 }
 
 void setAppearance(InitWidgets* wid, int Mode) {
@@ -1400,6 +1537,12 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->splitPatchUp->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->splitPatchDown->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->buildpanel->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		wid->titleIDText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		wid->titleIDBox->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		wid->zerozero->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		wid->titleIDButton->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		wid->applicationTitleText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		wid->applicationTitleBox->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		
 		wid->splitPatchLine->SetColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->panel->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
@@ -1446,6 +1589,12 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->splitPatchUp->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->splitPatchDown->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->buildpanel->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		wid->titleIDText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		wid->titleIDBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		wid->zerozero->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		wid->titleIDButton->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		wid->applicationTitleText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		wid->applicationTitleBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		
 		{
 			wxColor LightBlack = wxBLACK->GetRGB() + 0x141414;
@@ -1540,6 +1689,12 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->splitPatchUp->SetBackgroundColour(BackColor::splitPatchUp);
 		wid->splitPatchDown->SetBackgroundColour(BackColor::splitPatchDown);
 		wid->buildpanel->SetBackgroundColour(BackColor::buildpanel);
+		wid->titleIDText->SetBackgroundColour(BackColor::titleIDText);
+		wid->titleIDBox->SetBackgroundColour(BackColor::titleIDBox);
+		wid->zerozero->SetBackgroundColour(BackColor::zerozero);
+		wid->titleIDButton->SetBackgroundColour(BackColor::titleIDButton);
+		wid->applicationTitleText->SetBackgroundColour(BackColor::applicationTitleText);
+		wid->applicationTitleBox->SetBackgroundColour(BackColor::applicationTitleBox);
 		
 		wid->panel->SetForegroundColour(ForeColor::panel);
 		wid->mainMenu->SetForegroundColour(ForeColor::mainMenu);
@@ -1586,6 +1741,12 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->splitPatchUp->SetForegroundColour(ForeColor::splitPatchUp);
 		wid->splitPatchDown->SetForegroundColour(ForeColor::splitPatchDown);
 		wid->buildpanel->SetForegroundColour(ForeColor::buildpanel);
+		wid->titleIDText->SetForegroundColour(ForeColor::titleIDText);
+		wid->titleIDBox->SetForegroundColour(ForeColor::titleIDBox);
+		wid->zerozero->SetForegroundColour(ForeColor::zerozero);
+		wid->titleIDButton->SetForegroundColour(ForeColor::titleIDButton);
+		wid->applicationTitleText->SetForegroundColour(ForeColor::applicationTitleText);
+		wid->applicationTitleBox->SetForegroundColour(ForeColor::applicationTitleBox);
 		
 		{
 			wxColor BackOdd = (BackColor::bannerBox.GetRGB() < 0x7F7F7F) ? (BackColor::bannerBox.GetRGB() + 0x141414) : (BackColor::bannerBox.GetRGB() - 0x141414);//FF/2=7F
