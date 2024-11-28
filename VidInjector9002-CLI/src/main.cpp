@@ -98,11 +98,11 @@ int main(int argc, char** argv) {
 			else if(argc == 7) {
 				uint32_t inNumber = 0;
 				if(!stoul_s(inNumber, argv[3], true)) {
-					std::cout << ErrorText << " <" << number << "> " << '\n' << BadValue << " \"" << argv[3] << '\"' << std::endl;
+					std::cout << ErrorText << " <" << UniqueIDText << "> " << '\n' << BadValue << " \"" << argv[3] << '\"' << std::endl;
 					return 1;
 				}
 				if(!TIDisValid(inNumber)) {
-					std::cout << ErrorText << " <" << number << "> " << '\n' << BadValue << " \"" << argv[3] << '\"' << std::endl;
+					std::cout << ErrorText << " <" << UniqueIDText << "> " << '\n' << BadValue << " \"" << argv[3] << '\"' << std::endl;
 					return 2;
 				}
 				return build_archive(argv[2], argv[6], "", inNumber, argv[4], argv[5]);
@@ -110,11 +110,11 @@ int main(int argc, char** argv) {
 			else if(argc == 8) {
 				uint32_t inNumber = 0;
 				if(!stoul_s(inNumber, argv[3], true)) {
-					std::cout << ErrorText << " <" << number << "> " << '\n' << BadValue << " \"" << argv[3] << '\"' << std::endl;
+					std::cout << ErrorText << " <" << UniqueIDText << "> " << '\n' << BadValue << " \"" << argv[3] << '\"' << std::endl;
 					return 1;
 				}
 				if(!TIDisValid(inNumber)) {
-					std::cout << ErrorText << " <" << number << "> " << '\n' << BadValue << " \"" << argv[3] << '\"' << std::endl;
+					std::cout << ErrorText << " <" << UniqueIDText << "> " << '\n' << BadValue << " \"" << argv[3] << '\"' << std::endl;
 					return 2;
 				}
 				return build_archive(argv[2], argv[6], argv[7], inNumber, argv[4], argv[5]);
