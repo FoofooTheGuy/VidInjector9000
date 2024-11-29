@@ -11,7 +11,7 @@ A GUI wrapper for VidInjector9002-CLI
 **Linux**
 
 **Arch**
-1. Install `gtk3` with your package manager
+1. Install `gtk3` with your package manager (`pacman -S gtk3`)
 2. Run `VidInjector9002.5`
 
 # Compiling from source
