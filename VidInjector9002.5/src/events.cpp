@@ -785,11 +785,17 @@ void buildframe_wxEVT_CLOSE_WINDOW(InitWidgets* wid, wxCloseEvent* event) {
 	event->Veto();
 	wid->buildframe->Show(false);
 	wid->buildframe->SetSize(450, 500);
-	wid->titleIDBox->SetValue(wxEmptyString);
-	wid->applicationTitleBox->SetValue(wxEmptyString);
 	//TODO: cancel build
 }
 
 void buildpanel_wxEVT_SIZE(InitWidgets* wid, VI9Pparameters* parameters) {
 	positionWidgets(wid, parameters);
+}
+
+void titleIDButton_wxEVT_BUTTON(InitWidgets* wid) {
+	uint32_t uniqueID = RandomTID();
+	char uniqueIDstr [6];
+	sprintf(uniqueIDstr, "%05X", uniqueID);
+	
+	wid->titleIDBox->SetValue(wxString::FromUTF8(std::string(uniqueIDstr)));
 }

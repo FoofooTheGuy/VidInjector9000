@@ -460,7 +460,7 @@ void initAllWidgets(InitWidgets* wid) {
 		
 		wid->titleIDButton->SetFont(f);
 		wid->titleIDButton->GetTextExtent(wid->titleIDButton->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->titleIDButton->SetSize(w, h);
+		wid->titleIDButton->SetSize(w > h ? w : h, w > h ? w : h);
 	}
 	{//applicationTitleText
 		int w, h;
@@ -471,6 +471,45 @@ void initAllWidgets(InitWidgets* wid) {
 		wid->applicationTitleText->SetFont(f);
 		wid->applicationTitleText->GetTextExtent(wid->applicationTitleText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->applicationTitleText->SetSize(w, h);
+	}
+	{//applicationTitleBox
+		wxFont f;
+		
+		f = wid->productCodeBox->GetFont();
+		f.SetFamily(wxFONTFAMILY_TELETYPE);
+		
+		wid->applicationTitleBox->SetFont(f);
+	}
+	{//productCodeText
+		int w, h;
+		wxFont f;
+		
+		f = wid->modeText->GetFont();
+		
+		wid->productCodeText->SetFont(f);
+		wid->productCodeText->GetTextExtent(wid->productCodeText->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		wid->productCodeText->SetSize(w, h);
+	}
+	{//productCodeBox
+		int w, h;
+		wxFont f;
+		
+		f = wid->productCodeBox->GetFont();
+		f.SetFamily(wxFONTFAMILY_TELETYPE);
+		
+		wid->productCodeBox->SetFont(f);
+		wid->productCodeBox->GetTextExtent(wxString::FromUTF8("1234"), &w, &h, nullptr, nullptr, &f);
+		wid->productCodeBox->SetSize(w + 20, h + 10);
+	}
+	{//buildStatusText
+		int w, h;
+		wxFont f;
+		
+		f = wid->modeText->GetFont();
+		
+		wid->buildStatusText->SetFont(f);
+		wid->buildStatusText->GetTextExtent(wid->buildStatusText->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		wid->buildStatusText->SetSize(w, h);
 	}
 }
 
@@ -538,6 +577,9 @@ void setToolTips(InitWidgets* wid) {
 	wid->splitPatchDown->SetToolTip(wxString::FromUTF8(splitPatchDownTip));
 	
 	wid->titleIDBox->SetToolTip(wxString::FromUTF8(titleIDBoxTip));
+	wid->titleIDButton->SetToolTip(wxString::FromUTF8(titleIDButtonTip));
+	wid->applicationTitleBox->SetToolTip(wxString::FromUTF8(applicationTitleBoxTip));
+	wid->productCodeBox->SetToolTip(wxString::FromUTF8(productCodeBoxTip));
 }
 
 void setCursors(InitWidgets* wid) {
@@ -583,7 +625,9 @@ void setCursors(InitWidgets* wid) {
 	wid->panel->SetCursor(wxCURSOR_ARROW);
 	wid->mediaPanel->SetCursor(wxCURSOR_ARROW);
 	
+	wid->titleIDBox->SetCursor(wid->titleIDButton->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_ARROW);
 	wid->titleIDButton->SetCursor(wid->titleIDButton->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
+	wid->applicationTitleBox->SetCursor(wid->titleIDButton->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_ARROW);
 }
 
 void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
@@ -1224,7 +1268,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 	}
 	//buildpanel stuff
 	{//titleIDText
-		int x, y, panelwidth, mywidth, boxwidth, zzwidth, buttwidth, height;
+		int panelwidth, mywidth, boxwidth, zzwidth, buttwidth;
 		wid->buildpanel->GetSize(&panelwidth, NULL);
 		wid->titleIDText->GetSize(&mywidth, NULL);
 		wid->titleIDBox->GetSize(&boxwidth, NULL);
@@ -1259,10 +1303,11 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 	}
 	{//applicationTitleText
 		int x, y, height;
-		wid->titleIDText->GetSize(NULL, &height);
-		wid->titleIDText->GetPosition(&x, &y);
+		wid->titleIDButton->GetSize(NULL, &height);//this is probably the largest thing
+		wid->titleIDText->GetPosition(&x, NULL);
+		wid->titleIDButton->GetPosition(NULL, &y);
 		
-		wid->applicationTitleText->Move(x, y + height + 15);
+		wid->applicationTitleText->Move(x, y + height + 10);
 	}
 	{//applicationTitleBox
 		int x, y, width, height, myheight;
@@ -1273,7 +1318,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->applicationTitleBox->Move(x + width + 5, ((myheight > height) ? y - ((myheight - height) / 2) : y + ((height - myheight) / 2)));
 	}
 	{//applicationTitleBox width
-		int y, tidwidth, boxwidth, zzwidth, buttwidth, textwidth, height, myheight;
+		int tidwidth, boxwidth, zzwidth, buttwidth, textwidth, myheight;
 		wid->titleIDText->GetSize(&tidwidth, NULL);
 		wid->titleIDBox->GetSize(&boxwidth, NULL);
 		wid->zerozero->GetSize(&zzwidth, NULL);
@@ -1281,7 +1326,36 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->applicationTitleText->GetSize(&textwidth, NULL);
 		wid->applicationTitleBox->GetSize(NULL, &myheight);
 		
-		wid->applicationTitleBox->SetSize((tidwidth + boxwidth + zzwidth + 3 + buttwidth) - textwidth, myheight);
+		wid->applicationTitleBox->SetSize((tidwidth + boxwidth + zzwidth + 3 + buttwidth) - (textwidth + 5), myheight);
+	}
+	{//productCodeText
+		int texty, boxy, panelwidth, mywidth, boxwidth, boxheight, textheight;
+		wid->buildpanel->GetSize(&panelwidth, NULL);
+		wid->productCodeText->GetSize(&mywidth, NULL);
+		wid->productCodeBox->GetSize(&boxwidth, NULL);
+		wid->applicationTitleText->GetSize(NULL, &textheight);
+		wid->applicationTitleBox->GetSize(NULL, &boxheight);
+		wid->applicationTitleText->GetPosition(NULL, &texty);
+		wid->applicationTitleBox->GetPosition(NULL, &boxy);
+		
+		wid->productCodeText->Move((panelwidth - (mywidth + boxwidth)) / 2, (texty + textheight) > (boxy + boxheight) ? texty + textheight + 10 : boxy + boxheight + 10);
+	}
+	{//productCodeBox
+		int x, y, width, height, myheight;
+		wid->productCodeText->GetPosition(&x, &y);
+		wid->productCodeText->GetSize(&width, &height);
+		wid->productCodeBox->GetSize(NULL, &myheight);
+		
+		wid->productCodeBox->Move(x + width, ((myheight > height) ? y - ((myheight - height) / 2) : y + ((height - myheight) / 2)));
+	}
+	{//buildStatusText
+		int y, panelwidth, mywidth, boxheight;
+		wid->buildpanel->GetSize(&panelwidth, NULL);
+		wid->buildStatusText->GetSize(&mywidth, NULL);
+		wid->productCodeBox->GetSize(NULL, &boxheight);
+		wid->productCodeBox->GetPosition(NULL, &y);
+		
+		wid->buildStatusText->Move((panelwidth - mywidth) / 2, y + boxheight + 75);
 	}
 }
 
@@ -1335,6 +1409,8 @@ wxColour BackColor::zerozero;
 wxColour BackColor::titleIDButton;
 wxColour BackColor::applicationTitleText;
 wxColour BackColor::applicationTitleBox;
+wxColour BackColor::productCodeText;
+wxColour BackColor::productCodeBox;
 
 wxColour ForeColor::panel;
 wxColour ForeColor::mainMenu;
@@ -1386,6 +1462,8 @@ wxColour ForeColor::zerozero;
 wxColour ForeColor::titleIDButton;
 wxColour ForeColor::applicationTitleText;
 wxColour ForeColor::applicationTitleBox;
+wxColour ForeColor::productCodeText;
+wxColour ForeColor::productCodeBox;
 
 void getAppearance(InitWidgets* wid) {
 	BackColor::panel = wid->panel->GetBackgroundColour();
@@ -1438,6 +1516,8 @@ void getAppearance(InitWidgets* wid) {
 	BackColor::titleIDButton = wid->titleIDButton->GetBackgroundColour();
 	BackColor::applicationTitleText = wid->applicationTitleText->GetBackgroundColour();
 	BackColor::applicationTitleBox = wid->applicationTitleBox->GetBackgroundColour();
+	BackColor::productCodeText = wid->productCodeText->GetBackgroundColour();
+	BackColor::productCodeBox = wid->productCodeBox->GetBackgroundColour();
 	
 	ForeColor::panel = wid->panel->GetForegroundColour();
 	ForeColor::mainMenu = wid->mainMenu->GetForegroundColour();
@@ -1489,6 +1569,8 @@ void getAppearance(InitWidgets* wid) {
 	ForeColor::titleIDButton = wid->titleIDButton->GetForegroundColour();
 	ForeColor::applicationTitleText = wid->applicationTitleText->GetForegroundColour();
 	ForeColor::applicationTitleBox = wid->applicationTitleBox->GetForegroundColour();
+	ForeColor::productCodeText = wid->productCodeText->GetForegroundColour();
+	ForeColor::productCodeBox = wid->productCodeBox->GetForegroundColour();
 }
 
 void setAppearance(InitWidgets* wid, int Mode) {
@@ -1543,6 +1625,8 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->titleIDButton->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->applicationTitleText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->applicationTitleBox->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		wid->productCodeText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		wid->productCodeBox->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		
 		wid->splitPatchLine->SetColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->panel->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
@@ -1595,6 +1679,8 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->titleIDButton->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->applicationTitleText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->applicationTitleBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		wid->productCodeText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		wid->productCodeBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		
 		{
 			wxColor LightBlack = wxBLACK->GetRGB() + 0x141414;
@@ -1695,6 +1781,8 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->titleIDButton->SetBackgroundColour(BackColor::titleIDButton);
 		wid->applicationTitleText->SetBackgroundColour(BackColor::applicationTitleText);
 		wid->applicationTitleBox->SetBackgroundColour(BackColor::applicationTitleBox);
+		wid->productCodeText->SetBackgroundColour(BackColor::productCodeText);
+		wid->productCodeBox->SetBackgroundColour(BackColor::productCodeBox);
 		
 		wid->panel->SetForegroundColour(ForeColor::panel);
 		wid->mainMenu->SetForegroundColour(ForeColor::mainMenu);
@@ -1747,6 +1835,8 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->titleIDButton->SetForegroundColour(ForeColor::titleIDButton);
 		wid->applicationTitleText->SetForegroundColour(ForeColor::applicationTitleText);
 		wid->applicationTitleBox->SetForegroundColour(ForeColor::applicationTitleBox);
+		wid->productCodeText->SetForegroundColour(ForeColor::productCodeText);
+		wid->productCodeBox->SetForegroundColour(ForeColor::productCodeBox);
 		
 		{
 			wxColor BackOdd = (BackColor::bannerBox.GetRGB() < 0x7F7F7F) ? (BackColor::bannerBox.GetRGB() + 0x141414) : (BackColor::bannerBox.GetRGB() - 0x141414);//FF/2=7F

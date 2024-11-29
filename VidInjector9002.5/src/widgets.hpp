@@ -146,7 +146,12 @@ struct InitWidgets {
 	wxButton* titleIDButton = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8("⚄"), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	
 	wxStaticText* applicationTitleText = new wxStaticText(buildpanel, wxID_ANY, wxString::FromUTF8(ApplicationTitleText));
-	wxTextCtrl* applicationTitleBox = new wxTextCtrl(buildpanel, wxID_ANY, wxEmptyString);
+	wxTextCtrl* applicationTitleBox = new wxTextCtrl(buildpanel, wxID_ANY, wxString::FromUTF8("video"));
+
+	wxStaticText* productCodeText = new wxStaticText(buildpanel, wxID_ANY, wxString::FromUTF8(ProductCodeText));
+	wxTextCtrl* productCodeBox = new wxTextCtrl(buildpanel, wxID_ANY, wxString::FromUTF8("VDIJ"));
+	
+	wxStaticText* buildStatusText = new wxStaticText(buildpanel, wxID_ANY, "epsum lauren");
 	//wxButton* buildButt = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8(Build));
 };
 
@@ -212,6 +217,8 @@ class ForeColor
 	static wxColour titleIDButton;
 	static wxColour applicationTitleText;
 	static wxColour applicationTitleBox;
+	static wxColour productCodeText;
+	static wxColour productCodeBox;
 };
 
 class BackColor
@@ -267,6 +274,8 @@ class BackColor
 	static wxColour titleIDButton;
 	static wxColour applicationTitleText;
 	static wxColour applicationTitleBox;
+	static wxColour productCodeText;
+	static wxColour productCodeBox;
 };
 
 void getAppearance(InitWidgets* wid);

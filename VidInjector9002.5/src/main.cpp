@@ -570,8 +570,12 @@ int main(int argc, char* argv[]) {
 							TARfile = std::string(saveTARDialog.GetPath().ToUTF8());
 						}
 					}
-					if(!CIAfile.empty())//just make sure
+					if(!CIAfile.empty()) {//just make sure
+						titleIDButton_wxEVT_BUTTON(&wid);//randomize TID
+						wid.applicationTitleBox->SetValue(wxString::FromUTF8("video"));
+						wid.productCodeBox->SetValue(wxString::FromUTF8("VDIJ"));
 						wid.buildframe->Show();
+					}
 				}
 				break;
 			case ID_LOGBOOL:
@@ -618,6 +622,10 @@ int main(int argc, char* argv[]) {
 	
 	wid.buildpanel->Bind(wxEVT_SIZE, [&](wxSizeEvent& event) {
 		buildpanel_wxEVT_SIZE(&wid, &parameters);
+	});
+
+	wid.titleIDButton->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		titleIDButton_wxEVT_BUTTON(&wid);
 	});
 	
 	//consoleLog->LogTextAtLevel(0, wxString::Format("OUTPUT: %s", s));

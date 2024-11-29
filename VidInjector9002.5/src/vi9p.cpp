@@ -12,14 +12,14 @@ void parsePP(const std::string input, const std::string query, std::string* valu
 	for(const auto &c : input) {
 		line += c;
 		if (c == '\n') {
-		    size_t found = line.find("] ");
-		    if(found < line.size()) {
-		        //std::cout << line.substr(found + std::string("] ").size());
-			    lines.push_back(line.substr(found + std::string("] ").size()));
-		    }
-		    else {
-		        lines.push_back(line);
-		    }
+			size_t found = line.find("] ");
+			if(found < line.size()) {
+				//std::cout << line.substr(found + std::string("] ").size());
+				lines.push_back(line.substr(found + std::string("] ").size()));
+			}
+			else {
+				lines.push_back(line);
+			}
 			line = "";
 		}
 	}
@@ -29,27 +29,27 @@ void parsePP(const std::string input, const std::string query, std::string* valu
 			size_t second = 0;
 			first = lines.at(i).find_first_of("\x1F") + 1;
 			if(strcmp(lines.at(i).substr(first).c_str(), "\x1F\n") == 0) {//if it's empty
-			    *(value) = "";
-			    return;
+				*(value) = "";
+				return;
 			}
 			if (first > lines.at(i).size())
-			    first = 0;
+				first = 0;
 			while(second == 0) {
-    			if (first) {
-    				second = lines.at(i).substr(first).find_last_of("\x1F");
-    			}
-    			if (second > lines.at(i).size()) {
-    			    second = 0;
-    			}
-    			if (second) {
-    				*(value) = lines.at(i).substr(first).substr(0, second);
-    			}
-    			else {
-    			    if(i < lines.size() - 1) {
-    			        lines.at(i) += lines.at(i + 1);
-    			        lines.erase(lines.begin() + i + 1);
-    			    }
-    			}
+				if (first) {
+					second = lines.at(i).substr(first).find_last_of("\x1F");
+				}
+				if (second > lines.at(i).size()) {
+					second = 0;
+				}
+				if (second) {
+					*(value) = lines.at(i).substr(first).substr(0, second);
+				}
+				else {
+					if(i < lines.size() - 1) {
+						lines.at(i) += lines.at(i + 1);
+						lines.erase(lines.begin() + i + 1);
+					}
+				}
 			}
 			break;
 		}

@@ -64,6 +64,7 @@ extern std::string MenuBannerText;
 extern std::string SplitIntoAPatch;
 extern std::string TitleIDText;
 extern std::string ApplicationTitleText;
+extern std::string ProductCodeText;
 extern std::string Build;
 
 //tool tips
@@ -97,9 +98,10 @@ extern std::string appendRowTip;
 extern std::string splitPatchTip;
 extern std::string splitPatchUpTip;
 extern std::string splitPatchDownTip;
-extern std::string leaveBlank;
-extern std::string Random;
 extern std::string titleIDBoxTip;
+extern std::string titleIDButtonTip;
+extern std::string applicationTitleBoxTip;
+extern std::string productCodeBoxTip;
 
 //file stuffs (todo: image files)
 extern std::string moflexFiles;
