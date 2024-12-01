@@ -122,3 +122,5 @@ std::string IntShowLog = "INT:SHOW LOG";
 std::string IntColorMode = "INT:COLOR MODE";
 std::string IntFrameWidth = "INT:FRAME WIDTH";
 std::string IntFrameHeight = "INT:FRAME HEIGHT";
+std::string StrImagesPath = "STR:IMAGES PATH";
+std::string StrVideosPath = "STR:VIDEOS PATH";

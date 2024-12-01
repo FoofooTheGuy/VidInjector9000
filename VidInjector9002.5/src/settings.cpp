@@ -5,6 +5,8 @@ bool Settings::ShowLog = 0;
 int Settings::ColorMode = 2;
 int Settings::FrameWidth = 1150;
 int Settings::FrameHeight = 700;
+std::string Settings::ImagesPath = "";//we cant use the wxwidgets Get() junk yet
+std::string Settings::VideosPath = "";
 
 void saveSettings() {
 	std::ofstream settingsfile(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + settingsFile).c_str()), std::ios_base::out | std::ios_base::binary);
@@ -13,7 +15,9 @@ void saveSettings() {
 		IntShowLog << "=" << "\x1F" << Settings::ShowLog << "\x1F" << "\n" <<
 		IntColorMode << "=" << "\x1F" << Settings::ColorMode << "\x1F" << "\n" <<
 		IntFrameWidth << "=" << "\x1F" << Settings::FrameWidth << "\x1F" << "\n" <<
-		IntFrameHeight << "=" << "\x1F" << Settings::FrameHeight << "\x1F" << std::endl;
+		IntFrameHeight << "=" << "\x1F" << Settings::FrameHeight << "\x1F" << "\n" <<
+		StrImagesPath << "=" << "\x1F" << Settings::ImagesPath << "\x1F" << "\n" <<
+		StrVideosPath << "=" << "\x1F" << Settings::VideosPath << "\x1F" << std::endl;
 	settingsfile.close();
 }
 
@@ -32,6 +36,8 @@ std::vector<int> loadSettings() {
 		Settings::ColorMode = 2;
 		Settings::FrameWidth = 1150;
 		Settings::FrameHeight = 700;
+		Settings::ImagesPath = std::string(wxStandardPaths::Get().GetUserDir(wxStandardPaths::Dir_Pictures).ToUTF8());
+		Settings::VideosPath = std::string(wxStandardPaths::Get().GetUserDir(wxStandardPaths::Dir_Videos).ToUTF8());
 		saveSettings();
 	}
 	std::vector<std::string> filelines = fileRead(std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + settingsFile));
@@ -42,8 +48,6 @@ std::vector<int> loadSettings() {
 	}
 	else {
 		ret.push_back(3);
-		//wxMessagebox(wxString::FromUTF8(FailedToFindVar + ' ' + StrDefaultLanguage + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
-		//xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, StrDefaultLanguage, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
 	}
 	if (parseLines(outstr, filelines, IntShowLog)) {
 		if (!ASCII2number<int>(&outrealint, outstr)) {
@@ -84,6 +88,18 @@ std::vector<int> loadSettings() {
 	}
 	else {
 		ret.push_back(11);
+	}
+	if (parseLines(outstr, filelines, StrImagesPath)) {
+		Settings::ImagesPath = outstr;
+	}
+	else {
+		ret.push_back(12);
+	}
+	if (parseLines(outstr, filelines, StrVideosPath)) {
+		Settings::VideosPath = outstr;
+	}
+	else {
+		ret.push_back(12);
 	}
 	ret.push_back(0);
 	return ret;

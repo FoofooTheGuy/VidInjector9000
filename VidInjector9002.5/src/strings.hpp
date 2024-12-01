@@ -143,3 +143,5 @@ extern std::string IntShowLog;
 extern std::string IntColorMode;
 extern std::string IntFrameWidth;
 extern std::string IntFrameHeight;
+extern std::string StrImagesPath;
+extern std::string StrVideosPath;

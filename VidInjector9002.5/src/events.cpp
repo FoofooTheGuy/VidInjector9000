@@ -68,8 +68,8 @@ void bannerBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 	else wid->bannerError->Show(false);
 }
 
-void bannerBrowse_wxEVT_BUTTON(InitWidgets* wid) {
-	wxFileDialog openFileDialog(wid->frame, wxEmptyString, wxEmptyString, wxEmptyString, "All Files (*.*)|*.*", wxFD_OPEN|wxFD_FILE_MUST_EXIST);
+void bannerBrowse_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
+	wxFileDialog openFileDialog(wid->frame, wxEmptyString, wxString::FromUTF8(parameters->banner.empty() ? Settings::ImagesPath : parameters->banner.substr(0, parameters->banner.find_last_of("/\\"))), wxEmptyString, "All Files (*.*)|*.*", wxFD_OPEN|wxFD_FILE_MUST_EXIST);
 	openFileDialog.SetFilterIndex(0);
 	if (openFileDialog.ShowModal() == wxID_OK) {
 		wid->bannerBox->SetValue(openFileDialog.GetPath());
@@ -255,8 +255,8 @@ void iconPreview_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 	}
 }
 
-void iconBrowse_wxEVT_BUTTON(InitWidgets* wid) {
-	wxFileDialog openFileDialog(wid->frame, wxEmptyString, wxEmptyString, wxEmptyString, "All Files (*.*)|*.*", wxFD_OPEN|wxFD_FILE_MUST_EXIST);
+void iconBrowse_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
+	wxFileDialog openFileDialog(wid->frame, wxEmptyString, wxString::FromUTF8(parameters->icon.empty() ? Settings::ImagesPath : parameters->icon.substr(0, parameters->icon.find_last_of("/\\"))), wxEmptyString, "All Files (*.*)|*.*", wxFD_OPEN|wxFD_FILE_MUST_EXIST);
 	openFileDialog.SetFilterIndex(0);
 	if (openFileDialog.ShowModal() == wxID_OK) {
 		wid->iconBox->SetValue(openFileDialog.GetPath());
@@ -401,8 +401,8 @@ void dimCheck_wxEVT_CHECKBOX(InitWidgets* wid, VI9Pparameters* parameters) {
 	}
 }
 
-void multiBannerPreview_wxEVT_BUTTON(InitWidgets* wid) {
-	wxFileDialog openFileDialog(wid->frame, wxEmptyString, wxEmptyString, wxEmptyString, "All Files (*.*)|*.*", wxFD_OPEN|wxFD_FILE_MUST_EXIST);
+void multiBannerPreview_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
+	wxFileDialog openFileDialog(wid->frame, wxEmptyString, wxString::FromUTF8(parameters->MBannerVec.at(VI9P::MultiBannerIndex).empty() ? Settings::ImagesPath : parameters->MBannerVec.at(VI9P::MultiBannerIndex).substr(0, parameters->MBannerVec.at(VI9P::MultiBannerIndex).find_last_of("/\\"))), wxEmptyString, "All Files (*.*)|*.*", wxFD_OPEN|wxFD_FILE_MUST_EXIST);
 	openFileDialog.SetFilterIndex(0);
 	if (openFileDialog.ShowModal() == wxID_OK) {
 		wid->MenuBanners.at(VI9P::MultiBannerIndex)->SetValue((openFileDialog.GetPath()));
@@ -595,36 +595,46 @@ void MultiDown_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters, wxButt
 	}
 }
 
-void moflexBrowse_wxEVT_BUTTON(InitWidgets* wid) {
-	wxFileDialog openFileDialog(wid->frame, wxEmptyString, wxEmptyString, wxEmptyString, moflexFiles, wxFD_OPEN|wxFD_FILE_MUST_EXIST);
+void moflexBrowse_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
+	size_t row;
+	for(row = 0; row < wid->MoflexFiles.size() - 1; row++) {
+		if(std::string(wid->MoflexFiles.at(row)->GetValue().ToUTF8()).empty()) {
+			break;
+		}
+	}
+	wxArrayString paths;
+	wxFileDialog openFileDialog(wid->frame, wxEmptyString, wxString::FromUTF8(parameters->MoflexVec.at(row ? row - 1 : row).empty() ? Settings::VideosPath : parameters->MoflexVec.at(row ? row - 1 : row).substr(0, parameters->MoflexVec.at(row ? row - 1 : row).find_last_of("/\\"))), wxEmptyString, moflexFiles, wxFD_OPEN|wxFD_FILE_MUST_EXIST|wxFD_MULTIPLE);
 	openFileDialog.SetFilterIndex(0);
 	if (openFileDialog.ShowModal() == wxID_OK) {
-		//wid->iconBox->SetValue(openFileDialog.GetPath());
-		for(const auto &row : wid->MoflexFiles) {
-			if(std::string(row->GetValue().ToUTF8()).empty()) {
-				row->SetValue(openFileDialog.GetPath());
-				break;
-			}
+		openFileDialog.GetPaths(paths);
+		if(paths.GetCount() == 1) {
+			wid->MoflexFiles.at(row)->SetValue(paths.Last());
+		}
+		for(size_t i = 0; i < paths.GetCount(); i++) {
+			if(i < wid->MoflexFiles.size())
+				wid->MoflexFiles.at(i)->SetValue(paths.Item(i));
 		}
 	}
 }
 
-void multiBannerBrowse_wxEVT_BUTTON(InitWidgets* wid) {
-	wxFileDialog openFileDialog(wid->frame, wxEmptyString, wxEmptyString, wxEmptyString, "All Files (*.*)|*.*", wxFD_OPEN|wxFD_FILE_MUST_EXIST);
+void multiBannerBrowse_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
+	size_t row;
+	for(row = 0; row < wid->MenuBanners.size() - 1; row++) {
+		if(std::string(wid->MenuBanners.at(row)->GetValue().ToUTF8()).empty()) {
+			break;
+		}
+	}
+	wxArrayString paths;
+	wxFileDialog openFileDialog(wid->frame, wxEmptyString, wxString::FromUTF8(parameters->MBannerVec.at(row ? row - 1 : row).empty() ? Settings::ImagesPath : parameters->MBannerVec.at(row ? row - 1 : row).substr(0, parameters->MBannerVec.at(row ? row - 1 : row).find_last_of("/\\"))), wxEmptyString, "All Files (*.*)|*.*", wxFD_OPEN|wxFD_FILE_MUST_EXIST|wxFD_MULTIPLE);
 	openFileDialog.SetFilterIndex(0);
 	if (openFileDialog.ShowModal() == wxID_OK) {
-		//wid->iconBox->SetValue(openFileDialog.GetPath());
-		bool dolast = false;
-		for(const auto &row : wid->MenuBanners) {
-			if(std::string(row->GetValue().ToUTF8()).empty()) {
-				row->SetValue(openFileDialog.GetPath());
-				dolast = false;
-				break;
-			}
-			dolast = true;
+		openFileDialog.GetPaths(paths);
+		if(paths.GetCount() == 1) {
+			wid->MenuBanners.at(row)->SetValue(paths.Last());
 		}
-		if(dolast) {
-			wid->MenuBanners.back()->SetValue((openFileDialog.GetPath()));
+		for(size_t i = 0; i < paths.GetCount(); i++) {
+			if(i < wid->MenuBanners.size())
+				wid->MenuBanners.at(i)->SetValue(paths.Item(i));
 		}
 	}
 	

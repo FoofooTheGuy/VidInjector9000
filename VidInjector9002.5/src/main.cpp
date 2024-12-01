@@ -187,7 +187,7 @@ int main(int argc, char* argv[]) {
 	});
 	
 	wid.bannerBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
-		bannerBrowse_wxEVT_BUTTON(&wid);
+		bannerBrowse_wxEVT_BUTTON(&wid, &parameters);
 	});
 
 	wid.iconBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
@@ -199,7 +199,7 @@ int main(int argc, char* argv[]) {
 	});
 
 	wid.iconBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
-		iconBrowse_wxEVT_BUTTON(&wid);
+		iconBrowse_wxEVT_BUTTON(&wid, &parameters);
 	});
 	
 	wid.shortnameBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
@@ -231,7 +231,7 @@ int main(int argc, char* argv[]) {
 	});
 	
 	wid.multiBannerPreview->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
-		multiBannerPreview_wxEVT_BUTTON(&wid);
+		multiBannerPreview_wxEVT_BUTTON(&wid, &parameters);
 	});
 
 	wid.multiBannerPreviewLeft->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
@@ -273,11 +273,11 @@ int main(int argc, char* argv[]) {
 	}
 	
 	wid.moflexBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
-		moflexBrowse_wxEVT_BUTTON(&wid);
+		moflexBrowse_wxEVT_BUTTON(&wid, &parameters);
 	});
 
 	wid.multiBannerBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
-		multiBannerBrowse_wxEVT_BUTTON(&wid);
+		multiBannerBrowse_wxEVT_BUTTON(&wid, &parameters);
 	});
 	
 	wid.removeRow->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {

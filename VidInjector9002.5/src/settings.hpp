@@ -4,6 +4,8 @@
 #include <fstream>
 #include <vector>
 
+#include <wx/stdpaths.h>
+
 #include "fileReading.hpp"
 #include "formatting.hpp"
 #include "strings.hpp"
@@ -16,6 +18,8 @@ class Settings
     static int ColorMode;
     static int FrameWidth;
     static int FrameHeight;
+    static std::string ImagesPath;
+    static std::string VideosPath;
 };
 
 void saveSettings();

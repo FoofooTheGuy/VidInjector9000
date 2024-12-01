@@ -150,9 +150,8 @@ struct InitWidgets {
 
 	wxStaticText* productCodeText = new wxStaticText(buildpanel, wxID_ANY, wxString::FromUTF8(ProductCodeText));
 	wxTextCtrl* productCodeBox = new wxTextCtrl(buildpanel, wxID_ANY, wxString::FromUTF8("VDIJ"));
-	
-	wxStaticText* buildStatusText = new wxStaticText(buildpanel, wxID_ANY, "epsum lauren");
-	//wxButton* buildButt = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8(Build));
+
+	wxButton* buildButt = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8(Build));
 };
 
 void initAllWidgets(InitWidgets* initwidgets);

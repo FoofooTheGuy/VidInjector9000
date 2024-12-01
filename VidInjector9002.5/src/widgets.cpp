@@ -501,16 +501,6 @@ void initAllWidgets(InitWidgets* wid) {
 		wid->productCodeBox->GetTextExtent(wxString::FromUTF8("1234"), &w, &h, nullptr, nullptr, &f);
 		wid->productCodeBox->SetSize(w + 20, h + 10);
 	}
-	{//buildStatusText
-		int w, h;
-		wxFont f;
-		
-		f = wid->modeText->GetFont();
-		
-		wid->buildStatusText->SetFont(f);
-		wid->buildStatusText->GetTextExtent(wid->buildStatusText->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->buildStatusText->SetSize(w, h);
-	}
 }
 
 void ShowMultiUpDown(InitWidgets* wid) {
@@ -1347,15 +1337,6 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->productCodeBox->GetSize(NULL, &myheight);
 		
 		wid->productCodeBox->Move(x + width, ((myheight > height) ? y - ((myheight - height) / 2) : y + ((height - myheight) / 2)));
-	}
-	{//buildStatusText
-		int y, panelwidth, mywidth, boxheight;
-		wid->buildpanel->GetSize(&panelwidth, NULL);
-		wid->buildStatusText->GetSize(&mywidth, NULL);
-		wid->productCodeBox->GetSize(NULL, &boxheight);
-		wid->productCodeBox->GetPosition(NULL, &y);
-		
-		wid->buildStatusText->Move((panelwidth - mywidth) / 2, y + boxheight + 75);
 	}
 }
 
