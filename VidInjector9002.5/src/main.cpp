@@ -557,20 +557,20 @@ int main(int argc, char* argv[]) {
 				break;
 			case ID_EXPORT:
 				{
-					std::string CIAfile = "";
-					std::string TARfile = "";
+					Exports::OutCIA = "";
+					Exports::OutTAR = "";
 					wxFileDialog saveCIADialog(wid.frame, wxEmptyString, wxEmptyString, wxEmptyString, wxString::FromUTF8(ciaFiles), wxFD_SAVE);
 					if (saveCIADialog.ShowModal() != wxID_OK) {
 						break;
 					}
-					CIAfile = std::string(saveCIADialog.GetPath().ToUTF8());
+					Exports::OutCIA = std::string(saveCIADialog.GetPath().ToUTF8());
 					if(parameters.mode && parameters.splitPos) {
 						wxFileDialog saveTARDialog(wid.frame, wxEmptyString, wxEmptyString, wxEmptyString, wxString::FromUTF8(tarFiles), wxFD_SAVE);
 						if (saveTARDialog.ShowModal() == wxID_OK) {
-							TARfile = std::string(saveTARDialog.GetPath().ToUTF8());
+							Exports::OutTAR = std::string(saveTARDialog.GetPath().ToUTF8());
 						}
 					}
-					if(!CIAfile.empty()) {//just make sure
+					if(!Exports::OutCIA.empty()) {//just make sure
 						titleIDButton_wxEVT_BUTTON(&wid);//randomize TID
 						wid.applicationTitleBox->SetValue(wxString::FromUTF8("video"));
 						wid.productCodeBox->SetValue(wxString::FromUTF8("VDIJ"));
@@ -626,6 +626,52 @@ int main(int argc, char* argv[]) {
 
 	wid.titleIDButton->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		titleIDButton_wxEVT_BUTTON(&wid);
+	});
+
+	wid.buildButt->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		std::string uniqueID = std::string(wid.titleIDBox->GetValue().ToUTF8());
+		std::string appName = std::string(wid.applicationTitleBox->GetValue().ToUTF8());
+		std::string prodCode = std::string(wid.productCodeBox->GetValue().ToUTF8());
+		wid.frame->Enable(false);
+		setCursors(&wid);
+		/*
+		execute async process
+		...
+		... stop progress bar and enable the widgets when async process is done
+		*/
+		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -bc \"" + VI9P::WorkingFile + "\" \"" + uniqueID + "\" \"" + appName + "\" \"" + prodCode + "\" \"" + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "out.cia" + '\"');
+		wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+		
+		wid.exportArchive = new wxProcess(wid.frame, wxID_ANY);
+		wid.exportArchive->Redirect();
+		
+		wid.exportArchive->Bind(wxEVT_END_PROCESS, [&](wxProcessEvent& event) {
+			exportArchive_wxEVT_END_PROCESS(&wid);
+		});
+		
+		Exports::PID = wxExecute(command, wxEXEC_MAKE_GROUP_LEADER|wxEXEC_ASYNC, wid.exportArchive);
+		//wxMessageBox(wxString::FromUTF8(std::to_string(Exports::PID)));
+		
+		wid.barPulser->Start(100);
+		
+		if (Exports::PID = 0) {
+			wxLogError(wxString::FromUTF8(ErrorText + ' ' + command));
+			return;
+		}
+		wid.statusText->Show();
+		wid.exportLogger->Start(50);//poll for output every X milliseconds... i guess
+	});
+
+	wid.cancelButt->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		cancelButt_wxEVT_BUTTON(&wid);
+	});
+	
+	wid.barPulser->Bind(wxEVT_TIMER, [&](wxTimerEvent& event) {
+		barPulser_wxEVT_TIMER(&wid);
+	});
+
+	wid.exportLogger->Bind(wxEVT_TIMER, [&](wxTimerEvent& event) {
+		exportLogger_wxEVT_TIMER(&wid);
 	});
 	
 	//consoleLog->LogTextAtLevel(0, wxString::Format("OUTPUT: %s", s));

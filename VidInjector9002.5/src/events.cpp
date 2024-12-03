@@ -607,6 +607,7 @@ void moflexBrowse_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 	openFileDialog.SetFilterIndex(0);
 	if (openFileDialog.ShowModal() == wxID_OK) {
 		openFileDialog.GetPaths(paths);
+		paths.Sort();
 		if(paths.GetCount() == 1) {
 			wid->MoflexFiles.at(row)->SetValue(paths.Last());
 		}
@@ -629,6 +630,7 @@ void multiBannerBrowse_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters
 	openFileDialog.SetFilterIndex(0);
 	if (openFileDialog.ShowModal() == wxID_OK) {
 		openFileDialog.GetPaths(paths);
+		paths.Sort();
 		if(paths.GetCount() == 1) {
 			wid->MenuBanners.at(row)->SetValue(paths.Last());
 		}
@@ -795,7 +797,8 @@ void buildframe_wxEVT_CLOSE_WINDOW(InitWidgets* wid, wxCloseEvent* event) {
 	event->Veto();
 	wid->buildframe->Show(false);
 	wid->buildframe->SetSize(450, 500);
-	//TODO: cancel build
+	
+	cancelButt_wxEVT_BUTTON(wid);
 }
 
 void buildpanel_wxEVT_SIZE(InitWidgets* wid, VI9Pparameters* parameters) {
@@ -808,4 +811,68 @@ void titleIDButton_wxEVT_BUTTON(InitWidgets* wid) {
 	sprintf(uniqueIDstr, "%05X", uniqueID);
 	
 	wid->titleIDBox->SetValue(wxString::FromUTF8(std::string(uniqueIDstr)));
+}
+
+void exportArchive_wxEVT_END_PROCESS(InitWidgets* wid) {
+	//wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+	if(wid->exportArchive != NULL) {
+		delete wid->exportArchive;
+		wid->exportArchive = NULL;
+	}
+	wid->statusText->Show(false);
+	wid->exportLogger->Stop();
+	wid->barPulser->Stop();
+	wid->buildBar->SetValue(0);
+	wid->frame->Enable(true);
+	setCursors(wid);
+}
+
+void cancelButt_wxEVT_BUTTON(InitWidgets* wid) {
+	if(wid->exportArchive != NULL && wxProcess::Exists(Exports::PID)) {
+		int ret = 0;
+		ret = wxProcess::Kill(Exports::PID, wxSIGTERM, wxKILL_CHILDREN);
+		if(ret != wxKILL_OK) {
+			wxLogError(wxString::FromUTF8(ErrorText + ' ' + std::to_string(ret) + "\n(" + std::to_string(ret) + ')'));
+			return;
+		}
+	}
+	exportArchive_wxEVT_END_PROCESS(wid);
+}
+
+void barPulser_wxEVT_TIMER(InitWidgets* wid) {
+	wid->buildBar->Pulse();
+}
+
+void exportLogger_wxEVT_TIMER(InitWidgets* wid) {
+	//https://github.com/wxWidgets/wxWidgets/blob/master/samples/exec/exec.cpp#L1373
+	if (wid->exportArchive->IsInputAvailable()) {
+		wxTextInputStream exportStream(*wid->exportArchive->GetInputStream());
+
+		// this assumes that the output is always line buffered
+		wxString msg;
+		msg << exportStream.ReadLine();
+		//wxMessageBox(msg);
+		
+		wid->consoleLog->LogTextAtLevel(0, msg);
+		
+		{//statusText
+			wid->statusText->SetLabel(msg);
+			
+			int w, h;
+			wxFont f;
+			
+			f = wid->statusText->GetFont();
+			
+			wid->statusText->GetTextExtent(wid->statusText->GetLabel(), &w, &h, nullptr, nullptr, &f);
+			wid->statusText->SetSize(w, h);
+		}
+		{//statusText
+			int y, panelwidth, mywidth;
+			wid->buildpanel->GetSize(&panelwidth, NULL);
+			wid->statusText->GetSize(&mywidth, NULL);
+			wid->statusText->GetPosition(NULL, &y);
+			
+			wid->statusText->Move((panelwidth - mywidth) / 2, y);
+		}
+	}
 }

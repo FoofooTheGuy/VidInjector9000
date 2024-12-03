@@ -53,6 +53,7 @@ std::string TitleIDText = "Title ID: 000400000";
 std::string ApplicationTitleText = "Application title:";
 std::string ProductCodeText = "Product code: CTR-H-";
 std::string Build = "Build";
+std::string Cancel = "Cancel";
 std::string onlyMultiVideo = "(Only available in multi video mode)";//start of tooltips
 std::string modeChoiceBoxTip = "Expand to select the export mode";
 std::string bannerBoxTip = "The path of the image to be shown on the home menu top screen";

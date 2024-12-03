@@ -66,6 +66,7 @@ extern std::string TitleIDText;
 extern std::string ApplicationTitleText;
 extern std::string ProductCodeText;
 extern std::string Build;
+extern std::string Cancel;
 
 //tool tips
 extern std::string onlyMultiVideo;

@@ -10,6 +10,8 @@
 #include <wx/artprov.h>
 #include <wx/fontdlg.h>
 #include <wx/process.h>
+#include <wx/progdlg.h>
+#include <wx/txtstrm.h>
 #include <wx/colour.h>
 #include <wx/tglbtn.h>
 #include <wx/wx.h>
@@ -18,6 +20,19 @@
 #include "settings.hpp"
 #include "strings.hpp"
 #include "vi9p.hpp"
+
+/*
+OutCIA: the output .cia that you choose when exporting
+OutTAR: the output .tar that you optionally choose when exporting (for splitting into patch)
+PID: process ID of the subprocess for exporting it all
+*/
+class Exports
+{
+	public:
+	static std::string OutCIA;
+	static std::string OutTAR;
+	static long PID;
+};
 
 enum wxOwnedID {
 	ID_EXPORT,
@@ -137,21 +152,29 @@ struct InitWidgets {
 	
 	wxStaticText* rowText = new wxStaticText(scrolledPanel, wxID_ANY, wxString::FromUTF8("1/27"));
 	
-	wxFrame* buildframe = new wxFrame(frame, wxID_ANY, wxString::FromUTF8(buildFrameText), wxDefaultPosition, {450, 500}, wxCAPTION|wxCLOSE_BOX|wxRESIZE_BORDER|wxFRAME_FLOAT_ON_PARENT|wxCLIP_CHILDREN);
+	wxFrame* buildframe = new wxFrame(frame, wxID_ANY, wxString::FromUTF8(buildFrameText), wxDefaultPosition, {600, 500}, wxCAPTION|wxCLOSE_BOX|wxRESIZE_BORDER|wxFRAME_FLOAT_ON_PARENT|wxCLIP_CHILDREN);
 	wxPanel* buildpanel = new wxPanel(buildframe);
 	
 	wxStaticText* titleIDText = new wxStaticText(buildpanel, wxID_ANY, wxString::FromUTF8(TitleIDText));
 	wxTextCtrl* titleIDBox = new wxTextCtrl(buildpanel, wxID_ANY, wxEmptyString);
 	wxStaticText* zerozero = new wxStaticText(buildpanel, wxID_ANY, wxString::FromUTF8("00"));
-	wxButton* titleIDButton = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8("⚄"), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+	wxButton* titleIDButton = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8("⚄"));
 	
 	wxStaticText* applicationTitleText = new wxStaticText(buildpanel, wxID_ANY, wxString::FromUTF8(ApplicationTitleText));
 	wxTextCtrl* applicationTitleBox = new wxTextCtrl(buildpanel, wxID_ANY, wxString::FromUTF8("video"));
 
 	wxStaticText* productCodeText = new wxStaticText(buildpanel, wxID_ANY, wxString::FromUTF8(ProductCodeText));
 	wxTextCtrl* productCodeBox = new wxTextCtrl(buildpanel, wxID_ANY, wxString::FromUTF8("VDIJ"));
-
+	
+	wxStaticText* statusText = new wxStaticText(buildpanel, wxID_ANY, "placehold");
+	
+	wxGauge* buildBar = new wxGauge(buildpanel, wxID_ANY, 1, wxDefaultPosition, {-1, 25});
+	wxTimer* barPulser = new wxTimer();
+	wxProcess* exportArchive = NULL;
+	wxTimer* exportLogger = new wxTimer();
+	
 	wxButton* buildButt = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8(Build));
+	wxButton* cancelButt = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8(Cancel));
 };
 
 void initAllWidgets(InitWidgets* initwidgets);

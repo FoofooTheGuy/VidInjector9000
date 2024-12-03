@@ -1,5 +1,9 @@
 #include "widgets.hpp"
 
+std::string Exports::OutCIA = "";
+std::string Exports::OutTAR = "";
+long Exports::PID = 0;
+
 void initAllWidgets(InitWidgets* wid) {
 	//main menu
 	wid->menuItemFileNew->SetBitmap(wxArtProvider::GetBitmap(wxART_NEW, wxART_MENU));
@@ -462,6 +466,7 @@ void initAllWidgets(InitWidgets* wid) {
 		wid->titleIDButton->GetTextExtent(wid->titleIDButton->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->titleIDButton->SetSize(w > h ? w : h, w > h ? w : h);
 	}
+	
 	{//applicationTitleText
 		int w, h;
 		wxFont f;
@@ -480,6 +485,7 @@ void initAllWidgets(InitWidgets* wid) {
 		
 		wid->applicationTitleBox->SetFont(f);
 	}
+	
 	{//productCodeText
 		int w, h;
 		wxFont f;
@@ -500,6 +506,31 @@ void initAllWidgets(InitWidgets* wid) {
 		wid->productCodeBox->SetFont(f);
 		wid->productCodeBox->GetTextExtent(wxString::FromUTF8("1234"), &w, &h, nullptr, nullptr, &f);
 		wid->productCodeBox->SetSize(w + 20, h + 10);
+	}
+	
+	{//statusText
+		int w, h;
+		wxFont f;
+		
+		f = wid->modeText->GetFont();
+		
+		wid->statusText->SetFont(f);
+		wid->statusText->GetTextExtent(wid->statusText->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		wid->statusText->SetSize(w, h);
+		
+		wid->statusText->Show(false);
+	}
+	{//buildButt
+		int w, buttwidth, h, buttheight;
+		wxFont f;
+		
+		wid->buildButt->GetSize(&buttwidth, &buttheight);
+		f = wid->buildButt->GetFont();
+		wid->buildButt->GetTextExtent(wid->buildButt->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		buttwidth = buttwidth - w;
+		buttheight = buttheight - h;
+
+		wid->buildButt->SetSize(w + (buttwidth * 2), h + (buttheight * 2));
 	}
 }
 
@@ -1291,6 +1322,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->titleIDButton->Move(x + width + 3, ((myheight > height) ? y - ((myheight - height) / 2) : y + ((height - myheight) / 2)));
 	}
+	
 	{//applicationTitleText
 		int x, y, height;
 		wid->titleIDButton->GetSize(NULL, &height);//this is probably the largest thing
@@ -1318,6 +1350,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->applicationTitleBox->SetSize((tidwidth + boxwidth + zzwidth + 3 + buttwidth) - (textwidth + 5), myheight);
 	}
+	
 	{//productCodeText
 		int texty, boxy, panelwidth, mywidth, boxwidth, boxheight, textheight;
 		wid->buildpanel->GetSize(&panelwidth, NULL);
@@ -1337,6 +1370,44 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->productCodeBox->GetSize(NULL, &myheight);
 		
 		wid->productCodeBox->Move(x + width, ((myheight > height) ? y - ((myheight - height) / 2) : y + ((height - myheight) / 2)));
+	}
+	
+	{//statusText
+		int panelwidth, mywidth, myheight, panelheight, barheight, buildheight, cancelheight;
+		wid->buildpanel->GetSize(&panelwidth, &panelheight);
+		wid->buildBar->GetSize(NULL, &barheight);
+		wid->buildButt->GetSize(NULL, &buildheight);
+		wid->cancelButt->GetSize(NULL, &cancelheight);
+		wid->statusText->GetSize(&mywidth, &myheight);
+		
+		wid->statusText->Move((panelwidth - mywidth) / 2, panelheight - (myheight + 5 + barheight + 10 + buildheight + 2 + cancelheight + 15));
+	}
+	{//buildBar
+		int y, panelwidth, statusheight;
+		wid->statusText->GetPosition(NULL, &y);
+		wid->statusText->GetSize(NULL, &statusheight);
+		wid->buildpanel->GetSize(&panelwidth, NULL);
+		
+		wid->buildBar->SetSize(panelwidth, 25);
+		wid->buildBar->Move(0, y + statusheight + 5);
+	}
+	{//buildButt
+		int y, mywidth, panelwidth, barheight;
+		wid->buildpanel->GetSize(&panelwidth, NULL);
+		wid->buildBar->GetPosition(NULL, &y);
+		wid->buildBar->GetSize(NULL, &barheight);
+		wid->buildButt->GetSize(&mywidth, NULL);
+		
+		wid->buildButt->Move((panelwidth - mywidth) / 2, y + barheight + 10);
+	}
+	{//cancelButt
+		int y, mywidth, panelwidth, buildheight;
+		wid->buildpanel->GetSize(&panelwidth, NULL);
+		wid->buildButt->GetPosition(NULL, &y);
+		wid->buildButt->GetSize(NULL, &buildheight);
+		wid->cancelButt->GetSize(&mywidth, NULL);
+		
+		wid->cancelButt->Move((panelwidth - mywidth) / 2, y + buildheight + 2);
 	}
 }
 

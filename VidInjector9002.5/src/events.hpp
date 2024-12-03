@@ -36,8 +36,16 @@ void splitPatchDown_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters);
 void buildframe_wxEVT_CLOSE_WINDOW(InitWidgets* wid, wxCloseEvent* event);
 void buildpanel_wxEVT_SIZE(InitWidgets* wid, VI9Pparameters* parameters);
 void titleIDButton_wxEVT_BUTTON(InitWidgets* wid);
+void exportArchive_wxEVT_END_PROCESS(InitWidgets* wid);
+void cancelButt_wxEVT_BUTTON(InitWidgets* wid);
+void barPulser_wxEVT_TIMER(InitWidgets* wid);
+void exportLogger_wxEVT_TIMER(InitWidgets* wid);
 
 
 //binds are in these binds so it cant be done outside of main
-//void appendRow_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters);
-//void mainMenu_wxEVT_MENU(InitWidgets* wid, VI9Pparameters* parameters);
+/*
+
+void buildButt_wxEVT_BUTTON(InitWidgets* wid);
+void appendRow_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters);
+void mainMenu_wxEVT_MENU(InitWidgets* wid, VI9Pparameters* parameters);
+*/
