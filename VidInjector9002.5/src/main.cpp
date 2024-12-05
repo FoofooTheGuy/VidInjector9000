@@ -106,6 +106,10 @@ int main(int argc, char* argv[]) {
 		if (error)
 			wxMessageBox(wxString::FromUTF8(std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '\n' + error.message())), wxString::FromUTF8(ErrorText));
 
+		std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLItempPath).c_str()), error);
+		if (error)
+			wxMessageBox(wxString::FromUTF8(std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLItempPath + '\n' + error.message())), wxString::FromUTF8(ErrorText));
+
 		std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath).c_str()), error);
 		if (error)
 			wxMessageBox(wxString::FromUTF8(std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '\n' + error.message())), wxString::FromUTF8(ErrorText));
@@ -659,7 +663,7 @@ int main(int argc, char* argv[]) {
 			return;
 		}
 		wid.statusText->Show();
-		wid.exportLogger->Start(50);//poll for output every X milliseconds... i guess
+		wid.exportLogger->Start(1);//poll for output every X milliseconds... i guess
 	});
 
 	wid.cancelButt->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {

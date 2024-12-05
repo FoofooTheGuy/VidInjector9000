@@ -94,6 +94,7 @@ std::string ciaFiles = "CTR Importable Archives (*.cia)|*.cia";
 std::string tarFiles = "Tape ARchives (*.tar)|*.tar";
 
 std::string tempPath = "temp";
+std::string CLItempPath = "CLItemp";
 
 std::string resourcesPath = "VidInjector9000Resources";
 std::string CLIFile = "VidInjector9002-CLI";

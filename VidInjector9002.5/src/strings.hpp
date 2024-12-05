@@ -112,6 +112,7 @@ extern std::string tarFiles;
 
 //internal
 extern std::string tempPath;
+extern std::string CLItempPath;
 
 //resources
 extern std::string resourcesPath;
