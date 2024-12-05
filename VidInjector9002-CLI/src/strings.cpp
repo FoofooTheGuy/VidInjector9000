@@ -42,7 +42,7 @@ std::string RrArgShort = "-rr";
 
 std::string Languagedir = "English";
 
-std::string resourcesPath = "VidInjector9002-CLIResources";
+std::string resourcesPath = "VidInjector9000Resources";
 std::string VI9PVER = "VI9P101";
 std::string StrVerParam = "STR:VER";
 std::string IntMultiParam = "INT:MULTI";
