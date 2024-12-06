@@ -731,7 +731,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 	char uniqueIDstr [6];
 	sprintf(uniqueIDstr, "%05X", uniqueID);
 	std::cout << UniqueIDText << ": " << uniqueIDstr << std::endl;
-	
+
 	VI9Pparameters parameters;
 	
 	int res = loadParameters(inVi9p, &parameters);
@@ -739,7 +739,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 	bool dopatch = 0;
 	std::error_code error;
 	
-	std::string tempPath = resourcesPath + "/CLItemp";
+	std::string tempPath = resourcesPath + "/temp";
 	std::string romfsPath;
 	do {
 		if (dopatch) {
@@ -754,7 +754,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			std::error_code error;
 			std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*tempPath.c_str()), error);
 			if (error) {
-				std::cout << ErrorText << ' ' << tempPath << " (" << error.message() << ')' << std::endl;
+				std::cout << ErrorText << ' ' << tempPath << '\n' << error.message() << std::endl;
 				std::cout << ErrorText << ' ' << FailedToCreateFile << " \"" << (dopatch ? outTAR : outCIA) << '\"' << std::endl;
 				return 7;
 			}
@@ -768,7 +768,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			
 			std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie").c_str()), error);
 			if (error) {
-				std::cout << ErrorText << ' ' << romfsPath + "/movie" << " (" << error.message() << ')' << std::endl;
+				std::cout << ErrorText << ' ' << romfsPath + "/movie" << '\n' << error.message() << std::endl;
 				std::cout << ErrorText << ' ' << FailedToCreateFile << " \"" << (dopatch ? outTAR : outCIA) << '\"' << std::endl;
 				return 8;
 			}
@@ -802,7 +802,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			}
 			movie_title.close();
 			if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie/movie_title.csv").c_str()))) {
-				std::cout << ErrorText << ' ' << FailedToFindPath << " / " << FailedToCreateFile << ' ' << romfsPath << "/movie/movie_title.csv" << std::endl;
+				std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/movie/movie_title.csv" << std::endl;
 				return 9;
 			}
 		}
@@ -812,7 +812,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			
 			std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/settings").c_str()), error);
 			if (error) {
-				std::cout << ErrorText << ' ' << romfsPath + "/settings" << " (" << error.message() << ')' << std::endl;
+				std::cout << ErrorText << ' ' << romfsPath + "/settings" << '\n' << error.message() << std::endl;
 				std::cout << ErrorText << ' ' << FailedToCreateFile << " \"" << (dopatch ? outTAR : outCIA) << '\"' << std::endl;
 				return 10;
 			}
@@ -1030,7 +1030,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			}
 			settingsTL.close();
 			if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/settings/settingsTL.csv").c_str()))) {
-				std::cout << ErrorText << ' ' << FailedToFindPath << " / " << FailedToCreateFile << ' ' << romfsPath << "/settings/settingsTL.csv" << std::endl;
+				std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/settings/settingsTL.csv" << std::endl;
 				return 11;
 			}
 		}
@@ -1040,7 +1040,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			
 			std::filesystem::create_directories(std::string(romfsPath + "/settings").c_str(), error);//just in case Hehehhhah
 			if (error) {
-				std::cout << ErrorText << ' ' << romfsPath + "/settings" << " (" << error.message() << ')' << std::endl;
+				std::cout << ErrorText << ' ' << romfsPath + "/settings" << '\n' << error.message() << std::endl;
 				std::cout << ErrorText << ' ' << FailedToCreateFile << " \"" << (dopatch ? outTAR : outCIA) << '\"' << std::endl;
 				return 12;
 			}
@@ -1048,7 +1048,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			information_buttons << (parameters.copycheck ? ("\xFF\xFE" + UTF8toUTF16("Copyright")) : "\xFF\xFE");
 			information_buttons.close();
 			if (!std::filesystem::exists(std::string(romfsPath + "/settings/information_buttons.csv").c_str())) {
-				std::cout << ErrorText << ' ' << FailedToFindPath << " / " << FailedToCreateFile << ' ' << romfsPath << "/settings/information_buttons.csv" << std::endl;
+				std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/settings/information_buttons.csv" << std::endl;
 				return 13;
 			}
 
@@ -1059,7 +1059,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 				copyrighttxt << "\xFF\xFE" + UTF8toUTF16(parameters.copyrightInfo);
 				copyrighttxt.close();
 				if (!std::filesystem::exists(std::string(romfsPath + "/settings/copyright.txt").c_str())) {
-					std::cout << ErrorText << ' ' << FailedToFindPath << " / " << FailedToCreateFile << ' ' << romfsPath << "/settings/copyright.txt" << std::endl;
+					std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/settings/copyright.txt" << std::endl;
 					return 14;
 				}
 			}
@@ -1069,7 +1069,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			uint8_t Checker[4];
 			for (int i = dopatch ? parameters.splitPos : 0; i < (parameters.mode ? ((parameters.splitPos && !dopatch) ? parameters.splitPos : parameters.rows) : 1); i++) {
 				if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*parameters.MoflexVec.at(i).c_str()))) {
-					std::cout << ErrorText << ' ' << FailedToFindPath << " / " << parameters.MoflexVec.at(i) << std::endl;
+					std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << parameters.MoflexVec.at(i) << std::endl;
 					return 15;
 				}
 				std::string extension = parameters.MoflexVec.at(i).c_str();
@@ -1079,13 +1079,13 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 				for (int j = 0; j < 4; j++) {
 					inmoflex >> Checker[j];//https://stackoverflow.com/a/2974735
 					if (extension != ".moflex" || Checker[j] != moflexMagic[j]) {
-						std::cout << ErrorText << ' ' << BadValue << " (\"" << parameters.MoflexVec.at(i) << "\" " << MoflexError << ')' << std::endl;
+						std::cout << ErrorText << ' ' << BadValue << "\n\"" << parameters.MoflexVec.at(i) << "\" " << MoflexError << std::endl;
 						return 16;
 					}
 				}
 				std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie").c_str()), error);
 				if (error) {
-					std::cout << ErrorText << ' ' << romfsPath + "/movie" << " (" << error.message() << ')' << std::endl;
+					std::cout << ErrorText << ' ' << romfsPath + "/movie" << '\n' << error.message() << std::endl;
 					std::cout << ErrorText << ' ' << FailedToCreateFile << " \"" << (dopatch ? outTAR : outCIA) << '\"' << std::endl;
 					return 17;
 				}
@@ -1094,12 +1094,12 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 					std::error_code error;
 					error = copyfile(parameters.MoflexVec.at(i).c_str(), std::string(romfsPath + "/movie/movie_" + std::to_string(i) + ".moflex").c_str());
 					if (error) {
-						std::cout << ErrorText << ' ' << FailedToCopyFile << " / \"" << parameters.MoflexVec.at(i) << "\" -> \"" << romfsPath << "/movie/movie_" << std::to_string(i) << ".moflex\" (" << error.message() << ')' << std::endl;
+						std::cout << ErrorText << ' ' << FailedToCopyFile << "\n\"" << parameters.MoflexVec.at(i) << "\" -> \"" << romfsPath << "/movie/movie_" << std::to_string(i) << ".moflex\"\n" << error.message() << std::endl;
 						std::cout << ErrorText << ' ' << FailedToCreateFile << ' ' << romfsPath << "/movie/movie_" << std::to_string(i) << ".moflex" << std::endl;
 						return 18;
 					}
 					if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie/movie_" + std::to_string(i) + ".moflex").c_str()))) {//this probably only happens if there's no disk space
-						std::cout << ErrorText << ' ' << FailedToFindPath << " / " << FailedToCreateFile << ' ' << romfsPath << "/movie/movie_" << std::to_string(i) << ".moflex" << std::endl;
+						std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/movie/movie_" << std::to_string(i) << ".moflex" << std::endl;
 						return 19;
 					}
 				}
@@ -1108,12 +1108,12 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 					std::error_code error;
 					error = copyfile(parameters.MoflexVec.at(i).c_str(), std::string(romfsPath + "/movie/movie.moflex").c_str());
 					if (error) {
-						std::cout << ErrorText << ' ' << FailedToCopyFile << " / \"" << parameters.MoflexVec.at(i) << "\" -> \"" << romfsPath << "/movie/movie.moflex\" (" << error.message() << ')' << std::endl;
+						std::cout << ErrorText << ' ' << FailedToCopyFile << "\n\"" << parameters.MoflexVec.at(i) << "\" -> \"" << romfsPath << "/movie/movie.moflex\"\n" << error.message() << std::endl;
 						std::cout << ErrorText << ' ' << FailedToCreateFile << ' ' << romfsPath << "/movie/movie.moflex" << std::endl;
 						return 20;
 					}
 					if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie/movie.moflex").c_str()))) {//this probably only happens if there's no disk space
-						std::cout << ErrorText << ' ' << FailedToFindPath << " / " << FailedToCreateFile << ' ' << romfsPath << "/movie/movie.moflex" << std::endl;
+						std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/movie/movie.moflex" << std::endl;
 						return 21;
 					}
 				}
@@ -1128,12 +1128,12 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 				
 				uint8_t ret = convertToBimg(parameters.MBannerVec.at(i), bimg.data(), true);
 				if (ret > 0) {
-					std::cout << ErrorText << ' ' << FailedToFindPath << " / " << FailedToCreateFile << ' ' << romfsPath << "/movie/movie_" << std::to_string(i) << ".bimg (" << std::to_string(ret) << ')' << std::endl;
+					std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/movie/movie_" << std::to_string(i) << ".bimg\n(" << std::to_string(ret) << ')' << std::endl;
 					return 22;
 				}
 				std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie").c_str()), error);
 				if (error) {
-					std::cout << ErrorText << ' ' << romfsPath + "/movie" << " (" << error.message() << ')' << std::endl;
+					std::cout << ErrorText << ' ' << romfsPath + "/movie" << '\n' << error.message() << std::endl;
 					std::cout << ErrorText << ' ' << FailedToCreateFile << " \"" << (dopatch ? outTAR : outCIA) << '\"' << std::endl;
 					return 23;
 				}
@@ -1144,7 +1144,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			//make movie_bnrname.csv
 			std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/settings").c_str()), error);
 			if (error) {
-				std::cout << ErrorText << ' ' << romfsPath + "/settings" << " (" << error.message() << ')' << std::endl;
+				std::cout << ErrorText << ' ' << romfsPath + "/settings" << '\n' << error.message() << std::endl;
 				std::cout << ErrorText << ' ' << FailedToCreateFile << " \"" << (dopatch ? outTAR : outCIA) << '\"' << std::endl;
 				return 24;
 			}
@@ -1155,7 +1155,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			}
 			movie_bnrname.close();
 			if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/settings/movie_bnrname.csv").c_str()))) {
-				std::cout << ErrorText << ' ' << FailedToFindPath << " / " << FailedToCreateFile << ' ' << romfsPath << "/settings/movie_bnrname.csv" << std::endl;
+				std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/settings/movie_bnrname.csv" << std::endl;
 				return 25;
 			}
 		}
@@ -1165,7 +1165,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			uint8_t ret = 0;
 			ret = convertToIcon(parameters.icon, std::string(tempPath + "/exefs/icon"), UTF8toUTF16(parameters.Sname), UTF8toUTF16(parameters.Lname), UTF8toUTF16(parameters.publisher), parameters.iconBorder);
 			if (ret > 0) {
-				std::cout << ErrorText << ' ' << FailedToFindPath << " / " << FailedToCreateFile << ' ' << tempPath << "/exefs/icon (" << std::to_string(ret) << ')' << std::endl;
+				std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << tempPath << "/exefs/icon\n(" << std::to_string(ret) << ')' << std::endl;
 				return 26;
 			}
 			if (parameters.mode) {//multi vid needs an icon here so that it can make ext data or something (the game crashes if it isnt here)
@@ -1173,12 +1173,12 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 				std::error_code error;
 				error = copyfile(std::string(tempPath + "/exefs/icon").c_str(), std::string(romfsPath + "/icon.icn").c_str());
 				if (error) {
-					std::cout << ErrorText << ' ' << FailedToCopyFile << " / \"" << tempPath << "/exefs/icon\" -> \"" << romfsPath << "/icon.icn\" (" << error.message() << ')' << std::endl;
+					std::cout << ErrorText << ' ' << FailedToCopyFile << "\n\"" << tempPath << "/exefs/icon\" -> \"" << romfsPath << "/icon.icn\"\n" << error.message() << std::endl;
 					std::cout << ErrorText << ' ' << FailedToCreateFile << ' ' << romfsPath << "/icon.icn" << std::endl;
 					return 27;
 				}
 				if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/icon.icn").c_str()))) {
-					std::cout << ErrorText << ' ' << FailedToFindPath << " / " << FailedToCreateFile << ' ' << romfsPath << "/icon.icn" << std::endl;
+					std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/icon.icn" << std::endl;
 					return 28;
 				}
 			}
@@ -1203,7 +1203,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 				std::error_code error;
 				error = copyfile(parameters.banner, std::string(tempPath + "/exefs/banner").c_str());
 				if (error) {
-					std::cout << ErrorText << ' ' << FailedToCopyFile << " / \"" << parameters.banner << "\" -> \"" << tempPath << "/exefs/banner\" (" << error.message() << ')' << std::endl;
+					std::cout << ErrorText << ' ' << FailedToCopyFile << "\n\"" << parameters.banner << "\" -> \"" << tempPath << "/exefs/banner\"\n" << error.message() << std::endl;
 					std::cout << ErrorText << ' ' << FailedToCreateFile << ' ' << tempPath << "/exefs/banner" << std::endl;
 					return 29;
 				}
@@ -1212,7 +1212,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 				uint8_t buffer[256 * 128 * sizeof(nnc_u16)];
 				ret = convertToBimg(parameters.banner, buffer, false);
 				if (ret > 0) {
-					std::cout << ErrorText << ' ' << BadValue << " / " << FailedToConvertImage << " \"" << parameters.banner << "\" (" << std::to_string(ret) << ')' << std::endl;
+					std::cout << ErrorText << ' ' << BadValue << '\n' << FailedToConvertImage << " \"" << parameters.banner << "\"\n(" << std::to_string(ret) << ')' << std::endl;
 					return 30;
 				}
 
@@ -1242,7 +1242,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 				bnrfile.close();
 			}
 			if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(tempPath + "/exefs/banner").c_str()))) {
-				std::cout << ErrorText << ' ' << FailedToFindPath << " / " << FailedToCreateFile << ' ' << tempPath << "/exefs/banner" << std::endl;
+				std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << tempPath << "/exefs/banner" << std::endl;
 				return 31;
 			}
 		}
@@ -1387,7 +1387,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*outTAR.c_str()))) {//write wont work properly if it already exists
 				std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*outTAR.c_str()), error);
 				if (error) {
-					std::cout << ErrorText << ' ' << outTAR << " (" << error.message() << ')' << std::endl;
+					std::cout << ErrorText << ' ' << outTAR << '\n' << error.message() << std::endl;
 				}
 			}
 			
@@ -1403,7 +1403,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			tarpathstr = fixSlashes(tarpathstr);
 			std::error_code error = add_directory(&tar, tarpathstr, 30000000);//CRASH
 			if(error) {
-				std::cout << ErrorText << ' ' << tarpathstr << " (" << error.message() << ')' << std::endl;
+				std::cout << ErrorText << ' ' << tarpathstr << '\n' << error.message() << std::endl;
 				std::cout << ErrorText << ' ' << FailedToCreateFile << " \"" << outTAR << '\"' << std::endl;
 			}
 
@@ -1422,7 +1422,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 	} while (dopatch);
 	std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*tempPath.c_str()), error);
 	if (error) {
-		std::cout << ErrorText << ' ' << tempPath << " (" << error.message() << ')' << std::endl;
+		std::cout << ErrorText << ' ' << tempPath << '\n' << error.message() << std::endl;
 		//no return becuase nobody cares
 	}
 	return res;
