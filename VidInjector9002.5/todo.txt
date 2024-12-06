@@ -1,5 +1,5 @@
 Main menu:
-New - If unsaved, ask to save and do that or just save to the last used project
-blah
-
-finish mediapanel (split patch line)
+extract archive
+delete temp upon exit setting
+language drop down
+about window: where we show the title logo and link to the github 
