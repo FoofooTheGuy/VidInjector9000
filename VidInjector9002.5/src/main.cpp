@@ -663,7 +663,6 @@ int main(int argc, char* argv[]) {
 		
 		wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
 		
-		wid.exportArchive = new wxProcess(wid.frame, wxID_ANY);
 		wid.exportArchive->Redirect();
 
 		wid.exportArchive->Bind(wxEVT_END_PROCESS, [&](wxProcessEvent& event) {
