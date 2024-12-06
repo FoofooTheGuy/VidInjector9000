@@ -648,9 +648,9 @@ int main(int argc, char* argv[]) {
 		
 		wid.exportArchive = new wxProcess(wid.frame, wxID_ANY);
 		wid.exportArchive->Redirect();
-		
+
 		wid.exportArchive->Bind(wxEVT_END_PROCESS, [&](wxProcessEvent& event) {
-			exportArchive_wxEVT_END_PROCESS(&wid);
+			exportArchive_wxEVT_END_PROCESS(&wid, &event);
 		});
 		
 		Exports::PID = wxExecute(command, wxEXEC_MAKE_GROUP_LEADER|wxEXEC_ASYNC, wid.exportArchive);

@@ -813,9 +813,10 @@ void titleIDButton_wxEVT_BUTTON(InitWidgets* wid) {
 	wid->titleIDBox->SetValue(wxString::FromUTF8(std::string(uniqueIDstr)));
 }
 
-void exportArchive_wxEVT_END_PROCESS(InitWidgets* wid) {
-	//wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+void exportArchive_wxEVT_END_PROCESS(InitWidgets* wid, wxProcessEvent* event) {
 	if(wid->exportArchive != NULL) {
+		if(event->GetPid() != 0)
+			wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(event->GetExitCode()) + '\n'));
 		delete wid->exportArchive;
 		wid->exportArchive = NULL;
 	}
@@ -836,7 +837,8 @@ void cancelButt_wxEVT_BUTTON(InitWidgets* wid) {
 			return;
 		}
 	}
-	exportArchive_wxEVT_END_PROCESS(wid);
+	wxProcessEvent event(0, 0, 0);
+	exportArchive_wxEVT_END_PROCESS(wid, &event);
 }
 
 void barPulser_wxEVT_TIMER(InitWidgets* wid) {

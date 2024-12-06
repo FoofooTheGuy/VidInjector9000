@@ -166,7 +166,7 @@ struct InitWidgets {
 	wxStaticText* productCodeText = new wxStaticText(buildpanel, wxID_ANY, wxString::FromUTF8(ProductCodeText));
 	wxTextCtrl* productCodeBox = new wxTextCtrl(buildpanel, wxID_ANY, wxString::FromUTF8("VDIJ"));
 	
-	wxStaticText* statusText = new wxStaticText(buildpanel, wxID_ANY, "placehold");
+	wxStaticText* statusText = new wxStaticText(buildpanel, wxID_ANY, "   ");
 	
 	wxGauge* buildBar = new wxGauge(buildpanel, wxID_ANY, 1, wxDefaultPosition, {-1, 25});
 	wxTimer* barPulser = new wxTimer();
