@@ -739,7 +739,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 	bool dopatch = 0;
 	std::error_code error;
 	
-	std::string tempPath = resourcesPath + "/temp";
+	std::string tempPath = resourcesPath + "/CLItemp";
 	std::string romfsPath;
 	do {
 		if (dopatch) {
@@ -1069,7 +1069,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			uint8_t Checker[4];
 			for (int i = dopatch ? parameters.splitPos : 0; i < (parameters.mode ? ((parameters.splitPos && !dopatch) ? parameters.splitPos : parameters.rows) : 1); i++) {
 				if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*parameters.MoflexVec.at(i).c_str()))) {
-					std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << parameters.MoflexVec.at(i) << std::endl;
+					std::cout << ErrorText << ' ' << FailedToFindPath << " \"" << parameters.MoflexVec.at(i) << "\"\n" << StrMoflexParam << '(' << i << ')' << std::endl;
 					return 15;
 				}
 				std::string extension = parameters.MoflexVec.at(i).c_str();
