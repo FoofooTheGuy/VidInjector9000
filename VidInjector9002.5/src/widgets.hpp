@@ -31,7 +31,6 @@ class Exports
 	public:
 	static std::string OutCIA;
 	static std::string OutTAR;
-	static long PID;
 };
 
 enum wxOwnedID {

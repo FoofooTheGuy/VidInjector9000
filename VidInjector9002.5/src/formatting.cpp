@@ -22,6 +22,14 @@ std::string toupperstr(std::string str) {
 	return str;
 }
 
+std::string addMissingFileExtension(std::string instr, std::string extension) {
+	size_t find = tolowerstr(instr).rfind(extension);
+	if(find == std::string::npos) {
+		return (instr + extension);
+	}
+	return instr;
+}
+
 std::error_code copyfile(std::string inpath, std::string outpath) {//also works with directories
 	std::error_code error;
 	std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*outpath.c_str()), error);

@@ -56,6 +56,7 @@ extern std::string TextTooLongError;
 extern std::string ImageInfoError;
 extern std::string CopyFileError;
 extern std::string CLIError;
+extern std::string BuildError;
 extern std::string SeeLog;
 extern std::string FileSaved;
 extern std::string PlayerTitleText;
@@ -67,6 +68,7 @@ extern std::string ApplicationTitleText;
 extern std::string ProductCodeText;
 extern std::string Build;
 extern std::string Cancel;
+extern std::string SuccessfullyBuilt;
 
 //tool tips
 extern std::string onlyMultiVideo;

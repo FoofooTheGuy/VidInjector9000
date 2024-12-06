@@ -815,8 +815,39 @@ void titleIDButton_wxEVT_BUTTON(InitWidgets* wid) {
 
 void exportArchive_wxEVT_END_PROCESS(InitWidgets* wid, wxProcessEvent* event) {
 	if(wid->exportArchive != NULL) {
-		if(event->GetPid() != 0)
+		if(event->GetPid() != 0) {
+			if(event->GetExitCode() != 0) {
+				wxMessageBox(wxString::FromUTF8(ErrorText + ' ' + BuildError + " (" + std::to_string(event->GetExitCode()) + ")\n" + SeeLog), wxString::FromUTF8(ErrorText), wxICON_ERROR);
+			}
+			else {
+				std::error_code error;
+				//todo: copy out.cia to Exports::OutCIA and out.tar to EXPORTS::OutTAR
+				error = copyfile(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "out.cia", Exports::OutCIA);
+				if (error)
+					wxMessageBox(wxString::FromUTF8(CopyFileError + '\n' + std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "out.cia") + " -> " +  Exports::OutCIA + '\n' + error.message()), wxString::FromUTF8(ErrorText));
+				
+				if(std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(Exports::OutCIA).c_str()), error))
+					wxMessageBox(wxString::FromUTF8(Exports::OutCIA), wxString::FromUTF8(SuccessfullyBuilt));
+				else
+					wxMessageBox(wxString::FromUTF8(BuildError + " (" + Exports::OutCIA + ')'), wxString::FromUTF8(ErrorText), wxICON_ERROR);
+				if(error)
+					wxMessageBox(wxString::FromUTF8(BuildError + " (" + Exports::OutCIA + ")\n" + error.message()), wxString::FromUTF8(ErrorText), wxICON_ERROR);
+
+				if(!Exports::OutTAR.empty()) {
+					error = copyfile(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "out.tar", Exports::OutTAR);
+					if (error)
+						wxMessageBox(wxString::FromUTF8(CopyFileError + '\n' + std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "out.tar") + " -> " +  Exports::OutTAR + '\n' + error.message()), wxString::FromUTF8(ErrorText));
+
+					if(std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(Exports::OutTAR).c_str()), error))
+						wxMessageBox(wxString::FromUTF8(Exports::OutTAR), wxString::FromUTF8(SuccessfullyBuilt));
+					else
+						wxMessageBox(wxString::FromUTF8(BuildError + " (" + Exports::OutTAR + ')'), wxString::FromUTF8(ErrorText), wxICON_ERROR);
+					if(error)
+						wxMessageBox(wxString::FromUTF8(BuildError + " (" + Exports::OutTAR + ")\n" + error.message()), wxString::FromUTF8(ErrorText), wxICON_ERROR);
+				}
+			}
 			wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(event->GetExitCode()) + '\n'));
+		}
 		delete wid->exportArchive;
 		wid->exportArchive = NULL;
 	}
@@ -829,9 +860,9 @@ void exportArchive_wxEVT_END_PROCESS(InitWidgets* wid, wxProcessEvent* event) {
 }
 
 void cancelButt_wxEVT_BUTTON(InitWidgets* wid) {
-	if(wid->exportArchive != NULL && wxProcess::Exists(Exports::PID)) {
+	if(wid->exportArchive != NULL && wxProcess::Exists(wid->exportArchive->GetPid())) {
 		int ret = 0;
-		ret = wxProcess::Kill(Exports::PID, wxSIGTERM, wxKILL_CHILDREN);
+		ret = wxProcess::Kill(wid->exportArchive->GetPid(), wxSIGTERM, wxKILL_CHILDREN);
 		if(ret != wxKILL_OK) {
 			wxLogError(wxString::FromUTF8(ErrorText + ' ' + std::to_string(ret) + "\n(" + std::to_string(ret) + ')'));
 			return;

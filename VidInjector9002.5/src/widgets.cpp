@@ -2,7 +2,6 @@
 
 std::string Exports::OutCIA = "";
 std::string Exports::OutTAR = "";
-long Exports::PID = 0;
 
 void initAllWidgets(InitWidgets* wid) {
 	//main menu

@@ -14,6 +14,13 @@ size_t chrcount(const std::string& str);
 std::string tolowerstr(std::string str);
 std::string toupperstr(std::string str);
 
+/*
+instr: string with or without the file extension
+extension: file extension (eg. ".txt")
+return: instr + extension
+*/
+std::string addMissingFileExtension(std::string instr, std::string extension);
+
 std::error_code copyfile(std::string inpath, std::string outpath);
 
 bool TIDisValid(uint32_t TID);
