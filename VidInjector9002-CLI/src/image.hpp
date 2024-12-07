@@ -43,4 +43,4 @@ return values:
 28, 29, 16, 44, 45, 18, 46, 47, 24: failed to read input (banner)
 30, 31, 32: failed to read input (icon)
 ect.*/
-int generate_preview(std::string parampath, int number, std::string outpath);
+int generate_preview(std::string parampath, uint8_t number, std::string outpath);

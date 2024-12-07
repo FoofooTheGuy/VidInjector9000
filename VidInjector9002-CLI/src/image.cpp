@@ -505,7 +505,7 @@ int generateIconPreview(std::string infile, int borderMode, std::string outfile)
 	return 0;
 }
 
-int generate_preview(std::string inpath, int number, std::string outpath) {
+int generate_preview(std::string inpath, uint8_t number, std::string outpath) {
 	VI9Pparameters parameters;
 	
 	int res = loadParameters(inpath, &parameters);
@@ -572,15 +572,15 @@ int generate_preview(std::string inpath, int number, std::string outpath) {
 		}
 	}
 	//beware of incoming jank. tread lightly...
-	int rowcase = 12;
-	for((void)rowcase; rowcase < parameters.PTitleVec.size(); rowcase++) {
+	uint8_t rowcase = 12;
+	for((void)rowcase; rowcase < (parameters.PTitleVec.size() & 0xFF); rowcase++) {
 		if(number == rowcase) {
 			std::cout << ErrorText << ' ' << BadValue << " (" << number << " -> " << StrPTitleParam << ")\n" << NothingToDo << std::endl;
 			return 17;
 		}
 	}
 	rowcase = 12 + parameters.rows;
-	for((void)rowcase; rowcase < parameters.MoflexVec.size(); rowcase++) {
+	for((void)rowcase; rowcase < (parameters.MoflexVec.size() & 0xFF); rowcase++) {
 		if(number == rowcase) {
 			std::cout << ErrorText << ' ' << BadValue << " (" << number << " -> " << StrMoflexParam << ")\n" << NothingToDo << std::endl;
 			return 18;
