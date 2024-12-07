@@ -269,7 +269,7 @@ void shortnameBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 	{//-sp
 		wxArrayString output;
 		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 4 \"" + parameters->Sname + "\" \"" + VI9P::WorkingFile + '\"');
+		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 4 \"" + fixDoubleQuote(parameters->Sname) + "\" \"" + VI9P::WorkingFile + '\"');
 		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 		
 		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
@@ -292,7 +292,7 @@ void longnameBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 	{//-sp
 		wxArrayString output;
 		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 5 \"" + parameters->Lname + "\" \"" + VI9P::WorkingFile + '\"');
+		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 5 \"" + fixDoubleQuote(parameters->Lname) + "\" \"" + VI9P::WorkingFile + '\"');
 		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 		
 		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
@@ -315,7 +315,7 @@ void publisherBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 	{//-sp
 		wxArrayString output;
 		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 6 \"" + parameters->publisher + "\" \"" + VI9P::WorkingFile + '\"');
+		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 6 \"" + fixDoubleQuote(parameters->publisher) + "\" \"" + VI9P::WorkingFile + '\"');
 		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 		
 		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
@@ -338,7 +338,7 @@ void copyBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 	{//-sp
 		wxArrayString output;
 		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 8 \"" + parameters->copyrightInfo + "\" \"" + VI9P::WorkingFile + '\"');
+		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 8 \"" + fixDoubleQuote(parameters->copyrightInfo) + "\" \"" + VI9P::WorkingFile + '\"');
 		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 		
 		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
@@ -469,7 +469,7 @@ void PlayerTitles_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxTex
 			{//-sp
 				wxArrayString output;
 				wxArrayString errors;
-				wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + rowReal) + " \"" + parameters->PTitleVec.at(rowReal) + "\" \"" + VI9P::WorkingFile + '\"');
+				wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + rowReal) + " \"" + fixDoubleQuote(parameters->PTitleVec.at(rowReal)) + "\" \"" + VI9P::WorkingFile + '\"');
 				int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 				
 				wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");

@@ -21,6 +21,9 @@ return: instr + extension
 */
 std::string addMissingFileExtension(std::string instr, std::string extension);
 
+//replace " with \"
+std::string fixDoubleQuote(std::string str);
+
 std::error_code copyfile(std::string inpath, std::string outpath);
 
 bool TIDisValid(uint32_t TID);

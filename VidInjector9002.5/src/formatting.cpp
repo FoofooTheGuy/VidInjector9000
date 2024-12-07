@@ -30,6 +30,16 @@ std::string addMissingFileExtension(std::string instr, std::string extension) {
 	return instr;
 }
 
+std::string fixDoubleQuote(std::string str) {
+	for (size_t i = 0; i < str.size(); i++) {
+		if (str[i] == '"') {
+			str.insert(i, "\\");
+			i++;
+		}
+	}
+	return str;
+}
+
 std::error_code copyfile(std::string inpath, std::string outpath) {//also works with directories
 	std::error_code error;
 	std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*outpath.c_str()), error);

@@ -10,9 +10,7 @@ void parsePP(const std::string input, const std::string query, std::string* valu
 	std::string line;
 	//split into lines
 	for(const auto &c : input) {
-		if(c == '\"')
-			line += "\\\"";
-		else line += c;
+		line += c;
 		if (c == '\n') {
 			size_t found = line.find("] ");
 			if(found < line.size()) {
