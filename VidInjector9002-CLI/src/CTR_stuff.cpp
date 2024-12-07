@@ -1820,7 +1820,7 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 				}
 			}
 			for (size_t i = 0; i < output.size(); i++) {
-				std::cout << output.at(i) << std::endl;
+				//std::cout << output.at(i) << std::endl;
 				parameters.PTitleVec.push_back(output.at(i));
 			}
 		}
