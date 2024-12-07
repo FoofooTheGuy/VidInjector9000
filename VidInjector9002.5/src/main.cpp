@@ -577,17 +577,15 @@ int main(int argc, char* argv[]) {
 					if (saveCIADialog.ShowModal() != wxID_OK) {
 						break;
 					}
-					Exports::OutCIA = std::string(saveCIADialog.GetPath().ToUTF8());
+					Exports::OutCIA = addMissingFileExtension(std::string(saveCIADialog.GetPath().ToUTF8()), ".cia");
 					
 					if(parameters.mode && parameters.splitPos) {
 						wxFileDialog saveTARDialog(wid.frame, wxEmptyString, wxEmptyString, wxEmptyString, wxString::FromUTF8(tarFiles), wxFD_SAVE);
 						if (saveTARDialog.ShowModal() == wxID_OK) {
-							Exports::OutTAR = std::string(saveTARDialog.GetPath().ToUTF8());
+							Exports::OutTAR = addMissingFileExtension(std::string(saveTARDialog.GetPath().ToUTF8()), ".tar");
 						}
 					}
 					
-					Exports::OutCIA = addMissingFileExtension(Exports::OutCIA, ".cia");
-					Exports::OutTAR = addMissingFileExtension(Exports::OutTAR, ".cia");
 					
 					if(!Exports::OutCIA.empty()) {//just make sure
 						titleIDButton_wxEVT_BUTTON(&wid);//randomize TID

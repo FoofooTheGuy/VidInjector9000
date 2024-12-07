@@ -848,7 +848,6 @@ void exportArchive_wxEVT_END_PROCESS(InitWidgets* wid, wxProcessEvent* event) {
 			}
 			wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(event->GetExitCode()) + '\n'));
 		}
-		//delete wid->exportArchive;
 	}
 	wid->statusText->Show(false);
 	wid->exportLogger->Stop();
