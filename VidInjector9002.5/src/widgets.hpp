@@ -169,7 +169,7 @@ struct InitWidgets {
 	
 	wxGauge* buildBar = new wxGauge(buildpanel, wxID_ANY, 1, wxDefaultPosition, {-1, 25});
 	wxTimer* barPulser = new wxTimer();
-	wxProcess* exportArchive = new wxProcess(frame, wxID_ANY);
+	wxProcess* exportArchive = new wxProcess(frame);
 	wxTimer* exportLogger = new wxTimer();
 	
 	wxButton* buildButt = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8(Build));

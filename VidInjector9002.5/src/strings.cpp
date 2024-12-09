@@ -90,10 +90,13 @@ std::string titleIDBoxTip = "Five hexadecimal integers ranging from C0000 to EFF
 std::string titleIDButtonTip = "Randomize the Unique ID";
 std::string applicationTitleBoxTip = "The internal name of the application";
 std::string productCodeBoxTip = "The product code of the application";
+std::string chooseDirSave = "Choose the directory to save to";
 std::string moflexFiles = "MoFlex Files (*.moflex)|*.moflex";//file stuffs
-std::string vi9pFiles = "VI9P Files (*.vi9p)|*.vi9p";
+std::string openFiles = "Supported Files (*.vi9p;*.cia;*.tar)|*.vi9p;*.cia;*.tar";
+std::string vi9pFiles = "VidInjector9000 Project Files (*.vi9p)|*.vi9p";
 std::string ciaFiles = "CTR Importable Archives (*.cia)|*.cia";
 std::string tarFiles = "Tape ARchives (*.tar)|*.tar";
+std::string allFiles = "All Files (*.*)|*.*";
 
 std::string tempPath = "temp";
 std::string CLItempPath = "CLItemp";
@@ -102,6 +105,7 @@ std::string resourcesPath = "VidInjector9000Resources";
 std::string CLIFile = "VidInjector9002-CLI";
 std::string settingsFile = "settings.txt";
 std::string vi9pFile = "parameters.vi9p";
+std::string seedFile = "seeddb.bin";
 
 std::string StrVerParam = "STR:VER";
 std::string IntMultiParam = "INT:MULTI";

@@ -1372,14 +1372,18 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 	}
 	
 	{//statusText
-		int panelwidth, mywidth, myheight, panelheight, barheight, buildheight, cancelheight;
+		int prodcodey, panelwidth, mywidth, myheight, panelheight, barheight, buildheight, cancelheight, prodcodeheight;
 		wid->buildpanel->GetSize(&panelwidth, &panelheight);
 		wid->buildBar->GetSize(NULL, &barheight);
 		wid->buildButt->GetSize(NULL, &buildheight);
 		wid->cancelButt->GetSize(NULL, &cancelheight);
+		wid->productCodeText->GetPosition(NULL, &prodcodey);
+		wid->productCodeText->GetSize(NULL, &prodcodeheight);
 		wid->statusText->GetSize(&mywidth, &myheight);
-		
-		wid->statusText->Move((panelwidth - mywidth) / 2, panelheight - (myheight + 5 + barheight + 10 + buildheight + 2 + cancelheight + 15));
+		if(panelheight > prodcodey + prodcodeheight + 15 + (myheight + 5 + barheight + 10 + buildheight + 2 + cancelheight + 15))
+			wid->statusText->Move((panelwidth - mywidth) / 2, panelheight - (myheight + 5 + barheight + 10 + buildheight + 2 + cancelheight + 15));
+		else
+			wid->statusText->Move((panelwidth - mywidth) / 2, prodcodey + prodcodeheight + 15);
 	}
 	{//buildBar
 		int y, panelwidth, statusheight;

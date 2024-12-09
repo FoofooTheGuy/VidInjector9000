@@ -106,11 +106,14 @@ extern std::string titleIDButtonTip;
 extern std::string applicationTitleBoxTip;
 extern std::string productCodeBoxTip;
 
-//file stuffs (todo: image files)
+//file stuffs (todo: image files? i dont know what all the image file extensions can be so maybe i'll just leave it at all files)
+extern std::string chooseDirSave;
 extern std::string moflexFiles;
+extern std::string openFiles;
 extern std::string vi9pFiles;
 extern std::string ciaFiles;
 extern std::string tarFiles;
+extern std::string allFiles;
 
 //internal
 extern std::string tempPath;
@@ -121,6 +124,7 @@ extern std::string resourcesPath;
 extern std::string CLIFile;
 extern std::string settingsFile;
 extern std::string vi9pFile;
+extern std::string seedFile;
 
 //vi9p parameters
 extern std::string StrVerParam;
