@@ -855,6 +855,54 @@ void exportArchive_wxEVT_END_PROCESS(InitWidgets* wid, wxProcessEvent* event) {
 	setCursors(wid);
 }
 
+void buildButt_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
+	std::string uniqueID = std::string(wid->titleIDBox->GetValue().ToUTF8());
+	std::string appName = std::string(wid->applicationTitleBox->GetValue().ToUTF8());
+	std::string prodCode = std::string(wid->productCodeBox->GetValue().ToUTF8());
+	
+	Exports::OutCIA = "";
+	Exports::OutTAR = "";
+	wxFileDialog saveCIADialog(wid->frame, wxEmptyString, wxEmptyString, wxString::FromUTF8(std::string(wid->longnameBox->GetValue().ToUTF8()) + " [000400000" + std::string(wid->titleIDBox->GetValue().ToUTF8()) + "00].cia"), wxString::FromUTF8(ciaFiles), wxFD_SAVE);
+	if (saveCIADialog.ShowModal() != wxID_OK) {
+		return;
+	}
+	Exports::OutCIA = addMissingFileExtension(std::string(saveCIADialog.GetPath().ToUTF8()), ".cia");
+	
+	if(parameters->mode && parameters->splitPos) {
+		wxFileDialog saveTARDialog(wid->frame, wxEmptyString, wxString::FromUTF8(Exports::OutCIA.substr(0, Exports::OutCIA.find_last_of("\\/") == std::string::npos ? 0 : Exports::OutCIA.find_last_of("\\/"))), wxString::FromUTF8(std::string(wid->longnameBox->GetValue().ToUTF8()) + " [000400000" + std::string(wid->titleIDBox->GetValue().ToUTF8()) + "00].tar"), wxString::FromUTF8(tarFiles), wxFD_SAVE);
+		if (saveTARDialog.ShowModal() == wxID_OK) {
+			Exports::OutTAR = addMissingFileExtension(std::string(saveTARDialog.GetPath().ToUTF8()), ".tar");
+		}
+	}
+	
+	if(Exports::OutCIA.empty())//just make sure
+		return;
+	
+	//execute async process
+	wxString command = "";
+	if(Exports::OutTAR.empty())
+		command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -bc \"" + VI9P::WorkingFile + "\" \"" + uniqueID + "\" \"" + appName + "\" \"" + prodCode + "\" \"" + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/out.cia\"");
+	else
+		command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -bc \"" + VI9P::WorkingFile + "\" \"" + uniqueID + "\" \"" + appName + "\" \"" + prodCode + "\" \"" + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/out.cia\" \"" + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/out.tar\"");
+	
+	wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+	
+	wid->exportArchive->Redirect();
+	
+	long PID = wxExecute(command, wxEXEC_MAKE_GROUP_LEADER|wxEXEC_ASYNC, wid->exportArchive);
+	
+	if (PID = 0) {
+		wxLogError(wxString::FromUTF8(ErrorText + ' ' + command));
+		return;
+	}
+	
+	wid->frame->Enable(false);
+	setCursors(wid);
+	wid->barPulser->Start(100);
+	wid->statusText->Show();
+	wid->exportLogger->Start(1);//poll for output every X milliseconds... i guess
+}
+
 void cancelButt_wxEVT_BUTTON(InitWidgets* wid) {
 	if(wid->statusText->IsShown()) {//dumb but it is sure to work
 		int ret = 0;

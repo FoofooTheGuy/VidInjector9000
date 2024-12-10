@@ -37,6 +37,7 @@ void buildframe_wxEVT_CLOSE_WINDOW(InitWidgets* wid, wxCloseEvent* event);
 void buildpanel_wxEVT_SIZE(InitWidgets* wid, VI9Pparameters* parameters);
 void titleIDButton_wxEVT_BUTTON(InitWidgets* wid);
 void exportArchive_wxEVT_END_PROCESS(InitWidgets* wid, wxProcessEvent* event);
+void buildButt_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters);
 void cancelButt_wxEVT_BUTTON(InitWidgets* wid);
 void barPulser_wxEVT_TIMER(InitWidgets* wid);
 void exportLogger_wxEVT_TIMER(InitWidgets* wid);
