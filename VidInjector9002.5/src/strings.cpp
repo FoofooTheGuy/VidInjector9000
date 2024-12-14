@@ -21,6 +21,7 @@ std::string fileSave = "Save";
 std::string fileSaveAs = "Save as...";
 std::string fileExport = "Export...";
 std::string fileExtract = "Extract...";
+std::string fileImportSeed = "Import Seed";
 std::string options = "Options";
 std::string optionsShowLog = "Show Log";
 std::string optionsSystemMode = "System";
@@ -99,6 +100,7 @@ std::string extractFiles = "Supported Files (*.cia;*.tar)|*.cia;*.tar";
 std::string vi9pFiles = "VidInjector9000 Project Files (*.vi9p)|*.vi9p";
 std::string ciaFiles = "CTR Importable Archives (*.cia)|*.cia";
 std::string tarFiles = "Tape ARchives (*.tar)|*.tar";
+std::string seeddbFiles = "seeddb.bin (*.bin)|*.bin";
 std::string allFiles = "All Files (*.*)|*.*";
 
 std::string tempPath = "temp";

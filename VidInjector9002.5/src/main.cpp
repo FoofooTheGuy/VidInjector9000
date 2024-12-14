@@ -468,18 +468,12 @@ int main(int argc, char* argv[]) {
 					openFileDialog.SetFilterIndex(0);
 					if (openFileDialog.ShowModal() == wxID_OK) {
 						VI9P::WorkingFile = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "parameters.vi9p";
+						VI9P::OutFile = std::string(openFileDialog.GetPath().ToUTF8());
 						
-						size_t find = tolowerstr(std::string(openFileDialog.GetPath().ToUTF8())).rfind(".vi9p");
-						if(find != std::string::npos) {//chosen .vi9p file
-							if(strcmp(tolowerstr(std::string(openFileDialog.GetPath().ToUTF8())).substr(find).c_str(), ".vi9p") == 0) {
-								VI9P::OutFile = std::string(openFileDialog.GetPath().ToUTF8());
-								
-								std::error_code error;
-								error = copyfile(std::string(openFileDialog.GetPath().ToUTF8()).c_str(), VI9P::WorkingFile.c_str());//copy chosen file to temp
-								if (error) {
-									wxMessageBox(wxString::FromUTF8(CopyFileError + '\n' + std::string(openFileDialog.GetPath().ToUTF8()) + " -> " +  VI9P::WorkingFile + '\n' + error.message()), wxString::FromUTF8(ErrorText));
-								}
-							}
+						std::error_code error;
+						error = copyfile(std::string(openFileDialog.GetPath().ToUTF8()), VI9P::WorkingFile);//copy chosen file to temp
+						if (error) {
+							wxMessageBox(wxString::FromUTF8(CopyFileError + '\n' + std::string(openFileDialog.GetPath().ToUTF8()) + " -> " +  VI9P::WorkingFile + '\n' + error.message()), wxString::FromUTF8(ErrorText));
 						}
 						
 						VI9P::MultiBannerIndex = 0;
@@ -533,7 +527,7 @@ int main(int argc, char* argv[]) {
 							VI9P::OutFile = addMissingFileExtension(VI9P::OutFile, ".vi9p");
 							
 							std::error_code error;
-							error = copyfile(VI9P::WorkingFile.c_str(), VI9P::OutFile.c_str());
+							error = copyfile(VI9P::WorkingFile, VI9P::OutFile);
 							if (error) {
 								wxMessageBox(wxString::FromUTF8(CopyFileError + '\n' + VI9P::WorkingFile + " -> " + VI9P::OutFile + '\n' + error.message()), wxString::FromUTF8(ErrorText));
 							}
@@ -544,7 +538,7 @@ int main(int argc, char* argv[]) {
 					}
 					else {
 						std::error_code error;
-						error = copyfile(VI9P::WorkingFile.c_str(), VI9P::OutFile.c_str());
+						error = copyfile(VI9P::WorkingFile, VI9P::OutFile);
 						if (error) {
 							wxMessageBox(wxString::FromUTF8(CopyFileError + '\n' + VI9P::WorkingFile + " -> " + VI9P::OutFile + '\n' + error.message()), wxString::FromUTF8(ErrorText));
 						}
@@ -564,7 +558,7 @@ int main(int argc, char* argv[]) {
 						VI9P::OutFile = addMissingFileExtension(VI9P::OutFile, ".vi9p");
 						
 						std::error_code error;
-						error = copyfile(VI9P::WorkingFile.c_str(), VI9P::OutFile.c_str());
+						error = copyfile(VI9P::WorkingFile, VI9P::OutFile);
 						if (error) {
 							wxMessageBox(wxString::FromUTF8(CopyFileError + '\n' + VI9P::WorkingFile + " -> " +  VI9P::OutFile + '\n' + error.message()), wxString::FromUTF8(ErrorText));
 						}
@@ -593,7 +587,7 @@ int main(int argc, char* argv[]) {
 						if(find != std::string::npos) {//chosen .cia file
 							if(strcmp(tolowerstr(std::string(openFileDialog.GetPath().ToUTF8())).substr(find).c_str(), ".cia") == 0) {
 								//choose what dir to extract it to
-								wxDirDialog openDirectoryDialog(wid.frame, wxEmptyString, wxEmptyString, wxDD_DIR_MUST_EXIST);
+								wxDirDialog openDirectoryDialog(wid.frame, wxString::FromUTF8(chooseDirSave), wxEmptyString, wxDD_DIR_MUST_EXIST);
 								if (openDirectoryDialog.ShowModal() == wxID_OK) {
 									Extracted::Archive = std::string(openFileDialog.GetPath().ToUTF8()).substr(0, find);//fix this
 									//async execution
@@ -624,7 +618,7 @@ int main(int argc, char* argv[]) {
 						if(find != std::string::npos) {//chosen .tar file
 							if(strcmp(tolowerstr(std::string(openFileDialog.GetPath().ToUTF8())).substr(find).c_str(), ".tar") == 0) {
 								//choose what dir to extract it to
-								wxDirDialog openDirectoryDialog(wid.frame, wxEmptyString, wxEmptyString, wxDD_DIR_MUST_EXIST);
+								wxDirDialog openDirectoryDialog(wid.frame, wxString::FromUTF8(chooseDirSave), wxEmptyString, wxDD_DIR_MUST_EXIST);
 								if (openDirectoryDialog.ShowModal() == wxID_OK) {
 									Extracted::Archive = std::string(openFileDialog.GetPath().ToUTF8()).substr(0, find);//fix this
 									//async execution
@@ -649,6 +643,19 @@ int main(int argc, char* argv[]) {
 									}
 								}
 							}
+						}
+					}
+				}
+				break;
+			case ID_IMPORTSEED:
+				{
+					wxFileDialog openFileDialog(wid.frame, wxEmptyString, wxEmptyString, wxEmptyString, wxString::FromUTF8(seeddbFiles), wxFD_OPEN|wxFD_FILE_MUST_EXIST);
+					openFileDialog.SetFilterIndex(0);
+					if (openFileDialog.ShowModal() == wxID_OK) {
+						std::error_code error;
+						error = copyfile(std::string(openFileDialog.GetPath().ToUTF8()), std::string(openFileDialog.GetPath().ToUTF8()) + "\" \"" + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + seedFile);//copy chosen file to temp
+						if (error) {
+							wxMessageBox(wxString::FromUTF8(CopyFileError + '\n' + std::string(openFileDialog.GetPath().ToUTF8()) + " -> " +  VI9P::WorkingFile + '\n' + error.message()), wxString::FromUTF8(ErrorText));
 						}
 					}
 				}

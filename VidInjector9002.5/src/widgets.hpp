@@ -42,6 +42,7 @@ class Extracted
 enum wxOwnedID {
 	ID_EXPORT,
 	ID_EXTRACT,
+	ID_IMPORTSEED,
 	ID_LOGBOOL,
 	ID_SYSTEM,
 	ID_LIGHT,
@@ -78,6 +79,7 @@ struct InitWidgets {
 	wxMenuItem* menuItemFileSaveAs = menuFile->Append(wxID_SAVEAS, wxString::FromUTF8(fileSaveAs + "\tCtrl+Shift+S"));
 	wxMenuItem* menuItemFileExport = menuFile->Append(ID_EXPORT, wxString::FromUTF8(fileExport + "\tCtrl+E"));
 	wxMenuItem* menuItemFileExtract = menuFile->Append(ID_EXTRACT, wxString::FromUTF8(fileExtract + "\tCtrl+Alt+E"));
+	wxMenuItem* menuItemFileImportSeed = menuFile->Append(ID_IMPORTSEED, wxString::FromUTF8(fileImportSeed));
 	wxMenu* menuOptions = new wxMenu();
 	wxMenuItem* menuItemOptionsLog = menuOptions->Append(ID_LOGBOOL, wxString::FromUTF8(optionsShowLog), "", wxITEM_CHECK);
 	wxMenuItem* menuItemOptionsSystem = menuOptions->Append(ID_SYSTEM, wxString::FromUTF8(optionsSystemMode), "", wxITEM_RADIO);

@@ -32,6 +32,7 @@ extern std::string fileSave;
 extern std::string fileSaveAs;
 extern std::string fileExport;
 extern std::string fileExtract;
+extern std::string fileImportSeed;
 extern std::string options;
 extern std::string optionsShowLog;
 extern std::string optionsSystemMode;
@@ -116,6 +117,7 @@ extern std::string extractFiles;
 extern std::string vi9pFiles;
 extern std::string ciaFiles;
 extern std::string tarFiles;
+extern std::string seeddbFiles;
 extern std::string allFiles;
 
 //internal
