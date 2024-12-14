@@ -1722,6 +1722,7 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 	{
 		parameters.banner = std::string(exefspath + "/banner.bin");//do it like this because the vi9p is in outDir
 		parameters.icon = std::string(exefspath + "/icon.bin");
+		parameters.iconBorder = 0;
 		
 		(void)setIcon(std::string(exefspath + "/icon.bin").c_str(), parameters.Sname, parameters.Lname, parameters.publisher);
 	}
