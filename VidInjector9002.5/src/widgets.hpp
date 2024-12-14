@@ -29,12 +29,19 @@ PID: process ID of the subprocess for exporting it all
 class Exports
 {
 	public:
-	static std::string OutCIA;
-	static std::string OutTAR;
+	static std::string CIA;
+	static std::string TAR;
+};
+
+class Extracted
+{
+	public:
+	static std::string Archive;
 };
 
 enum wxOwnedID {
 	ID_EXPORT,
+	ID_EXTRACT,
 	ID_LOGBOOL,
 	ID_SYSTEM,
 	ID_LIGHT,
@@ -70,6 +77,7 @@ struct InitWidgets {
 	wxMenuItem* menuItemFileSave = menuFile->Append(wxID_SAVE, wxString::FromUTF8(fileSave + "\tCtrl+S"));
 	wxMenuItem* menuItemFileSaveAs = menuFile->Append(wxID_SAVEAS, wxString::FromUTF8(fileSaveAs + "\tCtrl+Shift+S"));
 	wxMenuItem* menuItemFileExport = menuFile->Append(ID_EXPORT, wxString::FromUTF8(fileExport + "\tCtrl+E"));
+	wxMenuItem* menuItemFileExtract = menuFile->Append(ID_EXTRACT, wxString::FromUTF8(fileExtract + "\tCtrl+Alt+E"));
 	wxMenu* menuOptions = new wxMenu();
 	wxMenuItem* menuItemOptionsLog = menuOptions->Append(ID_LOGBOOL, wxString::FromUTF8(optionsShowLog), "", wxITEM_CHECK);
 	wxMenuItem* menuItemOptionsSystem = menuOptions->Append(ID_SYSTEM, wxString::FromUTF8(optionsSystemMode), "", wxITEM_RADIO);
@@ -168,12 +176,17 @@ struct InitWidgets {
 	wxStaticText* statusText = new wxStaticText(buildpanel, wxID_ANY, "   ");
 	
 	wxGauge* buildBar = new wxGauge(buildpanel, wxID_ANY, 1, wxDefaultPosition, {-1, 25});
-	wxTimer* barPulser = new wxTimer();
 	wxProcess* exportArchive = new wxProcess(frame);
+	wxTimer* barPulser = new wxTimer();
 	wxTimer* exportLogger = new wxTimer();
 	
 	wxButton* buildButt = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8(Build));
 	wxButton* cancelButt = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8(Cancel));
+	
+	wxProgressDialog* extractDialog = new wxProgressDialog("Indeterminate process running", "Click \"Cancel\" to abort", 1, frame, wxPD_APP_MODAL|wxPD_CAN_ABORT|wxPD_ELAPSED_TIME);
+	wxProcess* extractArchive = new wxProcess(frame);
+	wxTimer* extractPulser = new wxTimer();
+	wxTimer* extractLogger = new wxTimer();
 };
 
 void initAllWidgets(InitWidgets* initwidgets);

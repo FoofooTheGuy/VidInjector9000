@@ -31,6 +31,7 @@ extern std::string fileOpen;
 extern std::string fileSave;
 extern std::string fileSaveAs;
 extern std::string fileExport;
+extern std::string fileExtract;
 extern std::string options;
 extern std::string optionsShowLog;
 extern std::string optionsSystemMode;
@@ -57,6 +58,7 @@ extern std::string ImageInfoError;
 extern std::string CopyFileError;
 extern std::string CLIError;
 extern std::string BuildError;
+extern std::string ExtractError;
 extern std::string SeeLog;
 extern std::string FileSaved;
 extern std::string PlayerTitleText;
@@ -69,6 +71,7 @@ extern std::string ProductCodeText;
 extern std::string Build;
 extern std::string Cancel;
 extern std::string SuccessfullyBuilt;
+extern std::string SuccessfullyExtracted;
 
 //tool tips
 extern std::string onlyMultiVideo;
@@ -109,7 +112,7 @@ extern std::string productCodeBoxTip;
 //file stuffs (todo: image files? i dont know what all the image file extensions can be so maybe i'll just leave it at all files)
 extern std::string chooseDirSave;
 extern std::string moflexFiles;
-extern std::string openFiles;
+extern std::string extractFiles;
 extern std::string vi9pFiles;
 extern std::string ciaFiles;
 extern std::string tarFiles;

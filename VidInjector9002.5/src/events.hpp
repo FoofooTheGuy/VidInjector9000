@@ -41,6 +41,10 @@ void buildButt_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters);
 void cancelButt_wxEVT_BUTTON(InitWidgets* wid);
 void barPulser_wxEVT_TIMER(InitWidgets* wid);
 void exportLogger_wxEVT_TIMER(InitWidgets* wid);
+void extractDialog_wxEVT_CLOSE_WINDOW(InitWidgets* wid, wxCloseEvent* event);
+void extractArchive_wxEVT_END_PROCESS(InitWidgets* wid, wxProcessEvent* event);
+void extractPulser_wxEVT_TIMER(InitWidgets* wid);
+void extractLogger_wxEVT_TIMER(InitWidgets* wid);
 
 
 //binds are in these binds so it cant be done outside of main

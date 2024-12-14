@@ -464,7 +464,7 @@ int main(int argc, char* argv[]) {
 				break;
 			case wxID_OPEN:
 				{
-					wxFileDialog openFileDialog(wid.frame, wxEmptyString, wxEmptyString, wxEmptyString, wxString::FromUTF8(openFiles + '|' + vi9pFiles + '|' + ciaFiles + '|' + tarFiles), wxFD_OPEN|wxFD_FILE_MUST_EXIST);
+					wxFileDialog openFileDialog(wid.frame, wxEmptyString, wxEmptyString, wxEmptyString, wxString::FromUTF8(vi9pFiles), wxFD_OPEN|wxFD_FILE_MUST_EXIST);
 					openFileDialog.SetFilterIndex(0);
 					if (openFileDialog.ShowModal() == wxID_OK) {
 						VI9P::WorkingFile = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "parameters.vi9p";
@@ -482,41 +482,6 @@ int main(int argc, char* argv[]) {
 							}
 						}
 						
-						find = tolowerstr(std::string(openFileDialog.GetPath().ToUTF8())).rfind(".cia");
-						if(find != std::string::npos) {//chosen .cia file
-							if(strcmp(tolowerstr(std::string(openFileDialog.GetPath().ToUTF8())).substr(find).c_str(), ".cia") == 0) {
-								//choose what dir to extract it to
-								wxDirDialog openDirectoryDialog(wid.frame, wxEmptyString, wxEmptyString, wxDD_DIR_MUST_EXIST);
-								if (openDirectoryDialog.ShowModal() == wxID_OK) {
-									//async execution
-									{//-ec
-										wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -ec \"" + std::string(openFileDialog.GetPath().ToUTF8()) + "\" \"" + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + seedFile + "\" \"" + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "extractedCIA\"");
-										
-									}
-									/*final copy will be like this
-									copyfile(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "extractedCIA", std::string(openDirectoryDialog.GetPath().ToUTF8()) + '/' + std::string(openFileDialog.GetPath().ToUTF8()).substr(0, find));
-									if (error)
-										wxMessageBox(wxString::FromUTF8(CopyFileError + '\n' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "extractedCIA" + " -> " + std::string(openDirectoryDialog.GetPath().ToUTF8()) + '/' + std::string(openFileDialog.GetPath().ToUTF8()).substr(0, find) + '\n' + error.message()), wxString::FromUTF8(ErrorText));
-									*/
-									//VI9P::OutFile = std::string(openDirectoryDialog.GetPath().ToUTF8()) + '/' + std::string(openFileDialog.GetPath().ToUTF8()).substr(0, find) + "/parameters.vi9p";//generated vi9p from extraction parameters.vi9p
-								}
-							}
-						}
-						
-						find = tolowerstr(std::string(openFileDialog.GetPath().ToUTF8())).rfind(".tar");
-						if(find != std::string::npos) {//chosen .tar file
-							if(strcmp(tolowerstr(std::string(openFileDialog.GetPath().ToUTF8())).substr(find).c_str(), ".tar") == 0) {
-								//choose what dir to extract it to
-								wxDirDialog openDirectoryDialog(wid.frame, wxDirSelectorPromptStr, wxEmptyString, wxDD_DIR_MUST_EXIST);
-								
-								
-								//async execution
-								//-et
-								{
-								}
-								//VI9P::OutFile = ;
-							}
-						}
 						VI9P::MultiBannerIndex = 0;
 						loadParameters(&wid, &parameters);
 						positionWidgets(&wid, &parameters);
@@ -617,6 +582,77 @@ int main(int argc, char* argv[]) {
 					wid.buildframe->Show();
 				}
 				break;
+			case ID_EXTRACT:
+				{
+					wxFileDialog openFileDialog(wid.frame, wxEmptyString, wxEmptyString, wxEmptyString, wxString::FromUTF8(extractFiles + '|' + ciaFiles + '|' + tarFiles), wxFD_OPEN|wxFD_FILE_MUST_EXIST);
+					openFileDialog.SetFilterIndex(0);
+					if (openFileDialog.ShowModal() == wxID_OK) {
+						VI9P::WorkingFile = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "parameters.vi9p";
+						
+						size_t find = tolowerstr(std::string(openFileDialog.GetPath().ToUTF8())).rfind(".cia");
+						if(find != std::string::npos) {//chosen .cia file
+							if(strcmp(tolowerstr(std::string(openFileDialog.GetPath().ToUTF8())).substr(find).c_str(), ".cia") == 0) {
+								//choose what dir to extract it to
+								wxDirDialog openDirectoryDialog(wid.frame, wxEmptyString, wxEmptyString, wxDD_DIR_MUST_EXIST);
+								if (openDirectoryDialog.ShowModal() == wxID_OK) {
+									Extracted::Archive = std::string(openFileDialog.GetPath().ToUTF8()).substr(0, find);//fix this
+									//async execution
+									{//-ec
+										wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -ec \"" + std::string(openFileDialog.GetPath().ToUTF8()) + "\" \"" + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + seedFile + "\" \"" + Extracted::Archive + '\"');
+										wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+										
+										wid.extractArchive->Redirect();
+										
+										long PID = wxExecute(command, wxEXEC_MAKE_GROUP_LEADER|wxEXEC_ASYNC, wid.extractArchive);
+										
+										if (PID = 0) {
+											wxLogError(wxString::FromUTF8(ErrorText + ' ' + command));
+											return;
+										}
+										
+										wid.frame->Enable(false);
+										setCursors(&wid);
+										wid.extractDialog->Show();
+										wid.extractPulser->Start(100);
+										wid.extractLogger->Start(1);
+									}
+								}
+							}
+						}
+						
+						find = tolowerstr(std::string(openFileDialog.GetPath().ToUTF8())).rfind(".tar");
+						if(find != std::string::npos) {//chosen .tar file
+							if(strcmp(tolowerstr(std::string(openFileDialog.GetPath().ToUTF8())).substr(find).c_str(), ".tar") == 0) {
+								//choose what dir to extract it to
+								wxDirDialog openDirectoryDialog(wid.frame, wxEmptyString, wxEmptyString, wxDD_DIR_MUST_EXIST);
+								if (openDirectoryDialog.ShowModal() == wxID_OK) {
+									Extracted::Archive = std::string(openFileDialog.GetPath().ToUTF8()).substr(0, find);//fix this
+									//async execution
+									{//-ec
+										wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -et \"" + std::string(openFileDialog.GetPath().ToUTF8()) + "\" \"" + Extracted::Archive + '\"');
+										wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+										
+										wid.extractArchive->Redirect();
+										
+										long PID = wxExecute(command, wxEXEC_MAKE_GROUP_LEADER|wxEXEC_ASYNC, wid.extractArchive);
+										
+										if (PID = 0) {
+											wxLogError(wxString::FromUTF8(ErrorText + ' ' + command));
+											return;
+										}
+										
+										wid.frame->Enable(false);
+										setCursors(&wid);
+										wid.extractDialog->Show();
+										wid.extractPulser->Start(100);
+										wid.extractLogger->Start(1);
+									}
+								}
+							}
+						}
+					}
+				}
+				break;
 			//settings
 			case ID_LOGBOOL:
 				{
@@ -686,6 +722,22 @@ int main(int argc, char* argv[]) {
 
 	wid.exportLogger->Bind(wxEVT_TIMER, [&](wxTimerEvent& event) {
 		exportLogger_wxEVT_TIMER(&wid);
+	});
+
+	wid.extractDialog->Bind(wxEVT_CLOSE_WINDOW, [&](wxCloseEvent& event) {
+		extractDialog_wxEVT_CLOSE_WINDOW(&wid, &event);
+	});
+	
+	wid.extractArchive->Bind(wxEVT_END_PROCESS, [&](wxProcessEvent& event) {
+		extractArchive_wxEVT_END_PROCESS(&wid, &event);
+	});
+
+	wid.extractPulser->Bind(wxEVT_TIMER, [&](wxTimerEvent& event) {
+		extractPulser_wxEVT_TIMER(&wid);
+	});
+
+	wid.extractLogger->Bind(wxEVT_TIMER, [&](wxTimerEvent& event) {
+		extractLogger_wxEVT_TIMER(&wid);
 	});
 	
 	//consoleLog->LogTextAtLevel(0, wxString::Format("OUTPUT: %s", s));

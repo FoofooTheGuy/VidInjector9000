@@ -1,7 +1,8 @@
 #include "widgets.hpp"
 
-std::string Exports::OutCIA = "";
-std::string Exports::OutTAR = "";
+std::string Exports::CIA = "";
+std::string Exports::TAR = "";
+std::string Extracted::Archive = "";
 
 void initAllWidgets(InitWidgets* wid) {
 	//main menu
@@ -530,6 +531,9 @@ void initAllWidgets(InitWidgets* wid) {
 		buttheight = buttheight - h;
 
 		wid->buildButt->SetSize(w + (buttwidth * 2), h + (buttheight * 2));
+	}
+	{//extractDialog
+		wid->extractDialog->Show(false);
 	}
 }
 
