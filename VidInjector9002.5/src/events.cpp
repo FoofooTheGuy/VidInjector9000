@@ -969,7 +969,6 @@ void extractDialog_wxEVT_CLOSE_WINDOW(InitWidgets* wid, wxCloseEvent* event) {
 }
 
 void extractArchive_wxEVT_END_PROCESS(InitWidgets* wid, wxProcessEvent* event) {
-	wid->frame->Enable(true);
 	if(event->GetPid() != 0) {
 		if(event->GetExitCode() != 0) {
 			wxMessageBox(wxString::FromUTF8(ErrorText + ' ' + BuildError + " (" + std::to_string(event->GetExitCode()) + ")\n" + SeeLog), wxString::FromUTF8(ErrorText), wxICON_ERROR);
@@ -999,7 +998,7 @@ void extractPulser_wxEVT_TIMER(InitWidgets* wid) {
 	wid->extractDialog->Pulse();
 	
 	//cancel
-	if(wid->extractDialog->WasSkipped()) {
+	if(wid->extractDialog->WasCancelled()) {
 		int ret = 0;
 		ret = wxProcess::Kill(wid->extractArchive->GetPid(), wxSIGTERM, wxKILL_CHILDREN);
 		if(ret != wxKILL_OK) {

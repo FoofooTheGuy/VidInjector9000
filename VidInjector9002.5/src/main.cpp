@@ -607,7 +607,7 @@ int main(int argc, char* argv[]) {
 										wid.frame->Enable(false);
 										setCursors(&wid);
 										delete wid.extractDialog;
-										wid.extractDialog = new wxProgressDialog(wxString::FromUTF8(extractingArchive), wxString::FromUTF8(clickCancel), 1, wid.frame, wxPD_APP_MODAL|wxPD_CAN_SKIP);
+										wid.extractDialog = new wxProgressDialog(wxString::FromUTF8(extractingArchive), wxString::FromUTF8(clickCancel), 1, wid.frame, wxPD_APP_MODAL|wxPD_CAN_ABORT);
 										wid.extractDialog->Show();
 										wid.extractPulser->Start(100);
 										wid.extractLogger->Start(1);
