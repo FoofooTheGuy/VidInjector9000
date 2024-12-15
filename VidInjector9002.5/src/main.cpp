@@ -655,7 +655,7 @@ int main(int argc, char* argv[]) {
 						std::error_code error;
 						error = copyfile(std::string(openFileDialog.GetPath().ToUTF8()), std::string(openFileDialog.GetPath().ToUTF8()) + "\" \"" + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + seedFile);//copy chosen file to temp
 						if (error) {
-							wxMessageBox(wxString::FromUTF8(CopyFileError + '\n' + std::string(openFileDialog.GetPath().ToUTF8()) + " -> " +  std::string(openFileDialog.GetPath().ToUTF8()) + "\" \"" + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + seedFile + '\n' + error.message()), wxString::FromUTF8(ErrorText));
+							wxMessageBox(wxString::FromUTF8(CopyFileError + '\n' + std::string(openFileDialog.GetPath().ToUTF8()) + " -> " + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + seedFile + '\n' + error.message()), wxString::FromUTF8(ErrorText));
 						}
 					}
 				}
@@ -715,12 +715,12 @@ int main(int argc, char* argv[]) {
 		exportArchive_wxEVT_END_PROCESS(&wid, &event);
 	});
 
-	wid.buildButt->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
-		buildButt_wxEVT_BUTTON(&wid, &parameters);
+	wid.buildButton->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		buildButton_wxEVT_BUTTON(&wid, &parameters);
 	});
 
-	wid.cancelButt->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
-		cancelButt_wxEVT_BUTTON(&wid);
+	wid.cancelButton->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		cancelButton_wxEVT_BUTTON(&wid);
 	});
 	
 	wid.barPulser->Bind(wxEVT_TIMER, [&](wxTimerEvent& event) {

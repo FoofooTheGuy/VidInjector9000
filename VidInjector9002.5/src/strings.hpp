@@ -38,6 +38,8 @@ extern std::string optionsShowLog;
 extern std::string optionsSystemMode;
 extern std::string optionsLightMode;
 extern std::string optionsDarkMode;
+extern std::string help;
+extern std::string helpAbout;
 
 //widgets
 extern std::string Return;
@@ -51,6 +53,7 @@ extern std::string ShortNameText;
 extern std::string LongNameText;
 extern std::string PublisherText;
 extern std::string CopyrightCheckText;
+extern std::string BannerCustomText;
 extern std::string BannerPreviewText;
 extern std::string FFrewindCheckText;
 extern std::string DimCheckText;

@@ -10,9 +10,12 @@ void initAllWidgets(InitWidgets* wid) {
 	wid->menuItemFileOpen->SetBitmap(wxArtProvider::GetBitmap(wxART_FILE_OPEN, wxART_MENU));
 	wid->menuItemFileSave->SetBitmap(wxArtProvider::GetBitmap(wxART_FILE_SAVE, wxART_MENU));
 	wid->menuItemFileSaveAs->SetBitmap(wxArtProvider::GetBitmap(wxART_FILE_SAVE_AS, wxART_MENU));
-	wid->mainMenu->Append(wid->menuFile, wxString::FromUTF8(file));
 	
+	wid->menuItemHelpAbout->SetBitmap(wxArtProvider::GetBitmap(wxART_HELP_BOOK, wxART_MENU));
+	
+	wid->mainMenu->Append(wid->menuFile, wxString::FromUTF8(file));
 	wid->mainMenu->Append(wid->menuOptions, wxString::FromUTF8(options));
+	wid->mainMenu->Append(wid->menuHelp, wxString::FromUTF8(help));
 	
 	wid->frame->SetMenuBar(wid->mainMenu);
 	wid->frame->SetIcon(wxString::FromUTF8(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + "/icon.png"));
@@ -164,6 +167,16 @@ void initAllWidgets(InitWidgets* wid) {
 		wid->publisherError->SetSize(w, h);
 	}
 	
+	{//bannerCustomText
+		int w, h;
+		wxFont f;
+		
+		f = wid->bannerError->GetFont().GetBaseFont();
+		
+		wid->bannerCustomText->SetFont(f);
+		wid->bannerCustomText->GetTextExtent(wid->bannerCustomText->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		wid->bannerCustomText->SetSize(w, h);
+	}
 	{//bannerPreviewText
 		int w, h;
 		wxFont f;
@@ -520,17 +533,17 @@ void initAllWidgets(InitWidgets* wid) {
 		
 		wid->statusText->Show(false);
 	}
-	{//buildButt
+	{//buildButton
 		int w, buttwidth, h, buttheight;
 		wxFont f;
 		
-		wid->buildButt->GetSize(&buttwidth, &buttheight);
-		f = wid->buildButt->GetFont();
-		wid->buildButt->GetTextExtent(wid->buildButt->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		wid->buildButton->GetSize(&buttwidth, &buttheight);
+		f = wid->buildButton->GetFont();
+		wid->buildButton->GetTextExtent(wid->buildButton->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		buttwidth = buttwidth - w;
 		buttheight = buttheight - h;
 
-		wid->buildButt->SetSize(w + (buttwidth * 2), h + (buttheight * 2));
+		wid->buildButton->SetSize(w + (buttwidth * 2), h + (buttheight * 2));
 	}
 	{//extractDialog
 		wid->extractDialog->Show(false);
@@ -846,6 +859,14 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->bannerPreviewText->GetSize(&bannerPreviewTextW, NULL);
 		
 		wid->bannerPreview->Move(x - (mywidth > bannerPreviewTextW ? mywidth : ((bannerPreviewTextW - mywidth) * 2)) - (mywidth > bannerPreviewTextW ? 15 : 15 * 2), y);
+	}
+	{//bannerCustomText
+		int x, y, width, mywidth, height, myheight;
+		wid->bannerPreview->GetPosition(&x, &y);
+		wid->bannerPreview->GetSize(&width, &height);
+		wid->bannerCustomText->GetSize(&mywidth, &myheight);
+		
+		wid->bannerCustomText->Move(x + ((width - mywidth) / 2), y + ((height - myheight) / 2));
 	}
 	{//bannerPreviewText
 		int x, y, width, mywidth, height;
@@ -1379,8 +1400,8 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		int prodcodey, panelwidth, mywidth, myheight, panelheight, barheight, buildheight, cancelheight, prodcodeheight;
 		wid->buildpanel->GetSize(&panelwidth, &panelheight);
 		wid->buildBar->GetSize(NULL, &barheight);
-		wid->buildButt->GetSize(NULL, &buildheight);
-		wid->cancelButt->GetSize(NULL, &cancelheight);
+		wid->buildButton->GetSize(NULL, &buildheight);
+		wid->cancelButton->GetSize(NULL, &cancelheight);
 		wid->productCodeText->GetPosition(NULL, &prodcodey);
 		wid->productCodeText->GetSize(NULL, &prodcodeheight);
 		wid->statusText->GetSize(&mywidth, &myheight);
@@ -1398,23 +1419,23 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->buildBar->SetSize(panelwidth, 25);
 		wid->buildBar->Move(0, y + statusheight + 5);
 	}
-	{//buildButt
+	{//buildButton
 		int y, mywidth, panelwidth, barheight;
 		wid->buildpanel->GetSize(&panelwidth, NULL);
 		wid->buildBar->GetPosition(NULL, &y);
 		wid->buildBar->GetSize(NULL, &barheight);
-		wid->buildButt->GetSize(&mywidth, NULL);
+		wid->buildButton->GetSize(&mywidth, NULL);
 		
-		wid->buildButt->Move((panelwidth - mywidth) / 2, y + barheight + 10);
+		wid->buildButton->Move((panelwidth - mywidth) / 2, y + barheight + 10);
 	}
 	{//cancelButt
 		int y, mywidth, panelwidth, buildheight;
 		wid->buildpanel->GetSize(&panelwidth, NULL);
-		wid->buildButt->GetPosition(NULL, &y);
-		wid->buildButt->GetSize(NULL, &buildheight);
-		wid->cancelButt->GetSize(&mywidth, NULL);
+		wid->buildButton->GetPosition(NULL, &y);
+		wid->buildButton->GetSize(NULL, &buildheight);
+		wid->cancelButton->GetSize(&mywidth, NULL);
 		
-		wid->cancelButt->Move((panelwidth - mywidth) / 2, y + buildheight + 2);
+		wid->cancelButton->Move((panelwidth - mywidth) / 2, y + buildheight + 2);
 	}
 }
 
@@ -1441,6 +1462,7 @@ wxColour BackColor::publisherBox;
 wxColour BackColor::publisherError;
 wxColour BackColor::copyBox;
 wxColour BackColor::copyCheck;
+wxColour BackColor::bannerCustomText;
 wxColour BackColor::bannerPreviewText;
 wxColour BackColor::iconPreview;
 wxColour BackColor::ffRewindCheck;
@@ -1470,6 +1492,10 @@ wxColour BackColor::applicationTitleText;
 wxColour BackColor::applicationTitleBox;
 wxColour BackColor::productCodeText;
 wxColour BackColor::productCodeBox;
+wxColour BackColor::statusText;
+//wxColour BackColor::buildBar;
+wxColour BackColor::buildButton;
+wxColour BackColor::cancelButton;
 
 wxColour ForeColor::panel;
 wxColour ForeColor::mainMenu;
@@ -1494,6 +1520,7 @@ wxColour ForeColor::publisherBox;
 wxColour ForeColor::publisherError;
 wxColour ForeColor::copyBox;
 wxColour ForeColor::copyCheck;
+wxColour ForeColor::bannerCustomText;
 wxColour ForeColor::bannerPreviewText;
 wxColour ForeColor::iconPreview;
 wxColour ForeColor::ffRewindCheck;
@@ -1523,6 +1550,10 @@ wxColour ForeColor::applicationTitleText;
 wxColour ForeColor::applicationTitleBox;
 wxColour ForeColor::productCodeText;
 wxColour ForeColor::productCodeBox;
+wxColour ForeColor::statusText;
+//wxColour ForeColor::buildBar;
+wxColour ForeColor::buildButton;
+wxColour ForeColor::cancelButton;
 
 void getAppearance(InitWidgets* wid) {
 	BackColor::panel = wid->panel->GetBackgroundColour();
@@ -1548,6 +1579,7 @@ void getAppearance(InitWidgets* wid) {
 	BackColor::publisherError = wid->publisherError->GetBackgroundColour();
 	BackColor::copyBox = wid->copyBox->GetBackgroundColour();
 	BackColor::copyCheck = wid->copyCheck->GetBackgroundColour();
+	BackColor::bannerCustomText = wid->bannerCustomText->GetBackgroundColour();
 	BackColor::bannerPreviewText = wid->bannerPreviewText->GetBackgroundColour();
 	BackColor::iconPreview = wid->iconPreview->GetBackgroundColour();
 	BackColor::ffRewindCheck = wid->ffRewindCheck->GetBackgroundColour();
@@ -1577,6 +1609,10 @@ void getAppearance(InitWidgets* wid) {
 	BackColor::applicationTitleBox = wid->applicationTitleBox->GetBackgroundColour();
 	BackColor::productCodeText = wid->productCodeText->GetBackgroundColour();
 	BackColor::productCodeBox = wid->productCodeBox->GetBackgroundColour();
+	BackColor::statusText = wid->statusText->GetBackgroundColour();
+	//BackColor::buildBar = wid->buildBar->GetBackgroundColour();
+	BackColor::buildButton = wid->buildButton->GetBackgroundColour();
+	BackColor::cancelButton = wid->cancelButton->GetBackgroundColour();
 	
 	ForeColor::panel = wid->panel->GetForegroundColour();
 	ForeColor::mainMenu = wid->mainMenu->GetForegroundColour();
@@ -1601,6 +1637,7 @@ void getAppearance(InitWidgets* wid) {
 	ForeColor::publisherError = wid->publisherError->GetForegroundColour();
 	ForeColor::copyBox = wid->copyBox->GetForegroundColour();
 	ForeColor::copyCheck = wid->copyCheck->GetForegroundColour();
+	ForeColor::bannerCustomText = wid->bannerCustomText->GetForegroundColour();
 	ForeColor::bannerPreviewText = wid->bannerPreviewText->GetForegroundColour();
 	ForeColor::iconPreview = wid->iconPreview->GetForegroundColour();
 	ForeColor::ffRewindCheck = wid->ffRewindCheck->GetForegroundColour();
@@ -1630,10 +1667,14 @@ void getAppearance(InitWidgets* wid) {
 	ForeColor::applicationTitleBox = wid->applicationTitleBox->GetForegroundColour();
 	ForeColor::productCodeText = wid->productCodeText->GetForegroundColour();
 	ForeColor::productCodeBox = wid->productCodeBox->GetForegroundColour();
+	ForeColor::statusText = wid->statusText->GetForegroundColour();
+	//ForeColor::buildBar = wid->buildBar->GetForegroundColour();
+	ForeColor::buildButton = wid->buildButton->GetForegroundColour();
+	ForeColor::cancelButton = wid->cancelButton->GetForegroundColour();
 }
 
 void setAppearance(InitWidgets* wid, int Mode) {
-	if(Mode < 2) {
+	if(Mode < 2) {//0 light 1 black
 		wid->panel->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->mainMenu->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->modeText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
@@ -1657,6 +1698,7 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->publisherError->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->copyBox->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->copyCheck->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		wid->bannerCustomText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->bannerPreviewText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->iconPreview->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->ffRewindCheck->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
@@ -1686,6 +1728,10 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->applicationTitleBox->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->productCodeText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->productCodeBox->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		wid->statusText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		//wid->buildBar->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		wid->buildButton->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		wid->cancelButton->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		
 		wid->splitPatchLine->SetColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->panel->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
@@ -1711,6 +1757,7 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->publisherError->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->copyBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->copyCheck->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		wid->bannerCustomText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->bannerPreviewText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->iconPreview->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->ffRewindCheck->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
@@ -1740,6 +1787,10 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->applicationTitleBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->productCodeText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->productCodeBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		wid->statusText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		//wid->buildBar->SetForegroundColour(*(Mode ? wxBLACK : wxWHITE));//uhhhhhhh
+		wid->buildButton->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		wid->cancelButton->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		
 		{
 			wxColor LightBlack = wxBLACK->GetRGB() + 0x141414;
@@ -1813,6 +1864,7 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->publisherError->SetBackgroundColour(BackColor::publisherError);
 		wid->copyBox->SetBackgroundColour(BackColor::copyBox);
 		wid->copyCheck->SetBackgroundColour(BackColor::copyCheck);
+		wid->bannerCustomText->SetBackgroundColour(BackColor::bannerCustomText);
 		wid->bannerPreviewText->SetBackgroundColour(BackColor::bannerPreviewText);
 		wid->iconPreview->SetBackgroundColour(BackColor::iconPreview);
 		wid->ffRewindCheck->SetBackgroundColour(BackColor::ffRewindCheck);
@@ -1842,6 +1894,10 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->applicationTitleBox->SetBackgroundColour(BackColor::applicationTitleBox);
 		wid->productCodeText->SetBackgroundColour(BackColor::productCodeText);
 		wid->productCodeBox->SetBackgroundColour(BackColor::productCodeBox);
+		wid->statusText->SetBackgroundColour(BackColor::statusText);
+		//wid->buildBar->SetBackgroundColour(BackColor::buildBar);
+		wid->buildButton->SetBackgroundColour(BackColor::buildButton);
+		wid->cancelButton->SetBackgroundColour(BackColor::cancelButton);
 		
 		wid->panel->SetForegroundColour(ForeColor::panel);
 		wid->mainMenu->SetForegroundColour(ForeColor::mainMenu);
@@ -1866,6 +1922,7 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->publisherError->SetForegroundColour(ForeColor::publisherError);
 		wid->copyBox->SetForegroundColour(ForeColor::copyBox);
 		wid->copyCheck->SetForegroundColour(ForeColor::copyCheck);
+		wid->bannerCustomText->SetForegroundColour(ForeColor::bannerCustomText);
 		wid->bannerPreviewText->SetForegroundColour(ForeColor::bannerPreviewText);
 		wid->iconPreview->SetForegroundColour(ForeColor::iconPreview);
 		wid->ffRewindCheck->SetForegroundColour(ForeColor::ffRewindCheck);
@@ -1896,6 +1953,10 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->applicationTitleBox->SetForegroundColour(ForeColor::applicationTitleBox);
 		wid->productCodeText->SetForegroundColour(ForeColor::productCodeText);
 		wid->productCodeBox->SetForegroundColour(ForeColor::productCodeBox);
+		wid->statusText->SetForegroundColour(ForeColor::statusText);
+		//wid->buildBar->SetForegroundColour(ForeColor::buildBar);
+		wid->buildButton->SetForegroundColour(ForeColor::buildButton);
+		wid->cancelButton->SetForegroundColour(ForeColor::cancelButton);
 		
 		{
 			wxColor BackOdd = (BackColor::bannerBox.GetRGB() < 0x7F7F7F) ? (BackColor::bannerBox.GetRGB() + 0x141414) : (BackColor::bannerBox.GetRGB() - 0x141414);//FF/2=7F

@@ -47,6 +47,7 @@ enum wxOwnedID {
 	ID_SYSTEM,
 	ID_LIGHT,
 	ID_DARK,
+	ID_ABOUT,
 };
 
 /*struct MediaPanelMedia {//just use the pointer as a unique ID number
@@ -85,6 +86,8 @@ struct InitWidgets {
 	wxMenuItem* menuItemOptionsSystem = menuOptions->Append(ID_SYSTEM, wxString::FromUTF8(optionsSystemMode), "", wxITEM_RADIO);
 	wxMenuItem* menuItemOptionsLight = menuOptions->Append(ID_LIGHT, wxString::FromUTF8(optionsLightMode), "", wxITEM_RADIO);
 	wxMenuItem* menuItemOptionsDark = menuOptions->Append(ID_DARK, wxString::FromUTF8(optionsDarkMode), "", wxITEM_RADIO);
+	wxMenu* menuHelp = new wxMenu();
+	wxMenuItem* menuItemHelpAbout = menuHelp->Append(ID_ABOUT, wxString::FromUTF8(helpAbout));
 	
 	//frame
 	wxLogWindow* consoleLog = new wxLogWindow(frame, wxString::FromUTF8(logFrameText), false);
@@ -119,6 +122,7 @@ struct InitWidgets {
 	wxCheckBox* copyCheck = new wxCheckBox(panel, wxID_ANY, wxString::FromUTF8(CopyrightCheckText));
 	
 	wxStaticBitmap* bannerPreview = new wxStaticBitmap(panel, wxID_ANY, wxNullBitmap, wxDefaultPosition, {264, 154}, wxBORDER_NONE);
+	wxStaticText* bannerCustomText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(BannerCustomText));
 	wxStaticText* bannerPreviewText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(BannerPreviewText));
 	
 	wxButton* iconPreview = new wxButton(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, {48, 48}, wxBORDER_NONE);
@@ -182,10 +186,10 @@ struct InitWidgets {
 	wxTimer* barPulser = new wxTimer();
 	wxTimer* exportLogger = new wxTimer();
 	
-	wxButton* buildButt = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8(Build));
-	wxButton* cancelButt = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8(Cancel));
+	wxButton* buildButton = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8(Build));
+	wxButton* cancelButton = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8(Cancel));
 	
-	wxProgressDialog* extractDialog = new wxProgressDialog("Indeterminate process running", "Click \"Cancel\" to abort", 1, frame, wxPD_APP_MODAL|wxPD_CAN_ABORT|wxPD_ELAPSED_TIME);
+	wxProgressDialog* extractDialog = new wxProgressDialog("Indeterminate process running", "Click \"Cancel\" to abort", 1, frame, wxPD_APP_MODAL|wxPD_CAN_ABORT);
 	wxProcess* extractArchive = new wxProcess(frame);
 	wxTimer* extractPulser = new wxTimer();
 	wxTimer* extractLogger = new wxTimer();
@@ -226,6 +230,7 @@ class ForeColor
 	static wxColour publisherError;
 	static wxColour copyBox;
 	static wxColour copyCheck;
+	static wxColour bannerCustomText;
 	static wxColour bannerPreviewText;
 	static wxColour iconPreview;
 	static wxColour ffRewindCheck;
@@ -255,6 +260,10 @@ class ForeColor
 	static wxColour applicationTitleBox;
 	static wxColour productCodeText;
 	static wxColour productCodeBox;
+	static wxColour statusText;
+	//static wxColour buildBar;
+	static wxColour buildButton;
+	static wxColour cancelButton;
 };
 
 class BackColor
@@ -283,6 +292,7 @@ class BackColor
 	static wxColour publisherError;
 	static wxColour copyBox;
 	static wxColour copyCheck;
+	static wxColour bannerCustomText;
 	static wxColour bannerPreviewText;
 	static wxColour iconPreview;
 	static wxColour ffRewindCheck;
@@ -312,6 +322,10 @@ class BackColor
 	static wxColour applicationTitleBox;
 	static wxColour productCodeText;
 	static wxColour productCodeBox;
+	static wxColour statusText;
+	//static wxColour buildBar;
+	static wxColour buildButton;
+	static wxColour cancelButton;
 };
 
 void getAppearance(InitWidgets* wid);
