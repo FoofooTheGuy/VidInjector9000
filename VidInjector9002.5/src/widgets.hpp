@@ -189,7 +189,7 @@ struct InitWidgets {
 	wxButton* buildButton = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8(Build));
 	wxButton* cancelButton = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8(Cancel));
 	
-	wxProgressDialog* extractDialog = new wxProgressDialog("Indeterminate process running", "Click \"Cancel\" to abort", 1, frame, wxPD_APP_MODAL|wxPD_CAN_ABORT);
+	wxProgressDialog* extractDialog = new wxProgressDialog(wxString::FromUTF8(extractingArchive), wxString::FromUTF8(clickCancel), 1, frame, wxPD_APP_MODAL|wxPD_CAN_SKIP);
 	wxProcess* extractArchive = new wxProcess(frame);
 	wxTimer* extractPulser = new wxTimer();
 	wxTimer* extractLogger = new wxTimer();

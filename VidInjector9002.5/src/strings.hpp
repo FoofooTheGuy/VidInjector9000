@@ -76,6 +76,8 @@ extern std::string Build;
 extern std::string Cancel;
 extern std::string SuccessfullyBuilt;
 extern std::string SuccessfullyExtracted;
+extern std::string extractingArchive;
+extern std::string clickCancel;
 
 //tool tips
 extern std::string onlyMultiVideo;

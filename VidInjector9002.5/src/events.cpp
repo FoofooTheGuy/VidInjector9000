@@ -969,12 +969,13 @@ void extractDialog_wxEVT_CLOSE_WINDOW(InitWidgets* wid, wxCloseEvent* event) {
 }
 
 void extractArchive_wxEVT_END_PROCESS(InitWidgets* wid, wxProcessEvent* event) {
+	wid->frame->Enable(true);
 	if(event->GetPid() != 0) {
 		if(event->GetExitCode() != 0) {
 			wxMessageBox(wxString::FromUTF8(ErrorText + ' ' + BuildError + " (" + std::to_string(event->GetExitCode()) + ")\n" + SeeLog), wxString::FromUTF8(ErrorText), wxICON_ERROR);
 		}
 		else {
-			VI9P::OutFile = Extracted::Archive + "/parameters.vi9p";//generated vi9p from extraction parameters.vi9p
+			//VI9P::OutFile = Extracted::Archive + "/parameters.vi9p";//generated vi9p from extraction parameters.vi9p
 			
 			std::error_code error;
 			if(std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(Extracted::Archive).c_str()), error))
@@ -998,7 +999,7 @@ void extractPulser_wxEVT_TIMER(InitWidgets* wid) {
 	wid->extractDialog->Pulse();
 	
 	//cancel
-	if(wid->extractDialog->WasCancelled()) {
+	if(wid->extractDialog->WasSkipped()) {
 		int ret = 0;
 		ret = wxProcess::Kill(wid->extractArchive->GetPid(), wxSIGTERM, wxKILL_CHILDREN);
 		if(ret != wxKILL_OK) {
@@ -1020,8 +1021,8 @@ void extractLogger_wxEVT_TIMER(InitWidgets* wid) {
 		msg << Stream.ReadLine();
 		//wxMessageBox(msg);
 		
-		wid->consoleLog->LogTextAtLevel(0, msg);
+		wid->consoleLog->LogTextAtLevel(0, msg);//why no get
 		
-		wid->extractDialog->Update(0, msg);
+		wid->extractDialog->Update(0, msg);//what even
 	}
 }
