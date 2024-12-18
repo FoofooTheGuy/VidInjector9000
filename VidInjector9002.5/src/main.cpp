@@ -573,6 +573,7 @@ int main(int argc, char* argv[]) {
 					titleIDButton_wxEVT_BUTTON(&wid);//randomize TID
 					wid.applicationTitleBox->SetValue(wxString::FromUTF8("video"));
 					wid.productCodeBox->SetValue(wxString::FromUTF8("VDIJ"));
+					wid.buildframe->SetSize(600, 500);
 					wid.buildframe->Show();
 				}
 				break;
@@ -655,7 +656,7 @@ int main(int argc, char* argv[]) {
 					openFileDialog.SetFilterIndex(0);
 					if (openFileDialog.ShowModal() == wxID_OK) {
 						std::error_code error;
-						error = copyfile(std::string(openFileDialog.GetPath().ToUTF8()), std::string(openFileDialog.GetPath().ToUTF8()) + "\" \"" + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + seedFile);//copy chosen file to temp
+						error = copyfile(std::string(openFileDialog.GetPath().ToUTF8()), std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + seedFile);//copy chosen file to temp
 						if (error) {
 							wxMessageBox(wxString::FromUTF8(CopyFileError + '\n' + std::string(openFileDialog.GetPath().ToUTF8()) + " -> " + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + seedFile + '\n' + error.message()), wxString::FromUTF8(ErrorText));
 						}
@@ -696,6 +697,13 @@ int main(int argc, char* argv[]) {
 					Settings::ColorMode = 1;
 					setAppearance(&wid, Settings::ColorMode);
 					saveSettings();
+				}
+				break;
+			//About
+			case ID_ABOUT:
+				{
+					wid.aboutframe->SetSize(650, 350);
+					wid.aboutframe->Show();
 				}
 				break;
 		}
@@ -747,6 +755,10 @@ int main(int argc, char* argv[]) {
 
 	wid.extractLogger->Bind(wxEVT_TIMER, [&](wxTimerEvent& event) {
 		extractLogger_wxEVT_TIMER(&wid);
+	});
+	
+	wid.aboutframe->Bind(wxEVT_CLOSE_WINDOW, [&](wxCloseEvent& event) {
+		aboutframe_wxEVT_CLOSE_WINDOW(&wid, &event);
 	});
 	
 	//consoleLog->LogTextAtLevel(0, wxString::Format("OUTPUT: %s", s));

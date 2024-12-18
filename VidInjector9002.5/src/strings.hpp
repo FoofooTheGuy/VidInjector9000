@@ -23,6 +23,7 @@ extern std::string BeANumber;
 extern std::string frameText;
 extern std::string logFrameText;
 extern std::string buildFrameText;
+extern std::string aboutFrameText;
 
 //main menu
 extern std::string file;

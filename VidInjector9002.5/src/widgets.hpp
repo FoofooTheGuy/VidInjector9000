@@ -165,7 +165,7 @@ struct InitWidgets {
 	
 	wxStaticText* rowText = new wxStaticText(scrolledPanel, wxID_ANY, wxString::FromUTF8("1/27"));
 	
-	wxFrame* buildframe = new wxFrame(frame, wxID_ANY, wxString::FromUTF8(buildFrameText), wxDefaultPosition, {600, 500}, wxCAPTION|wxCLOSE_BOX|wxRESIZE_BORDER|wxFRAME_FLOAT_ON_PARENT|wxCLIP_CHILDREN);
+	wxFrame* buildframe = new wxFrame(frame, wxID_ANY, wxString::FromUTF8(buildFrameText), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxCLOSE_BOX|wxRESIZE_BORDER|wxFRAME_FLOAT_ON_PARENT|wxCLIP_CHILDREN);
 	wxPanel* buildpanel = new wxPanel(buildframe);
 	
 	wxStaticText* titleIDText = new wxStaticText(buildpanel, wxID_ANY, wxString::FromUTF8(TitleIDText));
@@ -189,10 +189,14 @@ struct InitWidgets {
 	wxButton* buildButton = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8(Build));
 	wxButton* cancelButton = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8(Cancel));
 	
-	wxProgressDialog* extractDialog = new wxProgressDialog(wxString::FromUTF8(extractingArchive), wxString::FromUTF8(clickCancel), 1, frame, wxPD_APP_MODAL|wxPD_CAN_ABORT);
+	wxProgressDialog* extractDialog = new wxProgressDialog(wxEmptyString, wxEmptyString);
 	wxProcess* extractArchive = new wxProcess(frame);
 	wxTimer* extractPulser = new wxTimer();
 	wxTimer* extractLogger = new wxTimer();
+	
+	wxFrame* aboutframe = new wxFrame(frame, wxID_ANY, wxString::FromUTF8(aboutFrameText), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxCLOSE_BOX|wxRESIZE_BORDER|wxFRAME_FLOAT_ON_PARENT|wxCLIP_CHILDREN);
+	wxPanel* aboutpanel = new wxPanel(aboutframe);
+	wxStaticBitmap* titleLogo = new wxStaticBitmap(aboutpanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 };
 
 void initAllWidgets(InitWidgets* initwidgets);
@@ -264,6 +268,7 @@ class ForeColor
 	//static wxColour buildBar;
 	static wxColour buildButton;
 	static wxColour cancelButton;
+	static wxColour aboutpanel;
 };
 
 class BackColor
@@ -326,6 +331,7 @@ class BackColor
 	//static wxColour buildBar;
 	static wxColour buildButton;
 	static wxColour cancelButton;
+	static wxColour aboutpanel;
 };
 
 void getAppearance(InitWidgets* wid);

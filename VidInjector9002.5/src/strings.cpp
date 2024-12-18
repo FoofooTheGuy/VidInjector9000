@@ -14,6 +14,7 @@ std::string BeANumber = "must be a number";
 std::string frameText = "VidInjector9002.5";
 std::string logFrameText = "Console Log";
 std::string buildFrameText = "Export Archive";
+std::string aboutFrameText = "About";
 std::string file = "File";
 std::string fileNew = "New";
 std::string fileOpen = "Open...";

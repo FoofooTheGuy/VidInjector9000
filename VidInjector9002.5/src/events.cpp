@@ -806,7 +806,6 @@ void splitPatchDown_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 void buildframe_wxEVT_CLOSE_WINDOW(InitWidgets* wid, wxCloseEvent* event) {
 	event->Veto();
 	wid->buildframe->Show(false);
-	wid->buildframe->SetSize(600, 500);
 	
 	cancelButton_wxEVT_BUTTON(wid);
 }
@@ -1024,4 +1023,9 @@ void extractLogger_wxEVT_TIMER(InitWidgets* wid) {
 		
 		wid->extractDialog->Update(0, msg);//what even
 	}
+}
+
+void aboutframe_wxEVT_CLOSE_WINDOW(InitWidgets* wid, wxCloseEvent* event) {
+	event->Veto();
+	wid->aboutframe->Show(false);
 }

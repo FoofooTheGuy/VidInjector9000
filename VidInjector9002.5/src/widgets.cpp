@@ -1496,6 +1496,7 @@ wxColour BackColor::statusText;
 //wxColour BackColor::buildBar;
 wxColour BackColor::buildButton;
 wxColour BackColor::cancelButton;
+wxColour BackColor::aboutpanel;
 
 wxColour ForeColor::panel;
 wxColour ForeColor::mainMenu;
@@ -1554,6 +1555,7 @@ wxColour ForeColor::statusText;
 //wxColour ForeColor::buildBar;
 wxColour ForeColor::buildButton;
 wxColour ForeColor::cancelButton;
+wxColour ForeColor::aboutpanel;
 
 void getAppearance(InitWidgets* wid) {
 	BackColor::panel = wid->panel->GetBackgroundColour();
@@ -1613,6 +1615,7 @@ void getAppearance(InitWidgets* wid) {
 	//BackColor::buildBar = wid->buildBar->GetBackgroundColour();
 	BackColor::buildButton = wid->buildButton->GetBackgroundColour();
 	BackColor::cancelButton = wid->cancelButton->GetBackgroundColour();
+	BackColor::aboutpanel = wid->aboutpanel->GetBackgroundColour();
 	
 	ForeColor::panel = wid->panel->GetForegroundColour();
 	ForeColor::mainMenu = wid->mainMenu->GetForegroundColour();
@@ -1671,6 +1674,7 @@ void getAppearance(InitWidgets* wid) {
 	//ForeColor::buildBar = wid->buildBar->GetForegroundColour();
 	ForeColor::buildButton = wid->buildButton->GetForegroundColour();
 	ForeColor::cancelButton = wid->cancelButton->GetForegroundColour();
+	ForeColor::aboutpanel = wid->aboutpanel->GetForegroundColour();
 }
 
 void setAppearance(InitWidgets* wid, int Mode) {
@@ -1732,6 +1736,7 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		//wid->buildBar->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->buildButton->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->cancelButton->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		wid->aboutpanel->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		
 		wid->splitPatchLine->SetColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->panel->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
@@ -1791,6 +1796,7 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		//wid->buildBar->SetForegroundColour(*(Mode ? wxBLACK : wxWHITE));//uhhhhhhh
 		wid->buildButton->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->cancelButton->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		wid->aboutpanel->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		
 		{
 			wxColor LightBlack = wxBLACK->GetRGB() + 0x141414;
@@ -1898,6 +1904,7 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		//wid->buildBar->SetBackgroundColour(BackColor::buildBar);
 		wid->buildButton->SetBackgroundColour(BackColor::buildButton);
 		wid->cancelButton->SetBackgroundColour(BackColor::cancelButton);
+		wid->aboutpanel->SetBackgroundColour(BackColor::aboutpanel);
 		
 		wid->panel->SetForegroundColour(ForeColor::panel);
 		wid->mainMenu->SetForegroundColour(ForeColor::mainMenu);
@@ -1957,6 +1964,7 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		//wid->buildBar->SetForegroundColour(ForeColor::buildBar);
 		wid->buildButton->SetForegroundColour(ForeColor::buildButton);
 		wid->cancelButton->SetForegroundColour(ForeColor::cancelButton);
+		wid->aboutpanel->SetForegroundColour(ForeColor::aboutpanel);
 		
 		{
 			wxColor BackOdd = (BackColor::bannerBox.GetRGB() < 0x7F7F7F) ? (BackColor::bannerBox.GetRGB() + 0x141414) : (BackColor::bannerBox.GetRGB() - 0x141414);//FF/2=7F
@@ -2005,6 +2013,54 @@ void setAppearance(InitWidgets* wid, int Mode) {
 			row->SetBackgroundColour(BackColor::splitPatchDown);
 			row->SetForegroundColour(ForeColor::splitPatchDown);
 		}
+	}
+	{//titleLogo
+		int width, height;
+		wxImage top;
+		wxImage bottom;
+		
+		
+		top.LoadFile(wxString::FromUTF8(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + "/title_top.png"));
+		bottom.LoadFile(wxString::FromUTF8(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + "/title_bottom.png"));
+		
+		width = top.GetWidth();
+		height = top.GetHeight();
+		//maybe check bottom size? oh well they are supposed to be the same
+		
+		wxImage back(width, height);//LOOK LOOK IM RIGHT HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		
+		wxBrush MY_BRUSH(((Settings::ColorMode < 2) ? *(Settings::ColorMode ? wxBLACK : wxWHITE) : wid->aboutpanel->GetBackgroundColour()));
+		//wxBrush MY_BRUSH(BackColor::aboutpanel);//what why not?
+		
+		
+		//https://stackoverflow.com/a/35179780
+		wxBitmap bitmap(back);
+		wxMemoryDC memdc(bitmap);
+		memdc.SetBackground(MY_BRUSH);
+		memdc.Clear();    //fills the entire bitmap with green colour
+		memdc.SelectObject(wxNullBitmap);
+		back = bitmap.ConvertToImage();    //optionally
+		back.InitAlpha();
+		
+		for(int y = 0; y < height; y++)
+			for(int x = 0; x < width; x++) {
+				uint8_t r1 = bottom.GetRed(x, y);
+				uint8_t g1 = bottom.GetGreen(x, y);
+				uint8_t b1 = bottom.GetBlue(x, y);
+				uint8_t a1 = bottom.GetAlpha(x, y);
+				
+				uint8_t r2 = back.GetRed(x, y);
+				uint8_t g2 = back.GetGreen(x, y);
+				uint8_t b2 = back.GetBlue(x, y);
+				
+				back.SetRGB(x, y, r1 - r2, g1 - g2, b1 - b2);//difference blend
+				back.SetAlpha(x, y, a1);
+			}
+		
+		back.Paste(top, 0, 0, wxIMAGE_ALPHA_BLEND_COMPOSE);
+		
+		wid->titleLogo->SetSize(width, height);
+		wid->titleLogo->SetBitmap(wxBitmap(back));
 	}
 	wid->panel->Refresh();
 }
