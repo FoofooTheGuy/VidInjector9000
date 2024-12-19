@@ -46,6 +46,7 @@ void extractArchive_wxEVT_END_PROCESS(InitWidgets* wid, wxProcessEvent* event);
 void extractPulser_wxEVT_TIMER(InitWidgets* wid);
 void extractLogger_wxEVT_TIMER(InitWidgets* wid);
 void aboutframe_wxEVT_CLOSE_WINDOW(InitWidgets* wid, wxCloseEvent* event);
+void aboutpanel_wxEVT_SIZE(InitWidgets* wid, VI9Pparameters* parameters);
 
 
 //binds are in these binds so it cant be done outside of main

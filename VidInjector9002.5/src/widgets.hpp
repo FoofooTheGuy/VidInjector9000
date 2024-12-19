@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <map>
 
+#include <wx/hyperlink.h>
 #include <wx/filename.h>
 #include <wx/stdpaths.h>
 #include <wx/artprov.h>
@@ -194,9 +195,11 @@ struct InitWidgets {
 	wxTimer* extractPulser = new wxTimer();
 	wxTimer* extractLogger = new wxTimer();
 	
-	wxFrame* aboutframe = new wxFrame(frame, wxID_ANY, wxString::FromUTF8(aboutFrameText), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxCLOSE_BOX|wxRESIZE_BORDER|wxFRAME_FLOAT_ON_PARENT|wxCLIP_CHILDREN);
+	wxFrame* aboutframe = new wxFrame(frame, wxID_ANY, wxString::FromUTF8(aboutFrameText), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxCLOSE_BOX|wxFRAME_FLOAT_ON_PARENT|wxCLIP_CHILDREN);
 	wxPanel* aboutpanel = new wxPanel(aboutframe);
 	wxStaticBitmap* titleLogo = new wxStaticBitmap(aboutpanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+	wxStaticText* byMeText = new wxStaticText(aboutpanel, wxID_ANY, wxString::FromUTF8(ByMeText));
+	wxHyperlinkCtrl* gitHubLinker = new wxHyperlinkCtrl(aboutpanel, wxID_ANY, wxString::FromUTF8(GitHubLinker), wxString::FromUTF8(githubRepoLink));
 };
 
 void initAllWidgets(InitWidgets* initwidgets);
@@ -269,6 +272,7 @@ class ForeColor
 	static wxColour buildButton;
 	static wxColour cancelButton;
 	static wxColour aboutpanel;
+	static wxColour byMeText;
 };
 
 class BackColor
@@ -332,6 +336,7 @@ class BackColor
 	static wxColour buildButton;
 	static wxColour cancelButton;
 	static wxColour aboutpanel;
+	static wxColour byMeText;
 };
 
 void getAppearance(InitWidgets* wid);

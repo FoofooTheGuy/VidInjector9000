@@ -1029,3 +1029,7 @@ void aboutframe_wxEVT_CLOSE_WINDOW(InitWidgets* wid, wxCloseEvent* event) {
 	event->Veto();
 	wid->aboutframe->Show(false);
 }
+
+void aboutpanel_wxEVT_SIZE(InitWidgets* wid, VI9Pparameters* parameters) {
+	positionWidgets(wid, parameters);
+}

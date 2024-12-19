@@ -761,6 +761,10 @@ int main(int argc, char* argv[]) {
 		aboutframe_wxEVT_CLOSE_WINDOW(&wid, &event);
 	});
 	
+	wid.aboutpanel->Bind(wxEVT_SIZE, [&](wxSizeEvent& event) {
+		aboutpanel_wxEVT_SIZE(&wid, &parameters);
+	});
+	
 	//consoleLog->LogTextAtLevel(0, wxString::Format("OUTPUT: %s", s));
 	
 	/*fontbutton->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {

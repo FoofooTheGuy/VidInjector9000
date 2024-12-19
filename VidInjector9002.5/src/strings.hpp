@@ -79,6 +79,8 @@ extern std::string SuccessfullyBuilt;
 extern std::string SuccessfullyExtracted;
 extern std::string extractingArchive;
 extern std::string clickCancel;
+extern std::string ByMeText;
+extern std::string GitHubLinker;
 
 //tool tips
 extern std::string onlyMultiVideo;
@@ -129,6 +131,7 @@ extern std::string allFiles;
 //internal
 extern std::string tempPath;
 extern std::string CLItempPath;
+extern std::string githubRepoLink;
 
 //resources
 extern std::string resourcesPath;

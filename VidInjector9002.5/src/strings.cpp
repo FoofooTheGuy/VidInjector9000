@@ -66,6 +66,8 @@ std::string SuccessfullyBuilt = "Successfully built the archive.";
 std::string SuccessfullyExtracted = "Successfully extracted the archive.";
 std::string extractingArchive = "Extracting Archive...";
 std::string clickCancel = "Click \"Cancel\" to abort";
+std::string ByMeText = "by FoofooTheGuy";
+std::string GitHubLinker = "Learn more on GitHub";
 std::string onlyMultiVideo = "(Only available in multi video mode)";//start of tooltips
 std::string modeChoiceBoxTip = "Expand to select the export mode";
 std::string bannerBoxTip = "The path of the image to be shown on the home menu top screen";
@@ -111,6 +113,7 @@ std::string allFiles = "All Files (*.*)|*.*";
 
 std::string tempPath = "temp";
 std::string CLItempPath = "CLItemp";
+std::string githubRepoLink = "https://github.com/FoofooTheGuy/VidInjector9000/blob/main/README.md";
 
 std::string resourcesPath = "VidInjector9000Resources";
 std::string CLIFile = "VidInjector9002-CLI";
