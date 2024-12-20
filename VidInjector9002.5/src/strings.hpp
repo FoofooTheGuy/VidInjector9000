@@ -39,6 +39,7 @@ extern std::string optionsShowLog;
 extern std::string optionsSystemMode;
 extern std::string optionsLightMode;
 extern std::string optionsDarkMode;
+extern std::string language;
 extern std::string help;
 extern std::string helpAbout;
 
@@ -135,6 +136,8 @@ extern std::string githubRepoLink;
 
 //resources
 extern std::string resourcesPath;
+extern std::string languagePath;
+extern std::string imagePath;
 extern std::string CLIFile;
 extern std::string settingsFile;
 extern std::string vi9pFile;

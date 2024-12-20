@@ -4,6 +4,10 @@ std::string Exports::CIA = "";
 std::string Exports::TAR = "";
 std::string Extracted::Archive = "";
 
+void initLanguage(InitWidgets* wid) {
+	
+}
+
 void initAllWidgets(InitWidgets* wid) {
 	//main menu
 	wid->menuItemFileNew->SetBitmap(wxArtProvider::GetBitmap(wxART_NEW, wxART_MENU));
@@ -15,10 +19,11 @@ void initAllWidgets(InitWidgets* wid) {
 	
 	wid->mainMenu->Append(wid->menuFile, wxString::FromUTF8(file));
 	wid->mainMenu->Append(wid->menuOptions, wxString::FromUTF8(options));
+	wid->mainMenu->Append(wid->menuLanguage, wxString::FromUTF8(language));
 	wid->mainMenu->Append(wid->menuHelp, wxString::FromUTF8(help));
 	
 	wid->frame->SetMenuBar(wid->mainMenu);
-	wid->frame->SetIcon(wxString::FromUTF8(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + "/icon.png"));
+	wid->frame->SetIcon(wxString::FromUTF8(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + imagePath + "/icon.png"));
 	
 	//panel
 	//set fonts
@@ -2065,8 +2070,8 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wxImage bottom;
 		
 		
-		top.LoadFile(wxString::FromUTF8(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + "/title_top.png"));
-		bottom.LoadFile(wxString::FromUTF8(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + "/title_bottom.png"));
+		top.LoadFile(wxString::FromUTF8(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + imagePath + "/title_top.png"));
+		bottom.LoadFile(wxString::FromUTF8(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + imagePath + "/title_bottom.png"));
 		
 		width = top.GetWidth();
 		height = top.GetHeight();

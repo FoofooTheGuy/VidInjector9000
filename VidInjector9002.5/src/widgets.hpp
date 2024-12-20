@@ -87,8 +87,9 @@ struct InitWidgets {
 	wxMenuItem* menuItemOptionsSystem = menuOptions->Append(ID_SYSTEM, wxString::FromUTF8(optionsSystemMode), "", wxITEM_RADIO);
 	wxMenuItem* menuItemOptionsLight = menuOptions->Append(ID_LIGHT, wxString::FromUTF8(optionsLightMode), "", wxITEM_RADIO);
 	wxMenuItem* menuItemOptionsDark = menuOptions->Append(ID_DARK, wxString::FromUTF8(optionsDarkMode), "", wxITEM_RADIO);
+	wxMenu* menuLanguage = new wxMenu();
 	wxMenu* menuHelp = new wxMenu();
-	wxMenuItem* menuItemHelpAbout = menuHelp->Append(ID_ABOUT, wxString::FromUTF8(helpAbout));
+	wxMenuItem* menuItemHelpAbout = menuHelp->Append(ID_ABOUT, wxString::FromUTF8(helpAbout + "\tF1"));
 	
 	//frame
 	wxLogWindow* consoleLog = new wxLogWindow(frame, wxString::FromUTF8(logFrameText), false);
@@ -202,6 +203,7 @@ struct InitWidgets {
 	wxHyperlinkCtrl* gitHubLinker = new wxHyperlinkCtrl(aboutpanel, wxID_ANY, wxString::FromUTF8(GitHubLinker), wxString::FromUTF8(githubRepoLink));
 };
 
+void initLanguage(InitWidgets* wid);
 void initAllWidgets(InitWidgets* initwidgets);
 void ShowMultiUpDown(InitWidgets* wid);
 void ShowPatchUpDown(InitWidgets* wid, VI9Pparameters* parameters);

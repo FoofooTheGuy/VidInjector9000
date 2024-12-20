@@ -11,6 +11,8 @@ void panel_wxEVT_SIZE(InitWidgets* wid, VI9Pparameters* parameters) {
 }
 
 void modeChoiceBox_wxEVT_CHOICE(InitWidgets* wid, VI9Pparameters* parameters) {
+	if(!wid->modeChoiceBox->IsEnabled())
+		return;
 	int selection = wid->modeChoiceBox->GetSelection();
 	if(selection != wxNOT_FOUND)
 		parameters->mode = selection;
@@ -31,6 +33,8 @@ void modeChoiceBox_wxEVT_CHOICE(InitWidgets* wid, VI9Pparameters* parameters) {
 }
 
 void bannerBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
+	if(!wid->bannerBox->IsEnabled())
+		return;
 	parameters->banner = std::string(wid->bannerBox->GetValue().ToUTF8());
 	int ret = 0;
 	
@@ -79,6 +83,8 @@ void bannerBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 }
 
 void bannerBrowse_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
+	if(!wid->bannerBrowse->IsEnabled())
+		return;
 	wxFileDialog openFileDialog(wid->frame, wxEmptyString, wxString::FromUTF8(parameters->banner.empty() ? Settings::ImagesPath : parameters->banner.substr(0, parameters->banner.find_last_of("/\\"))), wxEmptyString, wxString::FromUTF8(allFiles), wxFD_OPEN|wxFD_FILE_MUST_EXIST);
 	openFileDialog.SetFilterIndex(0);
 	if (openFileDialog.ShowModal() == wxID_OK) {
@@ -87,6 +93,8 @@ void bannerBrowse_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 }
 
 void iconBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
+	if(!wid->iconBox->IsEnabled())
+		return;
 	parameters->icon = std::string(wid->iconBox->GetValue().ToUTF8());
 	int ret = 0;
 	
@@ -233,6 +241,8 @@ void iconBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 }
 
 void iconPreview_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
+	if(!wid->iconPreview->IsEnabled())
+		return;
 	++parameters->iconBorder;
 	if(parameters->iconBorder > 2) parameters->iconBorder = 0;
 	
@@ -266,6 +276,8 @@ void iconPreview_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 }
 
 void iconBrowse_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
+	if(!wid->iconBrowse->IsEnabled())
+		return;
 	wxFileDialog openFileDialog(wid->frame, wxEmptyString, wxString::FromUTF8(parameters->icon.empty() ? Settings::ImagesPath : parameters->icon.substr(0, parameters->icon.find_last_of("/\\"))), wxEmptyString, wxString::FromUTF8(allFiles), wxFD_OPEN|wxFD_FILE_MUST_EXIST);
 	openFileDialog.SetFilterIndex(0);
 	if (openFileDialog.ShowModal() == wxID_OK) {
@@ -274,6 +286,8 @@ void iconBrowse_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 }
 
 void shortnameBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
+	if(!wid->shortnameBox->IsEnabled())
+		return;
 	parameters->Sname = std::string(wid->shortnameBox->GetValue().ToUTF8());
 	
 	{//-sp
@@ -297,6 +311,8 @@ void shortnameBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 }
 
 void longnameBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
+	if(!wid->longnameBox->IsEnabled())
+		return;
 	parameters->Lname = std::string(wid->longnameBox->GetValue().ToUTF8());
 	
 	{//-sp
@@ -320,6 +336,8 @@ void longnameBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 }
 
 void publisherBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
+	if(!wid->publisherBox->IsEnabled())
+		return;
 	parameters->publisher = std::string(wid->publisherBox->GetValue().ToUTF8());
 	
 	{//-sp
@@ -343,6 +361,8 @@ void publisherBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 }
 
 void copyBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
+	if(!wid->copyBox->IsEnabled())
+		return;
 	parameters->copyrightInfo = std::string(wid->copyBox->GetValue().ToUTF8());
 	
 	{//-sp
@@ -360,6 +380,8 @@ void copyBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 }
 
 void copyCheck_wxEVT_CHECKBOX(InitWidgets* wid, VI9Pparameters* parameters) {
+	if(!wid->copyCheck->IsEnabled())
+		return;
 	parameters->copycheck = wid->copyCheck->GetValue();
 	
 	{//-sp
@@ -378,6 +400,8 @@ void copyCheck_wxEVT_CHECKBOX(InitWidgets* wid, VI9Pparameters* parameters) {
 }
 
 void ffRewindCheck_wxEVT_CHECKBOX(InitWidgets* wid, VI9Pparameters* parameters) {
+	if(!wid->ffRewindCheck->IsEnabled())
+		return;
 	parameters->FFrewind = wid->ffRewindCheck->GetValue();
 	
 	{//-sp
@@ -395,6 +419,8 @@ void ffRewindCheck_wxEVT_CHECKBOX(InitWidgets* wid, VI9Pparameters* parameters) 
 }
 
 void dimCheck_wxEVT_CHECKBOX(InitWidgets* wid, VI9Pparameters* parameters) {
+	if(!wid->dimCheck->IsEnabled())
+		return;
 	parameters->FadeOpt = wid->dimCheck->GetValue();
 	
 	{//-sp
@@ -412,6 +438,8 @@ void dimCheck_wxEVT_CHECKBOX(InitWidgets* wid, VI9Pparameters* parameters) {
 }
 
 void multiBannerPreview_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
+	if(!wid->multiBannerPreview->IsEnabled())
+		return;
 	wxFileDialog openFileDialog(wid->frame, wxEmptyString, wxString::FromUTF8(parameters->MBannerVec.at(VI9P::MultiBannerIndex).empty() ? Settings::ImagesPath : parameters->MBannerVec.at(VI9P::MultiBannerIndex).substr(0, parameters->MBannerVec.at(VI9P::MultiBannerIndex).find_last_of("/\\"))), wxEmptyString, wxString::FromUTF8(allFiles), wxFD_OPEN|wxFD_FILE_MUST_EXIST);
 	openFileDialog.SetFilterIndex(0);
 	if (openFileDialog.ShowModal() == wxID_OK) {
@@ -420,6 +448,8 @@ void multiBannerPreview_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameter
 }
 
 void multiBannerPreviewLeft_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
+	if(!wid->multiBannerPreviewLeft->IsEnabled())
+		return;
 	if(VI9P::MultiBannerIndex > 0) --VI9P::MultiBannerIndex;
 	if(VI9P::MultiBannerIndex <= 0) wid->multiBannerPreviewLeft->Enable(false);
 
@@ -446,6 +476,8 @@ void multiBannerPreviewLeft_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* param
 }
 
 void multiBannerPreviewRight_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
+	if(!wid->multiBannerPreviewRight->IsEnabled())
+		return;
 	if(VI9P::MultiBannerIndex < wid->MenuBanners.size() - 1) ++VI9P::MultiBannerIndex;
 	if(VI9P::MultiBannerIndex >= wid->MenuBanners.size() - 1) wid->multiBannerPreviewRight->Enable(false);
 	{//-gp
@@ -474,6 +506,8 @@ void PlayerTitles_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxTex
 	size_t rowReal;
 	for(rowReal = 0; rowReal < wid->PlayerTitles.size(); rowReal++) {//get row
 		if(reinterpret_cast<intptr_t>(wid->PlayerTitles.at(rowReal)) == reinterpret_cast<intptr_t>(row)) {//compare pointers
+			if(!row->IsEnabled())
+				return;
 			parameters->PTitleVec.at(rowReal) = std::string(row->GetValue().ToUTF8());
 			
 			{//-sp
@@ -496,6 +530,8 @@ void MoflexFiles_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxText
 	size_t rowReal;
 	for(rowReal = 0; rowReal < wid->MoflexFiles.size(); rowReal++) {//get row
 		if(reinterpret_cast<intptr_t>(wid->MoflexFiles.at(rowReal)) == reinterpret_cast<intptr_t>(row)) {//compare pointers
+			if(!row->IsEnabled())
+				return;
 			parameters->MoflexVec.at(rowReal) = std::string(row->GetValue().ToUTF8());
 			
 			{//-sp
@@ -518,6 +554,8 @@ void MenuBanners_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxText
 	size_t rowReal;
 	for(rowReal = 0; rowReal < wid->MenuBanners.size(); rowReal++) {//get row
 		if(reinterpret_cast<intptr_t>(wid->MenuBanners.at(rowReal)) == reinterpret_cast<intptr_t>(row)) {//compare pointers
+			if(!row->IsEnabled())
+				return;
 			VI9P::MultiBannerIndex = rowReal;
 			parameters->MBannerVec.at(VI9P::MultiBannerIndex) = std::string(row->GetValue().ToUTF8());
 			
@@ -557,6 +595,10 @@ void MultiUp_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters, wxButton
 	size_t rowReal;
 	for(rowReal = 0; rowReal < wid->MultiUp.size(); rowReal++) {//get row
 		if(reinterpret_cast<intptr_t>(wid->MultiUp.at(rowReal)) == reinterpret_cast<intptr_t>(row)) {//compare pointers
+			if(!row->IsEnabled())
+				return;
+			if(!row->IsShown())
+				return;
 			if(rowReal > 0) {
 				//the stuff will get saved if the text in the boxes changes so dont save here
 				{//PlayerTitles
@@ -583,6 +625,10 @@ void MultiDown_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters, wxButt
 	size_t rowReal;
 	for(rowReal = 0; rowReal < wid->MultiDown.size(); rowReal++) {//get row
 		if(reinterpret_cast<intptr_t>(wid->MultiDown.at(rowReal)) == reinterpret_cast<intptr_t>(row)) {//compare pointers
+			if(!row->IsEnabled())
+				return;
+			if(!row->IsShown())
+				return;
 			if(rowReal < wid->MultiDown.size()) {
 				//the stuff will get saved if the text in the boxes changes so dont save here
 				{//PlayerTitles
@@ -606,6 +652,8 @@ void MultiDown_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters, wxButt
 }
 
 void moflexBrowse_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
+	if(!wid->moflexBrowse->IsEnabled())
+		return;
 	size_t row;
 	for(row = 0; row < wid->MoflexFiles.size() - 1; row++) {
 		if(std::string(wid->MoflexFiles.at(row)->GetValue().ToUTF8()).empty()) {
@@ -629,6 +677,8 @@ void moflexBrowse_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 }
 
 void multiBannerBrowse_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
+	if(!wid->multiBannerBrowse->IsEnabled())
+		return;
 	size_t row;
 	for(row = 0; row < wid->MenuBanners.size() - 1; row++) {
 		if(std::string(wid->MenuBanners.at(row)->GetValue().ToUTF8()).empty()) {
@@ -673,7 +723,9 @@ void multiBannerBrowse_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters
 }
 
 void removeRow_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
-	if(parameters->rows - 1 < parameters->splitPos) {
+	if(!wid->removeRow->IsEnabled())
+		return;
+	if(parameters->rows - 1 <= parameters->splitPos) {
 		wid->splitPatchButton->SetValue(false);
 		splitPatchButton_wxEVT_TOGGLEBUTTON(wid, parameters);
 	}
@@ -744,6 +796,8 @@ void removeRow_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 }
 
 void splitPatchButton_wxEVT_TOGGLEBUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
+	if(!wid->splitPatchButton->IsEnabled())
+		return;
 	parameters->splitPos = wid->splitPatchButton->GetValue();
 	
 	{//-sp
@@ -764,6 +818,10 @@ void splitPatchButton_wxEVT_TOGGLEBUTTON(InitWidgets* wid, VI9Pparameters* param
 }
 
 void splitPatchUp_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
+	if(!wid->splitPatchUp->IsEnabled())
+		return;
+	if(!wid->splitPatchUp->IsShown())
+		return;
 	--parameters->splitPos;
 	
 	{//-sp
@@ -784,6 +842,10 @@ void splitPatchUp_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 }
 
 void splitPatchDown_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
+	if(!wid->splitPatchDown->IsEnabled())
+		return;
+	if(!wid->splitPatchDown->IsShown())
+		return;
 	++parameters->splitPos;
 	
 	{//-sp
@@ -815,6 +877,8 @@ void buildpanel_wxEVT_SIZE(InitWidgets* wid, VI9Pparameters* parameters) {
 }
 
 void titleIDButton_wxEVT_BUTTON(InitWidgets* wid) {
+	if(!wid->titleIDButton->IsEnabled())
+		return;
 	uint32_t uniqueID = RandomTID();
 	char uniqueIDstr [6];
 	sprintf(uniqueIDstr, "%05X", uniqueID);
@@ -865,6 +929,8 @@ void exportArchive_wxEVT_END_PROCESS(InitWidgets* wid, wxProcessEvent* event) {
 }
 
 void buildButton_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
+	if(!wid->buildButton->IsEnabled())
+		return;
 	std::string uniqueID = std::string(wid->titleIDBox->GetValue().ToUTF8());
 	std::string appName = std::string(wid->applicationTitleBox->GetValue().ToUTF8());
 	std::string prodCode = std::string(wid->productCodeBox->GetValue().ToUTF8());
@@ -913,6 +979,8 @@ void buildButton_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 }
 
 void cancelButton_wxEVT_BUTTON(InitWidgets* wid) {
+	if(!wid->cancelButton->IsEnabled())
+		return;
 	if(wid->statusText->IsShown()) {//dumb but it is sure to work
 		int ret = 0;
 		ret = wxProcess::Kill(wid->exportArchive->GetPid(), wxSIGTERM, wxKILL_CHILDREN);

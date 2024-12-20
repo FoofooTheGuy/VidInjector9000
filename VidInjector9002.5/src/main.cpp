@@ -289,43 +289,43 @@ int main(int argc, char* argv[]) {
 	});
 
 	wid.appendRow->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
-		if(wid.appendRow->IsEnabled()) {
-			wid.removeRow->Enable(false);//disable so you cant press it too much
-			wid.appendRow->Enable(false);
-			
-			addRows(&wid, &parameters);
-			
-			//well what do you know... it worked
-			for(const auto &row : wid.PlayerTitles) {
-				row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
-					PlayerTitles_wxEVT_TEXT(&wid, &parameters, row);
-				});
-			}
-			for(const auto &row : wid.MoflexFiles) {
-				row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
-					MoflexFiles_wxEVT_TEXT(&wid, &parameters, row);
-				});
-			}
-			for(const auto &row : wid.MenuBanners) {
-				row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
-					MenuBanners_wxEVT_TEXT(&wid, &parameters, row);
-				});
-			}
-			for(const auto &row : wid.MultiUp) {
-				row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
-					MultiUp_wxEVT_BUTTON(&wid, &parameters, row);
-				});
-			}
-			for(const auto &row : wid.MultiDown) {
-				row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
-					MultiDown_wxEVT_BUTTON(&wid, &parameters, row);
-				});
-			}
-			setAppearance(&wid, Settings::ColorMode);
-			
-			wid.rowText->SetLabel(wxString::FromUTF8(std::to_string(parameters.rows) + "/27"));
-			wid.multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string(wid.MenuBanners.size())));
+		if(!wid.appendRow->IsEnabled())
+			return;
+		wid.removeRow->Enable(false);//disable so you cant press it too much
+		wid.appendRow->Enable(false);
+		
+		addRows(&wid, &parameters);
+		
+		//well what do you know... it worked
+		for(const auto &row : wid.PlayerTitles) {
+			row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
+				PlayerTitles_wxEVT_TEXT(&wid, &parameters, row);
+			});
 		}
+		for(const auto &row : wid.MoflexFiles) {
+			row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
+				MoflexFiles_wxEVT_TEXT(&wid, &parameters, row);
+			});
+		}
+		for(const auto &row : wid.MenuBanners) {
+			row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
+				MenuBanners_wxEVT_TEXT(&wid, &parameters, row);
+			});
+		}
+		for(const auto &row : wid.MultiUp) {
+			row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
+				MultiUp_wxEVT_BUTTON(&wid, &parameters, row);
+			});
+		}
+		for(const auto &row : wid.MultiDown) {
+			row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
+				MultiDown_wxEVT_BUTTON(&wid, &parameters, row);
+			});
+		}
+		setAppearance(&wid, Settings::ColorMode);
+		
+		wid.rowText->SetLabel(wxString::FromUTF8(std::to_string(parameters.rows) + "/27"));
+		wid.multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string(wid.MenuBanners.size())));
 		
 		if(parameters.mode) {
 			wid.splitPatchButton->Enable((parameters.rows > 1));
