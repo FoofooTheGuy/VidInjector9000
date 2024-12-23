@@ -71,43 +71,6 @@ void initAllWidgets(InitWidgets* wid) {
 		ShowMultiUpDown(wid);
 	}
 	
-{//removeRow
-		int w, buttwidth, h, buttheight;
-		wxFont f;
-		
-		wxButton button(wid->panel, wxID_ANY, wxString::FromUTF8(wid->removeRow->GetLabel()));
-		button.Show(false);
-		button.GetSize(&buttwidth, &buttheight);
-		f = wid->removeRow->GetFont();
-		wid->removeRow->GetTextExtent(wid->removeRow->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		buttwidth = buttwidth - w;
-		buttheight = buttheight - h;
-		
-		f = wid->modeText->GetFont().Scale(1.2F);
-		
-		wid->removeRow->SetFont(f);
-		wid->removeRow->GetTextExtent(wid->removeRow->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->removeRow->SetSize(w + buttwidth, h + buttheight);
-	}
-	{//appendRow
-		int w, buttwidth, h, buttheight;
-		wxFont f;
-		
-		wxButton button(wid->panel, wxID_ANY, wid->appendRow->GetLabel());
-		button.Show(false);
-		button.GetSize(&buttwidth, &buttheight);
-		f = wid->appendRow->GetFont();
-		wid->appendRow->GetTextExtent(wid->appendRow->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		buttwidth = buttwidth - w;
-		buttheight = buttheight - h;
-		
-		f = wid->removeRow->GetFont();
-		
-		wid->appendRow->SetFont(f);
-		wid->appendRow->GetTextExtent(wid->appendRow->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->appendRow->SetSize(w + buttwidth, h + buttheight);
-	}
-	
 	/*{//splitPatchLine
 	
 	}*/
@@ -325,9 +288,11 @@ void setFonts(InitWidgets* wid) {
 		int w, width, mywidth, boxwidth, h;
 		wxFont f;
 		
-		f = wid->copyCheck->GetFont();
-		wid->copyCheck->GetTextExtent(wid->copyCheck->GetLabel(), &width, NULL, nullptr, nullptr, &f);
-		wid->copyCheck->GetSize(&mywidth, NULL);
+		wxCheckBox Check(wid->panel, wxID_ANY, wid->copyCheck->GetLabel());
+		f = Check.GetFont();
+		Check.GetTextExtent(wid->copyCheck->GetLabel(), &width, NULL, nullptr, nullptr, &f);
+		Check.GetSize(&mywidth, NULL);
+		Check.Show(false);
 		
 		boxwidth = mywidth - width;
 		
@@ -342,9 +307,11 @@ void setFonts(InitWidgets* wid) {
 		int w, width, mywidth, boxwidth, h;
 		wxFont f;
 		
-		f = wid->ffRewindCheck->GetFont();
-		wid->ffRewindCheck->GetTextExtent(wid->ffRewindCheck->GetLabel(), &width, NULL, nullptr, nullptr, &f);
-		wid->ffRewindCheck->GetSize(&mywidth, NULL);
+		wxCheckBox Check(wid->panel, wxID_ANY, wid->ffRewindCheck->GetLabel());
+		f = Check.GetFont();
+		Check.GetTextExtent(wid->ffRewindCheck->GetLabel(), &width, NULL, nullptr, nullptr, &f);
+		Check.GetSize(&mywidth, NULL);
+		Check.Show(false);
 		
 		boxwidth = mywidth - width;
 		
@@ -358,9 +325,11 @@ void setFonts(InitWidgets* wid) {
 		int w, width, mywidth, boxwidth, h;
 		wxFont f;
 		
-		f = wid->dimCheck->GetFont();
-		wid->dimCheck->GetTextExtent(wid->dimCheck->GetLabel(), &width, NULL, nullptr, nullptr, &f);
-		wid->dimCheck->GetSize(&mywidth, NULL);
+		wxCheckBox Check(wid->panel, wxID_ANY, wid->ffRewindCheck->GetLabel());
+		f = Check.GetFont();
+		Check.GetTextExtent(wid->dimCheck->GetLabel(), &width, NULL, nullptr, nullptr, &f);
+		Check.GetSize(&mywidth, NULL);
+		Check.Show(false);
 		
 		boxwidth = mywidth - width;
 		
@@ -440,6 +409,43 @@ void setFonts(InitWidgets* wid) {
 		buttheight = buttheight - h;
 
 		wid->multiBannerBrowse->SetSize(w + (buttwidth * 2), h + (buttheight * 2));
+	}
+	
+	{//removeRow
+		int w, buttwidth, h, buttheight;
+		wxFont f;
+		
+		wxButton button(wid->panel, wxID_ANY, wxString::FromUTF8(wid->removeRow->GetLabel()));
+		button.Show(false);
+		button.GetSize(&buttwidth, &buttheight);
+		f = wid->removeRow->GetFont();
+		wid->removeRow->GetTextExtent(wid->removeRow->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		buttwidth = buttwidth - w;
+		buttheight = buttheight - h;
+		
+		f = wid->modeText->GetFont().Scale(1.2F);
+		
+		wid->removeRow->SetFont(f);
+		wid->removeRow->GetTextExtent(wid->removeRow->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		wid->removeRow->SetSize(w + buttwidth, h + buttheight);
+	}
+	{//appendRow
+		int w, buttwidth, h, buttheight;
+		wxFont f;
+		
+		wxButton button(wid->panel, wxID_ANY, wid->appendRow->GetLabel());
+		button.Show(false);
+		button.GetSize(&buttwidth, &buttheight);
+		f = wid->appendRow->GetFont();
+		wid->appendRow->GetTextExtent(wid->appendRow->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		buttwidth = buttwidth - w;
+		buttheight = buttheight - h;
+		
+		f = wid->removeRow->GetFont();
+		
+		wid->appendRow->SetFont(f);
+		wid->appendRow->GetTextExtent(wid->appendRow->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		wid->appendRow->SetSize(w + buttwidth, h + buttheight);
 	}
 
 	{//splitPatchButton
