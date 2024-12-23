@@ -48,6 +48,16 @@ enum wxOwnedID {
 	ID_SYSTEM,
 	ID_LIGHT,
 	ID_DARK,
+	ID_LANG1,
+	ID_LANG2,
+	ID_LANG3,
+	ID_LANG4,
+	ID_LANG5,
+	ID_LANG6,
+	ID_LANG7,
+	ID_LANG8,
+	ID_LANG9,
+	ID_LANG10,//sorry if you speak more than 10 languages
 	ID_ABOUT,
 };
 
@@ -205,6 +215,7 @@ struct InitWidgets {
 
 void initLanguage(InitWidgets* wid);
 void initAllWidgets(InitWidgets* initwidgets);
+void setFonts(InitWidgets* wid);
 void ShowMultiUpDown(InitWidgets* wid);
 void ShowPatchUpDown(InitWidgets* wid, VI9Pparameters* parameters);
 void setToolTips(InitWidgets* initwidgets);

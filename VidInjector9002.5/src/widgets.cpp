@@ -4,10 +4,6 @@ std::string Exports::CIA = "";
 std::string Exports::TAR = "";
 std::string Extracted::Archive = "";
 
-void initLanguage(InitWidgets* wid) {
-	
-}
-
 void initAllWidgets(InitWidgets* wid) {
 	//main menu
 	wid->menuItemFileNew->SetBitmap(wxArtProvider::GetBitmap(wxART_NEW, wxART_MENU));
@@ -26,12 +22,140 @@ void initAllWidgets(InitWidgets* wid) {
 	wid->frame->SetIcon(wxString::FromUTF8(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + imagePath + "/icon.png"));
 	
 	//panel
-	//set fonts
-	{//modeText
-		int w, h;
+	for (const auto &s : {SingleVideo, MultiVideo})//https://github.com/gammasoft71/Examples_wxWidgets/blob/adbd395081bf25c9034f2b64eee62608a943441f/src/CommonControls/Choice/Choice.cpp#L10
+        wid->modeChoiceBox->Append(s);
+	//wid->modeChoiceBox->SetSelection(0);
+	
+	wid->scrolledPanel->SetScrollRate(10, 10);
+	
+	{//row stuff
+		int rows = 1;//yes this is loop executes once. the plan is to reuse this code when adding many rows at once. yes, yes, I know...
+		
+		for(int i = 0; i < rows; i++) {
+			wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString);
+			wid->PlayerTitles.push_back(box);
+		}
+		for(int i = 0; i < rows; i++) {
+			wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString);
+			wid->MoflexFiles.push_back(box);
+		}
+		for(int i = 0; i < rows; i++) {
+			wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString);
+			wid->MenuBanners.push_back(box);
+		}
+
+		for(int i = 0; i < rows; i++) {
+			wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+			int width, height;
+			wxFont f;
+			
+			button->SetLabel(wxString::FromUTF8("↑"));
+			
+			button->GetTextExtent(button->GetLabel(), &width, &height, nullptr, nullptr, &f);
+			button->SetSize(width, height);
+			
+			wid->MultiUp.push_back(button);
+		}
+		for(int i = 0; i < rows; i++) {
+			wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+			int width, height;
+			wxFont f;
+			
+			button->SetLabel(wxString::FromUTF8("↓"));
+			
+			button->GetTextExtent(button->GetLabel(), &width, &height, nullptr, nullptr, &f);
+			button->SetSize(width, height);
+			
+			wid->MultiDown.push_back(button);
+		}
+		ShowMultiUpDown(wid);
+	}
+	
+{//removeRow
+		int w, buttwidth, h, buttheight;
 		wxFont f;
 		
-		f = wid->modeText->GetFont().Scale(1.5F);
+		wxButton button(wid->panel, wxID_ANY, wxString::FromUTF8(wid->removeRow->GetLabel()));
+		button.Show(false);
+		button.GetSize(&buttwidth, &buttheight);
+		f = wid->removeRow->GetFont();
+		wid->removeRow->GetTextExtent(wid->removeRow->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		buttwidth = buttwidth - w;
+		buttheight = buttheight - h;
+		
+		f = wid->modeText->GetFont().Scale(1.2F);
+		
+		wid->removeRow->SetFont(f);
+		wid->removeRow->GetTextExtent(wid->removeRow->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		wid->removeRow->SetSize(w + buttwidth, h + buttheight);
+	}
+	{//appendRow
+		int w, buttwidth, h, buttheight;
+		wxFont f;
+		
+		wxButton button(wid->panel, wxID_ANY, wid->appendRow->GetLabel());
+		button.Show(false);
+		button.GetSize(&buttwidth, &buttheight);
+		f = wid->appendRow->GetFont();
+		wid->appendRow->GetTextExtent(wid->appendRow->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		buttwidth = buttwidth - w;
+		buttheight = buttheight - h;
+		
+		f = wid->removeRow->GetFont();
+		
+		wid->appendRow->SetFont(f);
+		wid->appendRow->GetTextExtent(wid->appendRow->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		wid->appendRow->SetSize(w + buttwidth, h + buttheight);
+	}
+	
+	/*{//splitPatchLine
+	
+	}*/
+	{//splitPatchUp
+		int width, height;
+		wxFont f;
+		
+		wid->splitPatchUp->GetTextExtent(wid->splitPatchUp->GetLabel(), &width, &height, nullptr, nullptr, &f);
+		wid->splitPatchUp->SetSize(width, height);
+	}
+	{//splitPatchDown
+		int width, height;
+		wxFont f;
+		
+		wid->splitPatchDown->GetTextExtent(wid->splitPatchDown->GetLabel(), &width, &height, nullptr, nullptr, &f);
+		wid->splitPatchDown->SetSize(width, height);
+	}
+	{//splitPatchUp
+		int width, height;
+		wxFont f;
+		
+		wid->splitPatchDown->GetTextExtent(wid->splitPatchDown->GetLabel(), &width, &height, nullptr, nullptr, &f);
+		wid->splitPatchDown->SetSize(width, height);
+	}
+
+	{//buildButton
+		int w, buttwidth, h, buttheight;
+		wxFont f;
+		
+		wxButton button(wid->panel, wxID_ANY, wid->buildButton->GetLabel());
+		button.Show(false);
+		button.GetSize(&buttwidth, &buttheight);
+		f = wid->buildButton->GetFont();
+		wid->buildButton->GetTextExtent(wid->buildButton->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		buttwidth = buttwidth - w;
+		buttheight = buttheight - h;
+
+		wid->buildButton->SetSize(w + (buttwidth * 2), h + (buttheight * 2));
+	}
+	{//extractDialog
+		wid->extractDialog->Show(false);
+	}
+}
+
+void setFonts(InitWidgets* wid) {
+	{//modeText
+		int w, h;
+		wxFont f(15, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
 		
 		wid->modeText->SetFont(f);
 		wid->modeText->GetTextExtent(wid->modeText->GetLabel(), &w, &h, nullptr, nullptr, &f);
@@ -52,7 +176,9 @@ void initAllWidgets(InitWidgets* wid) {
 		int w, buttwidth, h, buttheight;
 		wxFont f;
 		
-		wid->bannerBrowse->GetSize(&buttwidth, &buttheight);
+		wxButton button(wid->panel, wxID_ANY, wid->bannerBrowse->GetLabel());
+		button.Show(false);
+		button.GetSize(&buttwidth, &buttheight);
 		f = wid->bannerBrowse->GetFont();
 		wid->bannerBrowse->GetTextExtent(wid->bannerBrowse->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		buttwidth = buttwidth - w;
@@ -87,7 +213,9 @@ void initAllWidgets(InitWidgets* wid) {
 		int w, buttwidth, h, buttheight;
 		wxFont f;
 		
-		wid->iconBrowse->GetSize(&buttwidth, &buttheight);
+		wxButton button(wid->panel, wxID_ANY, wid->iconBrowse->GetLabel());
+		button.Show(false);
+		button.GetSize(&buttwidth, &buttheight);
 		f = wid->iconBrowse->GetFont();
 		wid->iconBrowse->GetTextExtent(wid->iconBrowse->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		buttwidth = buttwidth - w;
@@ -284,61 +412,14 @@ void initAllWidgets(InitWidgets* wid) {
 		wid->menuBannerText->GetTextExtent(wid->menuBannerText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->menuBannerText->SetSize(w, h);
 	}
-	
-	for (const auto &s : {SingleVideo, MultiVideo})//https://github.com/gammasoft71/Examples_wxWidgets/blob/adbd395081bf25c9034f2b64eee62608a943441f/src/CommonControls/Choice/Choice.cpp#L10
-        wid->modeChoiceBox->Append(s);
-	//wid->modeChoiceBox->SetSelection(0);
-	
-	wid->scrolledPanel->SetScrollRate(10, 10);
-	
-	{//row stuff
-		int rows = 1;//yes this is loop executes once. the plan is to reuse this code when adding many rows at once. yes, yes, I know...
-		
-		for(int i = 0; i < rows; i++) {
-			wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString);
-			wid->PlayerTitles.push_back(box);
-		}
-		for(int i = 0; i < rows; i++) {
-			wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString);
-			wid->MoflexFiles.push_back(box);
-		}
-		for(int i = 0; i < rows; i++) {
-			wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString);
-			wid->MenuBanners.push_back(box);
-		}
 
-		for(int i = 0; i < rows; i++) {
-			wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-			int width, height;
-			wxFont f;
-			
-			button->SetLabel(wxString::FromUTF8("↑"));
-			
-			button->GetTextExtent(button->GetLabel(), &width, &height, nullptr, nullptr, &f);
-			button->SetSize(width, height);
-			
-			wid->MultiUp.push_back(button);
-		}
-		for(int i = 0; i < rows; i++) {
-			wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-			int width, height;
-			wxFont f;
-			
-			button->SetLabel(wxString::FromUTF8("↓"));
-			
-			button->GetTextExtent(button->GetLabel(), &width, &height, nullptr, nullptr, &f);
-			button->SetSize(width, height);
-			
-			wid->MultiDown.push_back(button);
-		}
-		ShowMultiUpDown(wid);
-	}
-	
 	{//moflexBrowse
 		int w, buttwidth, h, buttheight;
 		wxFont f;
 		
-		wid->moflexBrowse->GetSize(&buttwidth, &buttheight);
+		wxButton button(wid->panel, wxID_ANY, wid->moflexBrowse->GetLabel());
+		button.Show(false);
+		button.GetSize(&buttwidth, &buttheight);
 		f = wid->moflexBrowse->GetFont();
 		wid->moflexBrowse->GetTextExtent(wid->moflexBrowse->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		buttwidth = buttwidth - w;
@@ -350,7 +431,9 @@ void initAllWidgets(InitWidgets* wid) {
 		int w, buttwidth, h, buttheight;
 		wxFont f;
 		
-		wid->multiBannerBrowse->GetSize(&buttwidth, &buttheight);
+		wxButton button(wid->panel, wxID_ANY, wid->multiBannerBrowse->GetLabel());
+		button.Show(false);
+		button.GetSize(&buttwidth, &buttheight);
 		f = wid->multiBannerBrowse->GetFont();
 		wid->multiBannerBrowse->GetTextExtent(wid->multiBannerBrowse->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		buttwidth = buttwidth - w;
@@ -358,45 +441,14 @@ void initAllWidgets(InitWidgets* wid) {
 
 		wid->multiBannerBrowse->SetSize(w + (buttwidth * 2), h + (buttheight * 2));
 	}
-	
-	{//removeRow
-		int w, buttwidth, h, buttheight;
-		wxFont f;
-		
-		wid->removeRow->GetSize(&buttwidth, &buttheight);
-		f = wid->removeRow->GetFont();
-		wid->removeRow->GetTextExtent(wid->removeRow->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		buttwidth = buttwidth - w;
-		buttheight = buttheight - h;
-		
-		f = wid->modeText->GetFont().Scale(1.2F);
-		
-		wid->removeRow->SetFont(f);
-		wid->removeRow->GetTextExtent(wid->removeRow->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->removeRow->SetSize(w + buttwidth, h + buttheight);
-	}
-	{//appendRow
-		int w, buttwidth, h, buttheight;
-		wxFont f;
-		
-		wid->appendRow->GetSize(&buttwidth, &buttheight);
-		f = wid->appendRow->GetFont();
-		wid->appendRow->GetTextExtent(wid->appendRow->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		buttwidth = buttwidth - w;
-		buttheight = buttheight - h;
-		
-		f = wid->removeRow->GetFont();
-		
-		wid->appendRow->SetFont(f);
-		wid->appendRow->GetTextExtent(wid->appendRow->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->appendRow->SetSize(w + buttwidth, h + buttheight);
-	}
 
 	{//splitPatchButton
 		int w, buttwidth, h, buttheight;
 		wxFont f;
 		
-		wid->splitPatchButton->GetSize(&buttwidth, &buttheight);
+		wxButton button(wid->panel, wxID_ANY, wid->splitPatchButton->GetLabel());
+		button.Show(false);
+		button.GetSize(&buttwidth, &buttheight);
 		f = wid->splitPatchButton->GetFont();
 		wid->splitPatchButton->GetTextExtent(wid->splitPatchButton->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		buttwidth = buttwidth - w;
@@ -408,30 +460,7 @@ void initAllWidgets(InitWidgets* wid) {
 		wid->splitPatchButton->GetTextExtent(wid->splitPatchButton->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->splitPatchButton->SetSize(w + buttwidth, h + buttheight);
 	}
-	/*{//splitPatchLine
 	
-	}*/
-	{//splitPatchUp
-		int width, height;
-		wxFont f;
-		
-		wid->splitPatchUp->GetTextExtent(wid->splitPatchUp->GetLabel(), &width, &height, nullptr, nullptr, &f);
-		wid->splitPatchUp->SetSize(width, height);
-	}
-	{//splitPatchDown
-		int width, height;
-		wxFont f;
-		
-		wid->splitPatchDown->GetTextExtent(wid->splitPatchDown->GetLabel(), &width, &height, nullptr, nullptr, &f);
-		wid->splitPatchDown->SetSize(width, height);
-	}
-	{//splitPatchUp
-		int width, height;
-		wxFont f;
-		
-		wid->splitPatchDown->GetTextExtent(wid->splitPatchDown->GetLabel(), &width, &height, nullptr, nullptr, &f);
-		wid->splitPatchDown->SetSize(width, height);
-	}
 	{//rowText
 		int w, h;
 		wxFont f;
@@ -538,21 +567,7 @@ void initAllWidgets(InitWidgets* wid) {
 		
 		wid->statusText->Show(false);
 	}
-	{//buildButton
-		int w, buttwidth, h, buttheight;
-		wxFont f;
-		
-		wid->buildButton->GetSize(&buttwidth, &buttheight);
-		f = wid->buildButton->GetFont();
-		wid->buildButton->GetTextExtent(wid->buildButton->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		buttwidth = buttwidth - w;
-		buttheight = buttheight - h;
-
-		wid->buildButton->SetSize(w + (buttwidth * 2), h + (buttheight * 2));
-	}
-	{//extractDialog
-		wid->extractDialog->Show(false);
-	}
+	
 	{//gitHubLinker
 		int w, h;
 		wxFont f;

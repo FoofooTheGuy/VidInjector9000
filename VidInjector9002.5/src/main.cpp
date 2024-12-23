@@ -1,7 +1,8 @@
 #include "appInitializer.hpp"
+#include "language.hpp"
 #include "settings.hpp"
 #include "widgets.hpp"
-#include "events.hpp"
+//#include "events.hpp"
 
 //https://github.com/gammasoft71/Examples_wxWidgets/blob/adbd395081bf25c9034f2b64eee62608a943441f/src/HelloWorld/HelloWorld/HelloWorld.cpp#L4
 #if defined(__WXOSX__)
@@ -166,16 +167,13 @@ int main(int argc, char* argv[]) {
 	
 	wid.consoleLog->Show(Settings::ShowLog);
 	
+	initLanguage(&wid);
 	initAllWidgets(&wid);
-
+	setFonts(&wid);
 	positionWidgets(&wid, &parameters);
-	
 	setToolTips(&wid);
-	
 	getAppearance(&wid);
-	
 	setAppearance(&wid, Settings::ColorMode);
-	
 	setCursors(&wid);
 	
 	wid.panel->Bind(wxEVT_SIZE, [&](wxSizeEvent& event) {
@@ -706,6 +704,32 @@ int main(int argc, char* argv[]) {
 					wid.aboutframe->Show();
 				}
 				break;
+		}
+		//boo hoo no more switch statement
+		{//language
+			std::vector<int> LANG_IDs {
+				ID_LANG1,
+				ID_LANG2,
+				ID_LANG3,
+				ID_LANG4,
+				ID_LANG5,
+				ID_LANG6,
+				ID_LANG7,
+				ID_LANG8,
+				ID_LANG9,
+				ID_LANG10,
+			};
+			if(event.GetId() >= ID_LANG1 && event.GetId() <= ID_LANG10) {
+				for(size_t i = 0; i < LANG_IDs.size(); i++) {
+					if(event.GetId() == LANG_IDs.at(i)) {
+						loadLanguage(Language::LanguageFiles.at(i));
+						applyLanguage(&wid);
+						setFonts(&wid);
+						positionWidgets(&wid, &parameters);
+						setToolTips(&wid);
+					}
+				}
+			}
 		}
 	});
 	
