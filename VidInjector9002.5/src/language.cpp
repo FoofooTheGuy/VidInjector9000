@@ -45,6 +45,8 @@ void applyLanguage(InitWidgets* wid) {
 	wid->mainMenu->SetMenuLabel(3, wxString::FromUTF8(help));
 	wid->menuItemHelpAbout->SetItemLabel(wxString::FromUTF8(helpAbout + "\tF1"));
 	wid->modeText->SetLabel(wxString::FromUTF8(ModeText));
+	wid->modeChoiceBox->SetString(0, wxString::FromUTF8(SingleVideo));
+	wid->modeChoiceBox->SetString(1, wxString::FromUTF8(MultiVideo));
 	wid->bannerText->SetLabel(wxString::FromUTF8(BannerText));
 	wid->bannerBrowse->SetLabel(wxString::FromUTF8(Browse));
 	wid->bannerError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + ImageInfoError + " (0) " + SeeLog));

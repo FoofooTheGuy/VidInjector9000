@@ -22,7 +22,7 @@ void initAllWidgets(InitWidgets* wid) {
 	wid->frame->SetIcon(wxString::FromUTF8(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + imagePath + "/icon.png"));
 	
 	//panel
-	for (const auto &s : {SingleVideo, MultiVideo})//https://github.com/gammasoft71/Examples_wxWidgets/blob/adbd395081bf25c9034f2b64eee62608a943441f/src/CommonControls/Choice/Choice.cpp#L10
+	for (const auto &s : {wxString::FromUTF8(SingleVideo), wxString::FromUTF8(MultiVideo)})//https://github.com/gammasoft71/Examples_wxWidgets/blob/adbd395081bf25c9034f2b64eee62608a943441f/src/CommonControls/Choice/Choice.cpp#L10
         wid->modeChoiceBox->Append(s);
 	//wid->modeChoiceBox->SetSelection(0);
 	
@@ -418,12 +418,12 @@ void setFonts(InitWidgets* wid) {
 		wxButton button(wid->panel, wxID_ANY, wxString::FromUTF8(wid->removeRow->GetLabel()));
 		button.Show(false);
 		button.GetSize(&buttwidth, &buttheight);
-		f = wid->removeRow->GetFont();
-		wid->removeRow->GetTextExtent(wid->removeRow->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		f = button.GetFont();
+		button.GetTextExtent(wid->removeRow->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		buttwidth = buttwidth - w;
 		buttheight = buttheight - h;
 		
-		f = wid->modeText->GetFont().Scale(1.2F);
+		f = wid->modeText->GetFont().Scale(1.1F);
 		
 		wid->removeRow->SetFont(f);
 		wid->removeRow->GetTextExtent(wid->removeRow->GetLabel(), &w, &h, nullptr, nullptr, &f);
@@ -436,8 +436,8 @@ void setFonts(InitWidgets* wid) {
 		wxButton button(wid->panel, wxID_ANY, wid->appendRow->GetLabel());
 		button.Show(false);
 		button.GetSize(&buttwidth, &buttheight);
-		f = wid->appendRow->GetFont();
-		wid->appendRow->GetTextExtent(wid->appendRow->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		f = button.GetFont();
+		button.GetTextExtent(wid->appendRow->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		buttwidth = buttwidth - w;
 		buttheight = buttheight - h;
 		
@@ -455,8 +455,8 @@ void setFonts(InitWidgets* wid) {
 		wxButton button(wid->panel, wxID_ANY, wid->splitPatchButton->GetLabel());
 		button.Show(false);
 		button.GetSize(&buttwidth, &buttheight);
-		f = wid->splitPatchButton->GetFont();
-		wid->splitPatchButton->GetTextExtent(wid->splitPatchButton->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		f = button.GetFont();
+		button.GetTextExtent(wid->splitPatchButton->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		buttwidth = buttwidth - w;
 		buttheight = buttheight - h;
 		
