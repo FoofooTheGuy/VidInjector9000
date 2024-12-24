@@ -1,12 +1,7 @@
 Main menu:
 
 file:
-import seed
 
 options:
 delete temp upon exit
 
-language:
-language drop down
-about:
-window where we show the title logo and link to the github
