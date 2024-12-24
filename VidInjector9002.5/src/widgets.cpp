@@ -1499,7 +1499,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->versionText->GetSize(NULL, &versionheight);
 		wid->gitHubLinker->GetSize(&mywidth, &myheight);
 		
-		wid->gitHubLinker->Move((panelwidth - mywidth) / 2, y + (((panelheight - (y + bymeheight)) - myheight - versionheight) / 2));
+		wid->gitHubLinker->Move((panelwidth - mywidth) / 2, y + bymeheight + (((panelheight - (y + bymeheight)) - myheight - versionheight) / 2));
 	}
 	{//versionText
 		int mywidth, myheight, panelwidth, panelheight;
