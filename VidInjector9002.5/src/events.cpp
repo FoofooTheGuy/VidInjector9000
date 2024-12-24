@@ -867,7 +867,8 @@ void splitPatchDown_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 
 void buildframe_wxEVT_CLOSE_WINDOW(InitWidgets* wid, wxCloseEvent* event) {
 	event->Veto();
-	wid->buildframe->Show(false);
+	//wid->buildframe->Show(false);
+	wid->buildframe->Hide();
 	
 	cancelButton_wxEVT_BUTTON(wid);
 }

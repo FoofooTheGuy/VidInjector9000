@@ -111,7 +111,8 @@ void initAllWidgets(InitWidgets* wid) {
 		wid->buildButton->SetSize(w + (buttwidth * 2), h + (buttheight * 2));
 	}
 	{//extractDialog
-		wid->extractDialog->Show(false);
+		//wid->extractDialog->Show(false);
+		wid->extractDialog->Hide();
 	}
 }
 
@@ -147,7 +148,7 @@ void setFonts(InitWidgets* wid) {
 		buttwidth = buttwidth - w;
 		buttheight = buttheight - h;
 
-		wid->bannerBrowse->SetSize(w + (buttwidth * 2), h + (buttheight * 2));
+		wid->bannerBrowse->SetSize(w + (buttwidth * 2), (h * 2) + buttheight);
 	}
 	{//bannerError
 		int w, h;
@@ -184,7 +185,7 @@ void setFonts(InitWidgets* wid) {
 		buttwidth = buttwidth - w;
 		buttheight = buttheight - h;
 
-		wid->iconBrowse->SetSize(w + (buttwidth * 2), h + (buttheight * 2));
+		wid->iconBrowse->SetSize(w + (buttwidth * 2), (h * 2) + buttheight);
 	}
 	{//iconError
 		int w, h;
@@ -394,7 +395,7 @@ void setFonts(InitWidgets* wid) {
 		buttwidth = buttwidth - w;
 		buttheight = buttheight - h;
 
-		wid->moflexBrowse->SetSize(w + (buttwidth * 2), h + (buttheight * 2));
+		wid->moflexBrowse->SetSize(w + (buttwidth * 2), (h * 2) + buttheight);
 	}
 	{//multiBannerBrowse
 		int w, buttwidth, h, buttheight;
@@ -408,7 +409,7 @@ void setFonts(InitWidgets* wid) {
 		buttwidth = buttwidth - w;
 		buttheight = buttheight - h;
 
-		wid->multiBannerBrowse->SetSize(w + (buttwidth * 2), h + (buttheight * 2));
+		wid->multiBannerBrowse->SetSize(w + (buttwidth * 2), (h * 2) + buttheight);
 	}
 	
 	{//removeRow
@@ -2160,6 +2161,8 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->titleLogo->SetBitmap(wxBitmap(back));
 	}
 	wid->panel->Refresh();
+	wid->buildpanel->Refresh();
+	wid->aboutpanel->Refresh();
 }
 
 int loadParameters(InitWidgets* wid, VI9Pparameters* parameters) {
