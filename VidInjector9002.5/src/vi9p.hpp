@@ -40,9 +40,6 @@ class VI9P
 	static uint8_t MultiBannerIndex;
 };
 
-//todo: delete this and parse cli output for -pp in order to get parameters
-//int loadParameters(std::string parampath, VI9Pparameters* parameters);
-
 /*parse output of -pp from CLI
 input: raw output of -pp
 query: parameter to get the value from (like INT:MULTI)

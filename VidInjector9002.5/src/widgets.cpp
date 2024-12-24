@@ -2537,7 +2537,7 @@ void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 			}
 		}
 	}
-	//loadParameters(wid, parameters);//TODO: stop being lazy and only load what you need
+	
 	int ret = 0;
 	{//-rr
 		wxArrayString output;
