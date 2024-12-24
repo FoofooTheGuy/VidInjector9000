@@ -143,7 +143,7 @@ std::string StrMoflexParam = "STR:MOFLEX";
 std::string StrMBannerParam = "STR:MBANNER";
 std::string IntSplitPatchParam = "INT:SPLITPATCH";
 
-std::string StrDefaultLanguage = "STR:DEFAULT LANGUAGE";
+std::string IntDefaultLanguage = "INT:DEFAULT LANGUAGE";
 std::string IntShowLog = "INT:SHOW LOG";
 std::string IntColorMode = "INT:COLOR MODE";
 std::string IntFrameWidth = "INT:FRAME WIDTH";

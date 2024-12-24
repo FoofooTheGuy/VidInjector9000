@@ -47,48 +47,63 @@ int main(int argc, char* argv[]) {
 					break;
 				case 3:
 					{
-						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + StrDefaultLanguage + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
+						//bad value
 					}
 					break;
 				case 4:
+					{
+						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + IntDefaultLanguage + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
+					}
+					break;
+				case 5:
 					{
 						
 						//xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({})\n{} {}", BadValue, outstr, IntAutoSaveParams, BeANumber), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
 					}
 					break;
-				case 5:
+				case 6:
 					{
 						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + IntShowLog + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
 					}
 					break;
-				case 6:
-					{
-						//bad value
-					}
-					break;
 				case 7:
 					{
-						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + IntColorMode + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
+						//bad value
 					}
 					break;
 				case 8:
 					{
-						//bad value
+						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + IntColorMode + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
 					}
 					break;
 				case 9:
 					{
-						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + IntFrameWidth + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
+						//bad value
 					}
 					break;
 				case 10:
 					{
-						//bad value
+						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + IntFrameWidth + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
 					}
 					break;
 				case 11:
 					{
+						//bad value
+					}
+					break;
+				case 12:
+					{
 						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + IntFrameHeight + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
+					}
+					break;
+				case 13:
+					{
+						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + StrImagesPath + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
+					}
+					break;
+				case 14:
+					{
+						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + StrVideosPath + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
 					}
 					break;
 			}
@@ -168,6 +183,9 @@ int main(int argc, char* argv[]) {
 	wid.consoleLog->Show(Settings::ShowLog);
 	
 	initLanguage(&wid);
+	if(Settings::DefaultLanguage < Languages::LanguageFiles.size())
+		if(loadLanguage(Languages::LanguageFiles.at(Settings::DefaultLanguage).File))
+			applyLanguage(&wid);
 	initAllWidgets(&wid);
 	setFonts(&wid);
 	positionWidgets(&wid, &parameters);
@@ -722,11 +740,13 @@ int main(int argc, char* argv[]) {
 			if(event.GetId() >= ID_LANG1 && event.GetId() <= ID_LANG10) {
 				for(size_t i = 0; i < LANG_IDs.size(); i++) {
 					if(event.GetId() == LANG_IDs.at(i)) {
-						loadLanguage(Language::LanguageFiles.at(i));
-						applyLanguage(&wid);
+						if(loadLanguage(Languages::LanguageFiles.at(i).File))
+							applyLanguage(&wid);
 						setFonts(&wid);
 						positionWidgets(&wid, &parameters);
 						setToolTips(&wid);
+						Settings::DefaultLanguage = i;
+						saveSettings();
 					}
 				}
 			}

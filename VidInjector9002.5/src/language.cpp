@@ -1,13 +1,16 @@
 #include "language.hpp"
 
-std::vector<std::string> Language::LanguageFiles;
+std::vector<Languages::Language> Languages::LanguageFiles;
 
 bool loadLanguage(std::string LangPath) {
 	std::string outstr = "";
-	if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*LangPath.c_str()))) {
+	std::error_code error;
+	if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*LangPath.c_str()), error)) {
 		//xtd::forms::message_box::show(*this, std::string::format("{} \"{}\"", FailedToFindPath, std::string::format("{}/{}/language/{}/Language.txt", ProgramDir, resourcesPath, Lang)), std::string::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
 		return false;
 	}
+	if(error)
+		return false;
 	std::vector<std::string> filelines = fileRead(LangPath);
 	if (filelines.size() == 0)
 		return false;
@@ -108,7 +111,7 @@ void initLanguage(InitWidgets* wid) {
 					std::vector<std::string> filelines = fileRead(entrystr + "/Language.txt");
 					if (parseLines(outstr, filelines, inLangLanguage)) {
 						wxMenuItem* menuItemLanguage = wid->menuLanguage->Append(LANG_IDs.at(slot), wxString::FromUTF8(outstr), "");
-						Language::LanguageFiles.push_back(std::filesystem::absolute(entry.path()).string() + "/Language.txt");
+						Languages::LanguageFiles.push_back({outstr, std::filesystem::absolute(entry.path()).string() + "/Language.txt"});
 						++slot;
 					}
 					//else xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, inLangLanguage, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);

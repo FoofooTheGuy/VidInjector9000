@@ -163,7 +163,7 @@ extern std::string StrMBannerParam;
 extern std::string IntSplitPatchParam;
 
 //settings stuff
-extern std::string StrDefaultLanguage;
+extern std::string IntDefaultLanguage;
 extern std::string IntShowLog;
 extern std::string IntColorMode;
 extern std::string IntFrameWidth;

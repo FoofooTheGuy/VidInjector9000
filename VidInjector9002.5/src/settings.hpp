@@ -13,7 +13,7 @@
 class Settings
 {
 	public:
-    static std::string DefaultLanguage;
+    static int DefaultLanguage;
     static bool ShowLog;
     static int ColorMode;
     static int FrameWidth;
