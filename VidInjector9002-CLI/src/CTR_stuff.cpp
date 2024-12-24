@@ -1610,7 +1610,7 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 				std::cout << ErrorText << ' ' << nnc_strerror(res) << std::endl;
 				return 3;
 			}
-			nnc_free_seeddb(&sdb);
+			//nnc_free_seeddb(&sdb);
 	}
 	else {
 		int ret = 0;
