@@ -527,6 +527,8 @@ int main(int argc, char* argv[]) {
 						setAppearance(&wid, Settings::ColorMode);
 						setCursors(&wid);
 						
+						MenuBanners_wxEVT_TEXT(&wid, &parameters, wid.MenuBanners.at(VI9P::MultiBannerIndex));
+						
 						wid.rowText->SetLabel(wxString::FromUTF8(std::to_string(parameters.rows) + "/27"));
 						wid.multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string(wid.MenuBanners.size())));
 					}
@@ -606,7 +608,11 @@ int main(int argc, char* argv[]) {
 								//choose what dir to extract it to
 								wxDirDialog openDirectoryDialog(wid.frame, wxString::FromUTF8(chooseDirSave), wxEmptyString, wxDD_DIR_MUST_EXIST);
 								if (openDirectoryDialog.ShowModal() == wxID_OK) {
-									Extracted::Archive = std::string(openFileDialog.GetPath().ToUTF8()).substr(0, find);//fix this
+									Extracted::Archive = std::string(openFileDialog.GetPath().ToUTF8()).substr(0, find);
+									size_t start = Extracted::Archive.find_last_of("\\/");
+									if(start == std::string::npos)
+										return;//yeah ok
+									Extracted::Archive = std::string(openDirectoryDialog.GetPath().ToUTF8()) + '/' + Extracted::Archive.substr(start + 1);
 									//async execution
 									{//-ec
 										wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -ec \"" + std::string(openFileDialog.GetPath().ToUTF8()) + "\" \"" + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + seedFile + "\" \"" + Extracted::Archive + '\"');
@@ -639,7 +645,11 @@ int main(int argc, char* argv[]) {
 								//choose what dir to extract it to
 								wxDirDialog openDirectoryDialog(wid.frame, wxString::FromUTF8(chooseDirSave), wxEmptyString, wxDD_DIR_MUST_EXIST);
 								if (openDirectoryDialog.ShowModal() == wxID_OK) {
-									Extracted::Archive = std::string(openFileDialog.GetPath().ToUTF8()).substr(0, find);//fix this
+									Extracted::Archive = std::string(openFileDialog.GetPath().ToUTF8()).substr(0, find);
+									size_t start = Extracted::Archive.find_last_of("\\/");
+									if(start == std::string::npos)
+										return;//yeah ok
+									Extracted::Archive = std::string(openDirectoryDialog.GetPath().ToUTF8()) + '/' + Extracted::Archive.substr(start + 1);
 									//async execution
 									{//-ec
 										wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -et \"" + std::string(openFileDialog.GetPath().ToUTF8()) + "\" \"" + Extracted::Archive + '\"');
