@@ -1499,14 +1499,24 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->versionText->GetSize(NULL, &versionheight);
 		wid->gitHubLinker->GetSize(&mywidth, &myheight);
 		
-		wid->gitHubLinker->Move((panelwidth - mywidth) / 2, y + bymeheight + (((panelheight - (y + bymeheight)) - myheight - versionheight) / 2));
+		if(panelheight > y + bymeheight + myheight + versionheight)
+			wid->gitHubLinker->Move((panelwidth - mywidth) / 2, y + bymeheight + (((panelheight - (y + bymeheight)) - myheight - versionheight) / 2));
+		else
+			wid->gitHubLinker->Move((panelwidth - mywidth) / 2, y + bymeheight);
 	}
 	{//versionText
-		int mywidth, myheight, panelwidth, panelheight;
+		int y, mywidth, myheight, bymeheight, panelwidth, panelheight, linkheight;
+		wid->aboutpanel->GetSize(&panelwidth, &panelheight);
+		wid->byMeText->GetPosition(NULL, &y);
+		wid->byMeText->GetSize(NULL, &bymeheight);
+		wid->gitHubLinker->GetSize(NULL, &linkheight);
 		wid->aboutpanel->GetSize(&panelwidth, &panelheight);
 		wid->versionText->GetSize(&mywidth, &myheight);
 		
-		wid->versionText->Move((panelwidth - mywidth) / 2, panelheight - myheight);
+		if(panelheight > y + bymeheight + linkheight + myheight)
+			wid->versionText->Move((panelwidth - mywidth) / 2, panelheight - myheight);
+		else
+			wid->versionText->Move((panelwidth - mywidth) / 2, y + bymeheight + linkheight);
 	}
 }
 
@@ -1569,6 +1579,7 @@ wxColour BackColor::buildButton;
 wxColour BackColor::cancelButton;
 wxColour BackColor::aboutpanel;
 wxColour BackColor::byMeText;
+wxColour BackColor::versionText;
 
 wxColour ForeColor::panel;
 wxColour ForeColor::mainMenu;
@@ -1629,6 +1640,7 @@ wxColour ForeColor::buildButton;
 wxColour ForeColor::cancelButton;
 wxColour ForeColor::aboutpanel;
 wxColour ForeColor::byMeText;
+wxColour ForeColor::versionText;
 
 void getAppearance(InitWidgets* wid) {
 	BackColor::panel = wid->panel->GetBackgroundColour();
@@ -1690,6 +1702,7 @@ void getAppearance(InitWidgets* wid) {
 	BackColor::cancelButton = wid->cancelButton->GetBackgroundColour();
 	BackColor::aboutpanel = wid->aboutpanel->GetBackgroundColour();
 	BackColor::byMeText = wid->byMeText->GetBackgroundColour();
+	BackColor::versionText = wid->versionText->GetBackgroundColour();
 	
 	ForeColor::panel = wid->panel->GetForegroundColour();
 	ForeColor::mainMenu = wid->mainMenu->GetForegroundColour();
@@ -1750,6 +1763,7 @@ void getAppearance(InitWidgets* wid) {
 	ForeColor::cancelButton = wid->cancelButton->GetForegroundColour();
 	ForeColor::aboutpanel = wid->aboutpanel->GetForegroundColour();
 	ForeColor::byMeText = wid->byMeText->GetForegroundColour();
+	ForeColor::versionText = wid->versionText->GetForegroundColour();
 }
 
 void setAppearance(InitWidgets* wid, int Mode) {
@@ -1813,6 +1827,7 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->cancelButton->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->aboutpanel->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->byMeText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		wid->versionText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		
 		wid->splitPatchLine->SetColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->panel->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
@@ -1874,6 +1889,7 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->cancelButton->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->aboutpanel->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->byMeText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		wid->versionText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		
 		{
 			wxColor LightBlack = wxBLACK->GetRGB() + 0x141414;
@@ -1983,6 +1999,7 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->cancelButton->SetBackgroundColour(BackColor::cancelButton);
 		wid->aboutpanel->SetBackgroundColour(BackColor::aboutpanel);
 		wid->byMeText->SetBackgroundColour(BackColor::byMeText);
+		wid->versionText->SetBackgroundColour(BackColor::versionText);
 		
 		wid->panel->SetForegroundColour(ForeColor::panel);
 		wid->mainMenu->SetForegroundColour(ForeColor::mainMenu);
@@ -2044,6 +2061,7 @@ void setAppearance(InitWidgets* wid, int Mode) {
 		wid->cancelButton->SetForegroundColour(ForeColor::cancelButton);
 		wid->aboutpanel->SetForegroundColour(ForeColor::aboutpanel);
 		wid->byMeText->SetForegroundColour(ForeColor::byMeText);
+		wid->versionText->SetForegroundColour(ForeColor::versionText);
 		
 		{
 			wxColor BackOdd = (BackColor::bannerBox.GetRGB() < 0x7F7F7F) ? (BackColor::bannerBox.GetRGB() + 0x141414) : (BackColor::bannerBox.GetRGB() - 0x141414);//FF/2=7F

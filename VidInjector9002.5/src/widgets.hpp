@@ -206,7 +206,7 @@ struct InitWidgets {
 	wxTimer* extractPulser = new wxTimer();
 	wxTimer* extractLogger = new wxTimer();
 	
-	wxFrame* aboutframe = new wxFrame(frame, wxID_ANY, wxString::FromUTF8(aboutFrameText), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxCLOSE_BOX|wxFRAME_FLOAT_ON_PARENT|wxCLIP_CHILDREN);
+	wxFrame* aboutframe = new wxFrame(frame, wxID_ANY, wxString::FromUTF8(aboutFrameText), wxDefaultPosition, wxDefaultSize, wxRESIZE_BORDER|wxCAPTION|wxCLOSE_BOX|wxFRAME_FLOAT_ON_PARENT|wxCLIP_CHILDREN);
 	wxPanel* aboutpanel = new wxPanel(aboutframe);
 	wxStaticBitmap* titleLogo = new wxStaticBitmap(aboutpanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	wxStaticText* byMeText = new wxStaticText(aboutpanel, wxID_ANY, wxString::FromUTF8(ByMeText));
@@ -287,6 +287,7 @@ class ForeColor
 	static wxColour cancelButton;
 	static wxColour aboutpanel;
 	static wxColour byMeText;
+	static wxColour versionText;
 };
 
 class BackColor
@@ -351,6 +352,7 @@ class BackColor
 	static wxColour cancelButton;
 	static wxColour aboutpanel;
 	static wxColour byMeText;
+	static wxColour versionText;
 };
 
 void getAppearance(InitWidgets* wid);
