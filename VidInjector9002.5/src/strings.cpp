@@ -1,6 +1,7 @@
 #include "strings.hpp"
 
 wxString ProgramDir;
+std::string version = "VidInjector9000 ver. 3.5";
 
 std::string Language = "English";
 std::string ErrorText = "Error:";

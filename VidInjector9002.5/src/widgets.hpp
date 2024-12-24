@@ -211,6 +211,7 @@ struct InitWidgets {
 	wxStaticBitmap* titleLogo = new wxStaticBitmap(aboutpanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	wxStaticText* byMeText = new wxStaticText(aboutpanel, wxID_ANY, wxString::FromUTF8(ByMeText));
 	wxHyperlinkCtrl* gitHubLinker = new wxHyperlinkCtrl(aboutpanel, wxID_ANY, wxString::FromUTF8(GitHubLinker), wxString::FromUTF8(githubRepoLink));
+	wxStaticText* versionText = new wxStaticText(aboutpanel, wxID_ANY, wxString::FromUTF8(version));
 };
 
 void initLanguage(InitWidgets* wid);

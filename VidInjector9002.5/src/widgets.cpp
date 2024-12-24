@@ -1492,13 +1492,21 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->byMeText->Move(x + ((titlewidth - mywidth) / 2), y + titleheight);
 	}
 	{//gitHubLinker
-		int y, mywidth, myheight, bymeheight, panelwidth, panelheight;
+		int y, mywidth, myheight, bymeheight, panelwidth, panelheight, versionheight;
 		wid->aboutpanel->GetSize(&panelwidth, &panelheight);
 		wid->byMeText->GetPosition(NULL, &y);
 		wid->byMeText->GetSize(NULL, &bymeheight);
+		wid->versionText->GetSize(NULL, &versionheight);
 		wid->gitHubLinker->GetSize(&mywidth, &myheight);
 		
-		wid->gitHubLinker->Move((panelwidth - mywidth) / 2, y + (((panelheight - (y + bymeheight)) - myheight) / 2));
+		wid->gitHubLinker->Move((panelwidth - mywidth) / 2, y + (((panelheight - (y + bymeheight)) - myheight - versionheight) / 2));
+	}
+	{//versionText
+		int mywidth, myheight, panelwidth, panelheight;
+		wid->aboutpanel->GetSize(&panelwidth, &panelheight);
+		wid->versionText->GetSize(&mywidth, &myheight);
+		
+		wid->versionText->Move((panelwidth - mywidth) / 2, panelheight - myheight);
 	}
 }
 

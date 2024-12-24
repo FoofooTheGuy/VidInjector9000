@@ -6,6 +6,7 @@
 
 //internal
 extern wxString ProgramDir;
+extern std::string version;
 
 //important
 extern std::string ErrorText;
