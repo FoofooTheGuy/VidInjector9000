@@ -80,7 +80,7 @@ extern std::string Cancel;
 extern std::string SuccessfullyBuilt;
 extern std::string SuccessfullyExtracted;
 extern std::string extractingArchive;
-extern std::string clickCancel;
+extern std::string clickToCancel;
 extern std::string ByMeText;
 extern std::string GitHubLinker;
 
@@ -237,7 +237,7 @@ extern std::string inLangCancel;
 extern std::string inLangSuccessfullyBuilt;
 extern std::string inLangSuccessfullyExtracted;
 extern std::string inLangextractingArchive;
-extern std::string inLangclickCancel;
+extern std::string inLangclickToCancel;
 extern std::string inLangByMeText;
 extern std::string inLangGitHubLinker;
 extern std::string inLangonlyMultiVideo;

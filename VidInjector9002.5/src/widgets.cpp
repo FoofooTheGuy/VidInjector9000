@@ -3,6 +3,7 @@
 std::string Exports::CIA = "";
 std::string Exports::TAR = "";
 std::string Extracted::Archive = "";
+bool Extracted::noError = false;
 
 void initAllWidgets(InitWidgets* wid) {
 	//main menu
@@ -111,8 +112,7 @@ void initAllWidgets(InitWidgets* wid) {
 		wid->buildButton->SetSize(w + (buttwidth * 2), h + (buttheight * 2));
 	}
 	{//extractDialog
-		//wid->extractDialog->Show(false);
-		wid->extractDialog->Hide();
+		wid->extractDialog->Destroy();
 	}
 }
 
@@ -2486,23 +2486,23 @@ void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 		int count = wid->PlayerTitles.size() - parameters->rows;
 		if(wid->PlayerTitles.size() - count >= 0) {
 			for(uint8_t i = 0; i < count; i++) {
-				delete wid->PlayerTitles.back();
+				wid->PlayerTitles.back()->Destroy();
 				wid->PlayerTitles.pop_back();
 			}
 			for(uint8_t i = 0; i < count; i++) {
-				delete wid->MoflexFiles.back();
+				wid->MoflexFiles.back()->Destroy();
 				wid->MoflexFiles.pop_back();
 			}
 			for(uint8_t i = 0; i < count; i++) {
-				delete wid->MenuBanners.back();
+				wid->MenuBanners.back()->Destroy();
 				wid->MenuBanners.pop_back();
 			}
 			for(uint8_t i = 0; i < count; i++) {
-				delete wid->MultiUp.back();
+				wid->MultiUp.back()->Destroy();
 				wid->MultiUp.pop_back();
 			}
 			for(uint8_t i = 0; i < count; i++) {
-				delete wid->MultiDown.back();
+				wid->MultiDown.back()->Destroy();
 				wid->MultiDown.pop_back();
 			}
 		}
@@ -2716,23 +2716,23 @@ void removeRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 		int count = wid->PlayerTitles.size() - parameters->rows;
 		if(parameters->rows - count >= 0) {//???????????????????
 			for(uint8_t i = 0; i < count; i++) {
-				delete wid->PlayerTitles.back();
+				wid->PlayerTitles.back()->Destroy();
 				wid->PlayerTitles.pop_back();
 			}
 			for(uint8_t i = 0; i < count; i++) {
-				delete wid->MoflexFiles.back();
+				wid->MoflexFiles.back()->Destroy();
 				wid->MoflexFiles.pop_back();
 			}
 			for(uint8_t i = 0; i < count; i++) {
-				delete wid->MenuBanners.back();
+				wid->MenuBanners.back()->Destroy();
 				wid->MenuBanners.pop_back();
 			}
 			for(uint8_t i = 0; i < count; i++) {
-				delete wid->MultiUp.back();
+				wid->MultiUp.back()->Destroy();
 				wid->MultiUp.pop_back();
 			}
 			for(uint8_t i = 0; i < count; i++) {
-				delete wid->MultiDown.back();
+				wid->MultiDown.back()->Destroy();
 				wid->MultiDown.pop_back();
 			}
 		}

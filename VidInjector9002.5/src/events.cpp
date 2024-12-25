@@ -867,8 +867,7 @@ void splitPatchDown_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 
 void buildframe_wxEVT_CLOSE_WINDOW(InitWidgets* wid, wxCloseEvent* event) {
 	event->Veto();
-	//wid->buildframe->Show(false);
-	wid->buildframe->Hide();
+	wid->buildframe->Show(false);
 	
 	cancelButton_wxEVT_BUTTON(wid);
 }
@@ -1034,6 +1033,17 @@ void exportLogger_wxEVT_TIMER(InitWidgets* wid) {
 
 void extractDialog_wxEVT_CLOSE_WINDOW(InitWidgets* wid, wxCloseEvent* event) {
 	event->Veto();
+	int ret = 0;
+	ret = wxProcess::Kill(wid->extractArchive->GetPid(), wxSIGTERM, wxKILL_CHILDREN);
+	if(ret != wxKILL_OK) {
+		if(!Extracted::noError) {
+			wxLogError(wxString::FromUTF8(ErrorText + ' ' + std::to_string(ret) + "\n(" + std::to_string(ret) + ')'));
+		}
+		Extracted::noError = false;
+		return;
+	}
+	wxProcessEvent noEvent(0, 0, 0);
+	extractArchive_wxEVT_END_PROCESS(wid, &noEvent);
 }
 
 void extractArchive_wxEVT_END_PROCESS(InitWidgets* wid, wxProcessEvent* event) {
@@ -1056,17 +1066,17 @@ void extractArchive_wxEVT_END_PROCESS(InitWidgets* wid, wxProcessEvent* event) {
 	}
 	wid->extractLogger->Stop();
 	wid->extractPulser->Stop();
-	//wid->extractDialog->SetValue(0);
-	wid->extractDialog->Show(false);
 	wid->frame->Enable(true);
 	setCursors(wid);
+	Extracted::noError = true;
+	wid->extractDialog->Close();
 }
 
 void extractPulser_wxEVT_TIMER(InitWidgets* wid) {
 	wid->extractDialog->Pulse();
 	
 	//cancel
-	if(wid->extractDialog->WasCancelled()) {
+	/*if(wid->extractDialog->WasCancelled()) {
 		int ret = 0;
 		ret = wxProcess::Kill(wid->extractArchive->GetPid(), wxSIGTERM, wxKILL_CHILDREN);
 		if(ret != wxKILL_OK) {
@@ -1075,7 +1085,7 @@ void extractPulser_wxEVT_TIMER(InitWidgets* wid) {
 		}
 		wxProcessEvent event(0, 0, 0);
 		extractArchive_wxEVT_END_PROCESS(wid, &event);
-	}
+	}*/
 }
 
 void extractLogger_wxEVT_TIMER(InitWidgets* wid) {
