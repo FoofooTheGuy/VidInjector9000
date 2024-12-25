@@ -64,11 +64,13 @@ int main(int argc, char* argv[]) {
 	}
 	
 	std::ofstream loadLanguageCpp_("loadLanguage.cpp", std::ios_base::out | std::ios_base::binary);
-	loadLanguageCpp_ << "bool loadLanguage(std::string Lang) {"
+	loadLanguageCpp_ << "bool loadLanguage(std::string LangPath) {"
 						"\n"
 						"	std::string outstr = \"\";"
 						"\n"
-						"	if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + languagePath + '/' + Lang).c_str()))) {"
+						"	std::error_code error;"
+						"\n"
+						"	if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*LangPath.c_str()), error)) {"
 						"\n"
 						"		//xtd::forms::message_box::show(*this, std::string::format(\"{} \\\"{}\\\"\", FailedToFindPath, std::string::format(\"{}/{}/language/{}/Language.txt\", ProgramDir, resourcesPath, Lang)), std::string::format(\"{} {}\", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);"
 						"\n"
@@ -76,7 +78,11 @@ int main(int argc, char* argv[]) {
 						"\n"
 						"	}"
 						"\n"
-						"	std::vector<std::string> filelines = fileRead(std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + languagePath + '/' + Lang + \"/language.txt\"));"
+						"	if(error)"
+						"\n"
+						"		return false;"
+						"\n"
+						"	std::vector<std::string> filelines = fileRead(LangPath);"
 						"\n"
 						"	if (filelines.size() == 0)"
 						"\n"
