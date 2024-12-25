@@ -38,7 +38,6 @@ class Extracted
 {
 	public:
 	static std::string Archive;
-	static bool noError;
 };
 
 enum wxOwnedID {

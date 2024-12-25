@@ -662,10 +662,10 @@ int main(int argc, char* argv[]) {
 						
 						wid.frame->Enable(false);
 						setCursors(&wid);
-						wid.extractDialog = new wxProgressDialog(wxString::FromUTF8(extractingArchive), wxString::FromUTF8(clickToCancel), 1, wid.frame, wxPD_APP_MODAL);//dialog main source
+						wid.extractDialog = new wxProgressDialog(wxString::FromUTF8(extractingArchive), wxString::FromUTF8(clickToCancel), 1, wid.frame, wxPD_APP_MODAL|wxPD_CAN_ABORT);//dialog main source
 						wid.extractDialog->Bind(wxEVT_CLOSE_WINDOW, [&](wxCloseEvent& event) {
 							extractDialog_wxEVT_CLOSE_WINDOW(&wid, &event);
-							wid.extractDialog->Destroy();
+							//wid.extractDialog->Destroy();
 						});
 						wid.extractPulser->Start(100);
 						wid.extractLogger->Start(1);
@@ -793,6 +793,7 @@ int main(int argc, char* argv[]) {
 	
 	wid.extractArchive->Bind(wxEVT_END_PROCESS, [&](wxProcessEvent& event) {
 		extractArchive_wxEVT_END_PROCESS(&wid, &event);
+		wid.extractDialog->Destroy();
 	});
 
 	wid.extractPulser->Bind(wxEVT_TIMER, [&](wxTimerEvent& event) {

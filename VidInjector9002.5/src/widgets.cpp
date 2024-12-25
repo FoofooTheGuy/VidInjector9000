@@ -3,7 +3,6 @@
 std::string Exports::CIA = "";
 std::string Exports::TAR = "";
 std::string Extracted::Archive = "";
-bool Extracted::noError = false;
 
 void initAllWidgets(InitWidgets* wid) {
 	//main menu
