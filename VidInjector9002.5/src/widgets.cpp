@@ -653,6 +653,8 @@ void setToolTips(InitWidgets* wid) {
 	wid->titleIDButton->SetToolTip(wxString::FromUTF8(titleIDButtonTip));
 	wid->applicationTitleBox->SetToolTip(wxString::FromUTF8(applicationTitleBoxTip));
 	wid->productCodeBox->SetToolTip(wxString::FromUTF8(productCodeBoxTip));
+	wid->buildButton->SetToolTip(wxString::FromUTF8(buildButtonTip));
+	wid->cancelButton->SetToolTip(wxString::FromUTF8(cancelButtonTip));
 	
 	wid->titleLogo->SetToolTip(wxString::FromUTF8(frameText));
 	wid->gitHubLinker->SetToolTip(wxString::FromUTF8(githubRepoLink));

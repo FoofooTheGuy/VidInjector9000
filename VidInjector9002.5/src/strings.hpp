@@ -119,6 +119,8 @@ extern std::string titleIDBoxTip;
 extern std::string titleIDButtonTip;
 extern std::string applicationTitleBoxTip;
 extern std::string productCodeBoxTip;
+extern std::string buildButtonTip;
+extern std::string cancelButtonTip;
 
 //file stuffs (todo: image files? i dont know what all the image file extensions can be so maybe i'll just leave it at all files)
 extern std::string chooseDirSave;
@@ -274,6 +276,8 @@ extern std::string inLangtitleIDBoxTip;
 extern std::string inLangtitleIDButtonTip;
 extern std::string inLangapplicationTitleBoxTip;
 extern std::string inLangproductCodeBoxTip;
+extern std::string inLangbuildButtonTip;
+extern std::string inLangcancelButtonTip;
 extern std::string inLangchooseDirSave;
 extern std::string inLangmoflexFiles;
 extern std::string inLangextractFiles;
