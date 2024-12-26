@@ -599,6 +599,7 @@ void MultiUp_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters, wxButton
 				return;
 			if(!row->IsShown())
 				return;
+			row->Enable(false);//disable so you can't press it too much
 			if(rowReal > 0) {
 				//the stuff will get saved if the text in the boxes changes so dont save here
 				{//PlayerTitles
@@ -617,6 +618,7 @@ void MultiUp_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters, wxButton
 					wid->MenuBanners.at(rowReal - 1)->SetValue(tempStr);
 				}
 			}
+			row->Enable(true);
 		}
 	}
 }
@@ -629,6 +631,7 @@ void MultiDown_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters, wxButt
 				return;
 			if(!row->IsShown())
 				return;
+			row->Enable(false);//disable so you can't press it too much
 			if(rowReal < wid->MultiDown.size()) {
 				//the stuff will get saved if the text in the boxes changes so dont save here
 				{//PlayerTitles
@@ -647,6 +650,7 @@ void MultiDown_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters, wxButt
 					wid->MenuBanners.at(rowReal + 1)->SetValue(tempStr);
 				}
 			}
+			row->Enable(true);
 		}
 	}
 }
