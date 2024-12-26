@@ -194,6 +194,57 @@ int main(int argc, char* argv[]) {
 	setAppearance(&wid, Settings::ColorMode);
 	setCursors(&wid);
 	
+	auto loadVI9P = [&](std::string VI9Pfile) {
+		VI9P::WorkingFile = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "parameters.vi9p";
+		VI9P::OutFile = VI9Pfile;
+		
+		std::error_code error;
+		error = copyfile(VI9P::OutFile, VI9P::WorkingFile);//copy chosen file to temp
+		if (error) {
+			wxMessageBox(wxString::FromUTF8(CopyFileError + '\n' + VI9P::OutFile + " -> " +  VI9P::WorkingFile + '\n' + error.message()), wxString::FromUTF8(ErrorText));
+		}
+		
+		VI9P::MultiBannerIndex = 0;
+		loadParameters(&wid, &parameters);
+		positionWidgets(&wid, &parameters);
+		
+		//well what do you know... it worked
+		for(const auto &row : wid.PlayerTitles) {
+			row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
+				PlayerTitles_wxEVT_TEXT(&wid, &parameters, row);
+			});
+		}
+		for(const auto &row : wid.MoflexFiles) {
+			row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
+				MoflexFiles_wxEVT_TEXT(&wid, &parameters, row);
+			});
+		}
+		for(const auto &row : wid.MenuBanners) {
+			row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
+				MenuBanners_wxEVT_TEXT(&wid, &parameters, row);
+			});
+		}
+		for(const auto &row : wid.MultiUp) {
+			row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
+				MultiUp_wxEVT_BUTTON(&wid, &parameters, row);
+			});
+		}
+		for(const auto &row : wid.MultiDown) {
+			row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
+				MultiDown_wxEVT_BUTTON(&wid, &parameters, row);
+			});
+		}
+		ShowPatchUpDown(&wid, &parameters);
+		ShowMultiUpDown(&wid);
+		setAppearance(&wid, Settings::ColorMode);
+		setCursors(&wid);
+		
+		MenuBanners_wxEVT_TEXT(&wid, &parameters, wid.MenuBanners.at(VI9P::MultiBannerIndex));
+		
+		wid.rowText->SetLabel(wxString::FromUTF8(std::to_string(parameters.rows) + "/27"));
+		wid.multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string(wid.MenuBanners.size())));
+	};
+	
 	wid.panel->Bind(wxEVT_SIZE, [&](wxSizeEvent& event) {
 		panel_wxEVT_SIZE(&wid, &parameters);
 	});
@@ -483,54 +534,7 @@ int main(int argc, char* argv[]) {
 					wxFileDialog openFileDialog(wid.frame, wxEmptyString, wxEmptyString, wxEmptyString, wxString::FromUTF8(vi9pFiles), wxFD_OPEN|wxFD_FILE_MUST_EXIST);
 					openFileDialog.SetFilterIndex(0);
 					if (openFileDialog.ShowModal() == wxID_OK) {
-						VI9P::WorkingFile = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "parameters.vi9p";
-						VI9P::OutFile = std::string(openFileDialog.GetPath().ToUTF8());
-						
-						std::error_code error;
-						error = copyfile(VI9P::OutFile, VI9P::WorkingFile);//copy chosen file to temp
-						if (error) {
-							wxMessageBox(wxString::FromUTF8(CopyFileError + '\n' + VI9P::OutFile + " -> " +  VI9P::WorkingFile + '\n' + error.message()), wxString::FromUTF8(ErrorText));
-						}
-						
-						VI9P::MultiBannerIndex = 0;
-						loadParameters(&wid, &parameters);
-						positionWidgets(&wid, &parameters);
-						
-						//well what do you know... it worked
-						for(const auto &row : wid.PlayerTitles) {
-							row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
-								PlayerTitles_wxEVT_TEXT(&wid, &parameters, row);
-							});
-						}
-						for(const auto &row : wid.MoflexFiles) {
-							row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
-								MoflexFiles_wxEVT_TEXT(&wid, &parameters, row);
-							});
-						}
-						for(const auto &row : wid.MenuBanners) {
-							row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
-								MenuBanners_wxEVT_TEXT(&wid, &parameters, row);
-							});
-						}
-						for(const auto &row : wid.MultiUp) {
-							row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
-								MultiUp_wxEVT_BUTTON(&wid, &parameters, row);
-							});
-						}
-						for(const auto &row : wid.MultiDown) {
-							row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
-								MultiDown_wxEVT_BUTTON(&wid, &parameters, row);
-							});
-						}
-						ShowPatchUpDown(&wid, &parameters);
-						ShowMultiUpDown(&wid);
-						setAppearance(&wid, Settings::ColorMode);
-						setCursors(&wid);
-						
-						MenuBanners_wxEVT_TEXT(&wid, &parameters, wid.MenuBanners.at(VI9P::MultiBannerIndex));
-						
-						wid.rowText->SetLabel(wxString::FromUTF8(std::to_string(parameters.rows) + "/27"));
-						wid.multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string(wid.MenuBanners.size())));
+						loadVI9P(std::string(openFileDialog.GetPath().ToUTF8()));
 					}
 				}
 				break;
@@ -839,52 +843,7 @@ int main(int argc, char* argv[]) {
 		find = v.find_last_of(".");
 		if (find > v.size()) find = 0;//if find_first_of fails, this flings in the first numeral
 		if (v.substr(find) == ".vi9p") {
-			VI9P::WorkingFile = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "parameters.vi9p";
-			VI9P::OutFile = v;
-			
-			std::error_code error;
-			error = copyfile(VI9P::OutFile, VI9P::WorkingFile);//copy chosen file to temp
-			if (error) {
-				wxMessageBox(wxString::FromUTF8(CopyFileError + '\n' + VI9P::OutFile + " -> " +  VI9P::WorkingFile + '\n' + error.message()), wxString::FromUTF8(ErrorText));
-			}
-			
-			VI9P::MultiBannerIndex = 0;
-			loadParameters(&wid, &parameters);
-			positionWidgets(&wid, &parameters);
-			
-			//well what do you know... it worked
-			for(const auto &row : wid.PlayerTitles) {
-				row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
-					PlayerTitles_wxEVT_TEXT(&wid, &parameters, row);
-				});
-			}
-			for(const auto &row : wid.MoflexFiles) {
-				row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
-					MoflexFiles_wxEVT_TEXT(&wid, &parameters, row);
-				});
-			}
-			for(const auto &row : wid.MenuBanners) {
-				row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
-					MenuBanners_wxEVT_TEXT(&wid, &parameters, row);
-				});
-			}
-			for(const auto &row : wid.MultiUp) {
-				row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
-					MultiUp_wxEVT_BUTTON(&wid, &parameters, row);
-				});
-			}
-			for(const auto &row : wid.MultiDown) {
-				row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
-					MultiDown_wxEVT_BUTTON(&wid, &parameters, row);
-				});
-			}
-			ShowPatchUpDown(&wid, &parameters);
-			ShowMultiUpDown(&wid);
-			setAppearance(&wid, Settings::ColorMode);
-			setCursors(&wid);
-			
-			wid.rowText->SetLabel(wxString::FromUTF8(std::to_string(parameters.rows) + "/27"));
-			wid.multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string(wid.MenuBanners.size())));
+			loadVI9P(v);
 		}
 	}
 	
