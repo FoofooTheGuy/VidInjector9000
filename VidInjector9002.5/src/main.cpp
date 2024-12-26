@@ -603,45 +603,46 @@ int main(int argc, char* argv[]) {
 						VI9P::WorkingFile = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "parameters.vi9p";
 						
 						size_t find = tolowerstr(std::string(openFileDialog.GetPath().ToUTF8())).rfind(".cia");//chosen .cia file
-						if(find == std::string::npos)
-							return;
-						if(strcmp(tolowerstr(std::string(openFileDialog.GetPath().ToUTF8())).substr(find).c_str(), ".cia") != 0)
-							return;
-						//choose what dir to extract it to
-						wxDirDialog openDirectoryDialog(wid.frame, wxString::FromUTF8(chooseDirSave), wxEmptyString, wxDD_DIR_MUST_EXIST);
-						if (openDirectoryDialog.ShowModal() != wxID_OK)
-							return;
-						Extracted::Archive = std::string(openFileDialog.GetPath().ToUTF8()).substr(0, find);
-						size_t start = Extracted::Archive.find_last_of("\\/");
-						if(start == std::string::npos)
-							return;//yeah ok
-						Extracted::Archive = std::string(openDirectoryDialog.GetPath().ToUTF8()) + '/' + Extracted::Archive.substr(start + 1);
-						//async execution
-						{//-ec
-							wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -ec \"" + std::string(openFileDialog.GetPath().ToUTF8()) + "\" \"" + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + seedFile + "\" \"" + Extracted::Archive + '\"');
-							wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-							
-							wid.extractArchive->Redirect();
-							
-							long PID = wxExecute(command, wxEXEC_MAKE_GROUP_LEADER|wxEXEC_ASYNC, wid.extractArchive);
-							
-							if (PID = 0) {
-								wxLogError(wxString::FromUTF8(ErrorText + ' ' + command));
-								return;
+						if(find != std::string::npos) {
+							if(strcmp(tolowerstr(std::string(openFileDialog.GetPath().ToUTF8())).substr(find).c_str(), ".cia") == 0) {								
+								Extracted::Archive = std::string(openFileDialog.GetPath().ToUTF8()).substr(0, find);
+								size_t start = Extracted::Archive.find_last_of("\\/");
+								if(start == std::string::npos)
+									return;//yeah ok
+								
+								//choose what dir to extract it to
+								wxDirDialog openDirectoryDialog(wid.frame, wxString::FromUTF8(chooseDirSave), wxString::FromUTF8(Extracted::Archive.substr(0, start)), wxDD_DIR_MUST_EXIST);
+								if (openDirectoryDialog.ShowModal() != wxID_OK)
+									return;
+								Extracted::Archive = std::string(openDirectoryDialog.GetPath().ToUTF8()) + '/' + Extracted::Archive.substr(start + 1);
+								//async execution
+								{//-ec
+									wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -ec \"" + std::string(openFileDialog.GetPath().ToUTF8()) + "\" \"" + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + seedFile + "\" \"" + Extracted::Archive + '\"');
+									wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+									
+									wid.extractArchive->Redirect();
+									
+									long PID = wxExecute(command, wxEXEC_MAKE_GROUP_LEADER|wxEXEC_ASYNC, wid.extractArchive);
+									
+									if (PID = 0) {
+										wxLogError(wxString::FromUTF8(ErrorText + ' ' + command));
+										return;
+									}
+								}
 							}
 						}
 						
 						find = tolowerstr(std::string(openFileDialog.GetPath().ToUTF8())).rfind(".tar");//chosen .tar file
 						if(find != std::string::npos) {
 							if(strcmp(tolowerstr(std::string(openFileDialog.GetPath().ToUTF8())).substr(find).c_str(), ".tar") == 0) {
-								//choose what dir to extract it to
-								wxDirDialog openDirectoryDialog(wid.frame, wxString::FromUTF8(chooseDirSave), wxEmptyString, wxDD_DIR_MUST_EXIST);
-								if (openDirectoryDialog.ShowModal() != wxID_OK)
-									return;
 								Extracted::Archive = std::string(openFileDialog.GetPath().ToUTF8()).substr(0, find);
 								size_t start = Extracted::Archive.find_last_of("\\/");
 								if(start == std::string::npos)
 									return;//yeah ok
+								//choose what dir to extract it to
+								wxDirDialog openDirectoryDialog(wid.frame, wxString::FromUTF8(chooseDirSave), wxString::FromUTF8(Extracted::Archive.substr(0, start)), wxDD_DIR_MUST_EXIST);
+								if (openDirectoryDialog.ShowModal() != wxID_OK)
+									return;
 								Extracted::Archive = std::string(openDirectoryDialog.GetPath().ToUTF8()) + '/' + Extracted::Archive.substr(start + 1);
 								//async execution
 								{//-ec
