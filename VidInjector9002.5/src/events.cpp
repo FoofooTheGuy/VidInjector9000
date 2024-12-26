@@ -876,6 +876,11 @@ void buildpanel_wxEVT_SIZE(InitWidgets* wid, VI9Pparameters* parameters) {
 	positionWidgets(wid, parameters);
 }
 
+void titleIDBox_wxEVT_TEXT(InitWidgets* wid) {
+	wid->titleIDBox->ForceUpper();
+	wid->titleIDBox->SetInsertionPoint(wid->titleIDBox->GetInsertionPoint() + 1);
+}
+
 void titleIDButton_wxEVT_BUTTON(InitWidgets* wid) {
 	if(!wid->titleIDButton->IsEnabled())
 		return;
@@ -931,13 +936,13 @@ void exportArchive_wxEVT_END_PROCESS(InitWidgets* wid, wxProcessEvent* event) {
 void buildButton_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 	if(!wid->buildButton->IsEnabled())
 		return;
-	std::string uniqueID = std::string(wid->titleIDBox->GetValue().ToUTF8());
+	std::string uniqueID = toupperstr(std::string(wid->titleIDBox->GetValue().ToUTF8()));
 	std::string appName = std::string(wid->applicationTitleBox->GetValue().ToUTF8());
 	std::string prodCode = std::string(wid->productCodeBox->GetValue().ToUTF8());
 	
 	Exports::CIA = "";
 	Exports::TAR = "";
-	wxFileDialog saveCIADialog(wid->frame, wxEmptyString, wxEmptyString, wxString::FromUTF8(std::string(wid->longnameBox->GetValue().ToUTF8()) + " [000400000" + std::string(wid->titleIDBox->GetValue().ToUTF8()) + "00].cia"), wxString::FromUTF8(ciaFiles), wxFD_SAVE);
+	wxFileDialog saveCIADialog(wid->frame, wxEmptyString, wxEmptyString, wxString::FromUTF8(std::string(wid->longnameBox->GetValue().ToUTF8()) + " [000400000" + uniqueID + "00].cia"), wxString::FromUTF8(ciaFiles), wxFD_SAVE);
 	if (saveCIADialog.ShowModal() != wxID_OK) {
 		return;
 	}

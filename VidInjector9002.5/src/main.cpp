@@ -772,6 +772,10 @@ int main(int argc, char* argv[]) {
 		buildpanel_wxEVT_SIZE(&wid, &parameters);
 	});
 
+	wid.titleIDBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
+		titleIDBox_wxEVT_TEXT(&wid);
+	});
+
 	wid.titleIDButton->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		titleIDButton_wxEVT_BUTTON(&wid);
 	});
