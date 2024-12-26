@@ -230,8 +230,6 @@ int main(int argc, char* argv[]) {
 		
 		wid.rowText->SetLabel(wxString::FromUTF8(std::to_string(parameters.rows) + "/27"));
 		wid.multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string(wid.MenuBanners.size())));
-		
-		MenuBanners_wxEVT_TEXT(&wid, &parameters, wid.MenuBanners.at(VI9P::MultiBannerIndex));
 	};
 	
 	auto loadVI9P = [&](std::string VI9Pfile) {
@@ -249,6 +247,8 @@ int main(int argc, char* argv[]) {
 		positionWidgets(&wid, &parameters);
 		
 		applyAddRows();
+		
+		MenuBanners_wxEVT_TEXT(&wid, &parameters, wid.MenuBanners.at(VI9P::MultiBannerIndex));
 	};
 	
 	wid.panel->Bind(wxEVT_SIZE, [&](wxSizeEvent& event) {
@@ -462,11 +462,7 @@ int main(int argc, char* argv[]) {
 						wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 					}
 					
-					VI9P::MultiBannerIndex = 0;
-					loadParameters(&wid, &parameters);
-					positionWidgets(&wid, &parameters);
-					
-					applyAddRows();
+					loadVI9P(VI9P::WorkingFile);
 				}
 				break;
 			case wxID_OPEN:
