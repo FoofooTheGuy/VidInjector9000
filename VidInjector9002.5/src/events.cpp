@@ -673,9 +673,11 @@ void moflexBrowse_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 		if(paths.GetCount() == 1) {
 			wid->MoflexFiles.at(row)->SetValue(paths.Last());
 		}
-		for(size_t i = 0; i < paths.GetCount(); i++) {
-			if(i < wid->MoflexFiles.size())
-				wid->MoflexFiles.at(i)->SetValue(paths.Item(i));
+		else {
+			for(size_t i = 0; i < paths.GetCount(); i++) {
+				if(i < wid->MoflexFiles.size())
+					wid->MoflexFiles.at(i)->SetValue(paths.Item(i));
+			}
 		}
 	}
 }
