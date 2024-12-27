@@ -696,7 +696,7 @@ void multiBannerBrowse_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters
 		openFileDialog.GetPaths(paths);
 		paths.Sort();
 		if(paths.GetCount() == 1) {
-			wid->MenuBanners.at(row)->SetValue(paths.Last());//todo: fix this or something
+			wid->MenuBanners.at(row)->SetValue(paths.Last());
 		}
 		else {
 			for(size_t i = 0; i < paths.GetCount(); i++) {
