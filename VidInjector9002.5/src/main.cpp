@@ -32,22 +32,22 @@ int main(int argc, char* argv[]) {
 			switch(i) {
 				case 0:
 					{
-						
+						//:)
 					}
 					break;
 				case 1:
 					{
-						
+						//uhhh i dont care
 					}
 					break;
 				case 2:
 					{
-						
+						//
 					}
 					break;
 				case 3:
 					{
-						//bad value
+						wxMessageBox(wxString::FromUTF8(BadValue + ' ' + IntDefaultLanguage + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + BadValue), wxICON_ERROR);
 					}
 					break;
 				case 4:
@@ -57,8 +57,7 @@ int main(int argc, char* argv[]) {
 					break;
 				case 5:
 					{
-						
-						//xtd::forms::message_box::show(*this, xtd::ustring::format("{} ({})\n{} {}", BadValue, outstr, IntAutoSaveParams, BeANumber), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+						wxMessageBox(wxString::FromUTF8(BadValue + ' ' + IntShowLog + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + BadValue), wxICON_ERROR);
 					}
 					break;
 				case 6:
@@ -68,7 +67,7 @@ int main(int argc, char* argv[]) {
 					break;
 				case 7:
 					{
-						//bad value
+						wxMessageBox(wxString::FromUTF8(BadValue + ' ' + IntColorMode + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + BadValue), wxICON_ERROR);
 					}
 					break;
 				case 8:
@@ -78,7 +77,7 @@ int main(int argc, char* argv[]) {
 					break;
 				case 9:
 					{
-						//bad value
+						wxMessageBox(wxString::FromUTF8(BadValue + ' ' + IntFrameWidth + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + BadValue), wxICON_ERROR);
 					}
 					break;
 				case 10:
@@ -88,7 +87,7 @@ int main(int argc, char* argv[]) {
 					break;
 				case 11:
 					{
-						//bad value
+						wxMessageBox(wxString::FromUTF8(BadValue + ' ' + IntFrameHeight + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + BadValue), wxICON_ERROR);
 					}
 					break;
 				case 12:
