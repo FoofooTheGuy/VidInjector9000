@@ -247,8 +247,6 @@ int main(int argc, char* argv[]) {
 		positionWidgets(&wid, &parameters);
 		
 		applyAddRows();
-		
-		MenuBanners_wxEVT_TEXT(&wid, &parameters, wid.MenuBanners.at(VI9P::MultiBannerIndex));
 	};
 	
 	wid.panel->Bind(wxEVT_SIZE, [&](wxSizeEvent& event) {
@@ -463,6 +461,8 @@ int main(int argc, char* argv[]) {
 					}
 					
 					loadVI9P(VI9P::WorkingFile);
+					
+					//MenuBanners_wxEVT_TEXT(&wid, &parameters, wid.MenuBanners.at(VI9P::MultiBannerIndex));
 				}
 				break;
 			case wxID_OPEN:
@@ -471,6 +471,7 @@ int main(int argc, char* argv[]) {
 					openFileDialog.SetFilterIndex(0);
 					if (openFileDialog.ShowModal() == wxID_OK) {
 						loadVI9P(std::string(openFileDialog.GetPath().ToUTF8()));
+						MenuBanners_wxEVT_TEXT(&wid, &parameters, wid.MenuBanners.at(VI9P::MultiBannerIndex));
 					}
 				}
 				break;
@@ -784,6 +785,7 @@ int main(int argc, char* argv[]) {
 		if (find > v.size()) find = 0;//if find_first_of fails, this flings in the first numeral
 		if (v.substr(find) == ".vi9p") {
 			loadVI9P(v);
+			MenuBanners_wxEVT_TEXT(&wid, &parameters, wid.MenuBanners.at(VI9P::MultiBannerIndex));
 		}
 	}
 	
