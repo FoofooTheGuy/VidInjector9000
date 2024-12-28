@@ -22,6 +22,20 @@ A GUI wrapper for VidInjector9002-CLI
 </details>
 
 <details>
+<summary>Windows 8.1</summary>
+
+### System
+![system](https://github.com/user-attachments/assets/a6df53a4-cbdd-446b-b613-9aca0fefecb2)
+
+### Light Mode
+![light](https://github.com/user-attachments/assets/1990f3ac-8789-4c49-b86e-8f3d006b61ea)
+
+### Dark Mode
+![dark](https://github.com/user-attachments/assets/17b9b818-a8e2-4410-bce5-8a290c6eb9b7)
+
+</details>
+
+<details>
 <summary>Windows 10</summary>
 
 ### System
