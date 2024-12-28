@@ -222,6 +222,7 @@ int main(int argc, char* argv[]) {
 		}
 		
 		setAppearance(&wid, Settings::ColorMode);
+		wid.splitPatchLine->Show(parameters.splitPos);
 		ShowPatchUpDown(&wid, &parameters);
 		ShowMultiUpDown(&wid);
 		setCursors(&wid);
