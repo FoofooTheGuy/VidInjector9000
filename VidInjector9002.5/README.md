@@ -35,6 +35,20 @@ A GUI wrapper for VidInjector9002-CLI
 
 </details>
 
+<details>
+<summary>Windows 11</summary>
+
+### System
+![system](https://github.com/user-attachments/assets/3504dc0f-432c-4e44-ae3e-ca78980d0c90)
+
+### Light Mode
+![light](https://github.com/user-attachments/assets/38d581f1-5154-489a-b01d-e72d7029876a)
+
+### Dark Mode
+![dark](https://github.com/user-attachments/assets/faf1d9a2-1f01-4d43-8dba-0a2ed7416515)
+
+</details>
+
 # Installation
 **Windows**
 1. Install the [Microsoft Visual C++ Redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads)
