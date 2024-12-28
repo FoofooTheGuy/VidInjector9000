@@ -78,7 +78,7 @@ std::vector<int> loadSettings() {
 	}
 	if (parseLines(outstr, filelines, IntDeleteTemp)) {
 		if (!ASCII2number<int>(&outrealint, outstr)) {
-			outrealint = 2;
+			outrealint = 0;
 			ret.push_back(9);
 		}
 		Settings::DeleteTemp = outrealint ? 1 : 0;
