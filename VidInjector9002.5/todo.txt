@@ -3,5 +3,4 @@ Main menu:
 file:
 
 options:
-delete temp upon exit
 
