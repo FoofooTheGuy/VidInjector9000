@@ -10,6 +10,12 @@ A GUI wrapper for VidInjector9002-CLI
 ### System (Dark Mode)
 ![System](https://github.com/user-attachments/assets/bb26a54e-d4eb-47fb-a76d-937ab96b7398)
 
+### Light Mode
+![Light](https://github.com/user-attachments/assets/4c2059d3-0ce8-4c34-a4ed-fdab3a1535f0)
+
+### Dark Mode
+![Dark](https://github.com/user-attachments/assets/916fa097-1a49-4a7d-8ecf-6547d53823d2)
+
 </details>
 
 # Installation
