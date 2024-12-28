@@ -16,6 +16,7 @@ class Settings
     static int DefaultLanguage;
     static bool ShowLog;
     static int ColorMode;
+    static bool DeleteTemp;
     static int FrameWidth;
     static int FrameHeight;
     static std::string ImagesPath;

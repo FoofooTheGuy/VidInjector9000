@@ -3,6 +3,7 @@
 int Settings::DefaultLanguage = 0;
 bool Settings::ShowLog = 0;
 int Settings::ColorMode = 2;
+bool Settings::DeleteTemp = 0;
 int Settings::FrameWidth = 1150;
 int Settings::FrameHeight = 700;
 std::string Settings::ImagesPath = "";//we cant use the wxwidgets Get() junk yet
@@ -14,6 +15,7 @@ void saveSettings() {
 		IntDefaultLanguage << "=" << "\x1F" << Settings::DefaultLanguage << "\x1F" << "\n" <<
 		IntShowLog << "=" << "\x1F" << Settings::ShowLog << "\x1F" << "\n" <<
 		IntColorMode << "=" << "\x1F" << Settings::ColorMode << "\x1F" << "\n" <<
+		IntDeleteTemp << "=" << "\x1F" << Settings::DeleteTemp << "\x1F" << "\n" <<
 		IntFrameWidth << "=" << "\x1F" << Settings::FrameWidth << "\x1F" << "\n" <<
 		IntFrameHeight << "=" << "\x1F" << Settings::FrameHeight << "\x1F" << "\n" <<
 		StrImagesPath << "=" << "\x1F" << Settings::ImagesPath << "\x1F" << "\n" <<
@@ -34,6 +36,7 @@ std::vector<int> loadSettings() {
 		Settings::DefaultLanguage = 0;
 		Settings::ShowLog = 0;
 		Settings::ColorMode = 2;
+		Settings::DeleteTemp = 0;
 		Settings::FrameWidth = 1150;
 		Settings::FrameHeight = 700;
 		Settings::ImagesPath = std::string(wxStandardPaths::Get().GetUserDir(wxStandardPaths::Dir_Pictures).ToUTF8());
@@ -58,7 +61,7 @@ std::vector<int> loadSettings() {
 			outrealint = 0;
 			ret.push_back(5);
 		}
-		Settings::ShowLog = outrealint;
+		Settings::ShowLog = outrealint ? 1 : 0;
 	}
 	else {
 		ret.push_back(6);
@@ -73,37 +76,47 @@ std::vector<int> loadSettings() {
 	else {
 		ret.push_back(8);
 	}
-	if (parseLines(outstr, filelines, IntFrameWidth)) {
+	if (parseLines(outstr, filelines, IntDeleteTemp)) {
 		if (!ASCII2number<int>(&outrealint, outstr)) {
 			outrealint = 2;
 			ret.push_back(9);
 		}
-		Settings::FrameWidth = outrealint;
+		Settings::DeleteTemp = outrealint ? 1 : 0;
 	}
 	else {
 		ret.push_back(10);
 	}
-	if (parseLines(outstr, filelines, IntFrameHeight)) {
+	if (parseLines(outstr, filelines, IntFrameWidth)) {
 		if (!ASCII2number<int>(&outrealint, outstr)) {
 			outrealint = 2;
 			ret.push_back(11);
 		}
-		Settings::FrameHeight = outrealint;
+		Settings::FrameWidth = outrealint;
 	}
 	else {
 		ret.push_back(12);
+	}
+	if (parseLines(outstr, filelines, IntFrameHeight)) {
+		if (!ASCII2number<int>(&outrealint, outstr)) {
+			outrealint = 2;
+			ret.push_back(13);
+		}
+		Settings::FrameHeight = outrealint;
+	}
+	else {
+		ret.push_back(14);
 	}
 	if (parseLines(outstr, filelines, StrImagesPath)) {
 		Settings::ImagesPath = outstr;
 	}
 	else {
-		ret.push_back(13);
+		ret.push_back(15);
 	}
 	if (parseLines(outstr, filelines, StrVideosPath)) {
 		Settings::VideosPath = outstr;
 	}
 	else {
-		ret.push_back(14);
+		ret.push_back(16);
 	}
 	ret.push_back(0);
 	return ret;

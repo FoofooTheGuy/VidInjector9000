@@ -5,6 +5,7 @@
 #include "widgets.hpp"
 #include "vi9p.hpp"
 
+void frame_wxEVT_CLOSE_WINDOW(InitWidgets * wid, wxCloseEvent* event);
 void panel_wxEVT_SIZE(InitWidgets* wid, VI9Pparameters* parameters);
 void modeChoiceBox_wxEVT_CHOICE(InitWidgets* wid, VI9Pparameters* parameters);
 void bannerBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters);

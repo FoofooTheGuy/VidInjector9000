@@ -77,30 +77,40 @@ int main(int argc, char* argv[]) {
 					break;
 				case 9:
 					{
-						wxMessageBox(wxString::FromUTF8(BadValue + ' ' + IntFrameWidth + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + BadValue), wxICON_ERROR);
+						wxMessageBox(wxString::FromUTF8(BadValue + ' ' + IntDeleteTemp + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + BadValue), wxICON_ERROR);
 					}
 					break;
 				case 10:
 					{
-						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + IntFrameWidth + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
+						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + IntDeleteTemp + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
 					}
 					break;
 				case 11:
 					{
-						wxMessageBox(wxString::FromUTF8(BadValue + ' ' + IntFrameHeight + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + BadValue), wxICON_ERROR);
+						wxMessageBox(wxString::FromUTF8(BadValue + ' ' + IntFrameWidth + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + BadValue), wxICON_ERROR);
 					}
 					break;
 				case 12:
 					{
-						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + IntFrameHeight + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
+						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + IntFrameWidth + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
 					}
 					break;
 				case 13:
 					{
-						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + StrImagesPath + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
+						wxMessageBox(wxString::FromUTF8(BadValue + ' ' + IntFrameHeight + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + BadValue), wxICON_ERROR);
 					}
 					break;
 				case 14:
+					{
+						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + IntFrameHeight + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
+					}
+					break;
+				case 15:
+					{
+						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + StrImagesPath + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
+					}
+					break;
+				case 16:
 					{
 						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + StrVideosPath + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
 					}
@@ -178,6 +188,9 @@ int main(int argc, char* argv[]) {
 	else if(Settings::ColorMode == 2) {
 		wid.menuItemOptionsSystem->Check();
 	}
+	if(Settings::DeleteTemp) {
+		wid.menuItemOptionsDeleteTemp->Check();
+	}
 	
 	wid.consoleLog->Show(Settings::ShowLog);
 	
@@ -248,6 +261,10 @@ int main(int argc, char* argv[]) {
 		
 		applyAddRows();
 	};
+	
+	wid.frame->Bind(wxEVT_CLOSE_WINDOW, [&](wxCloseEvent& event) {
+		frame_wxEVT_CLOSE_WINDOW(&wid, &event);
+	});
 	
 	wid.panel->Bind(wxEVT_SIZE, [&](wxSizeEvent& event) {
 		panel_wxEVT_SIZE(&wid, &parameters);
@@ -630,8 +647,7 @@ int main(int argc, char* argv[]) {
 			//settings
 			case ID_LOGBOOL:
 				{
-					bool checked = wid.menuItemOptionsLog->IsChecked();
-					Settings::ShowLog = checked;
+					Settings::ShowLog = wid.menuItemOptionsLog->IsChecked();
 					wid.consoleLog->Show(Settings::ShowLog);
 					saveSettings();
 				}
@@ -639,7 +655,6 @@ int main(int argc, char* argv[]) {
 			case ID_SYSTEM:
 				{
 					//2
-					bool checked = wid.menuItemOptionsSystem->IsChecked();
 					Settings::ColorMode = 2;
 					setAppearance(&wid, Settings::ColorMode);
 					saveSettings();
@@ -648,7 +663,6 @@ int main(int argc, char* argv[]) {
 			case ID_LIGHT:
 				{
 					//0
-					bool checked = wid.menuItemOptionsLight->IsChecked();
 					Settings::ColorMode = 0;
 					setAppearance(&wid, Settings::ColorMode);
 					saveSettings();
@@ -657,9 +671,14 @@ int main(int argc, char* argv[]) {
 			case ID_DARK:
 				{
 					//1
-					bool checked = wid.menuItemOptionsDark->IsChecked();
 					Settings::ColorMode = 1;
 					setAppearance(&wid, Settings::ColorMode);
+					saveSettings();
+				}
+				break;
+			case ID_DELETETEMP:
+				{
+					Settings::DeleteTemp = wid.menuItemOptionsDeleteTemp->IsChecked();
 					saveSettings();
 				}
 				break;

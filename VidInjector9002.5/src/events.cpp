@@ -1,5 +1,23 @@
 #include "events.hpp"
 
+void frame_wxEVT_CLOSE_WINDOW(InitWidgets * wid, wxCloseEvent* event) {
+	if(Settings::DeleteTemp) {
+		{//clear temp
+			std::error_code error;
+			
+			std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath).c_str()), error);
+			if (error)
+				wxMessageBox(wxString::FromUTF8(std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '\n' + error.message())), wxString::FromUTF8(ErrorText));
+
+			std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLItempPath).c_str()), error);
+			if (error)
+				wxMessageBox(wxString::FromUTF8(std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLItempPath + '\n' + error.message())), wxString::FromUTF8(ErrorText));
+		}
+	}
+	
+	event->Skip();
+}
+
 void panel_wxEVT_SIZE(InitWidgets* wid, VI9Pparameters* parameters) {
 	//wxMessageBox(wxString::FromUTF8(std::to_string(event.GetSize().GetWidth()) + ", " + std::to_string(event.GetSize().GetHeight())));
 	int width, height;

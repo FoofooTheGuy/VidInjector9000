@@ -48,6 +48,7 @@ enum wxOwnedID {
 	ID_SYSTEM,
 	ID_LIGHT,
 	ID_DARK,
+	ID_DELETETEMP,
 	ID_LANG1,
 	ID_LANG2,
 	ID_LANG3,
@@ -97,6 +98,7 @@ struct InitWidgets {
 	wxMenuItem* menuItemOptionsSystem = menuOptions->Append(ID_SYSTEM, wxString::FromUTF8(optionsSystemMode), "", wxITEM_RADIO);
 	wxMenuItem* menuItemOptionsLight = menuOptions->Append(ID_LIGHT, wxString::FromUTF8(optionsLightMode), "", wxITEM_RADIO);
 	wxMenuItem* menuItemOptionsDark = menuOptions->Append(ID_DARK, wxString::FromUTF8(optionsDarkMode), "", wxITEM_RADIO);
+	wxMenuItem* menuItemOptionsDeleteTemp = menuOptions->Append(ID_DELETETEMP, wxString::FromUTF8(optionsDeleteTemp), "", wxITEM_CHECK);
 	wxMenu* menuLanguage = new wxMenu();
 	wxMenu* menuHelp = new wxMenu();
 	wxMenuItem* menuItemHelpAbout = menuHelp->Append(ID_ABOUT, wxString::FromUTF8(helpAbout + "\tF1"));
