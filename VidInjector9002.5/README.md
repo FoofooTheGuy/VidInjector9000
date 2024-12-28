@@ -3,6 +3,15 @@
 # VidInjector9002.5
 A GUI wrapper for VidInjector9002-CLI
 
+## Screenshots
+<details>
+<summary>Arch Linux (GNOME 47.2)</summary>
+
+### System (Dark Mode)
+![System](https://github.com/user-attachments/assets/bb26a54e-d4eb-47fb-a76d-937ab96b7398)
+
+</details>
+
 # Installation
 **Windows**
 1. Install the [Microsoft Visual C++ Redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads)
