@@ -7,6 +7,9 @@ A GUI wrapper for VidInjector9002-CLI
 <details>
 <summary>Arch Linux (GNOME 47.2)</summary>
 
+### System (Light Mode)
+![System Light](https://github.com/user-attachments/assets/0b8cb59e-be9b-4fb9-a1ec-1081b2e8cffa)
+
 ### System (Dark Mode)
 ![System](https://github.com/user-attachments/assets/bb26a54e-d4eb-47fb-a76d-937ab96b7398)
 
