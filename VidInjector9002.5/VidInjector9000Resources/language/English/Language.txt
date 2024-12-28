@@ -24,6 +24,7 @@ optionsShowLog=&Show Log
 optionsSystemMode=S&ystem
 optionsLightMode=L&ight Mode
 optionsDarkMode=D&ark Mode
+optionsDeleteTemp=Delete &Temporary Files Upon Exit
 language=&Language
 help=&Help
 helpAbout=&About
