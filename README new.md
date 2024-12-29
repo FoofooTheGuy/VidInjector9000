@@ -4,7 +4,7 @@ A cross platform injector for 3DS video CIAs
 ## Editions
 - [VidInjector9002-CLI](https://github.com/FoofooTheGuy/VidInjector9000/blob/main/VidInjector9002-CLI/README.md): The new and improved real deal CLI.
   
-  It's what VidInjector9001 should have been; An argument style CLI instead of a live interface. It's also build into one binary, so it can pretty much run on anything as long as you can compile it.
+  VidInjector9001 walked so VidInjector9002-CLI could run. This is an argument style CLI instead of a live interface. It's also build into one binary, so it can pretty much run on anything as long as you can compile it.
   
 - [VidInjector9002.5](https://github.com/FoofooTheGuy/VidInjector9000/blob/main/VidInjector9002.5/README.md): A GUI wrapper for VidInjector9002-CLI.
 
