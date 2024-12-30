@@ -17,7 +17,7 @@
 # VidInjector9002-CLI
 A console program that interfaces with a VidInjector9002 parameters file.
 
-# Compiling
+## Compiling
 **Windows (MSYS2)**
 1. Download and install [MSYS2](https://www.msys2.org/)
 3. Start MSYS2 and run `pacman -Syyu make mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-python mingw-w64-ucrt-x86_64-python-jsonschema mingw-w64-ucrt-x86_64-python-jinja`
@@ -42,7 +42,7 @@ python3 -m pip install -U jsonschema
 python3 -m pip install jinja2
 ```
 
-# Usage
+## Usage
 
 The goal of VidInjector9002-CLI is to do [everything VidInjector9002 can do](https://github.com/FoofooTheGuy/VidInjector9000?tab=readme-ov-file#vidinjector9002-can) but as a CLI so you can use it in automation and with greater cross platform compatibility.
 
@@ -245,3 +245,14 @@ Vidinjector9002-CLI -generate_preview \<input .vi9p file\>
 </details>
 
 ---
+
+## Credits and Stuff
+~~[nnc](https://github.com/MyPasswordIsWeak/nnc)~~ [(my fork of nnc)](https://github.com/FoofooTheGuy/nnc): Converting banner and icon images, packing and unpacking CIA files
+
+[stb image](https://github.com/nothings/stb): Manipulating images
+
+[miniz cpp](https://github.com/tfussell/miniz-cpp): Zip extraction
+
+[microtar](https://github.com/mudita/microtar): TAR reading and writing
+
+[3DBrew](https://www.3dbrew.org/): Emotional support
