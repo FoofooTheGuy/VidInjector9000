@@ -124,22 +124,6 @@ int main(int argc, char* argv[]) {
 	//init widgets
 	InitWidgets wid;
 	
-	{//clear temp
-		std::error_code error;
-		
-		std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath).c_str()), error);
-		if (error)
-			wxMessageBox(wxString::FromUTF8(std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '\n' + error.message())), wxString::FromUTF8(ErrorText));
-
-		std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLItempPath).c_str()), error);
-		if (error)
-			wxMessageBox(wxString::FromUTF8(std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLItempPath + '\n' + error.message())), wxString::FromUTF8(ErrorText));
-
-		std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath).c_str()), error);
-		if (error)
-			wxMessageBox(wxString::FromUTF8(std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '\n' + error.message())), wxString::FromUTF8(ErrorText));
-	}
-	
 	{//test CLI
 		wxArrayString output;
 		wxArrayString errors;
@@ -157,23 +141,9 @@ int main(int argc, char* argv[]) {
 		}
 	}
 	
-	//todo: load vi9p from arg
 	if(VI9P::WorkingFile.empty())
 		VI9P::WorkingFile = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "parameters.vi9p";
 	VI9Pparameters parameters;
-
-	{//-n (for temp dir)
-		wxArrayString output;
-		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -n \"" + VI9P::WorkingFile + '\"');
-		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-
-		wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-		for (auto &s : output) {
-			wid.consoleLog->LogTextAtLevel(0, s);
-		}
-		wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
-	}
 	
 	//apply settings
 	if(Settings::ShowLog) {
@@ -793,8 +763,49 @@ int main(int argc, char* argv[]) {
 	//staticText1->SetFont({PointsToNativeFontGraphicsUntit(32), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_BOLD});
 	//staticText1->SetForegroundColour({0, 139, 0});
 	
+	{//deal temp
+		std::error_code error;
+		
+		if(!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath).c_str()), error)) {
+			std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath).c_str()), error);
+			if (error)
+				wxMessageBox(wxString::FromUTF8(std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '\n' + error.message())), wxString::FromUTF8(ErrorText));
+			
+			{//-n (for temp dir)
+				wxArrayString output;
+				wxArrayString errors;
+				wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -n \"" + VI9P::WorkingFile + '\"');
+				int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+
+				wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+				for (auto &s : output) {
+					wid.consoleLog->LogTextAtLevel(0, s);
+				}
+				wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+			}
+		}
+		if(error) {
+			//this probably wont work either
+			{//-n (for temp dir)
+				wxArrayString output;
+				wxArrayString errors;
+				wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -n \"" + VI9P::WorkingFile + '\"');
+				int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+
+				wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+				for (auto &s : output) {
+					wid.consoleLog->LogTextAtLevel(0, s);
+				}
+				wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+			}
+		}
+	}
+	
 	//plz call this last
 	loadParameters(&wid, &parameters);
+	
+	loadVI9P(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/parameters.vi9p");
+	MenuBanners_wxEVT_TEXT(&wid, &parameters, wid.MenuBanners.at(VI9P::MultiBannerIndex));
 	
 	//get the project path from args
 	for (int i = 0; i < argc; i++) {
