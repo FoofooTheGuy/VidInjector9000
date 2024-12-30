@@ -1,7 +1,7 @@
 <img src="https://github.com/user-attachments/assets/e3abe8b2-2b8e-47c4-a434-f9c8330f135b" alt="drawing" width="225"/>
 
 # VidInjector9002.5
-A GUI wrapper for VidInjector9002-CLI
+A GUI wrapper for VidInjector9002-CLI. Made with pure [wxWidgets](https://github.com/wxWidgets/wxWidgets) in pure code.
 
 ## Screenshots
 <details>
@@ -77,7 +77,7 @@ A GUI wrapper for VidInjector9002-CLI
 
 </details>
 
-# Installation
+## Installation
 **Windows**
 1. Install the [Microsoft Visual C++ Redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads)
 2. Run `VidInjector9002.5.exe`
@@ -88,7 +88,7 @@ A GUI wrapper for VidInjector9002-CLI
 1. Install `gtk3` with your package manager (`pacman -S gtk3`)
 2. Run `VidInjector9002.5`
 
-# Compiling from source
+## Compiling from source
 **Windows**
 1. Download and install [CMake](https://cmake.org/), [Git](https://git-scm.com/downloads/win), and [Microsoft Visual Studio](https://visualstudio.microsoft.com/) with the `Desktop development with C++` workload
 2. Clone the entire repository `git clone --recurse-submodules -j8 https://github.com/FoofooTheGuy/VidInjector9000.git`
@@ -118,7 +118,7 @@ libgspell-1-dev
 4. Run `install-wxwidgets.sh` Note: Alternatively, you might be able to install `wxwidgets` with your package manager
 5. Run `build.sh`
 
-# Translation
+## Translation
 I gave up trying to translate it into languages I don't know. If you want to help, please create a pull request or issue if you want to share your translation of the program.
 
 - the `Language` value in the file should be the name of the language in such language, not the word "English" translated.
