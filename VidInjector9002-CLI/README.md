@@ -44,8 +44,6 @@ python3 -m pip install jinja2
 
 ## Usage
 
-The goal of VidInjector9002-CLI is to do [everything VidInjector9002 can do](https://github.com/FoofooTheGuy/VidInjector9000?tab=readme-ov-file#vidinjector9002-can) but as a CLI so you can use it in automation and with greater cross platform compatibility.
-
 Usage: VidInjector9002-CLI \<argument\> \[parameters...\]
 
 **Arguments:**
