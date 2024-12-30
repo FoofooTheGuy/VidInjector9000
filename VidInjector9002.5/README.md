@@ -102,7 +102,7 @@ A GUI wrapper for VidInjector9002-CLI. Made with pure [wxWidgets](https://github
 3. Install dependencies for wxWidgets. For example, on debian:
 ```
 sudo apt install \
-libgtk3-dev \
+libgtk-3-dev \
 libcurl4-openssl-dev \
 libsecret-1-dev \
 libwebkitgtk-6.0-dev \
