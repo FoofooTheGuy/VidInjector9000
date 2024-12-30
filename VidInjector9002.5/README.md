@@ -119,7 +119,7 @@ libgspell-1-dev
 5. Run `build.sh`
 
 ## Translation
-I gave up trying to translate it into languages I don't know. If you want to help, please create a pull request or issue if you want to share your translation of the program.
+I gave up trying to translate the program into languages I don't know. So if you want to help, please create a pull request or issue to share your translation.
 
 - the `Language` value in the file should be the name of the language in such language, not the word "English" translated.
 - Put translations in `VidInjector9000Resources/language/<Language>/Language.txt`
