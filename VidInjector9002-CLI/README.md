@@ -242,7 +242,20 @@ Vidinjector9002-CLI -generate_preview \<input .vi9p file\>
 
 </details>
 
----
+## Known Issues
+
+#### Sometimes unicode file paths are not supported on Windows
+Most things work with file paths containing unicode but certain things don't. (SMDH reading, CIA reading, CIA writing, TAR reading, TAR writing) These work on other platforms though.
+
+#### Multi Video injects do not work on the regions China, Taiwan and Korea because there are no language files for those.
+I am unable to add them myself because I don't know those languages and this isn't really in my "jurisdiction" so I would appreciate it if someone would translate the files and contribute the following:
+
+romfs/lang/
+- CN_Simp_Chinese/message.msbt
+- KR_Hangeul/message.msbt
+- TW_Trad_Chinese/message.msbt
+
+To remedy this, you can use [lumalocaleswitcher](https://github.com/Possum/LumaLocaleSwitcher/releases/latest).
 
 ## Credits and Stuff
 ~~[nnc](https://github.com/MyPasswordIsWeak/nnc)~~ [(my fork of nnc)](https://github.com/FoofooTheGuy/nnc): Converting banner and icon images, packing and unpacking CIA files
