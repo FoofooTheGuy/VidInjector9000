@@ -802,21 +802,22 @@ int main(int argc, char* argv[]) {
 	}
 	
 	//plz call this last
-	loadParameters(&wid, &parameters);
-	
-	loadVI9P(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/parameters.vi9p");
-	MenuBanners_wxEVT_TEXT(&wid, &parameters, wid.MenuBanners.at(VI9P::MultiBannerIndex));
-	
-	//get the project path from args
-	for (int i = 0; i < argc; i++) {
-		std::string v = argv[i];
-		size_t find = 0;
-		find = v.find_last_of(".");
-		if (find > v.size()) find = 0;//if find_first_of fails, this flings in the first numeral
-		if (v.substr(find) == ".vi9p") {
-			loadVI9P(v);
-			MenuBanners_wxEVT_TEXT(&wid, &parameters, wid.MenuBanners.at(VI9P::MultiBannerIndex));
+	{
+		std::string VI9Pnow = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/parameters.vi9p";
+		
+		//get the project path from args
+		for (int i = 0; i < argc; i++) {
+			std::string v = argv[i];
+			size_t find = 0;
+			find = v.find_last_of(".");
+			if (find > v.size()) find = 0;//if find_first_of fails, this flings in the first numeral
+			if (v.substr(find) == ".vi9p") {
+				VI9Pnow = v;
+			}
 		}
+		
+		loadVI9P(VI9Pnow);
+		MenuBanners_wxEVT_TEXT(&wid, &parameters, wid.MenuBanners.at(VI9P::MultiBannerIndex));
 	}
 	
 	wid.frame->Show();
