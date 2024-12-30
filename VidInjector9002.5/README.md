@@ -22,6 +22,23 @@ A GUI wrapper for VidInjector9002-CLI. Made with pure [wxWidgets](https://github
 </details>
 
 <details>
+<summary>Linux Mint (Cinnamon 6.2.7)</summary>
+
+### System (Light Mode)
+![Screenshot from 2024-12-30 11-47-50](https://github.com/user-attachments/assets/20e56092-9eba-4e45-9e4d-f28dc2767881)
+
+### System (Dark Mode)
+![Screenshot from 2024-12-30 11-46-22](https://github.com/user-attachments/assets/833b8de2-343d-4056-a024-051babc0f8f2)
+
+### Light Mode
+![Screenshot from 2024-12-30 11-46-39](https://github.com/user-attachments/assets/086e3c54-2970-4f50-abd3-1e668700d70e)
+
+### Dark Mode
+![Screenshot from 2024-12-30 11-46-53](https://github.com/user-attachments/assets/a97144a5-6440-4217-af19-a1b7cac5830b)
+
+</details>
+
+<details>
 <summary>Windows 7</summary>
 
 ### System
