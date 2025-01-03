@@ -10,3 +10,5 @@ A cross platform injector for 3DS video CIAs
 
   It's what VidInjector9002 should have been. Consider this as a round ring with VidInjector9002-CLI as the core. It uses the CLI as it's backend, so it can forcibly cancel heavy operations like exporting or extracting archives by just killing the child process. 
   
+## [Download Release](https://github.com/FoofooTheGuy/VidInjector9000/releases/latest)
+Extract the contents of the .zip file to where ever you would like. (The source code is not required if you only want to use the programs)
