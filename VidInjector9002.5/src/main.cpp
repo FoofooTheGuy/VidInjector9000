@@ -20,10 +20,10 @@ int main(int argc, char* argv[]) {
 	wxInitAllImageHandlers();
 
 	{//get program dir
-		std::string programpath = std::filesystem::absolute(std::filesystem::path((const char8_t*)&*std::string(argv[0]).c_str()));
+		std::string programpath(std::filesystem::absolute(std::filesystem::path((const char8_t*)&*std::string(argv[0]).c_str())).string());
 		programpath = programpath.substr(0, programpath.find_last_of("\\/"));
 		ProgramDir = wxString::FromUTF8(programpath);
-		wxMessageBox(ProgramDir);
+		//wxMessageBox(ProgramDir);
 	}
 	
 	//TODO: load language
