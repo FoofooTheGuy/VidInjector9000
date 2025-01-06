@@ -2174,7 +2174,7 @@ int loadParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 	{//-rr
 		wxArrayString output;
 		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + resourcesPath + '/' + CLIFile + "\" -rr \"" + VI9P::WorkingFile + '\"');
+		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -rr \"" + VI9P::WorkingFile + '\"');
 		ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 
 		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
@@ -2191,7 +2191,7 @@ int loadParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 	{//-pp
 		wxArrayString output;
 		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + resourcesPath + '/' + CLIFile + "\" -pp \"" + VI9P::WorkingFile + '\"');
+		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -pp \"" + VI9P::WorkingFile + '\"');
 		ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 		std::string pp;
 		
@@ -2548,7 +2548,7 @@ void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 	{//-rr
 		wxArrayString output;
 		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + resourcesPath + '/' + CLIFile + "\" -rr \"" + VI9P::WorkingFile + '\"');
+		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -rr \"" + VI9P::WorkingFile + '\"');
 		ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 
 		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
@@ -2565,7 +2565,7 @@ void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 	{//-pp
 		wxArrayString output;
 		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + resourcesPath + '/' + CLIFile + "\" -pp \"" + VI9P::WorkingFile + '\"');
+		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -pp \"" + VI9P::WorkingFile + '\"');
 		ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 		std::string pp;
 
@@ -2665,7 +2665,7 @@ void removeRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 	{//-rr
 		wxArrayString output;
 		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + resourcesPath + '/' + CLIFile + "\" -rr \"" + VI9P::WorkingFile + '\"');
+		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -rr \"" + VI9P::WorkingFile + '\"');
 		ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 
 		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
@@ -2682,7 +2682,7 @@ void removeRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 	{//-pp
 		wxArrayString output;
 		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + resourcesPath + '/' + CLIFile + "\" -pp \"" + VI9P::WorkingFile + '\"');
+		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -pp \"" + VI9P::WorkingFile + '\"');
 		ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 		std::string pp;
 
