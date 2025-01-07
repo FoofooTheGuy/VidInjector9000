@@ -42,6 +42,12 @@ python3 -m pip install -U jsonschema
 python3 -m pip install jinja2
 ```
 
+Still, if none of that worked, you may need to install python packages with your package manager. For example, on debian:
+
+```
+apt install python3-jsonschema python3-jinja2
+```
+
 ## Usage
 
 Usage: VidInjector9002-CLI \<argument\> \[parameters...\]
