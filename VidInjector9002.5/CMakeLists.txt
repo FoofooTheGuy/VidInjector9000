@@ -54,7 +54,7 @@ if (MSVC)
     "    BEGIN\n"
     "      VALUE \"CompanyName\", \"FoofooTheGuy\"\n"
     "      VALUE \"FileDescription\", \"A GUI wrapper for VidInjector9002-CLI\"\n"
-    "      VALUE \"FileVersion\", \"3,5,0\"\n"
+    "      VALUE \"FileVersion\", \"3,5,0,0\"\n"
     "      VALUE \"InternalName\", \"${PROJECT_NAME}\"\n"
     "      VALUE \"LegalCopyright\", \"\"\n"
     "      VALUE \"LegalTrademarks1\", \"\"\n"
