@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.20)
 project(VidInjector9002.5)
 
 set(wxWidgets_ROOT_DIR ./wxWidgets-3.2.6)
