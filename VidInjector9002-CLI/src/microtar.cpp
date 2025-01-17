@@ -155,7 +155,7 @@ static int file_seek(mtar_t* tar, size_t offset) {
 #if defined(_WIN32)
     int res = _fseeki64(tar->stream, offset, SEEK_SET);
 #endif
-if defined(__APPLE__)
+#if defined(__APPLE__)
 	//this doesnt work in 32 bit
     /* ugly hack */
     int res = fseek(tar->stream, INT32_MAX, SEEK_SET);
