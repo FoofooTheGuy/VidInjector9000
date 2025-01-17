@@ -49,7 +49,7 @@ void initAllWidgets(InitWidgets* wid) {
 		for(int i = 0; i < rows; i++) {
 			wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 			int width, height;
-			wxFont f;
+			wxFont f = button->GetFont();
 			
 			button->SetLabel(wxString::FromUTF8("↑"));
 			
@@ -61,7 +61,7 @@ void initAllWidgets(InitWidgets* wid) {
 		for(int i = 0; i < rows; i++) {
 			wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 			int width, height;
-			wxFont f;
+			wxFont f = button->GetFont();
 			
 			button->SetLabel(wxString::FromUTF8("↓"));
 			
@@ -78,21 +78,14 @@ void initAllWidgets(InitWidgets* wid) {
 	}*/
 	{//splitPatchUp
 		int width, height;
-		wxFont f;
+		wxFont f = wid->splitPatchUp->GetFont();
 		
 		wid->splitPatchUp->GetTextExtent(wid->splitPatchUp->GetLabel(), &width, &height, nullptr, nullptr, &f);
 		wid->splitPatchUp->SetSize(width, height);
 	}
 	{//splitPatchDown
 		int width, height;
-		wxFont f;
-		
-		wid->splitPatchDown->GetTextExtent(wid->splitPatchDown->GetLabel(), &width, &height, nullptr, nullptr, &f);
-		wid->splitPatchDown->SetSize(width, height);
-	}
-	{//splitPatchUp
-		int width, height;
-		wxFont f;
+		wxFont f = wid->splitPatchDown->GetFont();
 		
 		wid->splitPatchDown->GetTextExtent(wid->splitPatchDown->GetLabel(), &width, &height, nullptr, nullptr, &f);
 		wid->splitPatchDown->SetSize(width, height);
@@ -138,18 +131,13 @@ void setFonts(InitWidgets* wid) {
 		wid->bannerText->SetSize(w, h);
 	}
 	{//bannerBrowse
-		int w, buttwidth, h, buttheight;
+		int w, h;
 		wxFont f;
 		
-		wxButton button(wid->panel, wxID_ANY, wid->bannerBrowse->GetLabel());
-		button.Show(false);
-		button.GetSize(&buttwidth, &buttheight);
 		f = wid->bannerBrowse->GetFont();
 		wid->bannerBrowse->GetTextExtent(wid->bannerBrowse->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		buttwidth = buttwidth - w;
-		buttheight = buttheight - h;
 
-		wid->bannerBrowse->SetSize(w + (buttwidth * 2), (h * 2) + buttheight);
+		wid->bannerBrowse->SetSize((w / 2) + (w * 2), (h / 2) + (h * 2));
 	}
 	{//bannerError
 		int w, h;
@@ -175,18 +163,13 @@ void setFonts(InitWidgets* wid) {
 		wid->iconText->SetSize(w, h);
 	}
 	{//iconBrowse
-		int w, buttwidth, h, buttheight;
+		int w, h;
 		wxFont f;
-		
-		wxButton button(wid->panel, wxID_ANY, wid->iconBrowse->GetLabel());
-		button.Show(false);
-		button.GetSize(&buttwidth, &buttheight);
+
 		f = wid->iconBrowse->GetFont();
 		wid->iconBrowse->GetTextExtent(wid->iconBrowse->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		buttwidth = buttwidth - w;
-		buttheight = buttheight - h;
 
-		wid->iconBrowse->SetSize(w + (buttwidth * 2), (h * 2) + buttheight);
+		wid->iconBrowse->SetSize((w / 2) + (w * 2), (h / 2) + (h * 2));
 	}
 	{//iconError
 		int w, h;
@@ -211,6 +194,17 @@ void setFonts(InitWidgets* wid) {
 		wid->shortnameText->GetTextExtent(wid->shortnameText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->shortnameText->SetSize(w, h);
 	}
+	{//shortnameBox
+		int w, h;
+		wxFont f;
+		
+		f = wid->shortnameBox->GetFont();
+		
+		wid->shortnameBox->SetFont(f);
+		wid->shortnameBox->GetTextExtent("A", &w, &h, nullptr, nullptr, &f);
+		wid->shortnameBox->GetSize(&w, NULL);
+		wid->shortnameBox->SetSize(w, (h * 2) + 10);//uhhhhhh
+	}
 	{//shortnameError
 		int w, h;
 		wxFont f;
@@ -233,6 +227,17 @@ void setFonts(InitWidgets* wid) {
 		wid->longnameText->GetTextExtent(wid->longnameText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->longnameText->SetSize(w, h);
 	}
+	{//longnameBox
+		int w, h;
+		wxFont f;
+		
+		f = wid->longnameBox->GetFont();
+		
+		wid->longnameBox->SetFont(f);
+		wid->longnameBox->GetTextExtent("A", &w, &h, nullptr, nullptr, &f);
+		wid->longnameBox->GetSize(&w, NULL);
+		wid->longnameBox->SetSize(w, (h * 2) + 10);//uhhhhhh
+	}
 	{//longnameError
 		int w, h;
 		wxFont f;
@@ -253,6 +258,17 @@ void setFonts(InitWidgets* wid) {
 		wid->publisherText->SetFont(f);
 		wid->publisherText->GetTextExtent(wid->publisherText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->publisherText->SetSize(w, h);
+	}
+	{//publisherBox
+		int w, h;
+		wxFont f;
+		
+		f = wid->publisherBox->GetFont();
+		
+		wid->publisherBox->SetFont(f);
+		wid->publisherBox->GetTextExtent("A", &w, &h, nullptr, nullptr, &f);
+		wid->publisherBox->GetSize(&w, NULL);
+		wid->publisherBox->SetSize(w, (h * 2) + 10);//uhhhhhh
 	}
 	{//publisherError
 		int w, h;
@@ -385,88 +401,56 @@ void setFonts(InitWidgets* wid) {
 	}
 
 	{//moflexBrowse
-		int w, buttwidth, h, buttheight;
+		int w, h;
 		wxFont f;
 		
-		wxButton button(wid->panel, wxID_ANY, wid->moflexBrowse->GetLabel());
-		button.Show(false);
-		button.GetSize(&buttwidth, &buttheight);
 		f = wid->moflexBrowse->GetFont();
 		wid->moflexBrowse->GetTextExtent(wid->moflexBrowse->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		buttwidth = buttwidth - w;
-		buttheight = buttheight - h;
 
-		wid->moflexBrowse->SetSize(w + (buttwidth * 2), (h * 2) + buttheight);
+		wid->moflexBrowse->SetSize((w / 2) + (w * 2), (h / 2) + (h * 2));
 	}
 	{//multiBannerBrowse
-		int w, buttwidth, h, buttheight;
+		int w, h;
 		wxFont f;
 		
-		wxButton button(wid->panel, wxID_ANY, wid->multiBannerBrowse->GetLabel());
-		button.Show(false);
-		button.GetSize(&buttwidth, &buttheight);
 		f = wid->multiBannerBrowse->GetFont();
 		wid->multiBannerBrowse->GetTextExtent(wid->multiBannerBrowse->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		buttwidth = buttwidth - w;
-		buttheight = buttheight - h;
 
-		wid->multiBannerBrowse->SetSize(w + (buttwidth * 2), (h * 2) + buttheight);
+		wid->multiBannerBrowse->SetSize((w / 2) + (w * 2), (h / 2) + (h * 2));
 	}
 	
 	{//removeRow
-		int w, buttwidth, h, buttheight;
+		int w, h;
 		wxFont f;
-		
-		wxButton button(wid->panel, wxID_ANY, wxString::FromUTF8(wid->removeRow->GetLabel()));
-		button.Show(false);
-		button.GetSize(&buttwidth, &buttheight);
-		f = button.GetFont();
-		button.GetTextExtent(wid->removeRow->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		buttwidth = buttwidth - w;
-		buttheight = buttheight - h;
 		
 		f = wid->modeText->GetFont().Scale(1.1F);
 		
 		wid->removeRow->SetFont(f);
-		wid->removeRow->GetTextExtent(wid->removeRow->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->removeRow->SetSize(w + buttwidth, h + buttheight);
+		wid->removeRow->GetTextExtent(wid->removeRow->GetLabel(), NULL, &h, nullptr, nullptr, &f);
+		wid->removeRow->GetSize(&w, NULL);
+		wid->removeRow->SetSize(w, h + (h / 2));
 	}
 	{//appendRow
-		int w, buttwidth, h, buttheight;
+		int w, h;
 		wxFont f;
-		
-		wxButton button(wid->panel, wxID_ANY, wid->appendRow->GetLabel());
-		button.Show(false);
-		button.GetSize(&buttwidth, &buttheight);
-		f = button.GetFont();
-		button.GetTextExtent(wid->appendRow->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		buttwidth = buttwidth - w;
-		buttheight = buttheight - h;
 		
 		f = wid->removeRow->GetFont();
 		
 		wid->appendRow->SetFont(f);
-		wid->appendRow->GetTextExtent(wid->appendRow->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->appendRow->SetSize(w + buttwidth, h + buttheight);
+		wid->appendRow->GetTextExtent(wid->appendRow->GetLabel(), NULL, &h, nullptr, nullptr, &f);
+		wid->appendRow->GetSize(&w, NULL);
+		wid->appendRow->SetSize(w, h + (h / 2));
 	}
 
 	{//splitPatchButton
-		int w, buttwidth, h, buttheight;
+		int w, h;
 		wxFont f;
-		
-		wxButton button(wid->panel, wxID_ANY, wid->splitPatchButton->GetLabel());
-		button.Show(false);
-		button.GetSize(&buttwidth, &buttheight);
-		f = button.GetFont();
-		button.GetTextExtent(wid->splitPatchButton->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		buttwidth = buttwidth - w;
-		buttheight = buttheight - h;
 		
 		f = wid->ffRewindCheck->GetFont();
 		
 		wid->splitPatchButton->SetFont(f);
 		wid->splitPatchButton->GetTextExtent(wid->splitPatchButton->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->splitPatchButton->SetSize(w + buttwidth, h + buttheight);
+		wid->splitPatchButton->SetSize(w + (w / 4), h + (h / 2));
 	}
 	
 	{//rowText
@@ -2462,7 +2446,7 @@ void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 			for(int i = 0; i < count; i++) {
 				wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 				int width, height;
-				wxFont f;
+				wxFont f = button->GetFont();
 				
 				button->SetLabel(wxString::FromUTF8("↑"));
 				
@@ -2474,7 +2458,7 @@ void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 			for(int i = 0; i < count; i++) {
 				wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 				int width, height;
-				wxFont f;
+				wxFont f = button->GetFont();
 				
 				button->SetLabel(wxString::FromUTF8("↓"));
 				
@@ -2617,7 +2601,7 @@ void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 			for(int i = 0; i < count; i++) {
 				wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 				int width, height;
-				wxFont f;
+				wxFont f = button->GetFont();
 				
 				button->SetLabel(wxString::FromUTF8("↑"));
 				
@@ -2629,7 +2613,7 @@ void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 			for(int i = 0; i < count; i++) {
 				wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 				int width, height;
-				wxFont f;
+				wxFont f = button->GetFont();
 				
 				button->SetLabel(wxString::FromUTF8("↓"));
 				

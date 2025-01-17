@@ -4,6 +4,7 @@
 #include "widgets.hpp"
 //#include "events.hpp"
 
+/*
 //https://github.com/gammasoft71/Examples_wxWidgets/blob/adbd395081bf25c9034f2b64eee62608a943441f/src/HelloWorld/HelloWorld/HelloWorld.cpp#L4
 #if defined(__WXOSX__)
 int PointsToNativeFontGraphicsUntit(int size) {
@@ -14,6 +15,7 @@ int PointsToNativeFontGraphicsUntit(int size) {
 	return size;  // font is in points
 }
 #endif
+*/
 
 int main(int argc, char* argv[]) {
 	AppInitializer appInitializer;
@@ -348,7 +350,8 @@ int main(int argc, char* argv[]) {
 	wid.removeRow->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		removeRow_wxEVT_BUTTON(&wid, &parameters);
 	});
-
+	
+	//add row
 	wid.appendRow->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		if(!wid.appendRow->IsEnabled())
 			return;
