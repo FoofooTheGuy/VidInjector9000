@@ -997,7 +997,7 @@ void buildButton_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 	
 	long PID = wxExecute(command, wxEXEC_MAKE_GROUP_LEADER|wxEXEC_ASYNC, wid->exportArchive);
 	
-	if (PID = 0) {
+	if (PID == 0) {
 		wxLogError(wxString::FromUTF8(ErrorText + ' ' + command));
 		return;
 	}

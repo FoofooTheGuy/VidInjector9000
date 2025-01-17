@@ -587,7 +587,7 @@ int main(int argc, char* argv[]) {
 									
 									long PID = wxExecute(command, wxEXEC_MAKE_GROUP_LEADER|wxEXEC_ASYNC, wid.extractArchive);
 									
-									if (PID = 0) {
+									if (PID == 0) {
 										wxLogError(wxString::FromUTF8(ErrorText + ' ' + command));
 										return;
 									}
