@@ -135,6 +135,13 @@ libgspell-1-dev
 4. Run `install-wxwidgets.sh` Note: Alternatively, you might be able to install `wxwidgets` with your package manager
 5. Run `build.sh`
 
+**MacOS**
+1. Install the [Homebrew](https://brew.sh/) package manager
+2. Clone the entire repository `git clone --recurse-submodules -j8 https://github.com/FoofooTheGuy/VidInjector9000.git`
+3. Run `brew install cmake`
+4. Run `install-wxwidgets.sh`
+5. Run `build.sh`
+
 ## Translation
 I gave up trying to translate the program into languages I don't know. So if you want to help, please create a pull request or issue to share your translation.
 
