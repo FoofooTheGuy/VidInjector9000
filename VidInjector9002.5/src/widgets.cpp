@@ -137,8 +137,7 @@ void setFonts(InitWidgets* wid) {
 		f = wid->bannerBrowse->GetFont();
 		wid->bannerBrowse->GetTextExtent(wid->bannerBrowse->GetLabel(), &w, &h, nullptr, nullptr, &f);
 
-		//wid->bannerBrowse->SetSize((w / 2) + (w * 2), (h / 2) + (h * 2));
-		wid->bannerBrowse->SetSize((w / 2) + (w * 2), h);
+		wid->bannerBrowse->SetSize((w / 2) + (w * 2), (h / 2) + (h * 2));
 	}
 	{//bannerError
 		int w, h;
@@ -170,8 +169,7 @@ void setFonts(InitWidgets* wid) {
 		f = wid->iconBrowse->GetFont();
 		wid->iconBrowse->GetTextExtent(wid->iconBrowse->GetLabel(), &w, &h, nullptr, nullptr, &f);
 
-		//wid->iconBrowse->SetSize((w / 2) + (w * 2), (h / 2) + (h * 2));
-		wid->iconBrowse->SetSize((w / 2) + (w * 2), h);
+		wid->iconBrowse->SetSize((w / 2) + (w * 2), (h / 2) + (h * 2));
 	}
 	{//iconError
 		int w, h;
