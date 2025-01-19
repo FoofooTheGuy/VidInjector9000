@@ -137,7 +137,8 @@ void setFonts(InitWidgets* wid) {
 		f = wid->bannerBrowse->GetFont();
 		wid->bannerBrowse->GetTextExtent(wid->bannerBrowse->GetLabel(), &w, &h, nullptr, nullptr, &f);
 
-		wid->bannerBrowse->SetSize((w / 2) + (w * 2), (h / 2) + (h * 2));
+		//wid->bannerBrowse->SetSize((w / 2) + (w * 2), (h / 2) + (h * 2));
+		wid->bannerBrowse->SetSize((w / 2) + (w * 2), h);
 	}
 	{//bannerError
 		int w, h;
@@ -169,7 +170,8 @@ void setFonts(InitWidgets* wid) {
 		f = wid->iconBrowse->GetFont();
 		wid->iconBrowse->GetTextExtent(wid->iconBrowse->GetLabel(), &w, &h, nullptr, nullptr, &f);
 
-		wid->iconBrowse->SetSize((w / 2) + (w * 2), (h / 2) + (h * 2));
+		//wid->iconBrowse->SetSize((w / 2) + (w * 2), (h / 2) + (h * 2));
+		wid->iconBrowse->SetSize((w / 2) + (w * 2), h);
 	}
 	{//iconError
 		int w, h;
@@ -702,6 +704,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->modeChoiceBox->Move(x, y + height);
 	}
+	
 	{//bannerText
 		int x, y, height;
 		wid->modeChoiceBox->GetPosition(&x, &y);
@@ -734,6 +737,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->bannerError->Move(x, y + height);
 	}
+	
 	{//iconText
 		int x, y, height, myheight, browseheight;
 		wid->modeText->GetPosition(&x, NULL);
@@ -769,13 +773,35 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->iconError->Move(x, y + height);
 	}
+	
+	{//bannerPreview y
+		int x, y;
+		wid->modeText->GetPosition(NULL, &y);
+		wid->bannerPreview->GetPosition(&x, NULL);
+		
+		wid->bannerPreview->Move(x, y);
+	}
+	
 	{//shortnameText
-		int x, y, height;
+		int x, y, bannerPreviewY, iconBrowseY, height, bannerPreviewHeight, bannerPreviewTextHeight, iconPreviewHeight;
 		wid->modeText->GetPosition(&x, NULL);
 		wid->iconError->GetPosition(NULL, &y);
 		wid->iconError->GetSize(NULL, &height);
 		
-		wid->shortnameText->Move(x, y + height + 6);
+		wid->bannerPreview->GetPosition(NULL, &bannerPreviewY);
+		wid->bannerPreview->GetSize(NULL, &bannerPreviewHeight);
+		wid->bannerPreviewText->GetSize(NULL, &bannerPreviewTextHeight);
+		wid->iconBrowse->GetPosition(NULL, &iconBrowseY);
+		wid->iconPreview->GetSize(NULL, &iconPreviewHeight);
+		
+		std::vector<int> sizes(3, 0);
+		sizes.at(0) = (bannerPreviewY + bannerPreviewHeight + bannerPreviewTextHeight);//banner preview
+		sizes.at(1) = (y + height);//icon error
+		sizes.at(2) = (iconBrowseY + iconPreviewHeight);//icon preview
+		
+		std::vector<int>::iterator Heightest = std::max_element(sizes.begin(), sizes.end());//dont even worry
+		
+		wid->shortnameText->Move(x, (*Heightest) + 6);
 	}
 	{//shortnameBox
 		int x, y, width;
@@ -791,6 +817,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->shortnameError->Move(x, y + height);
 	}
+	
 	{//longnameText
 		int x, y, height;
 		wid->modeText->GetPosition(&x, NULL);
@@ -813,6 +840,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->longnameError->Move(x, y + height);
 	}
+	
 	{//publisherText
 		int x, y, height;
 		wid->modeText->GetPosition(&x, NULL);
@@ -835,6 +863,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->publisherError->Move(x, y + height);
 	}
+	
 	{//ffRewindCheck
 		int x, y, height;
 		wid->publisherError->GetPosition(&x, &y);
@@ -849,6 +878,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->dimCheck->Move(x, y + height);
 	}
+	
 	//stuff that moves or changes size
 	{//copyBox
 		int x, y, width, mywidth, checkwidth, checkheight;
@@ -877,11 +907,13 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->copyBox->GetPosition(&x, &y);
 		wid->copyCheck->GetSize(NULL, &myheight);
 		
-		wid->copyCheck->Move(x, y - myheight);
+		wid->copyCheck->Move(x, y - myheight);//why not just put this in before the box?
 	}
-	{//bannerPreview
+	
+	{//bannerPreview x
 		int x, y, mywidth, bannerPreviewTextW;
-		wid->copyCheck->GetPosition(&x, &y);
+		wid->copyCheck->GetPosition(&x, NULL);
+		wid->bannerPreview->GetPosition(NULL, &y);
 		wid->bannerPreview->GetSize(&mywidth, NULL);
 		wid->bannerPreviewText->GetSize(&bannerPreviewTextW, NULL);
 		
@@ -903,6 +935,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->bannerPreviewText->Move(x + ((width - mywidth) / 2), y + height);
 	}
+	
 	{//iconPreview
 		int x, bannerPreviewTextx, y, mywidth;
 		wid->iconBrowse->GetPosition(NULL, &y);
