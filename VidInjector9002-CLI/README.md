@@ -18,35 +18,24 @@
 A console program that interfaces with a VidInjector9002 parameters file.
 
 ## Compiling
-**Windows (MSYS2)**
-1. Download and install [MSYS2](https://www.msys2.org/)
-3. Start MSYS2 and run `pacman -Syyu make mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-python mingw-w64-ucrt-x86_64-python-jsonschema mingw-w64-ucrt-x86_64-python-jinja`
-4. Run `cd "/Path/to/VidInjector9002-CLI/directory"` (Hint: `\` in the path must be changed to `/` or `\\`)
-5. Run `python build_deps.py`
-6. Run `python build.py`
+**Windows**
+1. Download and install [CMake](https://cmake.org/), [Git](https://git-scm.com/downloads/win), and [Microsoft Visual Studio](https://visualstudio.microsoft.com/) with the `Desktop development with C++` workload
+2. Clone the entire repository `git clone --recurse-submodules -j8 https://github.com/FoofooTheGuy/VidInjector9000.git`
+3. Run `cd VidInjector9000/VidInjector9002-CLI`
+4. Run `./build.bat`
 
 **Linux**
-1. Install `make`, `python` or `python3`, and `perl` with your package manager if you don't already have them
-2. Run `python build_deps.py`
-3. Run `python build.py`
+1. Install `make`, `cmake`, and `git` with your package manager if you don't already have them
+2. Clone the entire repository `git clone --recurse-submodules -j8 https://github.com/FoofooTheGuy/VidInjector9000.git`
+3. Run `cd VidInjector9000/VidInjector9002-CLI`
+4. Run `./build.sh`
 
-**Troubleshooting**
-
-If `pip` doesn't work, run `python3 -m ensurepip`
-
-If you don't have `ZipFile`, run `python3 -m pip install zipfile`
-
-If compiling MbedTLS gives errors, do these and try again:
-```
-python3 -m pip install -U jsonschema
-python3 -m pip install jinja2
-```
-
-Still, if none of that worked, you may need to install python packages with your package manager. For example, on debian:
-
-```
-apt install python3-jsonschema python3-jinja2
-```
+**MacOS**
+1. Install the [Homebrew](https://brew.sh/) package manager
+2. Run `brew install make cmake`
+3. Clone the entire repository `git clone --recurse-submodules -j8 https://github.com/FoofooTheGuy/VidInjector9000.git`
+4. Run `cd VidInjector9000/VidInjector9002-CLI`
+5. Run `./build.sh`
 
 ## Usage
 
