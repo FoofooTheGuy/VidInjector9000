@@ -122,18 +122,16 @@ A GUI wrapper for VidInjector9002-CLI. Made with pure [wxWidgets](https://github
 1. Install `gtk3` with your package manager (`pacman -S gtk3`)
 2. Run `VidInjector9002.5`
 
-## Compiling from source
+## Compiling
 **Windows**
 1. Download and install [CMake](https://cmake.org/), [Git](https://git-scm.com/downloads/win), and [Microsoft Visual Studio](https://visualstudio.microsoft.com/) with the `Desktop development with C++` workload
 2. Clone the entire repository `git clone --recurse-submodules -j8 https://github.com/FoofooTheGuy/VidInjector9000.git`
-3. Open `wxWidgets-3.2.6/build/msw/wx_vc17.sln` in Visual Studio
+3. In `VidInjector9000/VidInjector9002.5/`, Open `wxWidgets-3.2.6/build/msw/wx_vc17.sln` in Visual Studio
 4. Set `Solution Configuration` to `Release` and build the solution
-5. Run `build.bat`
+5. Close Microsoft Visual Studio and go back to `VidInjector9000/VidInjector9002.5/` to run `build.bat`
 
 **Linux**
-1. Install `cmake` and `git` with your package manager
-2. Clone the entire repository `git clone --recurse-submodules -j8 https://github.com/FoofooTheGuy/VidInjector9000.git`
-3. Install dependencies for wxWidgets. For example, on debian:
+1. Install dependencies for wxWidgets. For example, on debian:
 ```
 sudo apt install \
 libgtk-3-dev \
@@ -149,18 +147,26 @@ libnotify-dev \
 libmspack-dev \
 libgspell-1-dev
 ```
+2. Install `cmake`, `make`, and `git` with your package manager
+3. Clone the entire repository `git clone --recurse-submodules -j8 https://github.com/FoofooTheGuy/VidInjector9000.git`
 4. Run `install-wxwidgets.sh` Note: Alternatively, you might be able to install `wxwidgets` with your package manager
 5. Run `build.sh`
 
 **MacOS**
 1. Install the [Homebrew](https://brew.sh/) package manager
-2. Clone the entire repository `git clone --recurse-submodules -j8 https://github.com/FoofooTheGuy/VidInjector9000.git`
-3. Run `brew install cmake`
-4. Run `install-wxwidgets.sh`
-5. Run `build.sh`
+2. Run `brew install cmake make`
+3. Clone the entire repository `git clone --recurse-submodules -j8 https://github.com/FoofooTheGuy/VidInjector9000.git`
+4. Run `cd VidInjector9000/VidInjector9002.5`
+5. Run `install-wxwidgets.sh`
+6. Run `build.sh`
+
+## Compiling Continued
+In order to properly use this program, you must also compile `VidInjector9002-CLI`
+1. See [The instructions for compiling VidInjector9002-CLI](https://github.com/FoofooTheGuy/VidInjector9000/blob/main/VidInjector9002-CLI/README.md#compiling)
+2. move the `VidInjector9002-CLI(.exe)` binary to the `VidInjector9000Resources/` directory within the same directory of `VidInjector9002.5(.exe)`. (Create a new directory if it is not there.) If you are on MacOS, move the file `VidInjector9002-CLI.app/Contents/MacOS/VidInjector9002-CLI`
 
 ## Translation
 I gave up trying to translate the program into languages I don't know. So if you want to help, please create a pull request or issue to share your translation.
 
-- the `Language` value in the file should be the name of the language in such language, not the word "English" translated.
+- the `Language` value in the file should be the name of the language in said language, not the word "English" translated.
 - Put translations in `VidInjector9000Resources/language/<Language>/Language.txt`
