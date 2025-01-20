@@ -39,6 +39,23 @@ A GUI wrapper for VidInjector9002-CLI. Made with pure [wxWidgets](https://github
 </details>
 
 <details>
+<summary>MacOS (Sonoma 14.3)</summary>
+
+### System (Light Mode)
+![system](https://github.com/user-attachments/assets/f53e9cca-69ff-4c09-8039-e79778682ee7)
+
+### System (Dark Mode)
+![system dark](https://github.com/user-attachments/assets/62d95d87-1d98-445c-866a-225f0317fbc5)
+
+### Light Mode
+![light](https://github.com/user-attachments/assets/20a2f9cc-ceaa-47f7-941e-28e1a4a54a73)
+
+### Dark Mode
+![dark](https://github.com/user-attachments/assets/3d5b0e4a-407f-480a-9553-8888ee9a507b)
+
+</details>
+
+<details>
 <summary>Windows 7</summary>
 
 ### System
