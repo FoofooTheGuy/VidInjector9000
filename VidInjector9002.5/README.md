@@ -149,8 +149,9 @@ libgspell-1-dev
 ```
 2. Install `cmake`, `make`, and `git` with your package manager
 3. Clone the entire repository `git clone --recurse-submodules -j8 https://github.com/FoofooTheGuy/VidInjector9000.git`
-4. Run `install-wxwidgets.sh` Note: Alternatively, you might be able to install `wxwidgets` with your package manager
-5. Run `build.sh`
+4. Run `cd VidInjector9000/VidInjector9002.5`
+5. Run `install-wxwidgets.sh` Note: Alternatively, you might be able to install `wxwidgets` with your package manager
+6. Run `build.sh`
 
 **MacOS**
 1. Install the [Homebrew](https://brew.sh/) package manager
