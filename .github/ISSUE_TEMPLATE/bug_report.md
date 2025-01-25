@@ -21,6 +21,7 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
+ - Edition [e.g. VidInjector9002-CLI]
  - OS: [e.g. Linux, Windows]
  - Version [e.g. 3.5.0]
 
