@@ -575,25 +575,7 @@ void MenuBanners_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxText
 			if(!row->IsEnabled())
 				return;
 			VI9P::MultiBannerIndex = rowReal;
-			
-			if(wid->MenuBanners.size() != 1) {
-				if(VI9P::MultiBannerIndex > 0 && VI9P::MultiBannerIndex < wid->MenuBanners.size() - 1) {
-					wid->multiBannerPreviewLeft->Enable(true);
-					wid->multiBannerPreviewRight->Enable(true);
-				}
-				if(VI9P::MultiBannerIndex <= 0) {
-					wid->multiBannerPreviewLeft->Enable(false);
-					wid->multiBannerPreviewRight->Enable(true);
-				}
-				if(VI9P::MultiBannerIndex >= wid->MenuBanners.size() - 1) {
-					wid->multiBannerPreviewLeft->Enable(true);
-					wid->multiBannerPreviewRight->Enable(false);
-				}
-			}
-			else {
-				wid->multiBannerPreviewLeft->Enable(false);
-				wid->multiBannerPreviewRight->Enable(false);
-			}
+			EnableBannerLeftRight(wid);
 			
 			parameters->MBannerVec.at(VI9P::MultiBannerIndex) = std::string(row->GetValue().ToUTF8());
 			
@@ -750,24 +732,7 @@ void multiBannerBrowse_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters
 		}
 	}
 	
-	if(wid->MenuBanners.size() != 1) {
-		if(VI9P::MultiBannerIndex > 0 && VI9P::MultiBannerIndex < wid->MenuBanners.size() - 1) {
-			wid->multiBannerPreviewLeft->Enable(true);
-			wid->multiBannerPreviewRight->Enable(true);
-		}
-		if(VI9P::MultiBannerIndex <= 0) {
-			wid->multiBannerPreviewLeft->Enable(false);
-			wid->multiBannerPreviewRight->Enable(true);
-		}
-		if(VI9P::MultiBannerIndex >= wid->MenuBanners.size() - 1) {
-			wid->multiBannerPreviewLeft->Enable(true);
-			wid->multiBannerPreviewRight->Enable(false);
-		}
-	}
-	else {
-		wid->multiBannerPreviewLeft->Enable(false);
-		wid->multiBannerPreviewRight->Enable(false);
-	}
+	EnableBannerLeftRight(wid);
 	wid->multiBannerPreviewLeft->SetCursor(wid->multiBannerPreviewLeft->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
 	wid->multiBannerPreviewRight->SetCursor(wid->multiBannerPreviewRight->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
 }
@@ -789,24 +754,7 @@ void removeRow_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 	}
 	
 	if(parameters->mode) {
-		if(wid->MenuBanners.size() != 1) {
-			if(VI9P::MultiBannerIndex > 0 && VI9P::MultiBannerIndex < wid->MenuBanners.size() - 1) {
-				wid->multiBannerPreviewLeft->Enable(true);
-				wid->multiBannerPreviewRight->Enable(true);
-			}
-			if(VI9P::MultiBannerIndex <= 0) {
-				wid->multiBannerPreviewLeft->Enable(false);
-				wid->multiBannerPreviewRight->Enable(true);
-			}
-			if(VI9P::MultiBannerIndex >= wid->MenuBanners.size() - 1) {
-				wid->multiBannerPreviewLeft->Enable(true);
-				wid->multiBannerPreviewRight->Enable(false);
-			}
-		}
-		else {
-			wid->multiBannerPreviewLeft->Enable(false);
-			wid->multiBannerPreviewRight->Enable(false);
-		}
+		EnableBannerLeftRight(wid);
 		wid->multiBannerPreviewLeft->SetCursor(wid->multiBannerPreviewLeft->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
 		wid->multiBannerPreviewRight->SetCursor(wid->multiBannerPreviewRight->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
 		

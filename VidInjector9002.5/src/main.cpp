@@ -340,25 +340,8 @@ int main(int argc, char* argv[]) {
 		
 		if(parameters.mode) {
 			wid.splitPatchButton->Enable((parameters.rows > 1));
-			if(wid.MenuBanners.size() != 1) {
-				if(VI9P::MultiBannerIndex > 0 && VI9P::MultiBannerIndex < wid.MenuBanners.size() - 1) {
-					wid.multiBannerPreviewLeft->Enable(true);
-					wid.multiBannerPreviewRight->Enable(true);
-				}
-				if(VI9P::MultiBannerIndex <= 0) {
-					wid.multiBannerPreviewLeft->Enable(false);
-					wid.multiBannerPreviewRight->Enable(true);
-				}
-				if(VI9P::MultiBannerIndex >= wid.MenuBanners.size() - 1) {
-					wid.multiBannerPreviewLeft->Enable(true);
-					wid.multiBannerPreviewRight->Enable(false);
-				}
-			}
-			else {
-				wid.multiBannerPreviewLeft->Enable(false);
-				wid.multiBannerPreviewRight->Enable(false);
-			}
-		
+			EnableBannerLeftRight(&wid);
+			
 			wid.rowText->Show(true);
 			if(parameters.rows > 1 && parameters.rows < 27) {
 				wid.appendRow->Enable(true);

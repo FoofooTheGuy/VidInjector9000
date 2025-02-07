@@ -576,6 +576,27 @@ void setFonts(InitWidgets* wid) {
 	}
 }
 
+void EnableBannerLeftRight(InitWidgets* wid) {
+	if(wid->MenuBanners.size() != 1) {
+		if(VI9P::MultiBannerIndex > 0 && VI9P::MultiBannerIndex < wid->MenuBanners.size() - 1) {
+			wid->multiBannerPreviewLeft->Enable(true);
+			wid->multiBannerPreviewRight->Enable(true);
+		}
+		if(VI9P::MultiBannerIndex <= 0) {
+			wid->multiBannerPreviewLeft->Enable(false);
+			wid->multiBannerPreviewRight->Enable(true);
+		}
+		if(VI9P::MultiBannerIndex >= wid->MenuBanners.size() - 1) {
+			wid->multiBannerPreviewLeft->Enable(true);
+			wid->multiBannerPreviewRight->Enable(false);
+		}
+	}
+	else {
+		wid->multiBannerPreviewLeft->Enable(false);
+		wid->multiBannerPreviewRight->Enable(false);
+	}
+}
+
 void ShowMultiUpDown(InitWidgets* wid) {
 	for(const auto &row : wid->MultiUp) {
 		row->Enable(true);
@@ -2360,24 +2381,8 @@ void applyMode(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->rowText->Show(true);
 		wid->multiBannerPreview->Enable(true);
 		wid->multiBannerPreviewIndex->Show(true);
-		if(wid->MenuBanners.size() != 1) {
-			if(VI9P::MultiBannerIndex > 0 && VI9P::MultiBannerIndex < wid->MenuBanners.size() - 1) {
-				wid->multiBannerPreviewLeft->Enable(true);
-				wid->multiBannerPreviewRight->Enable(true);
-			}
-			if(VI9P::MultiBannerIndex <= 0) {
-				wid->multiBannerPreviewLeft->Enable(false);
-				wid->multiBannerPreviewRight->Enable(true);
-			}
-			if(VI9P::MultiBannerIndex >= wid->MenuBanners.size() - 1) {
-				wid->multiBannerPreviewLeft->Enable(true);
-				wid->multiBannerPreviewRight->Enable(false);
-			}
-		}
-		else {
-			wid->multiBannerPreviewLeft->Enable(false);
-			wid->multiBannerPreviewRight->Enable(false);
-		}
+		
+		EnableBannerLeftRight(wid);
 		
 		if(parameters->rows > 1 && parameters->rows < 27) {
 			wid->appendRow->Enable(true);
@@ -2705,24 +2710,7 @@ void removeRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 		
 		wid->multiBannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(imagePath), wxBITMAP_TYPE_ANY));
 	}
-	if(wid->MenuBanners.size() != 1) {
-		if(VI9P::MultiBannerIndex > 0 && VI9P::MultiBannerIndex < wid->MenuBanners.size() - 1) {
-			wid->multiBannerPreviewLeft->Enable(true);
-			wid->multiBannerPreviewRight->Enable(true);
-		}
-		if(VI9P::MultiBannerIndex <= 0) {
-			wid->multiBannerPreviewLeft->Enable(false);
-			wid->multiBannerPreviewRight->Enable(true);
-		}
-		if(VI9P::MultiBannerIndex >= wid->MenuBanners.size() - 1) {
-			wid->multiBannerPreviewLeft->Enable(true);
-			wid->multiBannerPreviewRight->Enable(false);
-		}
-	}
-	else {
-		wid->multiBannerPreviewLeft->Enable(false);
-		wid->multiBannerPreviewRight->Enable(false);
-	}
+	EnableBannerLeftRight(wid);
 
 	positionWidgets(wid, parameters);
 }

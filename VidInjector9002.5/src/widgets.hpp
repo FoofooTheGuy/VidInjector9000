@@ -221,6 +221,7 @@ void doAddRows(InitWidgets* wid, int rows);
 void initLanguage(InitWidgets* wid);
 void initAllWidgets(InitWidgets* initwidgets);
 void setFonts(InitWidgets* wid);
+void EnableBannerLeftRight(InitWidgets* wid);
 void ShowMultiUpDown(InitWidgets* wid);
 void ShowPatchUpDown(InitWidgets* wid, VI9Pparameters* parameters);
 void setToolTips(InitWidgets* initwidgets);
