@@ -575,6 +575,26 @@ void MenuBanners_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxText
 			if(!row->IsEnabled())
 				return;
 			VI9P::MultiBannerIndex = rowReal;
+			
+			if(wid->MenuBanners.size() != 1) {
+				if(VI9P::MultiBannerIndex > 0 && VI9P::MultiBannerIndex < wid->MenuBanners.size() - 1) {
+					wid->multiBannerPreviewLeft->Enable(true);
+					wid->multiBannerPreviewRight->Enable(true);
+				}
+				if(VI9P::MultiBannerIndex <= 0) {
+					wid->multiBannerPreviewLeft->Enable(false);
+					wid->multiBannerPreviewRight->Enable(true);
+				}
+				if(VI9P::MultiBannerIndex >= wid->MenuBanners.size() - 1) {
+					wid->multiBannerPreviewLeft->Enable(true);
+					wid->multiBannerPreviewRight->Enable(false);
+				}
+			}
+			else {
+				wid->multiBannerPreviewLeft->Enable(false);
+				wid->multiBannerPreviewRight->Enable(false);
+			}
+			
 			parameters->MBannerVec.at(VI9P::MultiBannerIndex) = std::string(row->GetValue().ToUTF8());
 			
 			{//-sp
@@ -607,6 +627,10 @@ void MenuBanners_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxText
 			wid->multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string(wid->MenuBanners.size())));
 		}
 	}
+}
+
+void MenuBanners_EVT_TEXT_ENTER(InitWidgets* wid, VI9Pparameters* parameters, wxTextCtrl* row) {
+	MenuBanners_wxEVT_TEXT(wid, parameters, row);//lool
 }
 
 void MultiUp_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters, wxButton* row) {
@@ -760,7 +784,7 @@ void removeRow_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->appendRow->Enable(false);
 	
 		removeRows(wid, parameters);
-		wid->rowText->SetLabel(wxString::FromUTF8(std::to_string(parameters->rows) + "/27"));
+		wid->rowText->SetLabel(wxString::FromUTF8(std::to_string(parameters->rows) + "/" + std::to_string(MAX_ROWS)));
 		wid->multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string(wid->MenuBanners.size())));
 	}
 	
@@ -787,7 +811,7 @@ void removeRow_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->multiBannerPreviewRight->SetCursor(wid->multiBannerPreviewRight->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
 		
 		wid->rowText->Show(true);
-		if(parameters->rows > 1 && parameters->rows < 27) {
+		if(parameters->rows > 1 && parameters->rows < MAX_ROWS) {
 			wid->appendRow->Enable(true);
 			wid->removeRow->Enable(true);
 			wid->splitPatchButton->Enable(true);
@@ -797,7 +821,7 @@ void removeRow_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 			wid->removeRow->Enable(false);
 			wid->splitPatchButton->Enable(false);
 		}
-		else if(parameters->rows >= 27) {
+		else if(parameters->rows >= MAX_ROWS) {
 			wid->appendRow->Enable(false);
 			wid->removeRow->Enable(true);
 			wid->splitPatchButton->Enable(true);

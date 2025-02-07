@@ -216,6 +216,8 @@ struct InitWidgets {
 	wxStaticText* versionText = new wxStaticText(aboutpanel, wxID_ANY, wxString::FromUTF8(version));
 };
 
+void doAddRows(InitWidgets* wid, int rows);
+
 void initLanguage(InitWidgets* wid);
 void initAllWidgets(InitWidgets* initwidgets);
 void setFonts(InitWidgets* wid);

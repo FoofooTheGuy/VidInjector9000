@@ -182,6 +182,7 @@ int main(int argc, char* argv[]) {
 	setCursors(&wid);
 	
 	auto applyAddRows = [&]() {
+		//row stuff is here too
 		//well what do you know... it worked
 		for(const auto &row : wid.PlayerTitles) {
 			row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
@@ -196,6 +197,9 @@ int main(int argc, char* argv[]) {
 		for(const auto &row : wid.MenuBanners) {
 			row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
 				MenuBanners_wxEVT_TEXT(&wid, &parameters, row);
+			});
+			row->Bind(wxEVT_TEXT_ENTER, [&](wxCommandEvent& event) {//memory leak city???
+				MenuBanners_EVT_TEXT_ENTER(&wid, &parameters, row);
 			});
 		}
 		for(const auto &row : wid.MultiUp) {
@@ -309,35 +313,7 @@ int main(int argc, char* argv[]) {
 		multiBannerPreviewRight_wxEVT_BUTTON(&wid, &parameters);
 	});
 	
-	for(const auto &row : wid.PlayerTitles) {
-		row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
-			PlayerTitles_wxEVT_TEXT(&wid, &parameters, row);
-		});
-	}
-
-	for(const auto &row : wid.MoflexFiles) {
-		row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
-			MoflexFiles_wxEVT_TEXT(&wid, &parameters, row);
-		});
-	}
-	
-	for(const auto &row : wid.MenuBanners) {
-		row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
-			MenuBanners_wxEVT_TEXT(&wid, &parameters, row);
-		});
-	}
-
-	for(const auto &row : wid.MultiUp) {
-		row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
-			MultiUp_wxEVT_BUTTON(&wid, &parameters, row);
-		});
-	}
-
-	for(const auto &row : wid.MultiDown) {
-		row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
-			MultiDown_wxEVT_BUTTON(&wid, &parameters, row);
-		});
-	}
+	applyAddRows();
 	
 	wid.moflexBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		moflexBrowse_wxEVT_BUTTON(&wid, &parameters);

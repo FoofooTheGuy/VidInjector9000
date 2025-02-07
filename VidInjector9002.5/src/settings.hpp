@@ -31,10 +31,19 @@ returns a vector of int containing each fail (if any happened)
 fails:
 1 create resources dir
 2 settings file
-3 StrDefaultLanguage
-4 bad value IntShowLog
-5 IntShowLog
-6 bad value IntDarkMode
-7 IntDarkMode
+3 bad value IntDefaultLanguage
+4 failed to find IntDefaultLanguage
+5 bad value IntShowLog
+6 failed to find IntShowLog
+7 bad value IntColorMode
+8 failed to find IntColorMode
+9 bad value IntDeleteTemp
+10 failed to find IntDeleteTemp
+11 bad value IntFrameWidth
+12 failed to find IntFrameWidth
+13 bad value IntFrameHeight
+14 failed to find IntFrameHeight
+15 failed to find StrImagesPath
+16 failed to find StrVideosPath
 */
 std::vector<int> loadSettings();

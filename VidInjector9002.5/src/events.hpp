@@ -26,6 +26,7 @@ void multiBannerPreviewRight_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* para
 void PlayerTitles_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxTextCtrl* row);
 void MoflexFiles_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxTextCtrl* row);
 void MenuBanners_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxTextCtrl* row);
+void MenuBanners_EVT_TEXT_ENTER(InitWidgets* wid, VI9Pparameters* parameters, wxTextCtrl* row);
 void MultiUp_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters, wxButton* row);
 void MultiDown_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters, wxButton* row);
 void moflexBrowse_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters);

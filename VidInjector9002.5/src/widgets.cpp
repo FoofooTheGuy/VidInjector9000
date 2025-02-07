@@ -4,6 +4,46 @@ std::string Exports::CIA = "";
 std::string Exports::TAR = "";
 std::string Extracted::Archive = "";
 
+void doAddRows(InitWidgets* wid, int rows) {
+	for(int i = 0; i < rows; i++) {
+		wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString);
+		wid->PlayerTitles.push_back(box);
+	}
+	for(int i = 0; i < rows; i++) {
+		wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString);
+		wid->MoflexFiles.push_back(box);
+	}
+	for(int i = 0; i < rows; i++) {
+		wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER);
+		wid->MenuBanners.push_back(box);
+	}
+	
+	for(int i = 0; i < rows; i++) {
+		wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+		int width, height;
+		wxFont f = button->GetFont();
+		
+		button->SetLabel(wxString::FromUTF8("↑"));
+		
+		button->GetTextExtent(button->GetLabel(), &width, &height, nullptr, nullptr, &f);
+		button->SetSize(width, height);
+		
+		wid->MultiUp.push_back(button);
+	}
+	for(int i = 0; i < rows; i++) {
+		wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+		int width, height;
+		wxFont f = button->GetFont();
+		
+		button->SetLabel(wxString::FromUTF8("↓"));
+		
+		button->GetTextExtent(button->GetLabel(), &width, &height, nullptr, nullptr, &f);
+		button->SetSize(width, height);
+		
+		wid->MultiDown.push_back(button);
+	}
+}
+
 void initAllWidgets(InitWidgets* wid) {
 	//main menu
 	wid->menuItemFileNew->SetBitmap(wxArtProvider::GetBitmap(wxART_NEW, wxART_MENU));
@@ -33,43 +73,7 @@ void initAllWidgets(InitWidgets* wid) {
 	{//row stuff
 		int rows = 1;//yes this is loop executes once. the plan is to reuse this code when adding many rows at once. yes, yes, I know...
 		
-		for(int i = 0; i < rows; i++) {
-			wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString);
-			wid->PlayerTitles.push_back(box);
-		}
-		for(int i = 0; i < rows; i++) {
-			wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString);
-			wid->MoflexFiles.push_back(box);
-		}
-		for(int i = 0; i < rows; i++) {
-			wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString);
-			wid->MenuBanners.push_back(box);
-		}
-
-		for(int i = 0; i < rows; i++) {
-			wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-			int width, height;
-			wxFont f = button->GetFont();
-			
-			button->SetLabel(wxString::FromUTF8("↑"));
-			
-			button->GetTextExtent(button->GetLabel(), &width, &height, nullptr, nullptr, &f);
-			button->SetSize(width, height);
-			
-			wid->MultiUp.push_back(button);
-		}
-		for(int i = 0; i < rows; i++) {
-			wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-			int width, height;
-			wxFont f = button->GetFont();
-			
-			button->SetLabel(wxString::FromUTF8("↓"));
-			
-			button->GetTextExtent(button->GetLabel(), &width, &height, nullptr, nullptr, &f);
-			button->SetSize(width, height);
-			
-			wid->MultiDown.push_back(button);
-		}
+		doAddRows(wid, rows);
 		ShowMultiUpDown(wid);
 	}
 	
@@ -2461,43 +2465,7 @@ void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 	if(wid->PlayerTitles.size() < parameters->rows) {
 		int count = parameters->rows - wid->PlayerTitles.size();
 		if(wid->PlayerTitles.size() + count <= 28) {
-			for(uint8_t i = 0; i < count; i++) {
-				wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString);
-				wid->PlayerTitles.push_back(box);
-			}
-			for(uint8_t i = 0; i < count; i++) {
-				wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString);
-				wid->MoflexFiles.push_back(box);
-			}
-			for(uint8_t i = 0; i < count; i++) {
-				wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString);
-				wid->MenuBanners.push_back(box);
-			}
-			
-			for(int i = 0; i < count; i++) {
-				wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-				int width, height;
-				wxFont f = button->GetFont();
-				
-				button->SetLabel(wxString::FromUTF8("↑"));
-				
-				button->GetTextExtent(button->GetLabel(), &width, &height, nullptr, nullptr, &f);
-				button->SetSize(width, height);
-				
-				wid->MultiUp.push_back(button);
-			}
-			for(int i = 0; i < count; i++) {
-				wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-				int width, height;
-				wxFont f = button->GetFont();
-				
-				button->SetLabel(wxString::FromUTF8("↓"));
-				
-				button->GetTextExtent(button->GetLabel(), &width, &height, nullptr, nullptr, &f);
-				button->SetSize(width, height);
-				
-				wid->MultiDown.push_back(button);
-			}
+			doAddRows(wid, count);
 		}
 	}
 	else if(wid->PlayerTitles.size() > parameters->rows) {
@@ -2616,43 +2584,7 @@ void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 		}
 		int count = parameters->rows - wid->PlayerTitles.size();
 		if(parameters->rows + count <= 28) {//??????? im sure this makes sense in some other universe
-			for(uint8_t i = 0; i < count; i++) {
-				wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString);
-				wid->PlayerTitles.push_back(box);
-			}
-			for(uint8_t i = 0; i < count; i++) {
-				wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString);
-				wid->MoflexFiles.push_back(box);
-			}
-			for(uint8_t i = 0; i < count; i++) {
-				wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString);
-				wid->MenuBanners.push_back(box);
-			}
-			
-			for(int i = 0; i < count; i++) {
-				wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-				int width, height;
-				wxFont f = button->GetFont();
-				
-				button->SetLabel(wxString::FromUTF8("↑"));
-				
-				button->GetTextExtent(button->GetLabel(), &width, &height, nullptr, nullptr, &f);
-				button->SetSize(width, height);
-				
-				wid->MultiUp.push_back(button);
-			}
-			for(int i = 0; i < count; i++) {
-				wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-				int width, height;
-				wxFont f = button->GetFont();
-				
-				button->SetLabel(wxString::FromUTF8("↓"));
-				
-				button->GetTextExtent(button->GetLabel(), &width, &height, nullptr, nullptr, &f);
-				button->SetSize(width, height);
-				
-				wid->MultiDown.push_back(button);
-			}
+			doAddRows(wid, count);
 		}
 	}
 	positionWidgets(wid, parameters);
