@@ -220,7 +220,7 @@ int main(int argc, char* argv[]) {
 		setCursors(&wid);
 		setToolTips(&wid);
 		
-		wid.rowText->SetLabel(wxString::FromUTF8(std::to_string(parameters.rows) + "/27"));
+		wid.rowText->SetLabel(wxString::FromUTF8(std::to_string(parameters.rows) + "/" + std::to_string(MAX_ROWS)));
 		wid.multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string(wid.MenuBanners.size())));
 	};
 	
@@ -343,7 +343,7 @@ int main(int argc, char* argv[]) {
 			EnableBannerLeftRight(&wid);
 			
 			wid.rowText->Show(true);
-			if(parameters.rows > 1 && parameters.rows < 27) {
+			if(parameters.rows > 1 && parameters.rows < MAX_ROWS) {
 				wid.appendRow->Enable(true);
 				wid.removeRow->Enable(true);
 			}
@@ -351,7 +351,7 @@ int main(int argc, char* argv[]) {
 				wid.appendRow->Enable(true);
 				wid.removeRow->Enable(false);
 			}
-			else if(parameters.rows >= 27) {
+			else if(parameters.rows >= MAX_ROWS) {
 				wid.appendRow->Enable(false);
 				wid.removeRow->Enable(true);
 			}

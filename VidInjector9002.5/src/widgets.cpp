@@ -2384,7 +2384,7 @@ void applyMode(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		EnableBannerLeftRight(wid);
 		
-		if(parameters->rows > 1 && parameters->rows < 27) {
+		if(parameters->rows > 1 && parameters->rows < MAX_ROWS) {
 			wid->appendRow->Enable(true);
 			wid->removeRow->Enable(true);
 			wid->splitPatchButton->Enable(true);
@@ -2394,7 +2394,7 @@ void applyMode(InitWidgets* wid, VI9Pparameters* parameters) {
 			wid->removeRow->Enable(false);
 			wid->splitPatchButton->Enable(false);
 		}
-		else if(parameters->rows >= 27) {
+		else if(parameters->rows >= MAX_ROWS) {
 			wid->appendRow->Enable(false);
 			wid->removeRow->Enable(true);
 			wid->splitPatchButton->Enable(true);
@@ -2515,7 +2515,7 @@ void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 }
 
 void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
-	if(parameters->rows + count <= 27) {
+	if(parameters->rows + count <= MAX_ROWS) {
 		for(int i = 0; i < count; i++) {
 			{//-ar
 				wxArrayString output;

@@ -177,7 +177,7 @@ struct InitWidgets {
 	wxButton* splitPatchUp = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8("↑"), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	wxButton* splitPatchDown = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8("↓"), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	
-	wxStaticText* rowText = new wxStaticText(scrolledPanel, wxID_ANY, wxString::FromUTF8("1/27"));
+	wxStaticText* rowText = new wxStaticText(scrolledPanel, wxID_ANY, wxString::FromUTF8("1/" + std::to_string(MAX_ROWS)));
 	
 	wxFrame* buildframe = new wxFrame(frame, wxID_ANY, wxString::FromUTF8(buildFrameText), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxCLOSE_BOX|wxRESIZE_BORDER|wxFRAME_FLOAT_ON_PARENT|wxCLIP_CHILDREN);
 	wxPanel* buildpanel = new wxPanel(buildframe);
@@ -379,7 +379,7 @@ void applyParameters(InitWidgets* wid, VI9Pparameters* parameters);
 
 /*count: how many rows to add
 note that this also called -ar to the CLI to add rows to VI9P::WorkingFile
-27 is maximum because if there are more then your 3ds will crash when loading it
+MAX_ROWS (27) is maximum because if there are more then your 3ds will crash when loading it
 hopefully this doesnt leak memory*/
 void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count = 1);
 
