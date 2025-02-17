@@ -37,9 +37,13 @@ bool TIDisValid(uint32_t TID) {//https://github.com/ihaveamac/videoinject/blob/m
 	case 0xda001://Smash Bros Dummy Application
 	case 0xda002://3ds quick shutdown
 	case 0xda003://Wifi Toggle
+	case 0xDEAD1://MCU Bricker
 	case 0xe7a5a://NASA ALL
 	case 0xec100://PKSM
+	case 0xEC600://Video player for 3DS
 	case 0xed990://NotifyMii
+	case 0xED000://Google Translate
+	case 0xEE3EE://MurderLands
 	case 0xeffec://FileKong
 	case 0xeffed://TriaAl
 	case 0:
