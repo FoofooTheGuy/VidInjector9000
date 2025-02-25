@@ -171,3 +171,6 @@ I gave up trying to translate the program into languages I don't know. So if you
 
 - the `Language` value in the file should be the name of the language in said language, not the word "English" translated.
 - Put translations in `VidInjector9000Resources/language/<Language>/Language.txt`
+
+**Translators:**
+- [sheepgreen](https://github.com/slippersheepig) (Simplified Chinese)
