@@ -44,6 +44,7 @@ void applyLanguage(InitWidgets* wid) {
 	wid->menuItemOptionsSystem->SetItemLabel(wxString::FromUTF8(optionsSystemMode));
 	wid->menuItemOptionsLight->SetItemLabel(wxString::FromUTF8(optionsLightMode));
 	wid->menuItemOptionsDark->SetItemLabel(wxString::FromUTF8(optionsDarkMode));
+	wid->menuItemOptionsDeleteTemp->SetItemLabel(wxString::FromUTF8(optionsDeleteTemp));
 	wid->mainMenu->SetMenuLabel(2, wxString::FromUTF8(language));
 	wid->mainMenu->SetMenuLabel(3, wxString::FromUTF8(help));
 	wid->menuItemHelpAbout->SetItemLabel(wxString::FromUTF8(helpAbout + "\tF1"));
