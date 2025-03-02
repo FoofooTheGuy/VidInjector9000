@@ -20,9 +20,9 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Desktop (please complete the following information):**
- - Edition [e.g. VidInjector9002-CLI]
- - Version [e.g. 3.5.0]
+**Environment (please complete the following information):**
+ - Edition: [e.g. VidInjector9002-CLI]
+ - Version: [e.g. 3.5.0]
  - OS: [e.g. Linux, Windows]
 
 **Additional context**
