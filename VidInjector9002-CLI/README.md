@@ -25,7 +25,7 @@ A console program that interfaces with a VidInjector9002 parameters file.
 4. Run `./build.bat`
 
 **Linux**
-1. Install `make`, `cmake`, `gcc`, and `git` with your package manager if you don't already have them
+1. Install `make`, `cmake`, `gcc`, `g++`, and `git` with your package manager if you don't already have them
 2. Clone the entire repository `git clone --recurse-submodules -j8 https://github.com/FoofooTheGuy/VidInjector9000.git`
 3. Run `cd VidInjector9000/VidInjector9002-CLI`
 4. Run `./build.sh`
