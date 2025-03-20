@@ -32,10 +32,13 @@ int saveParameters(std::string parampath, VI9Pparameters parameters) {
 		IntSplitPatchParam << "=" << "\x1F" << std::to_string(parameters.splitPos) << "\x1F" << "\n";
 		//IntPreIndexParam << "=\"" << std::to_string(parameters.BannerPreviewIndex) << "\"\n";
 	outparams.close();
-	if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*parampath.c_str()))) {
+	std::error_code error;
+	if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*parampath.c_str()), error)) {
 		std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << parampath << std::endl;
 		return 1;
 	}
+	if(error)
+		return 2;
 	return 0;
 }
 

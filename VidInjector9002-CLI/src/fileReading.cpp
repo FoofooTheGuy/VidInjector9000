@@ -38,7 +38,11 @@ bool parseLines(std::string& out, std::vector<std::string> filelines, std::strin
 
 std::vector<std::string> fileRead(std::string inpath) {
 	std::vector<std::string> filelines;
-	if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*inpath.c_str()))) return filelines;
+	std::error_code error;
+	if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*inpath.c_str()), error))
+		return filelines;
+	if(error)
+		return filelines;
 	std::ifstream infile(std::filesystem::path((const char8_t*)&*inpath.c_str()), std::ios_base::in | std::ios_base::binary);
 	char Byte;
 	std::string line = "";
