@@ -1204,7 +1204,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 					return 36;
 				}
 				if(error)
-					return 37
+					return 37;
 			}
 			//make banner
 			std::cout << CreatingFile << " exefs/banner" << std::endl;
@@ -1224,7 +1224,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 				}
 			}
 			if(error)
-				return 38
+				return 38;
 			if (bannerbool) {
 				std::error_code error;
 				error = copyfile(parameters.banner, std::string(tempPath + "/exefs/banner").c_str());
