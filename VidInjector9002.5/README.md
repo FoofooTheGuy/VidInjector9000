@@ -174,3 +174,4 @@ I gave up trying to translate the program into languages I don't know. So if you
 
 **Translators:**
 - [sheepgreen](https://github.com/slippersheepig) (Simplified Chinese)
+- [Tommy Nguyen](https://github.com/duynho2003) (Vietnamese)
