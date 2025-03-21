@@ -46,7 +46,7 @@ DimCheckText=Làm tối sau 5 giây
 TextTooLongError=Chữ quá dài
 ImageInfoError=Không thể tải thông tin ảnh.
 CopyFileError=Không thể sao chép tệp.
-CLIError=Không thể truy cập giao diện dòng lệnh (CLI).
+CLIError=Không thể truy cập giao diện dòng lệnh (CLI).
 Có phải VidInjector9002-CLI(.exe) nằm trong "VidInjector9000Resources/" không?
 BuildError=Không thể thực thi lưu trữ này.
 ExtractError=Không thể giải nén lưu trữ.
@@ -107,7 +107,7 @@ chooseDirSave=Chọn đường dẫn để lưu tại
 moflexFiles=Tệp MoFlex (*.moflex)|*.moflex
 extractFiles=Các tệp hỗ trợ (*.cia;*.tar)|*.cia;*.tar
 vi9pFiles=VidInjector9000 Project Files (*.vi9p)|*.vi9p
-ciaFiles=vCTR Importable Archives (*.cia)|*.cia
+ciaFiles=CTR Importable Archives (*.cia)|*.cia
 tarFiles=Tape ARchives (*.tar)|*.tar
 seeddbFiles=seeddb.bin (*.bin)|*.bin
 allFiles=Tất cả tệp (*.*)|*.*
