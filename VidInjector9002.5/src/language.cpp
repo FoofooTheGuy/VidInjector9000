@@ -27,7 +27,7 @@ bool loadLanguage(std::string LangPath) {
 	return true;
 }
 
-void applyLanguage(InitWidgets* wid) {
+void applyLanguage(InitWidgets* wid, VI9Pparameters* parameters) {
 	//wid->consoleLog->SetLabel(wxString::FromUTF8(logFrameText));//wxLogWindow is so weird idk how to change anything about it
 	
 	wid->frame->SetLabel(wxString::FromUTF8(frameText));
@@ -53,16 +53,16 @@ void applyLanguage(InitWidgets* wid) {
 	wid->modeChoiceBox->SetString(1, wxString::FromUTF8(MultiVideo));
 	wid->bannerText->SetLabel(wxString::FromUTF8(BannerText));
 	wid->bannerBrowse->SetLabel(wxString::FromUTF8(Browse));
-	wid->bannerError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + ImageInfoError + " (0) " + SeeLog));
+	//wid->bannerError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + ImageInfoError + " (0) " + SeeLog));//wait no we dont want 0. see below for fix
 	wid->iconText->SetLabel(wxString::FromUTF8(IconText));
 	wid->iconBrowse->SetLabel(wxString::FromUTF8(Browse));
-	wid->iconError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + ImageInfoError + " (0) " + SeeLog));
+	//wid->iconError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + ImageInfoError + " (0) " + SeeLog));
 	wid->shortnameText->SetLabel(wxString::FromUTF8(ShortNameText));
-	wid->shortnameError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + TextTooLongError + " (0/64)"));
+	//wid->shortnameError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + TextTooLongError + " (0/64)"));
 	wid->longnameText->SetLabel(wxString::FromUTF8(LongNameText));
-	wid->longnameError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + TextTooLongError + " (0/128)"));
+	//wid->longnameError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + TextTooLongError + " (0/128)"));
 	wid->publisherText->SetLabel(wxString::FromUTF8(PublisherText));
-	wid->publisherError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + TextTooLongError + " (0/64)"));
+	//wid->publisherError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + TextTooLongError + " (0/64)"));
 	wid->copyCheck->SetLabel(wxString::FromUTF8(CopyrightCheckText));
 	wid->bannerCustomText->SetLabel(wxString::FromUTF8(BannerCustomText));
 	wid->bannerPreviewText->SetLabel(wxString::FromUTF8(BannerPreviewText));
@@ -85,6 +85,12 @@ void applyLanguage(InitWidgets* wid) {
 	wid->aboutframe->SetLabel(wxString::FromUTF8(aboutFrameText));
 	wid->byMeText->SetLabel(wxString::FromUTF8(ByMeText));
 	wid->gitHubLinker->SetLabel(wxString::FromUTF8(GitHubLinker));
+	
+	bannerBox_wxEVT_TEXT(wid, parameters);//it actually should do this because the other thing was removing the error code
+	iconBox_wxEVT_TEXT(wid, parameters);
+	shortnameBox_wxEVT_TEXT(wid, parameters);
+	longnameBox_wxEVT_TEXT(wid, parameters);
+	publisherBox_wxEVT_TEXT(wid, parameters);
 }
 
 void initLanguage(InitWidgets* wid) {

@@ -172,7 +172,7 @@ int main(int argc, char* argv[]) {
 	initLanguage(&wid);
 	if(Settings::DefaultLanguage < Languages::LanguageFiles.size())
 		if(loadLanguage(Languages::LanguageFiles.at(Settings::DefaultLanguage).File))
-			applyLanguage(&wid);
+			applyLanguage(&wid, &parameters);
 	initAllWidgets(&wid);
 	setFonts(&wid);
 	positionWidgets(&wid, &parameters);
@@ -643,7 +643,7 @@ int main(int argc, char* argv[]) {
 				for(size_t i = 0; i < LANG_IDs.size(); i++) {
 					if(event.GetId() == LANG_IDs.at(i)) {
 						if(loadLanguage(Languages::LanguageFiles.at(i).File))
-							applyLanguage(&wid);
+							applyLanguage(&wid, &parameters);
 						setFonts(&wid);
 						positionWidgets(&wid, &parameters);
 						setToolTips(&wid);
