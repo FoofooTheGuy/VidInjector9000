@@ -167,10 +167,11 @@ In order to properly use this program, you must also compile `VidInjector9002-CL
 2. move the `VidInjector9002-CLI(.exe)` binary to the `VidInjector9000Resources/` directory within the same directory of `VidInjector9002.5(.exe)`. (Create a new directory if it is not there.) If you are on MacOS, move the file `VidInjector9002-CLI.app/Contents/MacOS/VidInjector9002-CLI`
 
 ## Translation
-I gave up trying to translate the program into languages I don't know. So if you want to help, please create a pull request or issue to share your translation.
+I gave up trying to translate the program into languages I don't know. So if you want to help, please create a pull request or issue to share your translation. Here are some useful tips on how it should be done:
 
-- the `Language` value in the file should be the name of the language in said language, not the word "English" translated.
-- Put translations in `VidInjector9000Resources/language/<Language>/Language.txt`
+- Please use a text editor like [geany](https://www.geany.org/) or [notepad++](https://notepad-plus-plus.org/) to make sure all of the text is shown correctly when editing.
+- The `Language` value in the file should be the name of the language in said language, not the word "English" translated.
+- Put translations in `VidInjector9000Resources/language/<Language>/Language.txt`.
 
 **Translators:**
 - [sheepgreen](https://github.com/slippersheepig) (Simplified Chinese)
