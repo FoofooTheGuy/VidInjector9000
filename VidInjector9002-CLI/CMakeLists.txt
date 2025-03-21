@@ -23,7 +23,7 @@ file(GLOB MY_SRC
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp")
 
-add_executable(${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${MY_SRC})
+add_executable(${PROJECT_NAME} MACOSX_BUNDLE ${MY_SRC})
 
 if (BUILD_TESTING AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/test/CMakeLists.txt")
     enable_testing()
