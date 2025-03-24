@@ -28,8 +28,6 @@ int main(int argc, char* argv[]) {
 		//wxMessageBox(ProgramDir);
 	}
 	
-	//TODO: load language
-	
 	//load settings
 	{
 		std::vector<int> ret = loadSettings();

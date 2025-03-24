@@ -86,10 +86,15 @@ void applyLanguage(InitWidgets* wid, VI9Pparameters* parameters) {
 	wid->byMeText->SetLabel(wxString::FromUTF8(ByMeText));
 	wid->gitHubLinker->SetLabel(wxString::FromUTF8(GitHubLinker));
 	
-	bannerBox_wxEVT_TEXT(wid, parameters);//it actually should do this because the other thing was removing the error code
-	iconBox_wxEVT_TEXT(wid, parameters);
-	shortnameBox_wxEVT_TEXT(wid, parameters);
-	longnameBox_wxEVT_TEXT(wid, parameters);
+	if(!parameters->banner.empty())//so it doesn't overwrite the actual information
+		bannerBox_wxEVT_TEXT(wid, parameters);//it actually should do this because the other thing was removing the error code
+	if(!parameters->icon.empty())
+		iconBox_wxEVT_TEXT(wid, parameters);
+	if(!parameters->Sname.empty())
+		shortnameBox_wxEVT_TEXT(wid, parameters);
+	if(!parameters->Lname.empty())
+		longnameBox_wxEVT_TEXT(wid, parameters);
+	if(!parameters->publisher.empty())
 	publisherBox_wxEVT_TEXT(wid, parameters);
 }
 
