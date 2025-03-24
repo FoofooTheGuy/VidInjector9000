@@ -717,6 +717,8 @@ void setCursors(InitWidgets* wid) {
 	wid->titleIDBox->SetCursor(wid->titleIDButton->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_ARROW);
 	wid->titleIDButton->SetCursor(wid->titleIDButton->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
 	wid->applicationTitleBox->SetCursor(wid->titleIDButton->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_ARROW);
+	wid->buildButton->SetCursor(wid->titleIDButton->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
+	wid->cancelButton->SetCursor(wid->titleIDButton->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
 }
 
 void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
