@@ -692,6 +692,9 @@ int main(int argc, char* argv[]) {
 	wid.extractArchive->Bind(wxEVT_END_PROCESS, [&](wxProcessEvent& event) {
 		extractArchive_wxEVT_END_PROCESS(&wid, &event);
 		wid.extractDialog->Destroy();
+		//cant load here because it's still in async or something idk but it doesnt work if you try
+		//loadVI9P(Extracted::Archive + "/parameters.vi9p");
+		//MenuBanners_wxEVT_TEXT(&wid, &parameters, wid.MenuBanners.at(VI9P::MultiBannerIndex));
 	});
 
 	wid.extractPulser->Bind(wxEVT_TIMER, [&](wxTimerEvent& event) {
