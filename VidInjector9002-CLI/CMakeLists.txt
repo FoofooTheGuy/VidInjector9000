@@ -9,13 +9,13 @@ add_subdirectory(nnc EXCLUDE_FROM_ALL)
 
 find_package(MbedTLS)
 
-if (NOT MbedTLS_FOUND)
-    set(ENABLE_TESTING CACHE BOOL OFF FORCE)
-    set(ENABLE_PROGRAMS CACHE BOOL OFF FORCE)
-    set(INSTALL_MBEDTLS_HEADERS CACHE BOOL OFF FORCE)
+#if (NOT MbedTLS_FOUND)
+#    set(ENABLE_TESTING CACHE BOOL OFF FORCE)
+#    set(ENABLE_PROGRAMS CACHE BOOL OFF FORCE)
+#    set(INSTALL_MBEDTLS_HEADERS CACHE BOOL OFF FORCE)
 
-    add_subdirectory(extern/mbedtls EXCLUDE_FROM_ALL)
-endif()
+#    add_subdirectory(extern/mbedtls EXCLUDE_FROM_ALL)
+#endif()
 
 link_libraries(MbedTLS::mbedcrypto nnc)
 
