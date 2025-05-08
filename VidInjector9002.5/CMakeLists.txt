@@ -12,6 +12,10 @@ if (MSVC)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ENTRY:mainCRTStartup")
 endif()
 
+set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
+#set(CMAKE_CXX_FLAGS_RELEASE "-O2")
+
 file(GLOB MY_SRC
 	"src/*.cpp"
     "src/*.hpp"

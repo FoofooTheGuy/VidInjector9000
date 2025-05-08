@@ -1,8 +1,8 @@
 #include "settings.hpp"
 
-int Settings::DefaultLanguage = 0;
+unsigned int Settings::DefaultLanguage = 0;
 bool Settings::ShowLog = 0;
-int Settings::ColorMode = 2;
+unsigned int Settings::ColorMode = 2;
 bool Settings::DeleteTemp = 0;
 int Settings::FrameWidth = 1150;
 int Settings::FrameHeight = 700;

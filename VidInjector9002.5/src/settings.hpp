@@ -13,9 +13,9 @@
 class Settings
 {
 	public:
-    static int DefaultLanguage;
+    static unsigned int DefaultLanguage;
     static bool ShowLog;
-    static int ColorMode;
+    static unsigned int ColorMode;
     static bool DeleteTemp;
     static int FrameWidth;
     static int FrameHeight;

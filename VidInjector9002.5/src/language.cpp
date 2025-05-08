@@ -123,6 +123,7 @@ void initLanguage(InitWidgets* wid) {
 					std::vector<std::string> filelines = fileRead(entrystr + "/Language.txt");
 					if (parseLines(outstr, filelines, inLangLanguage)) {
 						wxMenuItem* menuItemLanguage = wid->menuLanguage->Append(LANG_IDs.at(slot), wxString::FromUTF8(outstr), "");
+						(void)menuItemLanguage;
 						Languages::LanguageFiles.push_back({outstr, std::filesystem::absolute(entry.path()).string() + "/Language.txt"});
 						++slot;
 					}

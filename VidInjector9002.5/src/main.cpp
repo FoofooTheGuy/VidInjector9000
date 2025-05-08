@@ -184,30 +184,36 @@ int main(int argc, char* argv[]) {
 		//well what do you know... it worked
 		for(const auto &row : wid.PlayerTitles) {
 			row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
+				(void)event;//do as I say not as I do
 				PlayerTitles_wxEVT_TEXT(&wid, &parameters, row);
 			});
 		}
 		for(const auto &row : wid.MoflexFiles) {
 			row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
+				(void)event;
 				MoflexFiles_wxEVT_TEXT(&wid, &parameters, row);
 			});
 		}
 		for(const auto &row : wid.MenuBanners) {
 			row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
+				(void)event;
 				MenuBanners_wxEVT_TEXT(&wid, &parameters, row);
 			});
 			row->Bind(wxEVT_TEXT_ENTER, [&](wxCommandEvent& event) {//memory leak city???
+				(void)event;
 				MenuBanners_EVT_TEXT_ENTER(&wid, &parameters, row);
 			});
 		}
 		for(const auto &row : wid.MultiUp) {
 			row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
-				MultiUp_wxEVT_BUTTON(&wid, &parameters, row);
+				(void)event;
+				MultiUp_wxEVT_BUTTON(&wid, row);
 			});
 		}
 		for(const auto &row : wid.MultiDown) {
 			row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
-				MultiDown_wxEVT_BUTTON(&wid, &parameters, row);
+				(void)event;
+				MultiDown_wxEVT_BUTTON(&wid, row);
 			});
 		}
 		
@@ -240,93 +246,114 @@ int main(int argc, char* argv[]) {
 	};
 	
 	wid.frame->Bind(wxEVT_CLOSE_WINDOW, [&](wxCloseEvent& event) {
-		frame_wxEVT_CLOSE_WINDOW(&wid, &event);
+		frame_wxEVT_CLOSE_WINDOW(&event);
 	});
 	
 	wid.panel->Bind(wxEVT_SIZE, [&](wxSizeEvent& event) {
+		(void)event;
 		panel_wxEVT_SIZE(&wid, &parameters);
 	});
 	
 	wid.modeChoiceBox->Bind(wxEVT_CHOICE, [&](wxCommandEvent& event) {
+		(void)event;
 		modeChoiceBox_wxEVT_CHOICE(&wid, &parameters);
 	});
 	
 	wid.bannerBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
+		(void)event;
 		bannerBox_wxEVT_TEXT(&wid, &parameters);
 	});
 	
 	wid.bannerBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		(void)event;
 		bannerBrowse_wxEVT_BUTTON(&wid, &parameters);
 	});
 
 	wid.iconBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
+		(void)event;
 		iconBox_wxEVT_TEXT(&wid, &parameters);
 	});
 	
 	wid.iconPreview->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		(void)event;
 		iconPreview_wxEVT_BUTTON(&wid, &parameters);
 	});
 
 	wid.iconBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		(void)event;
 		iconBrowse_wxEVT_BUTTON(&wid, &parameters);
 	});
 	
 	wid.shortnameBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
+		(void)event;
 		shortnameBox_wxEVT_TEXT(&wid, &parameters);
 	});
 
 	wid.longnameBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
+		(void)event;
 		longnameBox_wxEVT_TEXT(&wid, &parameters);
 	});
 	
 	wid.publisherBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
+		(void)event;
 		publisherBox_wxEVT_TEXT(&wid, &parameters);
 	});
 
 	wid.copyBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
+		(void)event;
 		copyBox_wxEVT_TEXT(&wid, &parameters);
 	});
 
 	wid.copyCheck->Bind(wxEVT_CHECKBOX, [&](wxCommandEvent& event) {
+		(void)event;
 		copyCheck_wxEVT_CHECKBOX(&wid, &parameters);
 	});
 
 	wid.ffRewindCheck->Bind(wxEVT_CHECKBOX, [&](wxCommandEvent& event) {
+		(void)event;
 		ffRewindCheck_wxEVT_CHECKBOX(&wid, &parameters);
 	});
 
 	wid.dimCheck->Bind(wxEVT_CHECKBOX, [&](wxCommandEvent& event) {
+		(void)event;
 		dimCheck_wxEVT_CHECKBOX(&wid, &parameters);
 	});
 	
 	wid.multiBannerPreview->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		(void)event;
 		multiBannerPreview_wxEVT_BUTTON(&wid, &parameters);
 	});
 
 	wid.multiBannerPreviewLeft->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		(void)event;
 		multiBannerPreviewLeft_wxEVT_BUTTON(&wid, &parameters);
 	});
 
 	wid.multiBannerPreviewRight->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		(void)event;
 		multiBannerPreviewRight_wxEVT_BUTTON(&wid, &parameters);
 	});
 	
 	applyAddRows();
 	
 	wid.moflexBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		(void)event;
 		moflexBrowse_wxEVT_BUTTON(&wid, &parameters);
 	});
 
 	wid.multiBannerBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		(void)event;
 		multiBannerBrowse_wxEVT_BUTTON(&wid, &parameters);
 	});
 	
 	wid.removeRow->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		(void)event;
 		removeRow_wxEVT_BUTTON(&wid, &parameters);
 	});
 	
 	//add row
 	wid.appendRow->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		(void)event;
 		if(!wid.appendRow->IsEnabled())
 			return;
 		wid.removeRow->Enable(false);//disable so you cant press it too much
@@ -363,14 +390,17 @@ int main(int argc, char* argv[]) {
 	});
 	
 	wid.splitPatchButton->Bind(wxEVT_TOGGLEBUTTON, [&](wxCommandEvent& event) {
+		(void)event;
 		splitPatchButton_wxEVT_TOGGLEBUTTON(&wid, &parameters);
 	});
 	
 	wid.splitPatchUp->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		(void)event;
 		splitPatchUp_wxEVT_BUTTON(&wid, &parameters);
 	});
 
 	wid.splitPatchDown->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		(void)event;
 		splitPatchDown_wxEVT_BUTTON(&wid, &parameters);
 	});
 	
@@ -658,14 +688,17 @@ int main(int argc, char* argv[]) {
 	});
 	
 	wid.buildpanel->Bind(wxEVT_SIZE, [&](wxSizeEvent& event) {
+		(void)event;
 		buildpanel_wxEVT_SIZE(&wid, &parameters);
 	});
 
 	wid.titleIDBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
+		(void)event;
 		titleIDBox_wxEVT_TEXT(&wid);
 	});
 
 	wid.titleIDButton->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		(void)event;
 		titleIDButton_wxEVT_BUTTON(&wid);
 	});
 	
@@ -674,18 +707,22 @@ int main(int argc, char* argv[]) {
 	});
 
 	wid.buildButton->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		(void)event;
 		buildButton_wxEVT_BUTTON(&wid, &parameters);
 	});
 
 	wid.cancelButton->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
+		(void)event;
 		cancelButton_wxEVT_BUTTON(&wid);
 	});
 	
 	wid.barPulser->Bind(wxEVT_TIMER, [&](wxTimerEvent& event) {
+		(void)event;
 		barPulser_wxEVT_TIMER(&wid);
 	});
 
 	wid.exportLogger->Bind(wxEVT_TIMER, [&](wxTimerEvent& event) {
+		(void)event;
 		exportLogger_wxEVT_TIMER(&wid);
 	});
 	
@@ -698,10 +735,12 @@ int main(int argc, char* argv[]) {
 	});
 
 	wid.extractPulser->Bind(wxEVT_TIMER, [&](wxTimerEvent& event) {
+		(void)event;
 		extractPulser_wxEVT_TIMER(&wid);
 	});
 
 	wid.extractLogger->Bind(wxEVT_TIMER, [&](wxTimerEvent& event) {
+		(void)event;
 		extractLogger_wxEVT_TIMER(&wid);
 	});
 	
@@ -710,6 +749,7 @@ int main(int argc, char* argv[]) {
 	});
 	
 	wid.aboutpanel->Bind(wxEVT_SIZE, [&](wxSizeEvent& event) {
+		(void)event;
 		aboutpanel_wxEVT_SIZE(&wid, &parameters);
 	});
 	

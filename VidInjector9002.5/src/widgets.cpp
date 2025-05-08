@@ -1121,7 +1121,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		std::vector<int>::iterator widestText = std::max_element(sizes.begin(), sizes.end());
 		
 		{//PlayerTitles
-			for(int row = 0; row < wid->PlayerTitles.size(); row++) {
+			for(size_t row = 0; row < wid->PlayerTitles.size(); row++) {
 				int scrolledx, scrolledy, ppux, ppuy, previousy, width, upwidth, downwidth, upheight, height;
 				wid->mediaPanel->GetSize(&width, NULL);
 				wid->scrolledPanel->GetViewStart(&scrolledx, &scrolledy);
@@ -1163,7 +1163,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 			}
 		}
 		{//MoflexFiles
-			for(int row = 0; row < wid->MoflexFiles.size(); row++) {
+			for(size_t row = 0; row < wid->MoflexFiles.size(); row++) {
 				int scrolledx, scrolledy, ppux, ppuy, previousy, width, upwidth, downwidth, upheight, height;
 				wid->mediaPanel->GetSize(&width, NULL);
 				wid->scrolledPanel->GetViewStart(&scrolledx, &scrolledy);
@@ -1208,7 +1208,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 			}
 		}
 		{//MenuBanners
-			for(int row = 0; row < wid->MenuBanners.size(); row++) {
+			for(size_t row = 0; row < wid->MenuBanners.size(); row++) {
 				int scrolledx, scrolledy, ppux, ppuy, previousy, width, upwidth, downwidth, upheight, height;
 				wid->mediaPanel->GetSize(&width, NULL);
 				wid->scrolledPanel->GetViewStart(&scrolledx, &scrolledy);
@@ -1284,7 +1284,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 	}
 	{//MultiUp
 		int x, y, width, height, myheight;
-		for(int i = 0; i < wid->MenuBanners.size(); i++) {
+		for(size_t i = 0; i < wid->MenuBanners.size(); i++) {
 			wid->MenuBanners.at(i)->GetSize(&width, &height);
 			wid->MenuBanners.at(i)->GetPosition(&x, &y);
 			wid->MultiUp.at(i)->GetSize(NULL, &myheight);
@@ -1294,7 +1294,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 	}
 	{//MultiDown
 		int x, y, width;
-		for(int i = 0; i < wid->MultiUp.size(); i++) {
+		for(size_t i = 0; i < wid->MultiUp.size(); i++) {
 			wid->MultiUp.at(i)->GetSize(&width, NULL);
 			wid->MultiUp.at(i)->GetPosition(&x, &y);
 			
@@ -2477,7 +2477,7 @@ void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 	}
 	else if(wid->PlayerTitles.size() > parameters->rows) {
 		int count = wid->PlayerTitles.size() - parameters->rows;
-		if(wid->PlayerTitles.size() - count >= 0) {
+		if(static_cast<int>(wid->PlayerTitles.size() & 0xFF) - count >= 0) {
 			for(uint8_t i = 0; i < count; i++) {
 				wid->PlayerTitles.back()->Destroy();
 				wid->PlayerTitles.pop_back();
@@ -2501,13 +2501,13 @@ void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 		}
 	}
 	
-	for(int row = 0; row < parameters->PTitleVec.size(); row++) {
+	for(size_t row = 0; row < parameters->PTitleVec.size(); row++) {
 		wid->PlayerTitles.at(row)->SetValue(wxString::FromUTF8(parameters->PTitleVec.at(row)));
 	}
-	for(int row = 0; row < parameters->MoflexVec.size(); row++) {
+	for(size_t row = 0; row < parameters->MoflexVec.size(); row++) {
 		wid->MoflexFiles.at(row)->SetValue(wxString::FromUTF8(parameters->MoflexVec.at(row)));
 	}
-	for(int row = 0; row < parameters->MBannerVec.size(); row++) {
+	for(size_t row = 0; row < parameters->MBannerVec.size(); row++) {
 		wid->MenuBanners.at(row)->SetValue(wxString::FromUTF8(parameters->MBannerVec.at(row)));
 	}
 	

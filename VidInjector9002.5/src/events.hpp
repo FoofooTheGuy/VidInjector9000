@@ -5,7 +5,7 @@
 #include "widgets.hpp"
 #include "vi9p.hpp"
 
-void frame_wxEVT_CLOSE_WINDOW(InitWidgets * wid, wxCloseEvent* event);
+void frame_wxEVT_CLOSE_WINDOW(wxCloseEvent* event);
 void panel_wxEVT_SIZE(InitWidgets* wid, VI9Pparameters* parameters);
 void modeChoiceBox_wxEVT_CHOICE(InitWidgets* wid, VI9Pparameters* parameters);
 void bannerBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters);
@@ -27,8 +27,8 @@ void PlayerTitles_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxTex
 void MoflexFiles_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxTextCtrl* row);
 void MenuBanners_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxTextCtrl* row);
 void MenuBanners_EVT_TEXT_ENTER(InitWidgets* wid, VI9Pparameters* parameters, wxTextCtrl* row);
-void MultiUp_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters, wxButton* row);
-void MultiDown_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters, wxButton* row);
+void MultiUp_wxEVT_BUTTON(InitWidgets* wid, wxButton* row);
+void MultiDown_wxEVT_BUTTON(InitWidgets* wid, wxButton* row);
 void moflexBrowse_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters);
 void multiBannerBrowse_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters);
 void removeRow_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters);

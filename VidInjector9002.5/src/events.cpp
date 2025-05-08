@@ -1,6 +1,6 @@
 #include "events.hpp"
 
-void frame_wxEVT_CLOSE_WINDOW(InitWidgets * wid, wxCloseEvent* event) {
+void frame_wxEVT_CLOSE_WINDOW(wxCloseEvent* event) {
 	if(Settings::DeleteTemp) {
 		{//clear temp
 			std::error_code error;
@@ -615,7 +615,7 @@ void MenuBanners_EVT_TEXT_ENTER(InitWidgets* wid, VI9Pparameters* parameters, wx
 	MenuBanners_wxEVT_TEXT(wid, parameters, row);//lool
 }
 
-void MultiUp_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters, wxButton* row) {
+void MultiUp_wxEVT_BUTTON(InitWidgets* wid, wxButton* row) {
 	size_t rowReal;
 	for(rowReal = 0; rowReal < wid->MultiUp.size(); rowReal++) {//get row
 		if(reinterpret_cast<intptr_t>(wid->MultiUp.at(rowReal)) == reinterpret_cast<intptr_t>(row)) {//compare pointers
@@ -647,7 +647,7 @@ void MultiUp_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters, wxButton
 	}
 }
 
-void MultiDown_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters, wxButton* row) {
+void MultiDown_wxEVT_BUTTON(InitWidgets* wid, wxButton* row) {
 	size_t rowReal;
 	for(rowReal = 0; rowReal < wid->MultiDown.size(); rowReal++) {//get row
 		if(reinterpret_cast<intptr_t>(wid->MultiDown.at(rowReal)) == reinterpret_cast<intptr_t>(row)) {//compare pointers
