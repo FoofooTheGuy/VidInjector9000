@@ -12,7 +12,12 @@ if (MSVC)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ENTRY:mainCRTStartup")
 endif()
 
+if (MSVC)
+set(CMAKE_CXX_FLAGS "-Wall")
+else()
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+endif()
+
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 #set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 
