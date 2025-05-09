@@ -1812,7 +1812,7 @@ void getAppearance(InitWidgets* wid) {
 	ForeColor::versionText = wid->versionText->GetForegroundColour();
 }
 
-void setAppearance(InitWidgets* wid, int Mode) {
+void setAppearance(InitWidgets* wid, unsigned int Mode) {
 	if(Mode < 2) {//0 light 1 black
 		wid->panel->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->mainMenu->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));

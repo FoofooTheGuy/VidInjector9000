@@ -69,10 +69,10 @@ void bannerBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 	}
 	{//-gp
-		std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/bannerpreview.png";
+		std::string bannerImagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/bannerpreview.png";
 		wxArrayString output;
 		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 1 \"" + imagePath + '\"');
+		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 1 \"" + bannerImagePath + '\"');
 		ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 		
 		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
@@ -81,7 +81,7 @@ void bannerBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 		}
 		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 		
-		wid->bannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(imagePath), wxBITMAP_TYPE_ANY));
+		wid->bannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(bannerImagePath), wxBITMAP_TYPE_ANY));
 	}
 	if(ret == 17) {//custom non-video banner
 		wid->bannerCustomText->Show();
@@ -118,10 +118,10 @@ void iconBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 	
 	if(VI9P::Loading) {//so it doesnt mess up everything
 		{//-gp
-			std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "iconpreview.png";
+			std::string iconImagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "iconpreview.png";
 			wxArrayString output;
 			wxArrayString errors;
-			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 2 \"" + imagePath + '\"');
+			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 2 \"" + iconImagePath + '\"');
 			ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 			
 			wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
@@ -130,7 +130,7 @@ void iconBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 			}
 			wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 			
-			wid->iconPreview->SetBitmap(wxBitmap(wxString::FromUTF8(imagePath), wxBITMAP_TYPE_ANY));
+			wid->iconPreview->SetBitmap(wxBitmap(wxString::FromUTF8(iconImagePath), wxBITMAP_TYPE_ANY));
 		}
 		if(ret && !parameters->icon.empty()) {
 			wid->iconError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + ImageInfoError + " (" + std::to_string(ret) + ") " + SeeLog));
@@ -142,16 +142,18 @@ void iconBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 	
 	//we can just use ss since if you give that a normal image it will work like normal
 	{//-ss
-		wxArrayString output;
-		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -ss \"" + VI9P::WorkingFile + "\" \"" + parameters->icon + "\" \"" + VI9P::WorkingFile + '\"');
-		ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-		
-		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-		for (auto &s : output) {
-			wid->consoleLog->LogTextAtLevel(0, s);
+		{
+			wxArrayString output;
+			wxArrayString errors;
+			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -ss \"" + VI9P::WorkingFile + "\" \"" + parameters->icon + "\" \"" + VI9P::WorkingFile + '\"');
+			ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+			
+			wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+			for (auto &s : output) {
+				wid->consoleLog->LogTextAtLevel(0, s);
+			}
+			wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 		}
-		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 		
 		//if smdh (we dont want to keep that border)
 		if(ret == 0) {
@@ -237,10 +239,10 @@ void iconBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 		}
 	}
 	{//-gp
-		std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "iconpreview.png";
+		std::string iconImagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "iconpreview.png";
 		wxArrayString output;
 		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 2 \"" + imagePath + '\"');
+		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 2 \"" + iconImagePath + '\"');
 		ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 		
 		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
@@ -249,7 +251,7 @@ void iconBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 		}
 		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 		
-		wid->iconPreview->SetBitmap(wxBitmap(wxString::FromUTF8(imagePath), wxBITMAP_TYPE_ANY));
+		wid->iconPreview->SetBitmap(wxBitmap(wxString::FromUTF8(iconImagePath), wxBITMAP_TYPE_ANY));
 	}
 	if(ret && !parameters->icon.empty()) {
 		wid->iconError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + ImageInfoError + " (" + std::to_string(ret) + ") " + SeeLog));
@@ -277,10 +279,10 @@ void iconPreview_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 	}
 	{//-gp
-		std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "iconpreview.png";
+		std::string iconImagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "iconpreview.png";
 		wxArrayString output;
 		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 2 \"" + imagePath + '\"');
+		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 2 \"" + iconImagePath + '\"');
 		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 		
 		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
@@ -289,7 +291,7 @@ void iconPreview_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 		}
 		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 		
-		wid->iconPreview->SetBitmap(wxBitmap(wxString::FromUTF8(imagePath), wxBITMAP_TYPE_ANY));
+		wid->iconPreview->SetBitmap(wxBitmap(wxString::FromUTF8(iconImagePath), wxBITMAP_TYPE_ANY));
 	}
 }
 
@@ -472,10 +474,10 @@ void multiBannerPreviewLeft_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* param
 	if(VI9P::MultiBannerIndex <= 0) wid->multiBannerPreviewLeft->Enable(false);
 
 	{//-gp
-		std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/bannerpreview" + std::to_string(VI9P::MultiBannerIndex) + ".png";
+		std::string bannerImagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/bannerpreview" + std::to_string(VI9P::MultiBannerIndex) + ".png";
 		wxArrayString output;
 		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters->rows * 2) + VI9P::MultiBannerIndex) + " \"" + imagePath + '\"');
+		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters->rows * 2) + VI9P::MultiBannerIndex) + " \"" + bannerImagePath + '\"');
 		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 		
 		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
@@ -484,7 +486,7 @@ void multiBannerPreviewLeft_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* param
 		}
 		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 		
-		wid->multiBannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(imagePath), wxBITMAP_TYPE_ANY));
+		wid->multiBannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(bannerImagePath), wxBITMAP_TYPE_ANY));
 	}
 	wid->multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string(wid->MenuBanners.size())));
 	wid->multiBannerPreviewRight->Enable(true);
@@ -499,10 +501,10 @@ void multiBannerPreviewRight_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* para
 	if(VI9P::MultiBannerIndex < wid->MenuBanners.size() - 1) ++VI9P::MultiBannerIndex;
 	if(VI9P::MultiBannerIndex >= wid->MenuBanners.size() - 1) wid->multiBannerPreviewRight->Enable(false);
 	{//-gp
-		std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/bannerpreview" + std::to_string(VI9P::MultiBannerIndex) + ".png";
+		std::string bannerImagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/bannerpreview" + std::to_string(VI9P::MultiBannerIndex) + ".png";
 		wxArrayString output;
 		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters->rows * 2) + VI9P::MultiBannerIndex) + " \"" + imagePath + '\"');
+		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters->rows * 2) + VI9P::MultiBannerIndex) + " \"" + bannerImagePath + '\"');
 		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 		
 		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
@@ -511,7 +513,7 @@ void multiBannerPreviewRight_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* para
 		}
 		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 		
-		wid->multiBannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(imagePath), wxBITMAP_TYPE_ANY));
+		wid->multiBannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(bannerImagePath), wxBITMAP_TYPE_ANY));
 	}
 	wid->multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string(wid->MenuBanners.size())));
 	wid->multiBannerPreviewLeft->Enable(true);
@@ -592,10 +594,10 @@ void MenuBanners_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxText
 				wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 			}
 			{//-gp
-				std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/bannerpreview" + std::to_string(VI9P::MultiBannerIndex) + ".png";
+				std::string bannerImagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/bannerpreview" + std::to_string(VI9P::MultiBannerIndex) + ".png";
 				wxArrayString output;
 				wxArrayString errors;
-				wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters->rows * 2) + VI9P::MultiBannerIndex) + " \"" + imagePath + '\"');
+				wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters->rows * 2) + VI9P::MultiBannerIndex) + " \"" + bannerImagePath + '\"');
 				int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 				
 				wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
@@ -604,7 +606,7 @@ void MenuBanners_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxText
 				}
 				wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 				
-				wid->multiBannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(imagePath), wxBITMAP_TYPE_ANY));
+				wid->multiBannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(bannerImagePath), wxBITMAP_TYPE_ANY));
 			}
 			wid->multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string(wid->MenuBanners.size())));
 		}

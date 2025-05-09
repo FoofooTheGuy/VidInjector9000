@@ -367,7 +367,7 @@ set all widgets on panel to color mode
 0 light 1 dark 2 system
 wait a minute... why does the wxStaticText change automatically? oh well, i'll do it anyway
 */
-void setAppearance(InitWidgets* wid, int Mode);
+void setAppearance(InitWidgets* wid, unsigned int Mode);
 
 //send VI9P::WorkingFile to cli -pp to get parameters from the file
 int loadParameters(InitWidgets* wid, VI9Pparameters* parameters);
