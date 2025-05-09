@@ -13,7 +13,7 @@ if (MSVC)
 endif()
 
 if (MSVC)
-set(CMAKE_CXX_FLAGS "-Wall")
+set(CMAKE_CXX_FLAGS "-Wall -wd4577 -wd4530")
 else()
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 endif()
