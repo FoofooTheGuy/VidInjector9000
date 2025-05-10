@@ -25,7 +25,7 @@ void saveSettings() {
 
 std::vector<int> loadSettings() {
 	std::string outstr = "";
-	int outrealint = 0;
+	signed int outrealint = 0;
 	std::vector<int> ret;
 	std::error_code error;
 	if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + settingsFile).c_str()))) {

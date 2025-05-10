@@ -177,18 +177,20 @@ void iconBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 	
 	//do this in case of smdh
 	{//-pp
-		wxArrayString output;
-		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -pp \"" + VI9P::WorkingFile + '\"');
-		ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 		std::string pp;
-		
-		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-		for (auto &s : output) {
-			wid->consoleLog->LogTextAtLevel(0, s);
-			pp += std::string(s.ToUTF8()) + '\n';
+		{
+			wxArrayString output;
+			wxArrayString errors;
+			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -pp \"" + VI9P::WorkingFile + '\"');
+			ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+			
+			wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+			for (auto &s : output) {
+				wid->consoleLog->LogTextAtLevel(0, s);
+				pp += std::string(s.ToUTF8()) + '\n';
+			}
+			wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 		}
-		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 		
 		{//iconBorder
 			std::string value = "";
