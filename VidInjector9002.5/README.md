@@ -171,7 +171,7 @@ I gave up trying to translate the program into languages I don't know. So if you
 
 - Please use a text editor like [geany](https://www.geany.org/) or [notepad++](https://notepad-plus-plus.org/) to make sure all of the text is shown correctly when editing.
 - The `Language` value in the file should be the name of the language in said language, not the word "English" translated.
-- Put translations in `VidInjector9000Resources/language/<Language>/Language.txt`.
+- Put translations in `VidInjector9000Resources/language/<Language>/<Language>.txt`.
 
 **Translators:**
 - [sheepgreen](https://github.com/slippersheepig) (Simplified Chinese)
