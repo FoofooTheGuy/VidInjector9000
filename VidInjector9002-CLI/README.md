@@ -242,8 +242,8 @@ Vidinjector9002-CLI -generate_preview \<input .vi9p file\>
 #### Unicode paths do not work on Windows
 The program often crashes when given paths with special characters ([#8](https://github.com/FoofooTheGuy/VidInjector9000/issues/8))
 
-#### Multi Video injects do not work on the regions China, Taiwan and Korea because there are no language files for those.
-I am unable to add them myself because I don't know those languages and this isn't really in my "jurisdiction" so I would appreciate it if someone would translate the files and contribute the following:
+#### (Help wanted) Multi Video injects do not work on the regions China, Taiwan and Korea because there are no language files for those.
+I am unable to add them myself because I don't know those languages so I would appreciate it if someone would translate the files and contribute the following:
 
 romfs/lang/
 - CN_Simp_Chinese/message.msbt
