@@ -139,13 +139,14 @@ struct InitWidgets {
 	wxStaticText* bannerCustomText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(BannerCustomText));
 	wxStaticText* bannerPreviewText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(BannerPreviewText));
 	
-	wxButton* iconPreview = new wxButton(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, {48, 48}, wxBORDER_NONE);
+	//wxButton* iconPreview = new wxButton(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, {48, 48}, wxBORDER_NONE);
+	wxBitmapButton* iconPreview = new wxBitmapButton(panel, wxID_ANY, wxNullBitmap, wxDefaultPosition, {48, 48});
 	
 	wxCheckBox* ffRewindCheck = new wxCheckBox(panel, wxID_ANY, wxString::FromUTF8(FFrewindCheckText));
 	
 	wxCheckBox* dimCheck = new wxCheckBox(panel, wxID_ANY, wxString::FromUTF8(DimCheckText));
 	
-	wxButton* multiBannerPreview = new wxButton(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, {264, 154}, wxBORDER_NONE);
+	wxBitmapButton* multiBannerPreview = new wxBitmapButton(panel, wxID_ANY, wxNullBitmap, wxDefaultPosition, {264, 154});
 	
 	wxStaticText* multiBannerPreviewIndex = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8("/"));
 	wxButton* multiBannerPreviewLeft = new wxButton(panel, wxID_ANY, wxString::FromUTF8("←"));
@@ -174,8 +175,8 @@ struct InitWidgets {
 	
 	wxToggleButton* splitPatchButton = new wxToggleButton(scrolledPanel, wxID_ANY, wxString::FromUTF8(SplitIntoAPatch));
 	wxColouredLine* splitPatchLine = new wxColouredLine(scrolledPanel, {0, 0, 0});
-	wxButton* splitPatchUp = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8("↑"), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-	wxButton* splitPatchDown = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8("↓"), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+	wxButton* splitPatchUp = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8("↑"), wxDefaultPosition, wxDefaultSize);
+	wxButton* splitPatchDown = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8("↓"), wxDefaultPosition, wxDefaultSize);
 	
 	wxStaticText* rowText = new wxStaticText(scrolledPanel, wxID_ANY, wxString::FromUTF8("1/" + std::to_string(MAX_ROWS)));
 	

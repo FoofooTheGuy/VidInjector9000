@@ -19,26 +19,32 @@ void doAddRows(InitWidgets* wid, int rows) {
 	}
 	
 	for(int i = 0; i < rows; i++) {
-		wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+		wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize);
 		int width, height;
 		wxFont f = button->GetFont();
 		
 		button->SetLabel(wxString::FromUTF8("↑"));
 		
 		button->GetTextExtent(button->GetLabel(), &width, &height, nullptr, nullptr, &f);
-		button->SetSize(width, height);
+		//button->SetSize(width, height);
+		
+		//button->Fit();
+		button->SetClientSize(width, height);
 		
 		wid->MultiUp.push_back(button);
 	}
 	for(int i = 0; i < rows; i++) {
-		wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+		wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize);
 		int width, height;
 		wxFont f = button->GetFont();
 		
-		button->SetLabel(wxString::FromUTF8("↓"));
+		button->SetLabel(wxString::FromUTF8("↑"));
 		
 		button->GetTextExtent(button->GetLabel(), &width, &height, nullptr, nullptr, &f);
-		button->SetSize(width, height);
+		//button->SetSize(width, height);
+		
+		//button->Fit();
+		button->SetClientSize(width, height);
 		
 		wid->MultiDown.push_back(button);
 	}
@@ -85,14 +91,18 @@ void initAllWidgets(InitWidgets* wid) {
 		wxFont f = wid->splitPatchUp->GetFont();
 		
 		wid->splitPatchUp->GetTextExtent(wid->splitPatchUp->GetLabel(), &width, &height, nullptr, nullptr, &f);
-		wid->splitPatchUp->SetSize(width, height);
+		wid->splitPatchUp->SetClientSize(width, height);
+		//wid->splitPatchUp->SetSize(wid->splitPatchUp->DoGetBestSize());
 	}
 	{//splitPatchDown
 		int width, height;
 		wxFont f = wid->splitPatchDown->GetFont();
 		
 		wid->splitPatchDown->GetTextExtent(wid->splitPatchDown->GetLabel(), &width, &height, nullptr, nullptr, &f);
-		wid->splitPatchDown->SetSize(width, height);
+		wid->splitPatchDown->SetClientSize(width, height);
+		
+		//wid->splitPatchDown->Fit();
+		//wid->splitPatchDown->SetSize(wid->splitPatchDown->DoGetBestSize());
 	}
 
 	{//buildButton
@@ -677,6 +687,7 @@ void setCursors(InitWidgets* wid) {
 	wid->bannerBrowse->SetCursor(wid->bannerBrowse->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
 	wid->iconBox->SetCursor(wid->iconBox->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_ARROW);
 	wid->iconBrowse->SetCursor(wid->iconBrowse->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
+	wid->iconPreview->SetCursor(wid->iconPreview->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_ARROW);
 	wid->shortnameBox->SetCursor(wid->shortnameBox->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_ARROW);
 	wid->longnameBox->SetCursor(wid->longnameBox->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_ARROW);
 	wid->publisherBox->SetCursor(wid->publisherBox->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_ARROW);
@@ -789,6 +800,9 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->bannerError->GetSize(NULL, &height);
 		
 		wid->iconBrowse->Move(myx, y + height);
+	}
+	{//correct iconPreview size. for some reason, this is the only place where it works (or is it?)
+		wid->iconPreview->Fit();
 	}
 	{//iconError
 		int x, y, height;
@@ -1037,6 +1051,9 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->publisherBox->SetSize(((x < bannerPreviewTextx ? x : bannerPreviewTextx) + (width > bannerPreviewTextW ? width : bannerPreviewTextW)) - myx, myheight);
 	}
 	{//multiBannerPreview
+		//correct the size. like iconPreview, this has to be done here...
+		wid->multiBannerPreview->Fit();
+
 		int x, y, width, mywidth, height;
 		wid->copyBox->GetPosition(&x, &y);
 		wid->copyBox->GetSize(&width, &height);
