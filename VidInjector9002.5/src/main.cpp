@@ -167,6 +167,7 @@ int main(int argc, char* argv[]) {
 	
 	wid.consoleLog->Show(Settings::ShowLog);
 	
+	getBorders(&wid);
 	initLanguage(&wid);
 	if(Settings::DefaultLanguage < Languages::LanguageFiles.size())
 		if(loadLanguage(Languages::LanguageFiles.at(Settings::DefaultLanguage).File))

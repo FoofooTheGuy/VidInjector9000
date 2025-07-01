@@ -3,6 +3,8 @@
 std::string Exports::CIA = "";
 std::string Exports::TAR = "";
 std::string Extracted::Archive = "";
+int Borders::width = 0;
+int Borders::height = 0;
 
 void doAddRows(InitWidgets* wid, int rows) {
 	for(int i = 0; i < rows; i++) {
@@ -26,10 +28,7 @@ void doAddRows(InitWidgets* wid, int rows) {
 		button->SetLabel(wxString::FromUTF8("↑"));
 		
 		button->GetTextExtent(button->GetLabel(), &width, &height, nullptr, nullptr, &f);
-		//button->SetSize(width, height);
-		
-		//button->Fit();
-		button->SetClientSize(width, height);
+		button->SetSize(width + Borders::width + 5, height + Borders::height);
 		
 		wid->MultiUp.push_back(button);
 	}
@@ -41,10 +40,7 @@ void doAddRows(InitWidgets* wid, int rows) {
 		button->SetLabel(wxString::FromUTF8("↑"));
 		
 		button->GetTextExtent(button->GetLabel(), &width, &height, nullptr, nullptr, &f);
-		//button->SetSize(width, height);
-		
-		//button->Fit();
-		button->SetClientSize(width, height);
+		button->SetSize(width + Borders::width + 5, height + Borders::height);
 		
 		wid->MultiDown.push_back(button);
 	}
@@ -91,18 +87,14 @@ void initAllWidgets(InitWidgets* wid) {
 		wxFont f = wid->splitPatchUp->GetFont();
 		
 		wid->splitPatchUp->GetTextExtent(wid->splitPatchUp->GetLabel(), &width, &height, nullptr, nullptr, &f);
-		wid->splitPatchUp->SetClientSize(width, height);
-		//wid->splitPatchUp->SetSize(wid->splitPatchUp->DoGetBestSize());
+		wid->splitPatchUp->SetSize(width + Borders::width + 5, height + Borders::height);
 	}
 	{//splitPatchDown
 		int width, height;
 		wxFont f = wid->splitPatchDown->GetFont();
 		
 		wid->splitPatchDown->GetTextExtent(wid->splitPatchDown->GetLabel(), &width, &height, nullptr, nullptr, &f);
-		wid->splitPatchDown->SetClientSize(width, height);
-		
-		//wid->splitPatchDown->Fit();
-		//wid->splitPatchDown->SetSize(wid->splitPatchDown->DoGetBestSize());
+		wid->splitPatchDown->SetSize(width + Borders::width + 5, height + Borders::height);
 	}
 
 	{//buildButton
@@ -2732,4 +2724,24 @@ void removeRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 	EnableBannerLeftRight(wid);
 
 	positionWidgets(wid, parameters);
+}
+
+void getBorders(InitWidgets* wid) {
+	int ImageSize = 100;//width and height
+	
+	//wid->iconPreview->GetSize(&Borders::width, &Borders::height);
+	//create image data (black)
+	wxImage Picture = wxImage(ImageSize, ImageSize);
+	//make temporary button
+	wxBitmapButton* fakebutton = new wxBitmapButton(wid->panel, wxID_ANY, wxBitmap(Picture), wxDefaultPosition, wxDefaultSize);
+	//i think it already does this
+	fakebutton->Fit();
+	
+	fakebutton->GetSize(&Borders::width, &Borders::height);
+	//border should be larger than the image in the button
+	Borders::width -= ImageSize;
+	Borders::height -= ImageSize;
+	//wxMessageBox(std::to_string(Borders::width));
+	//wxMessageBox(std::to_string(Borders::height));
+	delete fakebutton;
 }
