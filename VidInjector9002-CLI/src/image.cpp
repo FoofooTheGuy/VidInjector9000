@@ -181,7 +181,7 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 				return 17;
 			}
 			CGFXdecomp = std::vector<uint8_t>(decompressedSize);
-			ret = CBMDgetCommonCGFX(infile, compressedSize, decompressedSize, CGFXoffset, CGFXdecomp.data());
+			ret = CBMDgetCommonCGFX(infile, compressedSize, CGFXoffset, CGFXdecomp.data());
 			if (ret > 0) {
 				//bannerpreview.image(empty(0, 0));
 				//customnotif.show();

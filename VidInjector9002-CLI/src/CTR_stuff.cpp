@@ -623,7 +623,7 @@ uint8_t getCBMDInfo(const std::string inpath, uint32_t* compressedSize, uint32_t
 	return 0;
 }
 
-uint8_t CBMDgetCommonCGFX(const std::string inpath, const uint32_t compressedSize, const uint32_t decompressedSize, const uint32_t CGFXoffset, uint8_t* outbuff) {
+uint8_t CBMDgetCommonCGFX(const std::string inpath, const uint32_t compressedSize, const uint32_t CGFXoffset, uint8_t* outbuff) {
 	std::ifstream CBMD;
 	CBMD.open(std::filesystem::path((const char8_t*)&*inpath.c_str()), std::ios_base::in | std::ios_base::binary);
 	uint32_t CBMDmagic = 0;
@@ -659,7 +659,7 @@ uint8_t getCBMDTexture(const std::string inpath, const std::string symbol, uint8
 		return ret;
 	}
 	std::vector<uint8_t> CGFXdecomp = std::vector<uint8_t>(decompressedSize);
-	ret = CBMDgetCommonCGFX(inpath, compressedSize, decompressedSize, CGFXoffset, CGFXdecomp.data());
+	ret = CBMDgetCommonCGFX(inpath, compressedSize, CGFXoffset, CGFXdecomp.data());
 	if (ret > 0) {
 		//delete[] CGFXdecomp;
 		return ret;
@@ -757,7 +757,6 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 		}
 		//extract base
 		{
-			std::error_code error;
 			std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*tempPath.c_str()), error);
 			if (error) {
 				std::cout << ErrorText << ' ' << tempPath << '\n' << error.message() << std::endl;
@@ -1107,7 +1106,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 				}
 				if (parameters.mode) {
 					std::cout << CopyingMoflex << ' ' << std::to_string(i + 1) << '/' << std::to_string(parameters.rows) << std::endl;
-					std::error_code error;
+					//std::error_code error;
 					error = copyfile(parameters.MoflexVec.at(i).c_str(), std::string(romfsPath + "/movie/movie_" + std::to_string(i) + ".moflex").c_str());
 					if (error) {
 						std::cout << ErrorText << ' ' << FailedToCopyFile << "\n\"" << parameters.MoflexVec.at(i) << "\" -> \"" << romfsPath << "/movie/movie_" << std::to_string(i) << ".moflex\"\n" << error.message() << std::endl;
@@ -1123,7 +1122,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 				}
 				else {
 					std::cout << CopyingMoflex << " 1/1" << std::endl;
-					std::error_code error;
+					//std::error_code error;
 					error = copyfile(parameters.MoflexVec.at(i).c_str(), std::string(romfsPath + "/movie/movie.moflex").c_str());
 					if (error) {
 						std::cout << ErrorText << ' ' << FailedToCopyFile << "\n\"" << parameters.MoflexVec.at(i) << "\" -> \"" << romfsPath << "/movie/movie.moflex\"\n" << error.message() << std::endl;
@@ -1192,7 +1191,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			}
 			if (parameters.mode) {//multi vid needs an icon here so that it can make ext data or something (the game crashes if it isnt here)
 				std::cout << CreatingFile << " romfs/icon.icn" << std::endl;
-				std::error_code error;
+				//std::error_code error;
 				error = copyfile(std::string(tempPath + "/exefs/icon").c_str(), std::string(romfsPath + "/icon.icn").c_str());
 				if (error) {
 					std::cout << ErrorText << ' ' << FailedToCopyFile << "\n\"" << tempPath << "/exefs/icon\" -> \"" << romfsPath << "/icon.icn\"\n" << error.message() << std::endl;
@@ -1226,7 +1225,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			if(error)
 				return 38;
 			if (bannerbool) {
-				std::error_code error;
+				//std::error_code error;
 				error = copyfile(parameters.banner, std::string(tempPath + "/exefs/banner").c_str());
 				if (error) {
 					std::cout << ErrorText << ' ' << FailedToCopyFile << "\n\"" << parameters.banner << "\" -> \"" << tempPath << "/exefs/banner\"\n" << error.message() << std::endl;

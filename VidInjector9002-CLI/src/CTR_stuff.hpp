@@ -77,7 +77,7 @@ uint8_t getCBMDInfo(const std::string inpath, uint32_t* compressedSize, uint32_t
 /*
 
 */
-uint8_t CBMDgetCommonCGFX(const std::string inpath, const uint32_t compressedSize, const uint32_t decompressedSize, const uint32_t CGFXoffset, uint8_t* outbuff);
+uint8_t CBMDgetCommonCGFX(const std::string inpath, const uint32_t compressedSize, const uint32_t CGFXoffset, uint8_t* outbuff);
 /*
 inpath: string path to file
 symbol: name of the texture you want
