@@ -2723,19 +2723,16 @@ void removeRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 void getBorders(InitWidgets* wid) {
 	int ImageSize = 100;//width and height
 	
-	//wid->iconPreview->GetSize(&Borders::width, &Borders::height);
-	//create image data (black)
 	wxImage Picture = wxImage(ImageSize, ImageSize);
-	//make temporary button
-	wxBitmapButton* fakebutton = new wxBitmapButton(wid->panel, wxID_ANY, wxBitmap(Picture), wxDefaultPosition, wxDefaultSize);
+	wxBitmapButton* tempButton = new wxBitmapButton(wid->panel, wxID_ANY, wxBitmap(Picture), wxDefaultPosition, wxDefaultSize);
 	//i think it already does this
-	fakebutton->Fit();
+	tempButton->Fit();
 	
-	fakebutton->GetSize(&Borders::width, &Borders::height);
+	tempButton->GetSize(&Borders::width, &Borders::height);
 	//border should be larger than the image in the button
 	Borders::width -= ImageSize;
 	Borders::height -= ImageSize;
 	//wxMessageBox(std::to_string(Borders::width));
 	//wxMessageBox(std::to_string(Borders::height));
-	delete fakebutton;
+	delete tempButton;
 }
