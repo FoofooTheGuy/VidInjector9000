@@ -827,6 +827,13 @@ int main(int argc, char* argv[]) {
 		MenuBanners_wxEVT_TEXT(&wid, &parameters, wid.MenuBanners.at(VI9P::MultiBannerIndex));
 	}
 	
+	{//correct iconPreview size
+		wid.iconPreview->Fit();
+	}
+	{//correct multiBannerPreview size
+		wid.multiBannerPreview->Fit();
+	}
+	
 	wid.frame->Show();
 	wxTheApp->OnRun();
 }

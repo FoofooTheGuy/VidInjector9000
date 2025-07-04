@@ -793,9 +793,6 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->iconBrowse->Move(myx, y + height);
 	}
-	{//correct iconPreview size. for some reason, this is the only place where it works (or is it?)
-		wid->iconPreview->Fit();
-	}
 	{//iconError
 		int x, y, height;
 		wid->iconBox->GetPosition(&x, NULL);
@@ -1043,9 +1040,6 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->publisherBox->SetSize(((x < bannerPreviewTextx ? x : bannerPreviewTextx) + (width > bannerPreviewTextW ? width : bannerPreviewTextW)) - myx, myheight);
 	}
 	{//multiBannerPreview
-		//correct the size. like iconPreview, this has to be done here...
-		wid->multiBannerPreview->Fit();
-
 		int x, y, width, mywidth, height;
 		wid->copyBox->GetPosition(&x, &y);
 		wid->copyBox->GetSize(&width, &height);
