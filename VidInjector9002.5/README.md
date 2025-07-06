@@ -125,8 +125,8 @@ A GUI wrapper for VidInjector9002-CLI. Made with pure [wxWidgets](https://github
 ## Compiling
 **Windows**
 1. Download and install [CMake](https://cmake.org/), [Git](https://git-scm.com/downloads/win), and [Microsoft Visual Studio](https://visualstudio.microsoft.com/) with the `Desktop development with C++` workload
-2. Clone the entire repository `git clone --recurse-submodules -j8 https://github.com/FoofooTheGuy/VidInjector9000.git`
-3. In `VidInjector9000/VidInjector9002.5/`, Open `wxWidgets-3.2.6/build/msw/wx_vc17.sln` in Visual Studio
+2. Clone the entire repository `git clone --recurse-submodules https://github.com/FoofooTheGuy/VidInjector9000.git`
+3. In `VidInjector9000/VidInjector9002.5/`, Open `wxWidgets-3.3.0/build/msw/wx_vc17.sln` in Visual Studio
 4. Set `Solution Configuration` to `Release` and build the solution
 5. Close Microsoft Visual Studio and go back to `VidInjector9000/VidInjector9002.5/` to run `build.bat`
 
@@ -148,7 +148,7 @@ libmspack-dev \
 libgspell-1-dev
 ```
 2. Install `cmake`, `make`, `gcc`, `g++`, and `git` with your package manager
-3. Clone the entire repository `git clone --recurse-submodules -j8 https://github.com/FoofooTheGuy/VidInjector9000.git`
+3. Clone the entire repository `git clone --recurse-submodules https://github.com/FoofooTheGuy/VidInjector9000.git`
 4. Run `cd VidInjector9000/VidInjector9002.5`
 5. Run `install-wxwidgets.sh` Note: Alternatively, you might be able to install `wxwidgets` with your package manager
 6. Run `build.sh`
@@ -156,7 +156,7 @@ libgspell-1-dev
 **MacOS**
 1. Install the [Homebrew](https://brew.sh/) package manager
 2. Run `brew install cmake make`
-3. Clone the entire repository `git clone --recurse-submodules -j8 https://github.com/FoofooTheGuy/VidInjector9000.git`
+3. Clone the entire repository `git clone --recurse-submodules https://github.com/FoofooTheGuy/VidInjector9000.git`
 4. Run `cd VidInjector9000/VidInjector9002.5`
 5. Run `install-wxwidgets.sh`
 6. Run `build.sh`
@@ -167,7 +167,7 @@ In order to properly use this program, you must also compile `VidInjector9002-CL
 2. move the `VidInjector9002-CLI(.exe)` binary to the `VidInjector9000Resources/` directory within the same directory of `VidInjector9002.5(.exe)`. (Create a new directory if it is not there.) If you are on MacOS, move the file `VidInjector9002-CLI.app/Contents/MacOS/VidInjector9002-CLI`
 
 ## Translation
-I gave up trying to translate the program into languages I don't know. So if you want to help, please create a pull request or issue to share your translation. Here are some useful tips on how it should be done:
+I gave up on trying to translate the program into languages I don't know. So if you want to help, please create a pull request or issue to share your translation. Here are some useful tips on how it should be done:
 
 - Please use a text editor like [geany](https://www.geany.org/) or [notepad++](https://notepad-plus-plus.org/) to ensure all of the text is shown correctly when editing.
 - The `Language` value in the file should be the name of the language in said language, not the word "English" translated.
