@@ -1,3 +1,6 @@
+//input: file.txt containing cpp strings to translate. make sure the last line has a line break
+//output: inlang info, loadlanguage function, and language.txt
+
 #include <iostream>
 #include <vector>
 #include <string>
