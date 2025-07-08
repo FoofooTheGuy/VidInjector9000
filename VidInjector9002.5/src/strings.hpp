@@ -4,9 +4,15 @@
 
 #include <wx/string.h>
 
+//stuff for use in version and tag. make sure it matches what you put on github
+#define MAJ "3"
+#define MIN "5"
+#define PAT "0"
+
 //internal
 extern wxString ProgramDir;
 extern std::string version;
+extern std::string internalTag;
 
 //important
 extern std::string ErrorText;
@@ -26,6 +32,10 @@ extern std::string logFrameText;
 extern std::string buildFrameText;
 extern std::string aboutFrameText;
 
+//update dialog
+extern std::string updateAvailable;
+extern std::string downloadVersion;
+
 //main menu
 extern std::string file;
 extern std::string fileNew;
@@ -41,6 +51,7 @@ extern std::string optionsSystemMode;
 extern std::string optionsLightMode;
 extern std::string optionsDarkMode;
 extern std::string optionsDeleteTemp;
+extern std::string optionsUpdateCheck;
 extern std::string language;
 extern std::string help;
 extern std::string helpAbout;
@@ -136,6 +147,7 @@ extern std::string allFiles;
 //internal
 extern std::string tempPath;
 extern std::string CLItempPath;
+extern std::string githubRepo;
 extern std::string githubRepoLink;
 
 //resources
@@ -171,6 +183,7 @@ extern std::string IntDefaultLanguage;
 extern std::string IntShowLog;
 extern std::string IntColorMode;
 extern std::string IntDeleteTemp;
+extern std::string IntUpdateCheck;
 extern std::string IntFrameWidth;
 extern std::string IntFrameHeight;
 extern std::string StrImagesPath;
@@ -190,6 +203,8 @@ extern std::string inLangframeText;
 extern std::string inLanglogFrameText;
 extern std::string inLangbuildFrameText;
 extern std::string inLangaboutFrameText;
+extern std::string inLangupdateAvailable;
+extern std::string inLangdownloadVersion;
 extern std::string inLangfile;
 extern std::string inLangfileNew;
 extern std::string inLangfileOpen;
@@ -204,6 +219,7 @@ extern std::string inLangoptionsSystemMode;
 extern std::string inLangoptionsLightMode;
 extern std::string inLangoptionsDarkMode;
 extern std::string inLangoptionsDeleteTemp;
+extern std::string inLangoptionsUpdateCheck;
 extern std::string inLanglanguage;
 extern std::string inLanghelp;
 extern std::string inLanghelpAbout;

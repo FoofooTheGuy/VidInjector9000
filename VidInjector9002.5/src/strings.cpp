@@ -1,7 +1,8 @@
 #include "strings.hpp"
 
 wxString ProgramDir;
-std::string version = "VidInjector9000 ver. 3.5";
+std::string version = "VidInjector9000 ver. " MAJ "." MIN;
+std::string internalTag = "v" MAJ "." MIN "." PAT;
 
 std::string Language = "English";
 std::string ErrorText = "Error:";
@@ -16,6 +17,8 @@ std::string frameText = "VidInjector9002.5";
 std::string logFrameText = "Console Log";
 std::string buildFrameText = "Export Archive";
 std::string aboutFrameText = "About";
+std::string updateAvailable = "Update available:";
+std::string downloadVersion = "Go to GitHub to download the new version.";
 std::string file = "&File";
 std::string fileNew = "&New";
 std::string fileOpen = "&Open...";
@@ -30,6 +33,7 @@ std::string optionsSystemMode = "S&ystem";
 std::string optionsLightMode = "L&ight Mode";
 std::string optionsDarkMode = "D&ark Mode";
 std::string optionsDeleteTemp = "Delete &Temporary Files Upon Exit";
+std::string optionsUpdateCheck = "Check For &Updates Upon Startup";
 std::string language = "&Language";
 std::string help = "&Help";
 std::string helpAbout = "&About";
@@ -116,10 +120,12 @@ std::string tarFiles = "Tape ARchives (*.tar)|*.tar";
 std::string seeddbFiles = "seeddb.bin (*.bin)|*.bin";
 std::string allFiles = "All Files (*.*)|*.*";
 
-//dont mess with this stuff
+//dont mess with any of this stuff:
+
 std::string tempPath = "temp";
 std::string CLItempPath = "CLItemp";
-std::string githubRepoLink = "https://github.com/FoofooTheGuy/VidInjector9000/blob/main/README.md";
+std::string githubRepo = "FoofooTheGuy/VidInjector9000";
+std::string githubRepoLink = "https://github.com/" + githubRepo + "/blob/main/README.md";
 
 std::string resourcesPath = "VidInjector9000Resources";
 std::string languagePath = "language";
@@ -151,6 +157,7 @@ std::string IntDefaultLanguage = "INT:DEFAULT LANGUAGE";
 std::string IntShowLog = "INT:SHOW LOG";
 std::string IntColorMode = "INT:COLOR MODE";
 std::string IntDeleteTemp = "INT:DELETE TEMP";
+std::string IntUpdateCheck = "INT:UPDATE CHECK";
 std::string IntFrameWidth = "INT:FRAME WIDTH";
 std::string IntFrameHeight = "INT:FRAME HEIGHT";
 std::string StrImagesPath = "STR:IMAGES PATH";
@@ -170,6 +177,8 @@ std::string inLangframeText = "frameText";
 std::string inLanglogFrameText = "logFrameText";
 std::string inLangbuildFrameText = "buildFrameText";
 std::string inLangaboutFrameText = "aboutFrameText";
+std::string inLangupdateAvailable = "updateAvailable";
+std::string inLangdownloadVersion = "downloadVersion";
 std::string inLangfile = "file";
 std::string inLangfileNew = "fileNew";
 std::string inLangfileOpen = "fileOpen";
@@ -184,6 +193,7 @@ std::string inLangoptionsSystemMode = "optionsSystemMode";
 std::string inLangoptionsLightMode = "optionsLightMode";
 std::string inLangoptionsDarkMode = "optionsDarkMode";
 std::string inLangoptionsDeleteTemp = "optionsDeleteTemp";
+std::string inLangoptionsUpdateCheck = "optionsUpdateCheck";
 std::string inLanglanguage = "language";
 std::string inLanghelp = "help";
 std::string inLanghelpAbout = "helpAbout";
@@ -269,3 +279,4 @@ std::string inLangciaFiles = "ciaFiles";
 std::string inLangtarFiles = "tarFiles";
 std::string inLangseeddbFiles = "seeddbFiles";
 std::string inLangallFiles = "allFiles";
+

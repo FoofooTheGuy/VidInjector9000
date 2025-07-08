@@ -90,30 +90,40 @@ int main(int argc, char* argv[]) {
 					break;
 				case 11:
 					{
-						wxMessageBox(wxString::FromUTF8(BadValue + ' ' + IntFrameWidth + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + BadValue), wxICON_ERROR);
+						wxMessageBox(wxString::FromUTF8(BadValue + ' ' + IntUpdateCheck + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + BadValue), wxICON_ERROR);
 					}
 					break;
 				case 12:
 					{
-						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + IntFrameWidth + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
+						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + IntUpdateCheck + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
 					}
 					break;
 				case 13:
 					{
-						wxMessageBox(wxString::FromUTF8(BadValue + ' ' + IntFrameHeight + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + BadValue), wxICON_ERROR);
+						wxMessageBox(wxString::FromUTF8(BadValue + ' ' + IntFrameWidth + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + BadValue), wxICON_ERROR);
 					}
 					break;
 				case 14:
 					{
-						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + IntFrameHeight + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
+						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + IntFrameWidth + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
 					}
 					break;
 				case 15:
 					{
-						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + StrImagesPath + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
+						wxMessageBox(wxString::FromUTF8(BadValue + ' ' + IntFrameHeight + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + BadValue), wxICON_ERROR);
 					}
 					break;
 				case 16:
+					{
+						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + IntFrameHeight + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
+					}
+					break;
+				case 17:
+					{
+						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + StrImagesPath + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
+					}
+					break;
+				case 18:
 					{
 						wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + StrVideosPath + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
 					}
@@ -163,6 +173,9 @@ int main(int argc, char* argv[]) {
 	}
 	if(Settings::DeleteTemp) {
 		wid.menuItemOptionsDeleteTemp->Check();
+	}
+	if(Settings::UpdateCheck) {
+		wid.menuItemOptionsUpdateCheck->Check();
 	}
 	
 	wid.consoleLog->Show(Settings::ShowLog);
@@ -245,6 +258,10 @@ int main(int argc, char* argv[]) {
 		
 		applyAddRows();
 	};
+	
+	wid.frame->Bind(wxEVT_WEBREQUEST_STATE, [&](wxWebRequestEvent& event) {
+		frame_wxEVT_WEBREQUEST_STATE(&wid, &event);
+	});
 	
 	wid.frame->Bind(wxEVT_CLOSE_WINDOW, [&](wxCloseEvent& event) {
 		frame_wxEVT_CLOSE_WINDOW(&event);
@@ -646,6 +663,12 @@ int main(int argc, char* argv[]) {
 					saveSettings();
 				}
 				break;
+			case ID_UPDATECHECK:
+				{
+					Settings::UpdateCheck = wid.menuItemOptionsUpdateCheck->IsChecked();
+					saveSettings();
+				}
+				break;
 			//About
 			case ID_ABOUT:
 				{
@@ -830,6 +853,9 @@ int main(int argc, char* argv[]) {
 	//correct sizes
 	wid.iconPreview->Fit();
 	wid.multiBannerPreview->Fit();
+	
+	if(Settings::UpdateCheck)
+		wid.updateCheck->Start();
 	
 	wid.frame->Show();
 	wxTheApp->OnRun();

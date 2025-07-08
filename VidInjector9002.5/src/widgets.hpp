@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <map>
 
+#include <wx/webrequest.h>
 #include <wx/hyperlink.h>
 #include <wx/filename.h>
 #include <wx/stdpaths.h>
@@ -56,6 +57,7 @@ enum wxOwnedID {
 	ID_LIGHT,
 	ID_DARK,
 	ID_DELETETEMP,
+	ID_UPDATECHECK,
 	ID_LANG1,
 	ID_LANG2,
 	ID_LANG3,
@@ -106,6 +108,7 @@ struct InitWidgets {
 	wxMenuItem* menuItemOptionsLight = menuOptions->Append(ID_LIGHT, wxString::FromUTF8(optionsLightMode), "", wxITEM_RADIO);
 	wxMenuItem* menuItemOptionsDark = menuOptions->Append(ID_DARK, wxString::FromUTF8(optionsDarkMode), "", wxITEM_RADIO);
 	wxMenuItem* menuItemOptionsDeleteTemp = menuOptions->Append(ID_DELETETEMP, wxString::FromUTF8(optionsDeleteTemp), "", wxITEM_CHECK);
+	wxMenuItem* menuItemOptionsUpdateCheck = menuOptions->Append(ID_UPDATECHECK, wxString::FromUTF8(optionsUpdateCheck), "", wxITEM_CHECK);
 	wxMenu* menuLanguage = new wxMenu();
 	wxMenu* menuHelp = new wxMenu();
 	wxMenuItem* menuItemHelpAbout = menuHelp->Append(ID_ABOUT, wxString::FromUTF8(helpAbout + "\tF1"));
@@ -222,6 +225,9 @@ struct InitWidgets {
 	wxStaticText* byMeText = new wxStaticText(aboutpanel, wxID_ANY, wxString::FromUTF8(ByMeText));
 	wxHyperlinkCtrl* gitHubLinker = new wxHyperlinkCtrl(aboutpanel, wxID_ANY, wxString::FromUTF8(GitHubLinker), wxString::FromUTF8(githubRepoLink));
 	wxStaticText* versionText = new wxStaticText(aboutpanel, wxID_ANY, wxString::FromUTF8(version));
+	
+	//you need curl for this if you're linux
+	wxWebRequest* updateCheck = new wxWebRequest(wxWebSession::GetDefault().CreateRequest(frame, "https://api.github.com/repos/" + githubRepo + "/tags"));
 };
 
 void doAddRows(InitWidgets* wid, int rows);

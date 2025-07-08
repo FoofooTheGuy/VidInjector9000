@@ -5,6 +5,7 @@
 #include "widgets.hpp"
 #include "vi9p.hpp"
 
+void frame_wxEVT_WEBREQUEST_STATE(InitWidgets* wid, wxWebRequestEvent* event);
 void frame_wxEVT_CLOSE_WINDOW(wxCloseEvent* event);
 void panel_wxEVT_SIZE(InitWidgets* wid, VI9Pparameters* parameters);
 void modeChoiceBox_wxEVT_CHOICE(InitWidgets* wid, VI9Pparameters* parameters);

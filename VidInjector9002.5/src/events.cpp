@@ -1,5 +1,54 @@
 #include "events.hpp"
 
+void frame_wxEVT_WEBREQUEST_STATE(InitWidgets* wid, wxWebRequestEvent* event) {
+	//https://docs.wxwidgets.org/3.3/classwx_web_request.html
+	switch (event->GetState())
+	{
+		// Request completed
+		case wxWebRequest::State_Completed:
+		{
+			std::string tag(event->GetResponse().AsString());
+			
+			//trim down the response to get the latest tag name
+			std::string namestr = "\"name\":";
+			
+			size_t find = tag.find(namestr);
+			if (find == std::string::npos)
+				return;
+			tag = tag.substr(find + namestr.size());
+			
+			find = tag.find("\"");
+			if (find == std::string::npos)
+				return;
+			tag = tag.substr(find + 1);
+
+			find = tag.find("\"");
+			if (find == std::string::npos)
+				return;
+			tag = tag.substr(0, find);
+			
+			//wxMessageBox(tag);
+			
+			if(tag == internalTag)
+				return;
+			
+			wxMessageDialog Updating = wxMessageDialog(wid->frame, downloadVersion, updateAvailable + " " + tag, wxOK|wxCANCEL|wxCENTRE);
+			int choice = Updating.ShowModal();
+			if(choice == wxID_OK)
+				wxLaunchDefaultBrowser("https://github.com/" + githubRepo + "/releases/tag/" + tag);
+			
+			break;
+		}
+		// Request failed
+		case wxWebRequest::State_Failed:
+			//if you can't access this, you must not want it
+			//wxLogError(event->GetErrorDescription());
+			break;
+		default:
+			break;
+	}
+};
+
 void frame_wxEVT_CLOSE_WINDOW(wxCloseEvent* event) {
 	if(Settings::DeleteTemp) {
 		{//clear temp

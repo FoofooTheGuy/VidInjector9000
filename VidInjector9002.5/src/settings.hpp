@@ -17,6 +17,7 @@ class Settings
     static bool ShowLog;
     static unsigned int ColorMode;
     static bool DeleteTemp;
+    static bool UpdateCheck;
     static int FrameWidth;
     static int FrameHeight;
     static std::string ImagesPath;
