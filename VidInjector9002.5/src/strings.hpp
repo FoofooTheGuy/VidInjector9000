@@ -7,7 +7,7 @@
 //stuff for use in version and tag. make sure it matches what you put on github
 #define MAJ "3"
 #define MIN "5"
-#define PAT "0"
+#define PAT "1"
 
 //internal
 extern wxString ProgramDir;

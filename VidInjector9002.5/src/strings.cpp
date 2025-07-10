@@ -1,7 +1,7 @@
 #include "strings.hpp"
 
 wxString ProgramDir;
-std::string version = "VidInjector9000 ver. " MAJ "." MIN;
+std::string version = "VidInjector9000 ver. " MAJ "." MIN "." PAT;
 std::string internalTag = "v" MAJ "." MIN "." PAT;
 
 std::string Language = "English";
