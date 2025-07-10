@@ -2,7 +2,7 @@
 name: Bug report
 about: Create a report to help us improve
 title: ''
-labels: ''
+labels: bug
 assignees: ''
 
 ---
@@ -22,8 +22,8 @@ If applicable, add screenshots to help explain your problem.
 
 **Environment (please complete the following information):**
  - Edition: [e.g. VidInjector9002-CLI]
- - Version: [e.g. 3.5.0]
- - OS: [e.g. Linux, Windows]
+ - Version: [e.g. v3.5.0]
+ - OS: [e.g. Linux, MacOS, Windows]
 
 **Additional context**
 Add any other context about the problem here.
