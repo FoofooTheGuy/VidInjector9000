@@ -8,6 +8,17 @@ link_libraries(${wxWidgets_LIBRARIES})
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+#https://stackoverflow.com/a/32259072
+if(UNIX AND NOT APPLE)
+    set(LINUX TRUE)
+endif()
+
+# if(NOT LINUX) should work, too, if you need that
+if(LINUX) 
+    link_libraries(curl)
+endif()
+
 if (MSVC)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ENTRY:mainCRTStartup")
 endif()
@@ -63,14 +74,14 @@ if (MSVC)
     "    BEGIN\n"
     "      VALUE \"CompanyName\", \"FoofooTheGuy\"\n"
     "      VALUE \"FileDescription\", \"A GUI wrapper for VidInjector9002-CLI\"\n"
-    "      VALUE \"FileVersion\", \"3,5,0,0\"\n"
+    "      VALUE \"FileVersion\", \"3,5,1,0\"\n"
     "      VALUE \"InternalName\", \"${PROJECT_NAME}\"\n"
     "      VALUE \"LegalCopyright\", \"\"\n"
     "      VALUE \"LegalTrademarks1\", \"\"\n"
     "      VALUE \"LegalTrademarks2\", \"\"\n"
     "      VALUE \"OriginalFilename\", \"${PROJECT_NAME}.exe\"\n"
     "      VALUE \"ProductName\", \"${PROJECT_NAME}\"\n"
-    "      VALUE \"ProductVersion\", \"3,5,0\"\n"
+    "      VALUE \"ProductVersion\", \"3,5,1\"\n"
     "    END\n"
     "  END\n"
     "  BLOCK \"VarFileInfo\"\n"
