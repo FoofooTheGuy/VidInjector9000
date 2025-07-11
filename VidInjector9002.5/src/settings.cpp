@@ -29,6 +29,7 @@ std::vector<int> loadSettings() {
 	std::string outstr = "";
 	signed int outrealint = 0;
 	std::vector<int> ret;
+	int errorValue = 3;//first not so bad value we have is 3
 	std::error_code error;
 	if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + settingsFile).c_str()))) {
 		std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath).c_str()), error);
@@ -51,84 +52,93 @@ std::vector<int> loadSettings() {
 	if (parseLines(outstr, filelines, IntDefaultLanguage)) {
 		if (!ASCII2number<int>(&outrealint, outstr)) {
 			outrealint = 0;
-			ret.push_back(3);
+			ret.push_back(errorValue++);
 		}
 		Settings::DefaultLanguage = outrealint;
 	}
 	else {
-		ret.push_back(4);
+		++errorValue;//do this because the one in the if is not called
+		ret.push_back(errorValue++);
 	}
 	if (parseLines(outstr, filelines, IntShowLog)) {
 		if (!ASCII2number<int>(&outrealint, outstr)) {
 			outrealint = 0;
-			ret.push_back(5);
+			ret.push_back(errorValue++);
 		}
 		Settings::ShowLog = outrealint ? 1 : 0;
 	}
 	else {
-		ret.push_back(6);
+		++errorValue;
+		ret.push_back(errorValue++);
 	}
 	if (parseLines(outstr, filelines, IntColorMode)) {
 		if (!ASCII2number<int>(&outrealint, outstr)) {
 			outrealint = 2;
-			ret.push_back(7);
+			ret.push_back(errorValue++);
 		}
 		Settings::ColorMode = outrealint;
 	}
 	else {
-		ret.push_back(8);
+		++errorValue;
+		ret.push_back(errorValue++);
 	}
 	if (parseLines(outstr, filelines, IntDeleteTemp)) {
 		if (!ASCII2number<int>(&outrealint, outstr)) {
 			outrealint = 0;
-			ret.push_back(9);
+			ret.push_back(errorValue++);
 		}
 		Settings::DeleteTemp = outrealint ? 1 : 0;
 	}
 	else {
-		ret.push_back(10);
+		++errorValue;
+		ret.push_back(errorValue++);
 	}
 	if (parseLines(outstr, filelines, IntUpdateCheck)) {
 		if (!ASCII2number<int>(&outrealint, outstr)) {
 			outrealint = 0;
-			ret.push_back(11);
+			ret.push_back(errorValue++);
 		}
 		Settings::UpdateCheck = outrealint ? 1 : 0;
 	}
 	else {
-		ret.push_back(12);
+		++errorValue;
+		ret.push_back(errorValue++);
 	}
 	if (parseLines(outstr, filelines, IntFrameWidth)) {
 		if (!ASCII2number<int>(&outrealint, outstr)) {
 			outrealint = 2;
-			ret.push_back(13);
+			ret.push_back(errorValue++);
 		}
 		Settings::FrameWidth = outrealint;
 	}
 	else {
-		ret.push_back(14);
+		++errorValue;
+		ret.push_back(errorValue++);
 	}
 	if (parseLines(outstr, filelines, IntFrameHeight)) {
 		if (!ASCII2number<int>(&outrealint, outstr)) {
 			outrealint = 2;
-			ret.push_back(15);
+			ret.push_back(errorValue++);
 		}
 		Settings::FrameHeight = outrealint;
 	}
 	else {
-		ret.push_back(16);
+		++errorValue;
+		ret.push_back(errorValue++);
 	}
 	if (parseLines(outstr, filelines, StrImagesPath)) {
 		Settings::ImagesPath = outstr;
 	}
 	else {
-		ret.push_back(17);
+		++errorValue;
+		ret.push_back(errorValue++);
 	}
 	if (parseLines(outstr, filelines, StrVideosPath)) {
 		Settings::VideosPath = outstr;
 	}
 	else {
-		ret.push_back(18);
+		++errorValue;
+		ret.push_back(errorValue++);
 	}
 	ret.push_back(0);
 	return ret;
