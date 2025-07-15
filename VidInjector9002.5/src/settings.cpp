@@ -40,6 +40,7 @@ std::vector<int> loadSettings() {
 		Settings::ShowLog = 0;
 		Settings::ColorMode = 2;
 		Settings::DeleteTemp = 0;
+		Settings::UpdateCheck = 1;
 		Settings::FrameWidth = 1150;
 		Settings::FrameHeight = 700;
 		Settings::ImagesPath = std::string(wxStandardPaths::Get().GetUserDir(wxStandardPaths::Dir_Pictures).ToUTF8());
@@ -49,97 +50,114 @@ std::vector<int> loadSettings() {
 	std::vector<std::string> filelines = fileRead(std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + settingsFile));
 	if (filelines.empty())
 		return std::vector<int>(1, 2);//maybe your disk is read only... at that point i think you have bigger problems than loading settings in FoofooTheGuy's VidInjector9002.5
-	if (parseLines(outstr, filelines, IntDefaultLanguage)) {
+	if (parseLines(outstr, filelines, IntDefaultLanguage)) {//3
 		if (!ASCII2number<int>(&outrealint, outstr)) {
 			outrealint = 0;
-			ret.push_back(errorValue++);
+			ret.push_back(errorValue);
 		}
 		Settings::DefaultLanguage = outrealint;
+		errorValue += 2;
 	}
 	else {
-		++errorValue;//do this because the one in the if is not called
+		++errorValue;
 		ret.push_back(errorValue++);
 	}
+	
 	if (parseLines(outstr, filelines, IntShowLog)) {
 		if (!ASCII2number<int>(&outrealint, outstr)) {
 			outrealint = 0;
-			ret.push_back(errorValue++);
+			ret.push_back(errorValue);
 		}
 		Settings::ShowLog = outrealint ? 1 : 0;
+		errorValue += 2;
 	}
 	else {
 		++errorValue;
 		ret.push_back(errorValue++);
 	}
+	
 	if (parseLines(outstr, filelines, IntColorMode)) {
 		if (!ASCII2number<int>(&outrealint, outstr)) {
 			outrealint = 2;
-			ret.push_back(errorValue++);
+			ret.push_back(errorValue);
 		}
 		Settings::ColorMode = outrealint;
+		errorValue += 2;
 	}
 	else {
 		++errorValue;
 		ret.push_back(errorValue++);
 	}
+	
+	
 	if (parseLines(outstr, filelines, IntDeleteTemp)) {
 		if (!ASCII2number<int>(&outrealint, outstr)) {
 			outrealint = 0;
-			ret.push_back(errorValue++);
+			ret.push_back(errorValue);
 		}
 		Settings::DeleteTemp = outrealint ? 1 : 0;
+		errorValue += 2;
 	}
 	else {
 		++errorValue;
 		ret.push_back(errorValue++);
 	}
+	
 	if (parseLines(outstr, filelines, IntUpdateCheck)) {
 		if (!ASCII2number<int>(&outrealint, outstr)) {
-			outrealint = 0;
-			ret.push_back(errorValue++);
+			outrealint = 1;
+			ret.push_back(errorValue);
 		}
 		Settings::UpdateCheck = outrealint ? 1 : 0;
+		errorValue += 2;
 	}
 	else {
 		++errorValue;
 		ret.push_back(errorValue++);
 	}
+	
 	if (parseLines(outstr, filelines, IntFrameWidth)) {
 		if (!ASCII2number<int>(&outrealint, outstr)) {
-			outrealint = 2;
-			ret.push_back(errorValue++);
+			outrealint = 1150;
+			ret.push_back(errorValue);
 		}
 		Settings::FrameWidth = outrealint;
+		errorValue += 2;
 	}
 	else {
 		++errorValue;
 		ret.push_back(errorValue++);
 	}
+	
 	if (parseLines(outstr, filelines, IntFrameHeight)) {
 		if (!ASCII2number<int>(&outrealint, outstr)) {
-			outrealint = 2;
-			ret.push_back(errorValue++);
+			outrealint = 700;
+			ret.push_back(errorValue);
 		}
 		Settings::FrameHeight = outrealint;
+		errorValue += 2;
 	}
 	else {
 		++errorValue;
 		ret.push_back(errorValue++);
 	}
+	
 	if (parseLines(outstr, filelines, StrImagesPath)) {
 		Settings::ImagesPath = outstr;
 	}
 	else {
-		++errorValue;
-		ret.push_back(errorValue++);
+		ret.push_back(errorValue);
 	}
+	++errorValue;
+	
 	if (parseLines(outstr, filelines, StrVideosPath)) {
 		Settings::VideosPath = outstr;
 	}
 	else {
-		++errorValue;
-		ret.push_back(errorValue++);
+		ret.push_back(errorValue);
 	}
+	++errorValue;
+	
 	ret.push_back(0);
 	return ret;
 }

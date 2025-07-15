@@ -30,8 +30,13 @@ bool TIDisValid(uint32_t TID);
 uint32_t RandomTID();
 
 template<class T> bool ASCII2number(T* outnum, const std::string& str, bool isHex = false) {
-	if (str.find_first_of("-abcdefABCDEF1234567890") == std::string::npos)
-		return false;
+	if(isHex)
+		if (str.find_first_of("-abcdefABCDEF1234567890") == std::string::npos)
+			return false;
+
+	if(!isHex)
+		if (str.find_first_of("-1234567890") == std::string::npos)
+			return false;
 
 	std::size_t size = 0;
 	int base = isHex ? 16 : 10;

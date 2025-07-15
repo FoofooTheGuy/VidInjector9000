@@ -28,73 +28,51 @@ int main(int argc, char* argv[]) {
 		//wxMessageBox(ProgramDir);
 	}
 	
-	//load settings
+	//load settings and handle errors
 	{
 		std::vector<int> ret = loadSettings();
+		//contain the repetitive setting strings (You will likely want to put your stuff here when adding new Settings)
+		std::vector<std::string> SettingStrings = {
+			"",
+			"",
+			"",
+			IntDefaultLanguage,
+			IntDefaultLanguage,
+			IntShowLog,
+			IntShowLog,
+			IntColorMode,
+			IntColorMode,
+			IntDeleteTemp,
+			IntDeleteTemp,
+			IntUpdateCheck,
+			IntUpdateCheck,
+			IntFrameWidth,
+			IntFrameWidth,
+			IntFrameHeight,
+			IntFrameHeight,
+		};
 		for(const auto &i : ret) {
 			int cases = 0;
-			if(i == cases++)
+			if(i == cases++)//0
 				continue;//:)
 			if(i == cases++)//1
 				continue;//uhhh i dont care
 			if(i == cases++)//2
 				continue;//this is actually bad so there should probably be a message here even though it's rare
-			if(i == cases++) {
-				wxMessageBox(wxString::FromUTF8(BadValue + ' ' + IntDefaultLanguage + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + BadValue), wxICON_ERROR);
-				continue;
+			
+			for(const auto &s : SettingStrings) {
+				(void)s;
+				std::cout << std::to_string(i) << std::endl;
+				if(i == cases++) {
+					wxMessageBox(wxString::FromUTF8(BadValue + ' ' + SettingStrings.at(i) + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + BadValue), wxICON_ERROR);
+					continue;
+				}
+				if(i == cases++) {
+					wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + SettingStrings.at(i) + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
+					continue;
+				}
 			}
-			if(i == cases++) {
-				wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + IntDefaultLanguage + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
-				continue;
-			}
-			if(i == cases++) {
-				wxMessageBox(wxString::FromUTF8(BadValue + ' ' + IntShowLog + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + BadValue), wxICON_ERROR);
-				continue;
-			}
-			if(i == cases++) {
-				wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + IntShowLog + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
-				continue;
-			}
-			if(i == cases++) {
-				wxMessageBox(wxString::FromUTF8(BadValue + ' ' + IntColorMode + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + BadValue), wxICON_ERROR);
-				continue;
-			}
-			if(i == cases++) {
-				wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + IntColorMode + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
-				continue;
-			}
-			if(i == cases++) {
-				wxMessageBox(wxString::FromUTF8(BadValue + ' ' + IntDeleteTemp + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + BadValue), wxICON_ERROR);
-				continue;
-			}
-			if(i == cases++) {
-				wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + IntDeleteTemp + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
-				continue;
-			}
-			if(i == cases++) {
-				wxMessageBox(wxString::FromUTF8(BadValue + ' ' + IntUpdateCheck + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + BadValue), wxICON_ERROR);
-				continue;
-			}
-			if(i == cases++) {
-				wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + IntUpdateCheck + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
-				continue;
-			}
-			if(i == cases++) {
-				wxMessageBox(wxString::FromUTF8(BadValue + ' ' + IntFrameWidth + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + BadValue), wxICON_ERROR);
-				continue;
-			}
-			if(i == cases++) {
-				wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + IntFrameWidth + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
-				continue;
-			}
-			if(i == cases++) {
-				wxMessageBox(wxString::FromUTF8(BadValue + ' ' + IntFrameHeight + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + BadValue), wxICON_ERROR);
-				continue;
-			}
-			if(i == cases++) {
-				wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + IntFrameHeight + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
-				continue;
-			}
+			
 			if(i == cases++) {
 				wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + StrImagesPath + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
 				continue;
