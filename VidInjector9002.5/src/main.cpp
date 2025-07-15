@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
 					continue;
 				}
 				if(i == cases++) {
-					wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + SettingStrings.at((i - 4) / 2) + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
+					wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + SettingStrings.at((i - (3 + 1)) / 2) + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
 					continue;
 				}
 			}
