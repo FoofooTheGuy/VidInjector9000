@@ -33,22 +33,12 @@ int main(int argc, char* argv[]) {
 		std::vector<int> ret = loadSettings();
 		//contain the repetitive setting strings (You will likely want to put your stuff here when adding new Settings)
 		std::vector<std::string> SettingStrings = {
-			"",
-			"",
-			"",
-			IntDefaultLanguage,
 			IntDefaultLanguage,
 			IntShowLog,
-			IntShowLog,
-			IntColorMode,
 			IntColorMode,
 			IntDeleteTemp,
-			IntDeleteTemp,
-			IntUpdateCheck,
 			IntUpdateCheck,
 			IntFrameWidth,
-			IntFrameWidth,
-			IntFrameHeight,
 			IntFrameHeight,
 		};
 		for(const auto &i : ret) {
@@ -62,13 +52,13 @@ int main(int argc, char* argv[]) {
 			
 			for(const auto &s : SettingStrings) {
 				(void)s;
-				std::cout << std::to_string(i) << std::endl;
+				//std::cout << std::to_string((i - 3) / 2) << std::endl;
 				if(i == cases++) {
-					wxMessageBox(wxString::FromUTF8(BadValue + ' ' + SettingStrings.at(i) + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + BadValue), wxICON_ERROR);
+					wxMessageBox(wxString::FromUTF8(BadValue + ' ' + SettingStrings.at((i - 3) / 2) + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + BadValue), wxICON_ERROR);
 					continue;
 				}
 				if(i == cases++) {
-					wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + SettingStrings.at(i) + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
+					wxMessageBox(wxString::FromUTF8(FailedToFindVar + ' ' + SettingStrings.at((i - 4) / 2) + '\n' + ValueNoChange), wxString::FromUTF8(ErrorText + ' ' + MissingVariableError), wxICON_ERROR);
 					continue;
 				}
 			}

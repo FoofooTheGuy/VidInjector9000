@@ -50,7 +50,7 @@ std::vector<int> loadSettings() {
 	std::vector<std::string> filelines = fileRead(std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + settingsFile));
 	if (filelines.empty())
 		return std::vector<int>(1, 2);//maybe your disk is read only... at that point i think you have bigger problems than loading settings in FoofooTheGuy's VidInjector9002.5
-	if (parseLines(outstr, filelines, IntDefaultLanguage)) {//3
+	if (parseLines(outstr, filelines, IntDefaultLanguage)) {
 		if (!ASCII2number<int>(&outrealint, outstr)) {
 			outrealint = 0;
 			ret.push_back(errorValue);
