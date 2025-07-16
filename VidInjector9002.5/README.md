@@ -119,7 +119,7 @@ A GUI wrapper for VidInjector9002-CLI. Made with pure [wxWidgets](https://github
 **Linux**
 
 **Arch**
-1. Install `gtk3` with your package manager (`pacman -S gtk3`)
+1. Install the dependencies with your package manager (`pacman -S gtk3 libmspack`)
 2. Run `VidInjector9002.5`
 
 ## Compiling
