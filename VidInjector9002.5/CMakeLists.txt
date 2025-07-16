@@ -109,15 +109,13 @@ elseif (UNIX)
   set(RESOURCES Resources/VidInjector9002_5.png)
   file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/resources/${PROJECT_NAME}.desktop
     "[Desktop Entry]\n"
-    "Type=Application\n"
-    "Encoding=UTF-8\n"
-    "Comment=${APP_NAME}\n"
-    "Exec=${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}\n"
-    "Icon=VidInjector9002_5.png\n"
     "Name=${APP_NAME}\n"
+    "Type=Application\n"
+    "Categories=Utility\n"
+    "Exec=${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}\n"
+    "Icon=VidInjector9002_5\n"
     "NoDisplay=true\n"
     "Terminal=false\n"
-    "Version=3.5.1\n"
   )
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Resources/VidInjector9002_5.png $ENV{HOME}/.local/share/icons/hicolor/512x512/apps/VidInjector9002_5.png COPYONLY)
   file(COPY ${CMAKE_CURRENT_BINARY_DIR}/resources/${PROJECT_NAME}.desktop DESTINATION "$ENV{HOME}/.local/share/applications" FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
