@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 project(VidInjector9002.5)
 
-set(wxWidgets_ROOT_DIR ./wxWidgets-3.2.6)
+set(wxWidgets_ROOT_DIR ./wxWidgets-3.3.0)
 find_package(wxWidgets REQUIRED)
 include(${wxWidgets_USE_FILE})
 link_libraries(${wxWidgets_LIBRARIES})
@@ -17,6 +17,8 @@ endif()
 # if(NOT LINUX) should work, too, if you need that
 if(LINUX) 
     link_libraries(curl)
+    #because we had trouble with the file type detection
+    project(VidInjector9002.5.out)
 endif()
 
 if (MSVC)
