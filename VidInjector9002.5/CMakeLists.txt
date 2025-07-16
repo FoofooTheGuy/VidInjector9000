@@ -18,7 +18,8 @@ endif()
 if(LINUX) 
     link_libraries(curl)
     #because we had trouble with the file type detection
-    project(VidInjector9002.5.out)
+    set(APP_NAME "${PROJECT_NAME}")
+    project("${PROJECT_NAME}.out")
 endif()
 
 if (MSVC)
@@ -60,8 +61,8 @@ if (MSVC)
     "\n"
     "IDI_APPLICATION ICON DISCARDABLE \"${ABSOLUTE_PATH_FILE_ICON}\"\n\n"
     "VS_VERSION_INFO VERSIONINFO\n"
-    " FILEVERSION 3,5,0,0\n"
-    " PRODUCTVERSION 3,5,0\n"
+    " FILEVERSION 3,5,1,0\n"
+    " PRODUCTVERSION 3,5,1\n"
     " FILEFLAGSMASK 0x0L\n"
     "#if !defined(NDEBUG)\n"
     " FILEFLAGS VS_FF_DEBUG\n"
@@ -110,13 +111,13 @@ elseif (UNIX)
     "[Desktop Entry]\n"
     "Type=Application\n"
     "Encoding=UTF-8\n"
-    "Comment=${PROJECT_NAME} example\n"
+    "Comment=${APP_NAME}\n"
     "Exec=${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}\n"
     "Icon=VidInjector9002_5.png\n"
-    "Name=${PROJECT_NAME}\n"
+    "Name=${APP_NAME}\n"
     "NoDisplay=true\n"
     "Terminal=false\n"
-    "Version=1.0.0\n"
+    "Version=3.5.1\n"
   )
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Resources/VidInjector9002_5.png $ENV{HOME}/.local/share/icons/hicolor/512x512/apps/VidInjector9002_5.png COPYONLY)
   file(COPY ${CMAKE_CURRENT_BINARY_DIR}/resources/${PROJECT_NAME}.desktop DESTINATION "$ENV{HOME}/.local/share/applications" FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
