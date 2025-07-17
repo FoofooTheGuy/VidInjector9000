@@ -39,7 +39,13 @@ A console program that interfaces with a VidInjector9002 parameters file.
 
 ## Usage
 
-Usage: VidInjector9002-CLI \<argument\> \[parameters...\]
+Usage: `VidInjector9002-CLI <argument> [parameters...]`
+
+Generally, the usage goes like so:
+1. Use `-new` or `-n` to create a blank project file
+2. Use `-print_parameters` or `-pp` to see which number stands for each parameter
+3. Use `-set_parameter` or `-sp` to set a new value to each parameter
+4. Use `-build_cia` or `-bc` to build the .cia file based on the set parameters
 
 **Arguments:**
 
