@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
 				return setParameter(argv[2], inNumber, argv[4], argv[5]);
 			}
 			else {
-				std::cout << SpArg << " | " << SpArgShort << " : " << SetPInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << SpArg << " <" << InVi9pFile << "> <" << number << "> <" << NewValueText << "> <" << OutVi9pFile << ">" << std::endl;
+				std::cout << SpArg << " | " << SpArgShort << " : " << SpInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << SpArg << " <" << InVi9pFile << "> <" << number << "> <" << NewValueText << "> <" << OutVi9pFile << ">" << std::endl;
 			}
 			return 1;
 		}
@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
 				return SetSMDH(argv[2], argv[3], argv[4]);
 			}
 			else {
-				std::cout << SsArg << " | " << SsArgShort << " : " << SetSInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << SsArg << " <" << InVi9pFile << "> <" << NewValueText << "> <" << OutVi9pFile << ">" << std::endl;
+				std::cout << SsArg << " | " << SsArgShort << " : " << SsInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << SsArg << " <" << InVi9pFile << "> <" << NewValueText << "> <" << OutVi9pFile << ">" << std::endl;
 			}
 			return 1;
 		}
@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
 				return printParameter(argv[2]);
 			}
 			else {
-				std::cout << PpArg << " | " << PpArgShort << " : " << PrintPInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << PpArg << " <" << InVi9pFile << ">" << std::endl;
+				std::cout << PpArg << " | " << PpArgShort << " : " << PpInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << PpArg << " <" << InVi9pFile << ">" << std::endl;
 			}
 			return 1;
 		}
@@ -75,7 +75,7 @@ int main(int argc, char** argv) {
 				return add_row(argv[2], argv[3]);
 			}
 			else {
-				std::cout << ArArg << " | " << ArArgShort << " : " << AddRInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << ArArg << " <" << InVi9pFile << "> <" << OutVi9pFile << ">" << std::endl;
+				std::cout << ArArg << " | " << ArArgShort << " : " << ArInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << ArArg << " <" << InVi9pFile << "> <" << OutVi9pFile << ">" << std::endl;
 			}
 			return 1;
 		}
@@ -84,7 +84,7 @@ int main(int argc, char** argv) {
 				return sub_row(argv[2], argv[3]);
 			}
 			else {
-				std::cout << SrArg << " | " << SrArgShort << " : " << SubRInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << SrArg << " <" << InVi9pFile << "> <" << OutVi9pFile << ">" << std::endl;
+				std::cout << SrArg << " | " << SrArgShort << " : " << SrInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << SrArg << " <" << InVi9pFile << "> <" << OutVi9pFile << ">" << std::endl;
 			}
 			return 1;
 		}
@@ -120,10 +120,10 @@ int main(int argc, char** argv) {
 				return build_archive(argv[2], argv[6], argv[7], inNumber, argv[4], argv[5]);
 			}
 			else {
-				std::cout << BcArg << " | " << BcArgShort << " : " << BuildCInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << BcArg << " <" << InVi9pFile << "> <" << UniqueIDText << "> <" << AppTitleText << "> <" << ProdCodeLatt << "> <" << OutCiaFile << ">\n\n----\n" << std::endl;
-				std::cout << BcArg << " | " << BcArgShort << " : " << BuildC3InfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << BcArg << " <" << InVi9pFile << "> <" << UniqueIDText << "> <" << AppTitleText << "> <" << ProdCodeLatt << "> <" << OutCiaFile << "> <" << OutTarFile << ">\n\n----\n" << std::endl;
-				std::cout << BcArg << " | " << BcArgShort << " : " << BuildC2InfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << BcArg << " <" << InVi9pFile << "> <" << OutCiaFile << ">\n\n----\n" << std::endl;
-				std::cout << BcArg << " | " << BcArgShort << " : " << BuildC3InfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << BcArg << " <" << InVi9pFile << "> <" << OutCiaFile << "> <" << OutTarFile << ">" << std::endl;
+				std::cout << BcArg << " | " << BcArgShort << " : " << BcInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << BcArg << " <" << InVi9pFile << "> <" << UniqueIDText << "> <" << AppTitleText << "> <" << ProdCodeLatt << "> <" << OutCiaFile << ">\n\n----\n" << std::endl;
+				std::cout << BcArg << " | " << BcArgShort << " : " << Bc3InfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << BcArg << " <" << InVi9pFile << "> <" << UniqueIDText << "> <" << AppTitleText << "> <" << ProdCodeLatt << "> <" << OutCiaFile << "> <" << OutTarFile << ">\n\n----\n" << std::endl;
+				std::cout << BcArg << " | " << BcArgShort << " : " << Bc2InfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << BcArg << " <" << InVi9pFile << "> <" << OutCiaFile << ">\n\n----\n" << std::endl;
+				std::cout << BcArg << " | " << BcArgShort << " : " << Bc3InfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << BcArg << " <" << InVi9pFile << "> <" << OutCiaFile << "> <" << OutTarFile << ">" << std::endl;
 			}
 			return 1;
 		}
@@ -135,8 +135,8 @@ int main(int argc, char** argv) {
 				return extract_archive(argv[2], argv[4], false, argv[3]);
 			}
 			else {
-				std::cout << EcArg << " | " << EcArgShort << " : " << ExCInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << EcArg << " <" << InCiaFile << "> <" << OutDir << ">\n\n----\n" << std::endl;
-				std::cout << EcArg << " | " << EcArgShort << " : " << ExC2InfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << EcArg << " <" << InCiaFile << "> <" << SeedFile << "> <" << OutDir << ">" << std::endl;
+				std::cout << EcArg << " | " << EcArgShort << " : " << EcInfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << EcArg << " <" << InCiaFile << "> <" << OutDir << ">\n\n----\n" << std::endl;
+				std::cout << EcArg << " | " << EcArgShort << " : " << Ec2InfoText << "\n\n" << UsageText << '\n' << argv[0] << ' ' << EcArg << " <" << InCiaFile << "> <" << SeedFile << "> <" << OutDir << ">" << std::endl;
 			}
 			return 1;
 		}
