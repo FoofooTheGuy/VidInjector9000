@@ -32,7 +32,7 @@ void frame_wxEVT_WEBREQUEST_STATE(InitWidgets* wid, wxWebRequestEvent* event) {
 			if(tag == internalTag)
 				return;
 			
-			wxMessageDialog Updating = wxMessageDialog(wid->frame, downloadVersion, updateAvailable + " " + tag, wxOK|wxCANCEL|wxCENTRE);
+			wxMessageDialog Updating = wxMessageDialog(wid->frame, wxString::FromUTF8(downloadVersion), wxString::FromUTF8(updateAvailable + " " + tag), wxOK|wxCANCEL|wxCENTRE);
 			int choice = Updating.ShowModal();
 			if(choice == wxID_OK)
 				wxLaunchDefaultBrowser("https://github.com/" + githubRepo + "/releases/tag/" + tag);

@@ -293,7 +293,7 @@ int main(int argc, char* argv[]) {
 		multiBannerPreviewRight_wxEVT_BUTTON(&wid, &parameters);
 	});
 	
-	applyAddRows();
+	applyAddRows();//make sure the row info is ok before we add events to it
 	
 	wid.moflexBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
@@ -791,6 +791,7 @@ int main(int argc, char* argv[]) {
 		MenuBanners_wxEVT_TEXT(&wid, &parameters, wid.MenuBanners.at(VI9P::MultiBannerIndex));
 	}
 	
+	//nvm this stuff really has to be after that
 	//correct sizes
 	wid.iconPreview->Fit();
 	wid.multiBannerPreview->Fit();
