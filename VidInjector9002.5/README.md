@@ -145,8 +145,7 @@ libsdl1.2-dev \
 libsdl2-dev \
 libnotify-dev \
 libmspack-dev \
-libgspell-1-dev \
-libcurl4-openssl-dev
+libgspell-1-dev
 ```
 2. Install `cmake`, `make`, `gcc`, `g++`, and `git` with your package manager
 3. Clone the entire repository `git clone --recurse-submodules https://github.com/FoofooTheGuy/VidInjector9000.git`
