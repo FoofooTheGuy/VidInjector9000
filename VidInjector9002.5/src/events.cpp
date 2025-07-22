@@ -869,9 +869,7 @@ void splitPatchButton_wxEVT_TOGGLEBUTTON(InitWidgets* wid, VI9Pparameters* param
 }
 
 void splitPatchUp_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
-	if(!wid->splitPatchUp->IsEnabled())
-		return;
-	if(!wid->splitPatchUp->IsShown())
+	if(!wid->splitPatchButton->GetValue() || !wid->splitPatchUp->IsEnabled() || !wid->splitPatchUp->IsShown())
 		return;
 	--parameters->splitPos;
 	
@@ -893,9 +891,7 @@ void splitPatchUp_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 }
 
 void splitPatchDown_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
-	if(!wid->splitPatchDown->IsEnabled())
-		return;
-	if(!wid->splitPatchDown->IsShown())
+	if(!wid->splitPatchButton->GetValue() || !wid->splitPatchDown->IsEnabled() || !wid->splitPatchDown->IsShown())
 		return;
 	++parameters->splitPos;
 	
