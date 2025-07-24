@@ -37,7 +37,7 @@ void doAddRows(InitWidgets* wid, int rows) {
 		int width, height;
 		wxFont f = button->GetFont();
 		
-		button->SetLabel(wxString::FromUTF8("↑"));
+		button->SetLabel(wxString::FromUTF8("↓"));
 		
 		button->GetTextExtent(button->GetLabel(), &width, &height, nullptr, nullptr, &f);
 		button->SetSize(width + Borders::width + 5, height + Borders::height);
