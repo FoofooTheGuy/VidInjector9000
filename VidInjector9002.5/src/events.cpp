@@ -625,8 +625,6 @@ void MenuBanners_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxText
 	size_t rowReal;
 	for(rowReal = 0; rowReal < wid->MenuBanners.size(); rowReal++) {//get row
 		if(reinterpret_cast<intptr_t>(wid->MenuBanners.at(rowReal)) == reinterpret_cast<intptr_t>(row)) {//compare pointers
-			if(!row->IsEnabled())
-				return;
 			VI9P::MultiBannerIndex = rowReal;
 			EnableBannerLeftRight(wid);
 			
