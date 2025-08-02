@@ -113,7 +113,7 @@ A GUI wrapper for VidInjector9002-CLI. Made with pure [wxWidgets](https://github
 
 ## Installation
 **Windows**
-1. Install the [Microsoft Visual C++ Redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads)
+1. Install the [Microsoft Visual C++ Redistributable](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist)
 2. Run `VidInjector9002.5.exe`
 
 **Linux**
