@@ -22,7 +22,7 @@ if (MSVC)
 endif()
 
 if (MSVC)
-set(CMAKE_CXX_FLAGS "-Wall -wd4577 -wd4710 -wd4711 -wd4530")
+set(CMAKE_CXX_FLAGS "-Wall -wd4577 -wd4710 -wd4711 -wd4530 -wd4514")
 else()
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 endif()
@@ -118,6 +118,7 @@ elseif (UNIX)
 endif ()
 
 # https://docs.wxwidgets.org/3.2/overview_cmake.html
+set(wxBUILD_SHARED OFF)
 add_subdirectory(wxWidgets-3.3.0)
 add_executable(${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${MY_SRC} ${RESOURCES})
 
