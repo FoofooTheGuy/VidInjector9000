@@ -161,7 +161,7 @@ libgspell-1-dev
 ## Compiling Continued
 In order to properly use this program, you must also compile `VidInjector9002-CLI`
 1. See [The instructions for compiling VidInjector9002-CLI](https://github.com/FoofooTheGuy/VidInjector9000/blob/main/VidInjector9002-CLI/README.md#compiling)
-2. move the `VidInjector9002-CLI(.exe)` binary to the `VidInjector9000Resources/` directory within the same directory of `VidInjector9002.5(.exe)`. (Create a new directory if it is not there.) If you are on MacOS, move the file `VidInjector9002-CLI.app/Contents/MacOS/VidInjector9002-CLI`
+2. move the `VidInjector9002-CLI(.exe)` binary to the `VidInjector9000Resources/` directory within the same directory of `VidInjector9002.5(.exe)`. (Create a new directory if it is not there.)
 
 ## Translation
 I gave up on trying to translate the program into languages I don't know. So if you want to help, please create a pull request or issue to share your translation. Here are some useful tips on how it should be done:
