@@ -1,15 +1,10 @@
 cmake_minimum_required(VERSION 3.20)
 project(VidInjector9002.5)
 
-set(wxWidgets_ROOT_DIR ./wxWidgets-3.3.0)
-find_package(wxWidgets REQUIRED)
-include(${wxWidgets_USE_FILE})
-link_libraries(${wxWidgets_LIBRARIES})
-
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-#https://stackoverflow.com/a/32259072
+# https://stackoverflow.com/a/32259072
 if(UNIX AND NOT APPLE)
     set(LINUX TRUE)
 endif()
@@ -17,7 +12,7 @@ endif()
 # if(NOT LINUX) should work, too, if you need that
 if(LINUX) 
     link_libraries(curl)
-    #because we had trouble with the file type detection
+    # because we had trouble with the file type detection (dont do this, just set the file SUFFIX)
     set(APP_NAME "${PROJECT_NAME}")
     project("${PROJECT_NAME}.out")
 endif()
@@ -41,7 +36,7 @@ file(GLOB MY_SRC
     "src/*.h"
 )
 
-#https://github.com/gammasoft71/Examples_wxWidgets/tree/master/wxCore/Applications/ApplicationIcon
+# https://github.com/gammasoft71/Examples_wxWidgets/tree/master/wxCore/Applications/ApplicationIcon
 # Resources
 if (MSVC)
   set(MY_SRC ${MY_SRC} ${CMAKE_CURRENT_BINARY_DIR}/resources/${PROJECT_NAME}.rc)
@@ -122,7 +117,11 @@ elseif (UNIX)
   configure_file(${CMAKE_CURRENT_BINARY_DIR}/resources/${PROJECT_NAME}.desktop $ENV{HOME}/.local/share/applications/${PROJECT_NAME}.desktop COPYONLY)
 endif ()
 
+# https://docs.wxwidgets.org/3.2/overview_cmake.html
+add_subdirectory(wxWidgets-3.3.0)
 add_executable(${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${MY_SRC} ${RESOURCES})
+
+target_link_libraries(${PROJECT_NAME} wx::net wx::core wx::base)
 if (UNIX)
     find_package(X11)
     if(X11_FOUND)
