@@ -58,7 +58,7 @@ if (MSVC)
   )
 endif()
 
-add_executable(${PROJECT_NAME} MACOSX_BUNDLE ${MY_SRC})
+add_executable(${PROJECT_NAME} ${MY_SRC})
 
 if (BUILD_TESTING AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/test/CMakeLists.txt")
     enable_testing()
