@@ -126,7 +126,8 @@ A GUI wrapper for VidInjector9002-CLI. Made with pure [wxWidgets](https://github
 **Windows**
 1. Download and install [CMake](https://cmake.org/), [Git](https://git-scm.com/downloads/win), and [Microsoft Visual Studio](https://visualstudio.microsoft.com/) with the `Desktop development with C++` workload
 2. Clone the entire repository `git clone --recurse-submodules https://github.com/FoofooTheGuy/VidInjector9000.git`
-3. Run `build.bat`
+3. Run `cd VidInjector9000/VidInjector9002.5`
+4. Run `build.bat`
 
 **Linux**
 1. Install dependencies for wxWidgets. For example, on debian:
