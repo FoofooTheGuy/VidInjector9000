@@ -12,9 +12,6 @@ endif()
 # if(NOT LINUX) should work, too, if you need that
 if(LINUX) 
 	link_libraries(curl)
-	# because we had trouble with the file type detection (dont do this, just set the file SUFFIX)
-	set(APP_NAME "${PROJECT_NAME}")
-	project("${PROJECT_NAME}.out")
 endif()
 
 if (MSVC)
@@ -38,7 +35,7 @@ file(GLOB MY_SRC
 
 # https://github.com/gammasoft71/Examples_wxWidgets/tree/master/wxCore/Applications/ApplicationIcon
 # Resources
-if (MSVC)
+if(MSVC)
 	set(MY_SRC ${MY_SRC} ${CMAKE_CURRENT_BINARY_DIR}/resources/${PROJECT_NAME}.rc)
 	set(RESOURCES Resources/VidInjector9002_5.ico)
 	get_filename_component(ABSOLUTE_PATH_FILE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/Resources/VidInjector9002_5.ico" REALPATH BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -100,11 +97,11 @@ elseif (APPLE)
 	set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/Resources/VidInjector9002_5.icns PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 	set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/Resources/VidInjector9002_5.png PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 	set(MACOSX_BUNDLE_ICON_FILE "VidInjector9002_5.icns")
-elseif (UNIX)
+elseif(LINUX)
 	set(RESOURCES Resources/VidInjector9002_5.png)
 	file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/resources/${PROJECT_NAME}.desktop
 		"[Desktop Entry]\n"
-		"Name=${APP_NAME}\n"
+		"Name=${PROJECT_NAME}\n"
 		"Type=Application\n"
 		"Categories=Utility\n"
 		"Exec=${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}\n"
@@ -115,12 +112,20 @@ elseif (UNIX)
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Resources/VidInjector9002_5.png $ENV{HOME}/.local/share/icons/hicolor/512x512/apps/VidInjector9002_5.png COPYONLY)
 	file(COPY ${CMAKE_CURRENT_BINARY_DIR}/resources/${PROJECT_NAME}.desktop DESTINATION "$ENV{HOME}/.local/share/applications" FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
 	configure_file(${CMAKE_CURRENT_BINARY_DIR}/resources/${PROJECT_NAME}.desktop $ENV{HOME}/.local/share/applications/${PROJECT_NAME}.desktop COPYONLY)
-endif ()
+endif()
 
 # https://docs.wxwidgets.org/3.2/overview_cmake.html
 set(wxBUILD_SHARED OFF)
 add_subdirectory(wxWidgets-3.3.0)
 add_executable(${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${MY_SRC} ${RESOURCES})
+
+if(LINUX)
+	set_target_properties(${PROJECT_NAME} PROPERTIES
+		OUTPUT_NAME ${PROJECT_NAME}
+		PREFIX ""
+		SUFFIX ".out"
+	)
+endif()
 
 target_link_libraries(${PROJECT_NAME} wx::net wx::core wx::base)
 if (UNIX)
