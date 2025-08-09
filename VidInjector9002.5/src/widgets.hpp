@@ -52,10 +52,10 @@ enum wxOwnedID {
 	ID_EXPORT,
 	ID_EXTRACT,
 	ID_IMPORTSEED,
-	ID_LOGBOOL,
 	ID_SYSTEM,
 	ID_LIGHT,
 	ID_DARK,
+	ID_LOGBOOL,
 	ID_DELETETEMP,
 	ID_UPDATECHECK,
 	ID_LANG1,
@@ -103,10 +103,10 @@ struct InitWidgets {
 	wxMenuItem* menuItemFileExtract = menuFile->Append(ID_EXTRACT, wxString::FromUTF8(fileExtract + "\tCtrl+Alt+E"));
 	wxMenuItem* menuItemFileImportSeed = menuFile->Append(ID_IMPORTSEED, wxString::FromUTF8(fileImportSeed));
 	wxMenu* menuOptions = new wxMenu();
-	wxMenuItem* menuItemOptionsLog = menuOptions->Append(ID_LOGBOOL, wxString::FromUTF8(optionsShowLog), "", wxITEM_CHECK);
 	wxMenuItem* menuItemOptionsSystem = menuOptions->Append(ID_SYSTEM, wxString::FromUTF8(optionsSystemMode), "", wxITEM_RADIO);
 	wxMenuItem* menuItemOptionsLight = menuOptions->Append(ID_LIGHT, wxString::FromUTF8(optionsLightMode), "", wxITEM_RADIO);
 	wxMenuItem* menuItemOptionsDark = menuOptions->Append(ID_DARK, wxString::FromUTF8(optionsDarkMode), "", wxITEM_RADIO);
+	wxMenuItem* menuItemOptionsLog = menuOptions->Append(ID_LOGBOOL, wxString::FromUTF8(optionsShowLog), "", wxITEM_CHECK);
 	wxMenuItem* menuItemOptionsDeleteTemp = menuOptions->Append(ID_DELETETEMP, wxString::FromUTF8(optionsDeleteTemp), "", wxITEM_CHECK);
 	wxMenuItem* menuItemOptionsUpdateCheck = menuOptions->Append(ID_UPDATECHECK, wxString::FromUTF8(optionsUpdateCheck), "", wxITEM_CHECK);
 	wxMenu* menuLanguage = new wxMenu();
