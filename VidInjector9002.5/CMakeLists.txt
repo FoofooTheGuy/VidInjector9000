@@ -114,9 +114,9 @@ elseif(LINUX)
 	configure_file(${CMAKE_CURRENT_BINARY_DIR}/resources/${PROJECT_NAME}.desktop $ENV{HOME}/.local/share/applications/${PROJECT_NAME}.desktop COPYONLY)
 endif()
 
-# https://docs.wxwidgets.org/3.2/overview_cmake.html
+# https://docs.wxwidgets.org/3.3.1/overview_cmake.html
 set(wxBUILD_SHARED OFF)
-add_subdirectory(wxWidgets-3.3.0)
+add_subdirectory(wxWidgets-3.3.1)
 add_executable(${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${MY_SRC} ${RESOURCES})
 
 if(LINUX)
