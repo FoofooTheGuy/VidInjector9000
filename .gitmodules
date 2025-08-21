@@ -1,5 +1,5 @@
 [submodule "VidInjector9002.5/wxWidgets-3.2.6"]
-	path = VidInjector9002.5/wxWidgets-3.3.0
+	path = VidInjector9002.5/wxWidgets-3.3.1
 	url = https://github.com/wxWidgets/wxWidgets
 [submodule "VidInjector9002-CLI/nnc"]
 	path = VidInjector9002-CLI/nnc
