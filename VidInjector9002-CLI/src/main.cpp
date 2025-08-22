@@ -2,11 +2,8 @@
 #include <iostream>
 #include <cstring>
 #include <vector>
-#include "formatting.hpp"
 #include "CTR_stuff.hpp"
 #include "strings.hpp"
-#include "image.hpp"
-//#include "vi9p.hpp"//included in image.hpp
 
 int main(int argc, char** argv) {
 	for(int i = 1; i < argc; i++) {
