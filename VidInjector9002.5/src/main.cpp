@@ -796,6 +796,9 @@ int main(int argc, char* argv[]) {
 	wid.iconPreview->Fit();
 	wid.multiBannerPreview->Fit();
 	
+	// make sure the window looks good
+	positionWidgets(&wid, &parameters);
+	
 	if(Settings::UpdateCheck)
 		wid.updateCheck->Start();
 	
