@@ -128,7 +128,7 @@ int main(int argc, char* argv[]) {
 			applyLanguage(&wid, &parameters);
 	initAllWidgets(&wid);
 	setFonts(&wid);
-	positionWidgets(&wid, &parameters);
+	//positionWidgets(&wid, &parameters);// we do this later
 	setToolTips(&wid);
 	getAppearance(&wid);
 	setAppearance(&wid, Settings::ColorMode);
