@@ -130,7 +130,10 @@ A GUI wrapper for VidInjector9002-CLI. Made with pure [wxWidgets](https://github
 4. Run `build.bat`
 
 **Linux**
-1. Install dependencies for wxWidgets. For example, on debian:
+1. Install `cmake`, `make`, `gcc`, `g++`, and `git` with your package manager
+2. Clone the entire repository `git clone --recurse-submodules https://github.com/FoofooTheGuy/VidInjector9000.git`
+3. Run `cd VidInjector9000/VidInjector9002.5`
+4. Install dependencies for wxWidgets. For example, on debian:
 ```
 sudo apt install \
 libgtk-3-dev \
@@ -146,10 +149,7 @@ libnotify-dev \
 libmspack-dev \
 libgspell-1-dev
 ```
-2. Install `cmake`, `make`, `gcc`, `g++`, and `git` with your package manager
-3. Clone the entire repository `git clone --recurse-submodules https://github.com/FoofooTheGuy/VidInjector9000.git`
-4. Run `cd VidInjector9000/VidInjector9002.5`
-6. Run `build.sh`
+5. Run `build.sh`
 
 **MacOS**
 1. Install the [Homebrew](https://brew.sh/) package manager
