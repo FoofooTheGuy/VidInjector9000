@@ -56,10 +56,13 @@ A GUI wrapper for VidInjector9002-CLI. Made with pure [wxWidgets](https://github
 <summary>Windows 8.1</summary>
 
 ### System
+<img width="1150" height="700" alt="system" src="https://github.com/user-attachments/assets/0138247a-cd9e-416d-8ed1-37fd086702ad" />
 
 ### Light Mode
+<img width="1150" height="700" alt="light" src="https://github.com/user-attachments/assets/f5271a7d-87d8-462a-b077-f4b32ba3e52b" />
 
 ### Dark Mode
+<img width="1150" height="700" alt="dark" src="https://github.com/user-attachments/assets/9ebe78ee-0e24-470b-b5a5-59ecdf831f81" />
 
 </details>
 
