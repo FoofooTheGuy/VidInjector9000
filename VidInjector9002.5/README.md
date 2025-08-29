@@ -5,53 +5,36 @@ A GUI wrapper for VidInjector9002-CLI. Made with pure [wxWidgets](https://github
 
 ## Screenshots
 <details>
-<summary>Arch Linux (GNOME 47.2)</summary>
+<summary>Arch Linux (XFCE)</summary>
 
 ### System (Light Mode)
-![System Light](https://github.com/user-attachments/assets/0b8cb59e-be9b-4fb9-a1ec-1081b2e8cffa)
+<img width="1272" height="700" alt="system light" src="https://github.com/user-attachments/assets/4d112232-5efb-4bec-8571-b809cdb1bd24" />
 
 ### System (Dark Mode)
-![System](https://github.com/user-attachments/assets/bb26a54e-d4eb-47fb-a76d-937ab96b7398)
+<img width="1282" height="718" alt="system dark" src="https://github.com/user-attachments/assets/ea9189b0-9895-43dd-943c-793bc169cf82" />
 
 ### Light Mode
-![Light](https://github.com/user-attachments/assets/4c2059d3-0ce8-4c34-a4ed-fdab3a1535f0)
+<img width="1272" height="700" alt="light" src="https://github.com/user-attachments/assets/72e83f40-e0fa-45f7-8a69-76100ce9bd5d" />
 
 ### Dark Mode
-![Dark](https://github.com/user-attachments/assets/916fa097-1a49-4a7d-8ecf-6547d53823d2)
+<img width="1272" height="700" alt="dark" src="https://github.com/user-attachments/assets/05b6bf26-39f2-4d69-80ed-e33bec9c33a6" />
 
 </details>
 
 <details>
-<summary>Linux Mint (Cinnamon 6.2.7)</summary>
+<summary>MacOS (Sonoma 14.7.7)</summary>
 
 ### System (Light Mode)
-![Screenshot from 2024-12-30 11-47-50](https://github.com/user-attachments/assets/20e56092-9eba-4e45-9e4d-f28dc2767881)
+<img width="1262" height="812" alt="system light" src="https://github.com/user-attachments/assets/b7dd74e0-b0ec-4894-976f-9d57e24fca4b" />
 
 ### System (Dark Mode)
-![Screenshot from 2024-12-30 11-46-22](https://github.com/user-attachments/assets/833b8de2-343d-4056-a024-051babc0f8f2)
+<img width="1262" height="812" alt="system dark" src="https://github.com/user-attachments/assets/df7fc5bc-43e1-404d-826c-7b6285ab1638" />
 
 ### Light Mode
-![Screenshot from 2024-12-30 11-46-39](https://github.com/user-attachments/assets/086e3c54-2970-4f50-abd3-1e668700d70e)
+<img width="1262" height="812" alt="light" src="https://github.com/user-attachments/assets/d2356f79-a5a1-4e7f-8b38-6e355a020af5" />
 
 ### Dark Mode
-![Screenshot from 2024-12-30 11-46-53](https://github.com/user-attachments/assets/a97144a5-6440-4217-af19-a1b7cac5830b)
-
-</details>
-
-<details>
-<summary>MacOS (Sonoma 14.3)</summary>
-
-### System (Light Mode)
-![system](https://github.com/user-attachments/assets/f53e9cca-69ff-4c09-8039-e79778682ee7)
-
-### System (Dark Mode)
-![system dark](https://github.com/user-attachments/assets/62d95d87-1d98-445c-866a-225f0317fbc5)
-
-### Light Mode
-![light](https://github.com/user-attachments/assets/20a2f9cc-ceaa-47f7-941e-28e1a4a54a73)
-
-### Dark Mode
-![dark](https://github.com/user-attachments/assets/3d5b0e4a-407f-480a-9553-8888ee9a507b)
+<img width="1262" height="812" alt="dark" src="https://github.com/user-attachments/assets/91469d26-a02f-458a-8cc2-b8962b7cf5b7" />
 
 </details>
 
@@ -59,13 +42,13 @@ A GUI wrapper for VidInjector9002-CLI. Made with pure [wxWidgets](https://github
 <summary>Windows 7</summary>
 
 ### System
-![system crop](https://github.com/user-attachments/assets/3d1316c0-c097-4361-84cb-92b5079a3476)
+<img width="1150" height="700" alt="system" src="https://github.com/user-attachments/assets/1488a798-ecf4-496f-a668-1765c55ce2ee" />
 
 ### Light Mode
-![light crop](https://github.com/user-attachments/assets/a973ff88-9415-4277-b844-d4c21e4fe780)
+<img width="1150" height="700" alt="light" src="https://github.com/user-attachments/assets/dff31912-44f1-49f2-8beb-198577955e84" />
 
 ### Dark Mode
-![dark crop](https://github.com/user-attachments/assets/a7ec957c-3796-4605-9b2f-6d4cdb2c57ee)
+<img width="1150" height="700" alt="dark" src="https://github.com/user-attachments/assets/99ff21f8-a337-442a-b68c-2293e88e048f" />
 
 </details>
 
@@ -73,13 +56,10 @@ A GUI wrapper for VidInjector9002-CLI. Made with pure [wxWidgets](https://github
 <summary>Windows 8.1</summary>
 
 ### System
-![system](https://github.com/user-attachments/assets/a6df53a4-cbdd-446b-b613-9aca0fefecb2)
 
 ### Light Mode
-![light](https://github.com/user-attachments/assets/1990f3ac-8789-4c49-b86e-8f3d006b61ea)
 
 ### Dark Mode
-![dark](https://github.com/user-attachments/assets/17b9b818-a8e2-4410-bce5-8a290c6eb9b7)
 
 </details>
 
@@ -87,13 +67,13 @@ A GUI wrapper for VidInjector9002-CLI. Made with pure [wxWidgets](https://github
 <summary>Windows 10</summary>
 
 ### System
-![system](https://github.com/user-attachments/assets/811bdb6a-42d8-4cb7-b963-1456b861734d)
+<img width="1136" height="693" alt="system" src="https://github.com/user-attachments/assets/c06aa33e-572c-4dca-ab59-7b2e5d7f8cd2" />
 
 ### Light Mode
-![light](https://github.com/user-attachments/assets/cc6117ee-b366-4b35-9eb7-fd824fafca0b)
+<img width="1136" height="693" alt="light" src="https://github.com/user-attachments/assets/4e5f54aa-906a-4757-a2fd-b7ac571e3568" />
 
 ### Dark Mode
-![dark](https://github.com/user-attachments/assets/f8db3e8f-cd92-42af-b1ca-296cd7ec7f83)
+<img width="1136" height="693" alt="dark" src="https://github.com/user-attachments/assets/af2991f1-fbec-4dc3-88ee-41ff8a7a3ade" />
 
 </details>
 
@@ -101,13 +81,13 @@ A GUI wrapper for VidInjector9002-CLI. Made with pure [wxWidgets](https://github
 <summary>Windows 11</summary>
 
 ### System
-![system](https://github.com/user-attachments/assets/3504dc0f-432c-4e44-ae3e-ca78980d0c90)
+<img width="1136" height="693" alt="system" src="https://github.com/user-attachments/assets/bc360782-dcd9-4e1e-8047-4b41614f5db1" />
 
 ### Light Mode
-![light](https://github.com/user-attachments/assets/38d581f1-5154-489a-b01d-e72d7029876a)
+<img width="1136" height="693" alt="light" src="https://github.com/user-attachments/assets/f46a4005-d605-4153-81af-5a5ebc00f289" />
 
 ### Dark Mode
-![dark](https://github.com/user-attachments/assets/faf1d9a2-1f01-4d43-8dba-0a2ed7416515)
+<img width="1136" height="693" alt="dark" src="https://github.com/user-attachments/assets/5b2bc2a4-696c-49ec-8f25-2edccc4dc035" />
 
 </details>
 
