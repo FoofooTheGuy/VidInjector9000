@@ -17,7 +17,7 @@ int PointsToNativeFontGraphicsUntit(int size) {
 #endif
 */
 
-int main(int argc, char* argv[]) {
+int progmain(int argc, char* argv[]) {
 	AppInitializer appInitializer;
 	wxInitAllImageHandlers();
 
@@ -128,7 +128,7 @@ int main(int argc, char* argv[]) {
 			applyLanguage(&wid, &parameters);
 	initAllWidgets(&wid);
 	setFonts(&wid);
-	//positionWidgets(&wid, &parameters);// we do this later
+	//positionWidgets(&wid, &parameters);
 	setToolTips(&wid);
 	getAppearance(&wid);
 	setAppearance(&wid, Settings::ColorMode);
@@ -805,3 +805,65 @@ int main(int argc, char* argv[]) {
 	wid.frame->Show();
 	wxTheApp->OnRun();
 }
+
+// entry point (real)
+#ifndef _WIN32
+int main(int argc, char** argv) {
+	int ret = progmain(argc, argv);
+	return ret;
+}
+#else
+
+// https://stackoverflow.com/a/41665246
+std::string WstrToUtf8Str(const std::wstring& wstr)
+{
+	std::string retStr = "";
+	if (!wstr.empty())
+	{
+		int sizeRequired = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, NULL, 0, NULL, NULL);
+		
+		if (sizeRequired > 0)
+		{
+			retStr.resize(sizeRequired);
+			int bytesConverted = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &retStr[0], sizeRequired, NULL, NULL);
+			if (!bytesConverted)
+			{
+				std::wcout << L"WstrToUtf8Str failed to convert wstring '" << wstr.c_str() << L"'";
+				return "";
+			}
+		}
+	}
+	return retStr;
+}	
+
+int wmain(int argc, wchar_t** argv) {
+	// put argv in std::vector (yay!)
+	std::vector<std::string> argvecmb;
+	{
+		int j = 0;
+		for(size_t i = 0; i < argc; i++) {
+			std::string arg = WstrToUtf8Str(argv[i]);
+			argvecmb.push_back(arg);
+		}
+	}
+
+	// string vector to char**
+	char** charcharArray = new char*[argvecmb.size()];
+
+	for (size_t i = 0; i < argvecmb.size(); i++) {
+		charcharArray[i] = new char[argvecmb.at(i).length() + 1];
+		strcpy_s(charcharArray[i], argvecmb.at(i).length() + 1, argvecmb.at(i).c_str());
+	}
+	
+	int ret = progmain(argc, charcharArray);
+	
+	//delete everything from the char**
+	for (size_t i = 0; i < argvecmb.size(); ++i) {
+		delete[] charcharArray[i];
+	}
+	delete[] charcharArray;
+	
+	return ret;
+}
+#endif
+

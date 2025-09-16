@@ -15,7 +15,7 @@ if(LINUX)
 endif()
 
 if (MSVC)
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ENTRY:mainCRTStartup")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ENTRY:wmainCRTStartup")
 endif()
 
 if (MSVC)
@@ -23,6 +23,9 @@ set(CMAKE_CXX_FLAGS "-Wall -wd4577 -wd4710 -wd4711 -wd4530 -wd4514")
 else()
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 endif()
+
+# https://docs.wxwidgets.org/3.3/overview_string.html I'm not sure if this fixed anything or not but it seems good to keep
+set(wxUSE_UNICODE_UTF8 TRUE)
 
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 #set(CMAKE_CXX_FLAGS_RELEASE "-O2")
