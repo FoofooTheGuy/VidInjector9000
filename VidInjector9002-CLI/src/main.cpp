@@ -5,7 +5,11 @@
 #include "CTR_stuff.hpp"
 #include "strings.hpp"
 
-int main(int argc, char** argv) {
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+int progmain(int argc, char** argv) {
 	for(int i = 1; i < argc; i++) {
 		if(strcmp(argv[i], HArg.c_str()) == 0 || strcmp(argv[i], HArgShort.c_str()) == 0) {
 			std::cout << LogoASCII << '\n' << ProgramName << '\n' << ByMeText << "\n(" << Version << ")\n" <<
@@ -191,3 +195,65 @@ int main(int argc, char** argv) {
 	RrArg << " | " << RrArgShort << std::endl;
 	return 1;
 }
+
+// entry point (real)
+#ifndef _WIN32
+int main(int argc, char** argv) {
+	int ret = progmain(argc, argv);
+	return ret;
+}
+#else
+
+// https://stackoverflow.com/a/41665246
+std::string WstrToUtf8Str(const std::wstring& wstr)
+{
+	std::string retStr = "";
+	if (!wstr.empty())
+	{
+		int sizeRequired = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, NULL, 0, NULL, NULL);
+		
+		if (sizeRequired > 0)
+		{
+			retStr.resize(sizeRequired);
+			int bytesConverted = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &retStr[0], sizeRequired, NULL, NULL);
+			if (!bytesConverted)
+			{
+				std::wcout << L"WstrToUtf8Str failed to convert wstring '" << wstr.c_str() << L"'";
+				return "";
+			}
+		}
+	}
+	return retStr;
+}	
+
+int wmain(int argc, wchar_t** argv) {
+	// put argv in std::vector (yay!)
+	std::vector<std::string> argvecmb;
+	{
+		int j = 0;
+		for(size_t i = 0; i < argc; i++) {
+			std::string arg = WstrToUtf8Str(argv[i]);
+			argvecmb.push_back(arg);
+		}
+	}
+
+	// string vector to char**
+	char** charcharArray = new char*[argvecmb.size()];
+
+	for (size_t i = 0; i < argvecmb.size(); i++) {
+		charcharArray[i] = new char[argvecmb.at(i).length() + 1];
+		strcpy_s(charcharArray[i], argvecmb.at(i).length() + 1, argvecmb.at(i).c_str());
+	}
+	
+	int ret = progmain(argc, charcharArray);
+	
+	//delete everything from the char**
+	for (size_t i = 0; i < argvecmb.size(); ++i) {
+		delete[] charcharArray[i];
+	}
+	delete[] charcharArray;
+	
+	return ret;
+}
+#endif
+

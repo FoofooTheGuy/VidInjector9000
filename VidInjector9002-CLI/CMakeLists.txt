@@ -33,10 +33,6 @@ find_package(MbedTLS)
 
 link_libraries(MbedTLS::mbedcrypto nnc)
 
-if (MSVC)
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ENTRY:mainCRTStartup")
-endif()
-
 file(GLOB MY_SRC
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
