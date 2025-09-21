@@ -804,6 +804,7 @@ int progmain(int argc, char* argv[]) {
 	
 	wid.frame->Show();
 	wxTheApp->OnRun();
+	return 0;
 }
 
 // entry point (real)
