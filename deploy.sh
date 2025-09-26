@@ -9,6 +9,8 @@ echo 'build VidInjector9002.5...'
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release --parallel 4
 
+cd 'build'
+
 # get the path of the binary since on mac it is a package
 BIN90025=$(find './' -maxdepth 1 -not -name '.' -not -name 'CMakeFiles' -not -name 'resources' -not -name 'wxWidgets-*' -not -name 'CMakeCache.txt' -not -name 'Makefile' -not -name 'cmake_install.cmake' -not -name 'VidInjector9000Resources')
 MAC=false
@@ -19,6 +21,8 @@ if [[ -d $BIN90025 ]]; then
 	MAC=true
 	ZIP='macOS.zip'
 fi
+
+cd ..
 
 if [[ $MAC = true ]]; then
 	mkdir "build/${BIN90025}/Contents/MacOS/VidInjector9000Resources"
@@ -46,3 +50,5 @@ cd '../VidInjector9002.5/build'
 echo 'zip binary...'
 
 zip -r "../../out/${ZIP}" $(find './' -maxdepth 1 -not -name '.' -not -name 'CMakeFiles' -not -name 'resources' -not -name 'wxWidgets-*' -not -name 'CMakeCache.txt' -not -name 'Makefile' -not -name 'cmake_install.cmake')
+
+echo 'finished'
