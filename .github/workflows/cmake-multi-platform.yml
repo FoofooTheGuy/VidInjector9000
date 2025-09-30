@@ -14,7 +14,7 @@ env:
   BUILD_TYPE: Release
 
 jobs:
-  linux:
+  checkout:
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
     # You can convert this to a matrix build if you need cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
@@ -26,62 +26,65 @@ jobs:
     - name: Init Submodules
       run: git submodule update --init --recursive
 
-    - name: Run deploy.sh
+  linux:
+    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
+    # You can convert this to a matrix build if you need cross-platform coverage.
+    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+    runs-on: ubuntu-latest
+    needs: checkout
+
+    steps:
+
+    - name: Run deploy script
       working-directory: ${{github.workspace}}
       run: |
            chmod +x deploy.sh
            ./deploy.sh
            ls out
+
   macOS:
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
     # You can convert this to a matrix build if you need cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: macos-15
+    needs: checkout
 
     steps:
-    - uses: actions/checkout@v4
 
-    - name: Init Submodules
-      run: git submodule update --init --recursive
-
-    - name: Run deploy.sh
+    - name: Run deploy script
       working-directory: ${{github.workspace}}
       run: |
            chmod +x deploy.sh
            ./deploy.sh
            ls out
+
   macOS-intel:
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
     # You can convert this to a matrix build if you need cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: macos-15-intel
+    needs: checkout
 
     steps:
-    - uses: actions/checkout@v4
 
-    - name: Init Submodules
-      run: git submodule update --init --recursive
-
-    - name: Run deploy.sh
+    - name: Run deploy script
       working-directory: ${{github.workspace}}
       run: |
            chmod +x deploy.sh
            ./deploy.sh
            ls out
+
   windows:
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
     # You can convert this to a matrix build if you need cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: windows-latest
+    needs: checkout
 
     steps:
-    - uses: actions/checkout@v4
 
-    - name: Init Submodules
-      run: git submodule update --init --recursive
-
-    - name: Run deploy.sh
+    - name: Run deploy script
       working-directory: ${{github.workspace}}
       run: |
-           build.bat
+           deploy.bat
            dir out
