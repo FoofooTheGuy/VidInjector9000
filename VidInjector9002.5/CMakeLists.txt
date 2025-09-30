@@ -5,25 +5,24 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # https://stackoverflow.com/a/32259072
-if (UNIX AND NOT APPLE)
+if(UNIX AND NOT APPLE)
 	set(LINUX TRUE)
 endif()
 
 # if(NOT LINUX) should work, too, if you need that
-if (LINUX) 
+if(LINUX) 
 	link_libraries(curl)
 endif()
 
 if (MSVC)
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ENTRY:wmainCRTStartup")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ENTRY:mainCRTStartup")
 endif()
 
-if (NOT MSVC)
+if (MSVC)
+set(CMAKE_CXX_FLAGS "-Wall -wd4577 -wd4710 -wd4711 -wd4530 -wd4514")
+else()
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 endif()
-
-# https://docs.wxwidgets.org/3.3/overview_string.html I'm not sure if this fixed anything or not but it seems good to keep
-set(wxUSE_UNICODE_UTF8 TRUE)
 
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 #set(CMAKE_CXX_FLAGS_RELEASE "-O2")
@@ -36,7 +35,7 @@ file(GLOB MY_SRC
 
 # https://github.com/gammasoft71/Examples_wxWidgets/tree/master/wxCore/Applications/ApplicationIcon
 # Resources
-if (MSVC)
+if(MSVC)
 	set(MY_SRC ${MY_SRC} ${CMAKE_CURRENT_BINARY_DIR}/resources/${PROJECT_NAME}.rc)
 	set(RESOURCES Resources/VidInjector9002_5.ico)
 	get_filename_component(ABSOLUTE_PATH_FILE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/Resources/VidInjector9002_5.ico" REALPATH BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -98,7 +97,7 @@ elseif (APPLE)
 	set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/Resources/VidInjector9002_5.icns PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 	set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/Resources/VidInjector9002_5.png PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 	set(MACOSX_BUNDLE_ICON_FILE "VidInjector9002_5.icns")
-elseif (LINUX)
+elseif(LINUX)
 	set(RESOURCES Resources/VidInjector9002_5.png)
 	file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/resources/${PROJECT_NAME}.desktop
 		"[Desktop Entry]\n"
@@ -120,7 +119,7 @@ set(wxBUILD_SHARED OFF)
 add_subdirectory(wxWidgets-3.3.1)
 add_executable(${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${MY_SRC} ${RESOURCES})
 
-if (LINUX)
+if(LINUX)
 	set_target_properties(${PROJECT_NAME} PROPERTIES
 		OUTPUT_NAME ${PROJECT_NAME}
 		PREFIX ""
@@ -129,10 +128,10 @@ if (LINUX)
 endif()
 
 target_link_libraries(${PROJECT_NAME} wx::net wx::core wx::base)
-#if (UNIX)
-#	find_package(X11)
-#	if(X11_FOUND)
-#		target_link_libraries(${PROJECT_NAME} X11)
-#	endif()
-#endif()
+if (UNIX)
+	find_package(X11)
+	if(X11_FOUND)
+		target_link_libraries(${PROJECT_NAME} X11)
+	endif()
+endif()
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Application")
