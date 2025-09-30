@@ -22,12 +22,12 @@ cd 'build'
 # get the path of the binary since on mac it is a package
 BIN90025=$(find './' -maxdepth 1 -not -name '.' -not -name 'CMakeFiles' -not -name 'resources' -not -name 'wxWidgets-*' -not -name 'CMakeCache.txt' -not -name 'Makefile' -not -name 'cmake_install.cmake' -not -name 'VidInjector9000Resources')
 MAC=false
-ZIP='linux.zip'
+ZIP='Linux.zip'
 
 # on mac, the package is a dir
 if [[ -d $BIN90025 ]]; then
 	MAC=true
-	ZIP='macOS.zip'
+	ZIP='MacOS.zip'
 fi
 
 cd ..

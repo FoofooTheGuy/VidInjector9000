@@ -14,7 +14,7 @@ if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
 cmake --build build --config %BUILD_TYPE% --parallel 4
 if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
 
-set "ZIP=windows.zip"
+set "ZIP=Windows.zip"
 
 mkdir "build/%BUILD_TYPE%/VidInjector9000Resources"
 robocopy "VidInjector9000Resources/image" "build/%BUILD_TYPE%/VidInjector9000Resources/image" /e
