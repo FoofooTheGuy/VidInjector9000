@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 rm -rf 'out'
-mkdir 'out'
+mkdir -p 'out/VidInjector9000'
 cd 'VidInjector9002.5'
 
 echo 'build VidInjector9002.5...'
@@ -63,6 +63,6 @@ cd '../VidInjector9002.5/build'
 
 echo 'copy out binary...'
 
-cp -a $(find './' -maxdepth 1 -not -name '.' -not -name 'CMakeFiles' -not -name 'resources' -not -name 'wxWidgets-*' -not -name 'CMakeCache.txt' -not -name 'Makefile' -not -name 'cmake_install.cmake') ../../out/
+cp -a $(find './' -maxdepth 1 -not -name '.' -not -name 'CMakeFiles' -not -name 'resources' -not -name 'wxWidgets-*' -not -name 'CMakeCache.txt' -not -name 'Makefile' -not -name 'cmake_install.cmake') ../../out/VidInjector9000/
 
 echo 'finished'

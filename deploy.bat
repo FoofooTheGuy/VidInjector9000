@@ -3,7 +3,8 @@
 set "BUILD_TYPE=Release"
 
 rmdir /S /Q "out"
-mkdir "out"
+mkdir out
+mkdir out/VidInjector9000
 cd "VidInjector9002.5"
 
 echo build VidInjector9002.5...
@@ -35,6 +36,6 @@ echo copy out binary...
 title copy out binary...
 
 for /f "delims=" %%i in ('dir /b') do (
-	robocopy . ../../../out %%i /e
+	robocopy . ../../../out/VidInjector9000 %%i /e
 )
 pause
