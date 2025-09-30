@@ -7,7 +7,15 @@ cd 'VidInjector9002.5'
 echo 'build VidInjector9002.5...'
 
 cmake -B build -DCMAKE_BUILD_TYPE=Release
+ret="$?"
+if [[ "$ret" -ne 0 ]]; then
+	exit "$ret"
+fi
 cmake --build build --config Release --parallel 4
+ret="$?"
+if [[ "$ret" -ne 0 ]]; then
+	exit "$ret"
+fi
 
 cd 'build'
 
@@ -37,7 +45,15 @@ cd '../VidInjector9002-CLI'
 echo 'build VidInjector9002-CLI...'
 
 cmake -B build -DCMAKE_BUILD_TYPE=Release
+ret="$?"
+if [[ "$ret" -ne 0 ]]; then
+	exit "$ret"
+fi
 cmake --build build --config Release --parallel 4
+ret="$?"
+if [[ "$ret" -ne 0 ]]; then
+	exit "$ret"
+fi
 
 if [[ $MAC = true ]]; then
 	cp 'build/VidInjector9002-CLI' '../VidInjector9002.5/build/$BIN90025/Contents/MacOS/VidInjector9000Resources'

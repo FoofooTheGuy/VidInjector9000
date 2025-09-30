@@ -10,7 +10,9 @@ echo build VidInjector9002.5...
 title build VidInjector9002.5...
 
 cmake -B build -DCMAKE_BUILD_TYPE=%BUILD_TYPE%
+if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
 cmake --build build --config %BUILD_TYPE% --parallel 4
+if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
 
 set "ZIP=windows.zip"
 
@@ -23,7 +25,9 @@ echo build VidInjector9002-CLI...
 title build VidInjector9002-CLI...
 
 cmake -B build -DCMAKE_BUILD_TYPE=%BUILD_TYPE%
+if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
 cmake --build build --config %BUILD_TYPE% --parallel 4
+if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
 
 robocopy "build/%BUILD_TYPE%" "../VidInjector9002.5/build/%BUILD_TYPE%/VidInjector9000Resources" VidInjector9002-CLI.exe
 
