@@ -35,6 +35,8 @@ cd "../VidInjector9002.5/build/%BUILD_TYPE%"
 echo copy out binary...
 title copy out binary...
 
+dir /b
+
 for /f "delims=" %%i in ('dir /b') do (
 	robocopy . ../../../out/VidInjector9000 %%i /e
 )
