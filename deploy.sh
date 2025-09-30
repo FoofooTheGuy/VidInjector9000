@@ -56,7 +56,7 @@ if [[ "$ret" -ne 0 ]]; then
 fi
 
 if [[ $MAC = true ]]; then
-	cp 'build/VidInjector9002-CLI' '../VidInjector9002.5/build/$BIN90025/Contents/MacOS/VidInjector9000Resources'
+	cp 'build/VidInjector9002-CLI' "../VidInjector9002.5/build/${BIN90025}/Contents/MacOS/VidInjector9000Resources"
 else
 	cp 'build/VidInjector9002-CLI' '../VidInjector9002.5/build/VidInjector9000Resources'
 fi
