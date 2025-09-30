@@ -14,10 +14,6 @@ if (LINUX)
 	link_libraries(curl)
 endif()
 
-if (MSVC)
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ENTRY:wmainCRTStartup")
-endif()
-
 if (NOT MSVC)
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 endif()
@@ -135,4 +131,9 @@ target_link_libraries(${PROJECT_NAME} wx::net wx::core wx::base)
 #		target_link_libraries(${PROJECT_NAME} X11)
 #	endif()
 #endif()
+
+if (MSVC)
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ENTRY:wmainCRTStartup")
+endif()
+
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Application")
