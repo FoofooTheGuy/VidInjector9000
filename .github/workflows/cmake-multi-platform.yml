@@ -26,6 +26,22 @@ jobs:
     - name: Init Submodules
       run: git submodule update --init --recursive
 
+    - name: Install Dependencies for wxWidgets
+      run: |
+           sudo apt install -y \
+           libgtk-3-dev \
+           libcurl4-openssl-dev \
+           libsecret-1-dev \
+           libwebkitgtk-6.0-dev \
+           libwebkit2gtk-4.1-dev \
+           libsoup-3.0-dev \
+           libgstreamer-plugins-base1.0-dev \
+           libsdl1.2-dev \
+           libsdl2-dev \
+           libnotify-dev \
+           libmspack-dev \
+           libgspell-1-dev
+
     - name: Run deploy script
       working-directory: ${{github.workspace}}
       run: |
