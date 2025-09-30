@@ -64,7 +64,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: Linux
-        path: ${{github.workspace}}/out/Linux.zip
+        path: ${{github.workspace}}/out
 
   macOS:
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
@@ -89,7 +89,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: MacOS
-        path: ${{github.workspace}}/out/MacOS.zip
+        path: ${{github.workspace}}/out
 
   macOS-intel:
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
@@ -108,14 +108,13 @@ jobs:
       run: |
            chmod +x deploy.sh
            ./deploy.sh
-           mv out/MacOS.zip out/MacOS-intel.zip
            ls out
 
     - name: Upload MacOS-intel Artifact
       uses: actions/upload-artifact@v4
       with:
         name: MacOS-intel
-        path: ${{github.workspace}}/out/MacOS-intel.zip
+        path: ${{github.workspace}}/out
 
   windows:
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
@@ -139,5 +138,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: Windows
-        path: ${{github.workspace}}/out/Windows.zip
+        path: ${{github.workspace}}/out
     
