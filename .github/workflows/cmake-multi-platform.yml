@@ -9,6 +9,10 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
 jobs:
   src:
     runs-on: ubuntu-latest
@@ -54,18 +58,53 @@ jobs:
            libmspack-dev \
            libgspell-1-dev
 
-    - name: Run deploy script
-      working-directory: ${{github.workspace}}
+    - name: Make Output Directory
       run: |
-           chmod +x deploy.sh
-           ./deploy.sh
-           ls out
+           mkdir -p ${{github.workspace}}/bin/VidInjector9000
 
-    - name: Upload Linux Artifact
+    - name: (VidInjector9002.5) Configure CMake
+      working-directory: ${{github.workspace}}/VidInjector9002.5
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      run: cmake -B build
+
+    - name: (VidInjector9002.5) Build
+      working-directory: ${{github.workspace}}/VidInjector9002.5
+      # Build your program with the given configuration
+      run: cmake --build build --config ${{env.BUILD_TYPE}}
+
+    
+    - name: (VidInjector9002-CLI) Configure CMake
+      working-directory: ${{github.workspace}}/VidInjector9002-CLI
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      run: cmake -B build
+
+    - name: (VidInjector9002-CLI) Build
+      working-directory: ${{github.workspace}}/VidInjector9002-CLI
+      # Build your program with the given configuration
+      run: cmake --build build --config ${{env.BUILD_TYPE}}
+
+    - name: (VidInjector9002.5) Copy to Output
+      working-directory: ${{github.workspace}}/VidInjector9002.5/build
+      run: |
+           cp 'VidInjector9002.5.out' ${{github.workspace}}/bin/VidInjector9000
+    
+    - name: (VidInjector9000Resources) Copy to Output
+      working-directory: ${{github.workspace}}/VidInjector9002.5
+      run: |
+           cp -a 'VidInjector9000Resources' ${{github.workspace}}/bin/VidInjector9000
+    
+    - name: (VidInjector9002-CLI) Copy to Output
+      working-directory: ${{github.workspace}}/VidInjector9002-CLI/build
+      run: |
+           cp 'VidInjector9002-CLI' ${{github.workspace}}/bin/VidInjector9000/VidInjector9000Resources
+
+    - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: Linux
-        path: ${{github.workspace}}/out
+        path: ${{github.workspace}}/bin
 
   macOS:
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
@@ -86,7 +125,7 @@ jobs:
            ./deploy.sh
            ls out
 
-    - name: Upload MacOS Artifact
+    - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: MacOS
@@ -111,7 +150,7 @@ jobs:
            ./deploy.sh
            ls out
 
-    - name: Upload MacOS-intel Artifact
+    - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: MacOS-intel
@@ -135,7 +174,7 @@ jobs:
            ./deploy.bat
            dir out
 
-    - name: Upload Windows Artifact
+    - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: Windows
