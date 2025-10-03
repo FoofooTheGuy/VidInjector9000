@@ -241,15 +241,50 @@ jobs:
     - name: Init Submodules
       run: git submodule update --init --recursive
 
-    - name: Run deploy script
-      working-directory: ${{github.workspace}}
+    - name: Make Output Directory
       run: |
-           ./deploy.bat
-           dir out
+           mkdir -p ${{github.workspace}}/bin/VidInjector9000
+
+    - name: (VidInjector9002.5) Configure CMake
+      working-directory: ${{github.workspace}}/VidInjector9002.5
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: (VidInjector9002.5) Build
+      working-directory: ${{github.workspace}}/VidInjector9002.5
+      # Build your program with the given configuration
+      run: cmake --build build --config ${{env.BUILD_TYPE}}
+
+    
+    - name: (VidInjector9002-CLI) Configure CMake
+      working-directory: ${{github.workspace}}/VidInjector9002-CLI
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: (VidInjector9002-CLI) Build
+      working-directory: ${{github.workspace}}/VidInjector9002-CLI
+      # Build your program with the given configuration
+      run: cmake --build build --config ${{env.BUILD_TYPE}}
+
+
+    - name: (VidInjector9002.5) Copy to Output
+      run: |
+           robocopy ${{github.workspace}}/VidInjector9002.5/build/${{env.BUILD_TYPE}} ${{github.workspace}}/bin/VidInjector9000 VidInjector9002.5.exe
+    
+    - name: (VidInjector9000Resources) Copy to Output
+      working-directory: ${{github.workspace}}/VidInjector9002.5
+      run: |
+          robocopy ${{github.workspace}}/VidInjector9002.5 ${{github.workspace}}/bin/VidInjector9000 VidInjector9000Resources /e
+          
+    - name: (VidInjector9002-CLI) Copy to Output
+      run: |
+           robocopy ${{github.workspace}}/VidInjector9002-CLI/build/${{env.BUILD_TYPE}} ${{github.workspace}}/bin/VidInjector9000/VidInjector9000Resources VidInjector9002-CLI.exe
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: Windows
-        path: ${{github.workspace}}/out
+        path: ${{github.workspace}}/bin
     
