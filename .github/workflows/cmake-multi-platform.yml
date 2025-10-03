@@ -270,17 +270,18 @@ jobs:
 
 
     - name: (VidInjector9002.5) Copy to Output
+      # https://superuser.com/a/346112
       run: |
-           robocopy ${{github.workspace}}/VidInjector9002.5/build/${{env.BUILD_TYPE}} ${{github.workspace}}/bin/VidInjector9000 VidInjector9002.5.exe
+           (robocopy ${{github.workspace}}/VidInjector9002.5/build/${{env.BUILD_TYPE}} ${{github.workspace}}/bin/VidInjector9000 VidInjector9002.5.exe) ^& IF %ERRORLEVEL% LEQ 1 exit 0
     
     - name: (VidInjector9000Resources) Copy to Output
       working-directory: ${{github.workspace}}/VidInjector9002.5
       run: |
-          robocopy ${{github.workspace}}/VidInjector9002.5 ${{github.workspace}}/bin/VidInjector9000 VidInjector9000Resources /e
+          (robocopy ${{github.workspace}}/VidInjector9002.5 ${{github.workspace}}/bin/VidInjector9000 VidInjector9000Resources /e) ^& IF %ERRORLEVEL% LEQ 1 exit 0
           
     - name: (VidInjector9002-CLI) Copy to Output
       run: |
-           robocopy ${{github.workspace}}/VidInjector9002-CLI/build/${{env.BUILD_TYPE}} ${{github.workspace}}/bin/VidInjector9000/VidInjector9000Resources VidInjector9002-CLI.exe
+           (robocopy ${{github.workspace}}/VidInjector9002-CLI/build/${{env.BUILD_TYPE}} ${{github.workspace}}/bin/VidInjector9000/VidInjector9000Resources VidInjector9002-CLI.exe) ^& IF %ERRORLEVEL% LEQ 1 exit 0
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
