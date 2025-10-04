@@ -110,8 +110,6 @@ jobs:
   macOS:
     strategy:
       matrix:
-        os: [macos-15, macos-15-intel]
-        artifact: [MacOS, MacOS-intel]
         include:
           - os: macos-15
             artifact: MacOS
