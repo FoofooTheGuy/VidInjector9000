@@ -60,7 +60,7 @@ jobs:
 
     - name: Make Output Directory
       run: |
-           mkdir -p ${{github.workspace}}/bin/VidInjector9000
+           mkdir -p ${{github.workspace}}/bin/VidInjector9000/VidInjector9000Resources
 
     - name: (VidInjector9002.5) Configure CMake
       working-directory: ${{github.workspace}}/VidInjector9002.5
@@ -91,10 +91,10 @@ jobs:
       run: |
            cp 'VidInjector9002.5.out' ${{github.workspace}}/bin/VidInjector9000
     
-    - name: (VidInjector9000Resources) Copy to Output
-      working-directory: ${{github.workspace}}/VidInjector9002.5
+    - name: (image) Copy to Output
+      working-directory: ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources
       run: |
-           cp -a 'VidInjector9000Resources' ${{github.workspace}}/bin/VidInjector9000
+           cp -a 'image' ${{github.workspace}}/bin/VidInjector9000/VidInjector9000Resources
     
     - name: (VidInjector9002-CLI) Copy to Output
       working-directory: ${{github.workspace}}/VidInjector9002-CLI/build
@@ -125,7 +125,7 @@ jobs:
 
     - name: Make Output Directory
       run: |
-           mkdir -p ${{github.workspace}}/bin/VidInjector9000
+           mkdir -p ${{github.workspace}}/bin/VidInjector9000/VidInjector9000Resources
 
     - name: (VidInjector9002.5) Configure CMake
       working-directory: ${{github.workspace}}/VidInjector9002.5
@@ -156,11 +156,10 @@ jobs:
       run: |
            cp -a 'VidInjector9002.5.app' ${{github.workspace}}/bin/VidInjector9000
     
-    - name: (VidInjector9000Resources) Copy to Output
-      working-directory: ${{github.workspace}}/VidInjector9002.5
+    - name: (image) Copy to Output
+      working-directory: ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources
       run: |
-           cp -a 'VidInjector9000Resources' ${{github.workspace}}/bin/VidInjector9000/VidInjector9002.5.app/Contents/MacOS
-    
+           cp -a 'image' ${{github.workspace}}/bin/VidInjector9000/VidInjector9002.5.app/Contents/MacOS/VidInjector9000Resources
     - name: (VidInjector9002-CLI) Copy to Output
       working-directory: ${{github.workspace}}/VidInjector9002-CLI/build
       run: |
@@ -186,7 +185,7 @@ jobs:
 
     - name: Make Output Directory
       run: |
-           mkdir -p ${{github.workspace}}/bin/VidInjector9000/VidInjector9000Resources
+           mkdir -p ${{github.workspace}}/bin/VidInjector9000/VidInjector9000Resources/image
 
     - name: (VidInjector9002.5) Configure CMake
       working-directory: ${{github.workspace}}/VidInjector9002.5
@@ -218,10 +217,10 @@ jobs:
            robocopy ${{github.workspace}}/VidInjector9002.5/build/${{env.BUILD_TYPE}} ${{github.workspace}}/bin/VidInjector9000 VidInjector9002.5.exe
            if ($? -le 1) { exit 0 }
         
-    - name: (VidInjector9000Resources) Copy to Output
+    - name: (image) Copy to Output
       working-directory: ${{github.workspace}}/VidInjector9002.5
       run: |
-          robocopy ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources ${{github.workspace}}/bin/VidInjector9000/VidInjector9000Resources /e
+          robocopy ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources/image ${{github.workspace}}/bin/VidInjector9000/VidInjector9000Resources/image /e
           if ($? -le 1) { exit 0 }
           
     - name: (VidInjector9002-CLI) Copy to Output
