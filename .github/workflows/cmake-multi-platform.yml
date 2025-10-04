@@ -111,7 +111,11 @@ jobs:
     strategy:
       matrix:
         os: [macos-15, macos-15-intel]
-        artifact: [MacOS, MacOS-intel]
+        include:
+          - artifact: MacOS
+            os: macos-15
+          - artifact: MacOS-intel
+            os: macos-15-intel
     runs-on: ${{ matrix.os }}
 
     steps:
