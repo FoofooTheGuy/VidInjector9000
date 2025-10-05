@@ -53,17 +53,17 @@ jobs:
   get-languages:
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.matrix.outputs.value }}
+      matrix: ${{ steps.matrix.outputs.directories }}
     steps:
       - uses: actions/checkout@v4
       
-      - id: directories
+      - id: matrix
         working-directory: ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources/language
         run: |
-          echo "value=$(ls | jq -R -s -c 'split("\n")[:-1]')"
-          echo "value=$(ls | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+          echo "directories=$(ls | jq -R -s -c 'split("\n")[:-1]')"
+          echo "directories=$(ls | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
       - run: |
-          echo "${{ steps.matrix.outputs.value }}"
+          echo "${{ steps.matrix.outputs.directories }}"
           
   copy-language:
     needs: [ get-languages ]
