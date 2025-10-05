@@ -81,7 +81,7 @@ jobs:
         working-directory: ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources/language
         run: |
              mkdir -p ${{github.workspace}}/out/VidInjector9000Resources/language
-             cp -a ${{matrix.value}} ${{github.workspace}}/out/VidInjector9000Resources/language
+             cp -a "${{matrix.value}}" ${{github.workspace}}/out/VidInjector9000Resources/language
   
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
