@@ -28,28 +28,8 @@ jobs:
       with:
         name: SRC
         path: ${{github.workspace}}
-        
-  #copy-language:
-  #  runs-on: ubuntu-latest
-  #
-  #  steps:
-  #  - uses: actions/checkout@v4
-  #
-  #  - name: Copy Directories
-  #    run: |
-  #         dirs=()
-  #         for i in ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources/language/*; do
-  #             mkdir -p "${{github.workspace}}/out/$i/VidInjector9000Resources/language"
-  #             cp -a "$i" "${{github.workspace}}/out/$i/VidInjector9000Resources/language"
-  #         done
-  #
-  #  - name: Upload Artifact
-  #    uses: actions/upload-artifact@v4
-  #    with:
-  #      name: Linux
-  #      path: ${{github.workspace}}/bin
 
-  # https://stackoverflow.com/questions/59180385/using-an-array-of-values-to-repeat-a-step-in-github-actions-workflow
+  # https://stackoverflow.com/a/70716837
   get-languages:
     runs-on: ubuntu-latest
     outputs:
