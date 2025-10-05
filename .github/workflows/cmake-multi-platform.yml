@@ -49,7 +49,7 @@ jobs:
     needs: get-languages
     strategy:
       matrix:
-        dir: ${{ needs.get-languages.outputs.directories.outputs.DIRS }}
+        dir: ${{ needs.get-languages.outputs.DIRS }}
     
     runs-on: ubuntu-latest
 
