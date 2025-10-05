@@ -56,8 +56,10 @@ jobs:
       matrix: ${{ steps.matrix.outputs.value }}
     steps:
       - id: matrix
+        working-directory: ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources/language
         run: |
-          echo "value=[\"a\", \"b\", \"c\"]" >> $GITHUB_OUTPUT
+          echo "value=$(ls | jq -R -s -c 'split("\n")[:-1]')"
+          echo "value=$(ls | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
       - run: |
           echo "${{ steps.matrix.outputs.value }}"
   build:
