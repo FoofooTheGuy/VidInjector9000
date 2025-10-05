@@ -28,6 +28,45 @@ jobs:
       with:
         name: SRC
         path: ${{github.workspace}}
+        
+  get-languages:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+  
+    # https://stackoverflow.com/a/32354503
+    # https://stackoverflow.com/a/65616499
+    - name: List Directories
+      working-directory: ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources/language
+      run: |
+           echo DIRS="$(ls | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+      id: directories
+
+  copy-language:
+    needs: get-languages
+    strategy:
+      matrix:
+        dir: ${{ steps.directories.outputs.DIRS }}
+    
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    # https://stackoverflow.com/a/32354503
+    # https://stackoverflow.com/a/65616499
+    - name: List Directories
+      working-directory: ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources/language
+      run: |
+           mkdir -p ${{github.workspace}}/out/VidInjector9000Resources/language
+           cp -a ${{dir}} ${{github.workspace}}/out/VidInjector9000Resources/language
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Linux
+        path: ${{github.workspace}}/bin
 
   linux:
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
