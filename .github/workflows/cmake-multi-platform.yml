@@ -32,7 +32,7 @@ jobs:
   get-languages:
     runs-on: ubuntu-latest
     outputs:
-      DIRS: ${{ steps.directories.DIRS}}
+      out-dirs: ${{ steps.directories.DIRS }}
 
     steps:
     - uses: actions/checkout@v4
@@ -41,13 +41,13 @@ jobs:
     # https://stackoverflow.com/a/65616499
     - id: directories
       working-directory: ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources/language
-      run: echo DIRS="$(ls | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+      run: echo "DIRS=$(ls | jq -R -s -c 'split("\n")[:-1]')" >> "$GITHUB_OUTPUT"
 
   copy-language:
     needs: get-languages
     strategy:
       matrix:
-        dir: ${{ needs.get-languages.outputs.DIRS }}
+        dir: ${{ needs.get-languages.outputs.out-dirs }}
     
     runs-on: ubuntu-latest
 
