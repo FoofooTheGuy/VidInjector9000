@@ -31,6 +31,8 @@ jobs:
         
   get-languages:
     runs-on: ubuntu-latest
+    outputs:
+      DIRS: ${{ steps.directories.DIRS}}
 
     steps:
     - uses: actions/checkout@v4
@@ -47,7 +49,7 @@ jobs:
     needs: get-languages
     strategy:
       matrix:
-        dir: ${{ steps.directories.outputs.DIRS }}
+        dir: ${{ needs.get-languages.outputs.directories.outputs.DIRS }}
     
     runs-on: ubuntu-latest
 
