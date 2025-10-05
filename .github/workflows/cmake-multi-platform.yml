@@ -55,6 +55,7 @@ jobs:
     outputs:
       matrix: ${{ steps.matrix.outputs.value }}
     steps:
+      - uses: actions/checkout@v4
       - id: matrix
         working-directory: ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources/language
         run: |
