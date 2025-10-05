@@ -5,6 +5,11 @@ name: CMake for multi platform
 
 on:
   push:
+    # ignore stuff that doesn't affect build or this workflow
+    paths-ignore:
+      - '**.md'
+      - '**.sh'
+      - '**.bat'
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
