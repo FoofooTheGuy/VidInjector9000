@@ -86,7 +86,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Linux
+          name: ${{matrix.value}}
           path: ${{github.workspace}}/out
 
   linux:
