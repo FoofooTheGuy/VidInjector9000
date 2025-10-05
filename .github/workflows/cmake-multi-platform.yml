@@ -28,46 +28,47 @@ jobs:
       with:
         name: SRC
         path: ${{github.workspace}}
+        
+  #copy-language:
+  #  runs-on: ubuntu-latest
+  #
+  #  steps:
+  #  - uses: actions/checkout@v4
+  #
+  #  - name: Copy Directories
+  #    run: |
+  #         dirs=()
+  #         for i in ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources/language/*; do
+  #             mkdir -p "${{github.workspace}}/out/$i/VidInjector9000Resources/language"
+  #             cp -a "$i" "${{github.workspace}}/out/$i/VidInjector9000Resources/language"
+  #         done
+  #
+  #  - name: Upload Artifact
+  #    uses: actions/upload-artifact@v4
+  #    with:
+  #      name: Linux
+  #      path: ${{github.workspace}}/bin
 
-  # https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-commands#example-masking-and-passing-a-secret-between-jobs-or-workflows
-  # https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/pass-job-outputs
-  get-languages:
+  # https://stackoverflow.com/questions/59180385/using-an-array-of-values-to-repeat-a-step-in-github-actions-workflow
+  setup:
     runs-on: ubuntu-latest
     outputs:
-      out-dirs: ${{ steps.directories.DIRS }}
-
+      matrix: ${{ steps.matrix.outputs.value }}
     steps:
-    - uses: actions/checkout@v4
-  
-    # https://stackoverflow.com/a/32354503
-    # https://stackoverflow.com/a/65616499
-    - id: directories
-      working-directory: ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources/language
-      run: echo "DIRS=$(ls | jq -R -s -c 'split("\n")[:-1]')" >> "$GITHUB_OUTPUT"
-
-  copy-language:
-    needs: get-languages
+      - id: matrix
+        run: |
+          echo "value=[\"a\", \"b\", \"c\"]" >> $GITHUB_OUTPUT
+      - run: |
+          echo "${{ steps.matrix.outputs.value }}"
+  build:
+    needs: [ setup ]
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        # https://www.reddit.com/r/github/comments/1cm3bmv/comment/l2yaj7d/
-        dir: ${{ fromJson(needs.get-languages.outputs.out-dirs) }}
-    
-    runs-on: ubuntu-latest
-
+        value: ${{fromJSON(needs.setup.outputs.matrix)}}
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Copy Directories
-      working-directory: ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources/language
-      run: |
-           mkdir -p ${{github.workspace}}/out/VidInjector9000Resources/language
-           cp -a ${{dir}} ${{github.workspace}}/out/VidInjector9000Resources/language
-
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: Linux
-        path: ${{github.workspace}}/bin
+      - run: |
+          echo "${{ matrix.value }}"
 
   linux:
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
