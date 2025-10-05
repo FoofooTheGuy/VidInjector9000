@@ -28,7 +28,9 @@ jobs:
       with:
         name: SRC
         path: ${{github.workspace}}
-        
+
+  # https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-commands#example-masking-and-passing-a-secret-between-jobs-or-workflows
+  # https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/pass-job-outputs
   get-languages:
     runs-on: ubuntu-latest
     outputs:
@@ -47,16 +49,15 @@ jobs:
     needs: get-languages
     strategy:
       matrix:
-        dir: ${{ needs.get-languages.outputs.out-dirs }}
+        # https://www.reddit.com/r/github/comments/1cm3bmv/comment/l2yaj7d/
+        dir: ${{ fromJson(needs.get-languages.outputs.out-dirs) }}
     
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
     
-    # https://stackoverflow.com/a/32354503
-    # https://stackoverflow.com/a/65616499
-    - name: List Directories
+    - name: Copy Directories
       working-directory: ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources/language
       run: |
            mkdir -p ${{github.workspace}}/out/VidInjector9000Resources/language
