@@ -50,43 +50,43 @@ jobs:
   #      path: ${{github.workspace}}/bin
 
   # https://stackoverflow.com/questions/59180385/using-an-array-of-values-to-repeat-a-step-in-github-actions-workflow
-  get-language:
+  get-languages:
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.matrix.outputs.value }}
+      matrix: ${{ steps.matrix.outputs.dirs }}
     steps:
       - uses: actions/checkout@v4
       
       - id: matrix
         working-directory: ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources/language
         run: |
-          echo "value=$(ls | jq -R -s -c 'split("\n")[:-1]')"
-          echo "value=$(ls | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+          echo "dirs=$(ls | jq -R -s -c 'split("\n")[:-1]')"
+          echo "dirs=$(ls | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
       - run: |
-          echo "${{ steps.matrix.outputs.value }}"
+          echo "${{ steps.matrix.outputs.dirs }}"
 
   copy-language:
-    needs: [ get-language ]
+    needs: [ get-languages ]
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        value: ${{fromJSON(needs.get-language.outputs.matrix)}}
+        dir: ${{fromJSON(needs.get-languages.outputs.matrix)}}
     steps:
       - uses: actions/checkout@v4
       
       - run: |
-          echo "${{ matrix.value }}"
+          echo "${{ matrix.dir }}"
       
       - name: Copy Directories
         working-directory: ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources/language
         run: |
              mkdir -p ${{github.workspace}}/out/VidInjector9000Resources/language
-             cp -a "${{matrix.value}}" ${{github.workspace}}/out/VidInjector9000Resources/language
+             cp -a "${{matrix.dir}}" ${{github.workspace}}/out/VidInjector9000Resources/language
   
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{matrix.value}}
+          name: ${{matrix.dir}}
           path: ${{github.workspace}}/out
 
   linux:
