@@ -56,6 +56,7 @@ jobs:
       matrix: ${{ steps.matrix.outputs.value }}
     steps:
       - uses: actions/checkout@v4
+      
       - id: matrix
         working-directory: ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources/language
         run: |
@@ -63,6 +64,7 @@ jobs:
           echo "value=$(ls | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
       - run: |
           echo "${{ steps.matrix.outputs.value }}"
+
   copy-language:
     needs: [ get-language ]
     runs-on: ubuntu-latest
@@ -70,6 +72,8 @@ jobs:
       matrix:
         value: ${{fromJSON(needs.get-language.outputs.matrix)}}
     steps:
+      - uses: actions/checkout@v4
+      
       - run: |
           echo "${{ matrix.value }}"
       
