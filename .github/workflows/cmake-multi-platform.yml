@@ -39,11 +39,9 @@ jobs:
   
     # https://stackoverflow.com/a/32354503
     # https://stackoverflow.com/a/65616499
-    - name: List Directories
+    - id: directories
       working-directory: ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources/language
-      run: |
-           echo DIRS="$(ls | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
-      id: directories
+      run: echo DIRS="$(ls | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
 
   copy-language:
     needs: get-languages
