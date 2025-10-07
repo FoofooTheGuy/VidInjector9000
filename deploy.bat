@@ -15,7 +15,7 @@ if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
 cmake --build build --config %BUILD_TYPE% --parallel 4
 if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
 
-mkdir "build/%BUILD_TYPE%/VidInjector9000Resources"
+mkdir "build/%BUILD_TYPE%/VidInjector9000Resources/image"
 robocopy "VidInjector9000Resources/image" "build/%BUILD_TYPE%/VidInjector9000Resources/image" /e
 
 cd "../VidInjector9002-CLI"
@@ -41,3 +41,4 @@ for /f "delims=" %%i in ('dir /b') do (
 	robocopy . ../../../out/VidInjector9000 %%i /e
 )
 pause
+
