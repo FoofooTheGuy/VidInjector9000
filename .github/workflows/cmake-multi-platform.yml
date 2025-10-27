@@ -153,9 +153,11 @@ jobs:
       matrix:
         include:
           - os: macos-15
-            artifact: MacOS
+            artifact: MacOS-15
           - os: macos-15-intel
-            artifact: MacOS-intel
+            artifact: MacOS-15-intel
+          - os: macos-26
+            artifact: MacOS-26
     runs-on: ${{ matrix.os }}
 
     steps:
