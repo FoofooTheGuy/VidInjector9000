@@ -206,7 +206,7 @@ jobs:
     - name: (image) Copy to Output
       working-directory: ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources
       run: |
-           cp -a 'image' ${{github.workspace}}/bin/VidInjector9000/VidInjector9002.5.app/Contents/MacOS/VidInjector9000Resources
+           cp -R 'image' ${{github.workspace}}/bin/VidInjector9000/VidInjector9002.5.app/Contents/MacOS/VidInjector9000Resources
     
     - name: (VidInjector9002-CLI) Copy to Output
       working-directory: ${{github.workspace}}/VidInjector9002-CLI/build
