@@ -19,7 +19,6 @@ int PointsToNativeFontGraphicsUntit(int size) {
 
 int progmain(int argc, char* argv[]) {
 	AppInitializer appInitializer;
-	wxInitAllImageHandlers();
 
 	{//get program dir
 		std::string programpath(std::filesystem::absolute(std::filesystem::path((const char8_t*)&*std::string(argv[0]).c_str())).string());
