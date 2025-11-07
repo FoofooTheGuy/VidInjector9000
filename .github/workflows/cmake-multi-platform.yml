@@ -152,10 +152,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: macos-14
-            artifact: macOS-14-Arm64
-          - os: macos-14-large
-            artifact: macOS-14
+          - os: macos-15
+            artifact: macOS-15
+          - os: macos-15-intel
+            artifact: macOS-15-intel
           - os: macos-26
             artifact: macOS-26
     runs-on: ${{ matrix.os }}
