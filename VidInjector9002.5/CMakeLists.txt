@@ -4,6 +4,8 @@ project(VidInjector9002.5)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(PRODUCT_VER "3,5,2,0")
+
 # https://stackoverflow.com/a/32259072
 if (UNIX AND NOT APPLE)
 	set(LINUX TRUE)
@@ -66,14 +68,14 @@ if (MSVC)
 		"    BEGIN\n"
 		"      VALUE \"CompanyName\", \"FoofooTheGuy\"\n"
 		"      VALUE \"FileDescription\", \"A GUI wrapper for VidInjector9002-CLI\"\n"
-		"      VALUE \"FileVersion\", \"3,5,1,0\"\n"
+		"      VALUE \"FileVersion\", \"${PRODUCT_VER}\"\n"
 		"      VALUE \"InternalName\", \"${PROJECT_NAME}\"\n"
 		"      VALUE \"LegalCopyright\", \"\"\n"
 		"      VALUE \"LegalTrademarks1\", \"\"\n"
 		"      VALUE \"LegalTrademarks2\", \"\"\n"
 		"      VALUE \"OriginalFilename\", \"${PROJECT_NAME}.exe\"\n"
 		"      VALUE \"ProductName\", \"${PROJECT_NAME}\"\n"
-		"      VALUE \"ProductVersion\", \"3,5,1\"\n"
+		"      VALUE \"ProductVersion\", \"${PRODUCT_VER}\"\n"
 		"    END\n"
 		"  END\n"
 		"  BLOCK \"VarFileInfo\"\n"
