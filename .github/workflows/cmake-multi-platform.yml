@@ -10,6 +10,7 @@ on:
       - '**.md'
       - '**.sh'
       - '**.bat'
+      - '.gitignore'
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
