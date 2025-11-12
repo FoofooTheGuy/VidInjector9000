@@ -36,10 +36,12 @@ find_package(MbedTLS)
 link_libraries(MbedTLS::mbedcrypto nnc)
 
 file(GLOB MY_SRC
-	"${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/sources/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp"
 )
+
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 if (MSVC)
 	set(MY_SRC ${MY_SRC} ${CMAKE_CURRENT_BINARY_DIR}/resources/${PROJECT_NAME}.rc)
