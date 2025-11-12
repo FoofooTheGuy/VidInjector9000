@@ -5,8 +5,8 @@
 #include <cstdint>
 #include <cstring>
 #include <fstream>
+#include <sstream>
 #include <vector>
-#include <string>
 
 //these are from bannertool with slight edits
 #define CBMD_NUM_CGFXS 14
