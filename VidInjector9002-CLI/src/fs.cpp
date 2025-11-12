@@ -549,3 +549,19 @@ int makeBanner(VI9Pparameters& parameters, std::string& tempPath) {
 	
 	return 0;
 }
+
+void editExheader(std::string& tempPath, uint32_t& uniqueID, std::string& ApplicationName) {
+	std::fstream exheader(std::string(tempPath + "/exheader.bin").c_str(), std::ios::in | std::ios::out | std::ios::binary);
+	for (int i = 0; i < 8; i++) { // write application name only 8 bytes because that's the limit. i had to do this loop because it was being weird with .write ???
+		exheader.seekp(i);
+		exheader << char(ApplicationName.c_str()[i]);
+	}
+	exheader.seekp(0x1C9);
+	exheader.write(reinterpret_cast<const char*>(&uniqueID), sizeof(uint32_t));
+	exheader.seekp(0x201);
+	exheader.write(reinterpret_cast<const char*>(&uniqueID), sizeof(uint32_t));
+	exheader.seekp(0x601);
+	exheader.write(reinterpret_cast<const char*>(&uniqueID), sizeof(uint32_t));
+	exheader.close();
+	return;
+}

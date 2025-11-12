@@ -7,13 +7,9 @@
 #include <chrono>
 #include <random>
 
-#include "microtar.hpp"
 #include "zip_file.hpp"
+#include "archive.hpp"
 #include "fs.hpp"
-
-#include <nnc/swizzle.h>
-#include <nnc/romfs.h>
-#include <nnc/cia.h>
 
 /*this only exists for generating a preview of what the banner or icon could look like
 parampath: vi9p file

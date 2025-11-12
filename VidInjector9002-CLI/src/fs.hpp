@@ -7,7 +7,6 @@
 #include <fstream>
 
 #include "stbiStuff.hpp"
-#include "archive.hpp"
 #include "strings.hpp"
 #include "arrays.hpp"
 #include "files.hpp"
@@ -26,3 +25,5 @@ int makeBimgs(VI9Pparameters& parameters, std::string& romfsPath, std::string& o
 int makeIcon(VI9Pparameters& parameters, std::string& romfsPath, std::string& tempPath);
 
 int makeBanner(VI9Pparameters& parameters, std::string& tempPath);
+
+void editExheader(std::string& tempPath, uint32_t& uniqueID, std::string& ApplicationName);
