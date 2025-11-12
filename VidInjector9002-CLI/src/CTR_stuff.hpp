@@ -7,17 +7,13 @@
 #include <chrono>
 #include <random>
 
-#include "stbiStuff.hpp"
 #include "microtar.hpp"
 #include "zip_file.hpp"
-#include "files.hpp"
-#include "vi9p.hpp"
+#include "fs.hpp"
 
 #include <nnc/swizzle.h>
 #include <nnc/romfs.h>
 #include <nnc/cia.h>
-
-// formerly in image.hpp
 
 /*this only exists for generating a preview of what the banner or icon could look like
 parampath: vi9p file
@@ -60,6 +56,7 @@ return:
 8 not an smdh
 */
 int SetSMDH(std::string inpath, std::string Newicon, std::string outpath);
+
 /*
 return:
 0 good
@@ -87,6 +84,10 @@ return:
 31 failed to create banner
 NNC errors ?
 */
+/*int build_archive(std::string inVi9p, uint32_t uniqueID, std::string ApplicationName, std::string ProductCode, std::string outCIA) : build_archive(inVi9p, outCIA, "", uniqueID, ApplicationName, ProductCode) {}
+int build_archive(std::string inVi9p, uint32_t uniqueID, std::string ApplicationName, std::string ProductCode, std::string outCIA, std::string outTAR) : build_archive(inVi9p, outCIA, outTAR, uniqueID, ApplicationName, ProductCode) {}
+int build_archive(std::string inVi9p, std::string outCIA) : build_archive(inVi9p, outCIA, "", RandomTID(), "video", "VDIJ") {}
+int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR) : build_archive(inVi9p, outCIA, outTAR, RandomTID(), "video", "VDIJ") {}*/
 int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR = "", uint32_t uniqueID = RandomTID(), std::string ApplicationName = "video", std::string ProductCode = "VDIJ");
 
 int extract_archive(std::string inArc, std::string outDir, bool dopatch = false, std::string seedpath = "");
