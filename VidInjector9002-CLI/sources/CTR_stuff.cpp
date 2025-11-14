@@ -813,7 +813,7 @@ std::string extract_dir(nnc_romfs_ctx* ctx, nnc_romfs_info* info, const char* pa
 	while (nnc_romfs_next(&it, &ent))
 	{
 		std::string dir(nnc_romfs_info_filename(ctx, &ent));
-		if (ent.type == nnc_romfs_info::NNC_ROMFS_DIR && strcmp(dir.c_str(), "movie") != 0 && strcmp(dir.c_str(), "settings") != 0)//R.I.P. all the files that we do not care about
+		if (ent.type == nnc_romfs_info::NNC_ROMFS_DIR && strcmp(dir.c_str(), "movie") != 0 && strcmp(dir.c_str(), "settings") != 0)// R.I.P. to all the files that we do not care about
 			continue;
 		strcpy(pathbuf + len, dir.c_str());
 		if (ent.type == nnc_romfs_info::NNC_ROMFS_DIR)
@@ -821,23 +821,20 @@ std::string extract_dir(nnc_romfs_ctx* ctx, nnc_romfs_info* info, const char* pa
 		else
 		{
 			nnc_wfile outf;
+			res = nnc_wfile_open(&outf, pathbuf);
+			if (res != NNC_R_OK) {
+				continue;
+			}
 			/* empty files just need to be touched */
 			if (ent.u.f.size)
 			{
 				nnc_u32 r;
 				nnc_subview sv;
 				res = nnc_romfs_open_subview(ctx, &sv, &ent);
-				if (res != NNC_R_OK)
-					goto out;
-				res = nnc_wfile_open(&outf, pathbuf);
 				if (res != NNC_R_OK) {
-					return "nnc_wfile_open(&outf, pathbuf);";
+					return "nnc_romfs_open_subview(ctx, &sv, &ent);";
 				}
 				nnc_copy(NNC_RSP(&sv), NNC_WSP(&outf), &r);
-				if (r != ent.u.f.size) goto out;
-			out:
-				NNC_WS_CALL0(outf, close);
-				continue;
 			}
 			NNC_WS_CALL0(outf, close);
 		}
