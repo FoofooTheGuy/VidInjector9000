@@ -20,56 +20,6 @@ env:
   BUILD_TYPE: Release
 
 jobs:
-  src:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Init Submodules
-      run: git submodule update --init --recursive
-
-    - name: Upload Source Code Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: SRC
-        path: ${{github.workspace}}
-
-  # https://stackoverflow.com/a/70716837
-  get-languages:
-    runs-on: ubuntu-latest
-    outputs:
-      directories: ${{ steps.directories.outputs.dirs }}
-    steps:
-      - uses: actions/checkout@v4
-      
-      - id: directories
-        working-directory: ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources/language
-        run: |
-          echo "dirs=$(ls | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
-      - run: |
-          echo "${{ steps.directories.outputs.dirs }}"
-
-  copy-language:
-    needs: [ get-languages ]
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        dir: ${{fromJSON(needs.get-languages.outputs.directories)}}
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Copy Directories
-        working-directory: ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources/language
-        run: |
-             mkdir -p ${{github.workspace}}/out/VidInjector9000Resources/language
-             cp -a "${{matrix.dir}}" ${{github.workspace}}/out/VidInjector9000Resources/language
-  
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{matrix.dir}}
-          path: ${{github.workspace}}/out
 
   linux:
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
