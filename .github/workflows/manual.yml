@@ -1,32 +1,63 @@
 # This is a basic workflow that is manually triggered
+# This is for getting the complete SRC and translations for release
 
-name: Manual workflow
+name: Get extras
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
 on:
   workflow_dispatch:
-    # Inputs the workflow accepts.
-    inputs:
-      name:
-        # Friendly description to be shown in the UI instead of 'name'
-        description: 'Person to greet'
-        # Default value if no value is explicitly provided
-        default: 'World'
-        # Input has to be provided for the workflow to run
-        required: true
-        # The data type of the input
-        type: string
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "greet"
-  greet:
-    # The type of runner that the job will run on
+
+  src:
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Runs a single command using the runners shell
-    - name: Send greeting
-      run: echo "Hello ${{ inputs.name }}"
+    - uses: actions/checkout@v4
+
+    - name: Init Submodules
+      run: git submodule update --init --recursive
+
+    - name: Upload Source Code Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: SRC
+        path: ${{github.workspace}}
+
+  # https://stackoverflow.com/a/70716837
+  get-languages:
+    runs-on: ubuntu-latest
+    outputs:
+      directories: ${{ steps.directories.outputs.dirs }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - id: directories
+        working-directory: ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources/language
+        run: |
+          echo "dirs=$(ls | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+      - run: |
+          echo "${{ steps.directories.outputs.dirs }}"
+
+  copy-language:
+    needs: [ get-languages ]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dir: ${{fromJSON(needs.get-languages.outputs.directories)}}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Copy Directories
+        working-directory: ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources/language
+        run: |
+             mkdir -p ${{github.workspace}}/out/VidInjector9000Resources/language
+             cp -a "${{matrix.dir}}" ${{github.workspace}}/out/VidInjector9000Resources/language
+  
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{matrix.dir}}
+          path: ${{github.workspace}}/out
