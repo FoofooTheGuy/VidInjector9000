@@ -31,10 +31,11 @@ bool TIDisValid(uint32_t TID);
 uint32_t RandomTID();
 
 /*
+inpath: path to smdh icon
 gets the short name, long name, and publisher from an smdh.
 returns: false for fail (not an smdh?) true for complete
 */
-int setIcon(std::string inpath, std::string &Sname, std::string &Lname, std::string &Publisher);
+int setIcon(const std::string& inpath, std::string* Sname, std::string* Lname, std::string* Publisher);
 
 /*
 this is here because this file already includes vi9p.hpp
@@ -86,19 +87,10 @@ int build_archive(std::string inVi9p, std::string outCIA) : build_archive(inVi9p
 int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR) : build_archive(inVi9p, outCIA, outTAR, RandomTID(), "video", "VDIJ") {}*/
 int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR = "", uint32_t uniqueID = RandomTID(), std::string ApplicationName = "video", std::string ProductCode = "VDIJ");
 
-int extract_archive(std::string inArc, std::string outDir, bool dopatch = false, std::string seedpath = "");
+int extract_archive(std::string inArc, std::string outDir, bool dopatch = false, std::string seedPath = "");
 
 /*path: input path to text file containing utf16 text
 outVec: output vector containing each line per element
 trim: true for remove lines that start with '#' and empty lines, false for write all lines to outVec
 return 0 if succeeded or other numbers for fail*/
 uint8_t UTF16fileToUTF8str(const std::string path, std::vector<std::string>* outVec);
-
-//output: string of error or empty string if it completed
-std::string extract_dir(nnc_romfs_ctx* ctx, nnc_romfs_info* info, const char* path, int baselen);
-
-/*infile: path to seeddb file
-TID: title ID to search for
-outseed: array big enough to recieve the seed (0x10 pls)
-return 0 if succeeded or other numbers if fail*/
-uint8_t getSeedFromTID(std::string infile, uint64_t TID, uint8_t* outseed);

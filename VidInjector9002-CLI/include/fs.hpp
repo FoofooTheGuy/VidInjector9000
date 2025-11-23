@@ -12,7 +12,7 @@
 #include "files.hpp"
 #include "vi9p.hpp"
 
-int movie_title(VI9Pparameters& parameters, std::string& romfsPath, std::string& outCIA, std::string& outTAR, bool& dopatch);
+int movie_title(const VI9Pparameters& parameters, const std::string& romfsPath, const std::string& outCIA, const std::string& outTAR, const bool& dopatch);
 
 int settingsTL(VI9Pparameters& parameters, std::string& romfsPath, std::string uniqueIDstr, std::string& outCIA, std::string& outTAR, bool& dopatch);
 

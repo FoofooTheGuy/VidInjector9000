@@ -165,7 +165,7 @@ uint32_t RandomTID() {
 	return TID;
 }
 
-int setIcon(std::string inpath, std::string &Sname, std::string &Lname, std::string &Publisher) {
+int setIcon(const std::string& inpath, std::string* Sname, std::string* Lname, std::string* Publisher) {
 	bool smdhinput = true;
 	
 	while(smdhinput)
@@ -186,11 +186,12 @@ int setIcon(std::string inpath, std::string &Sname, std::string &Lname, std::str
 
 		if (smdhinput) {
 			for (int i = 0; i < NNC_SMDH_TITLES; i++) {
-				Sname = to_UTF8(smdh.titles[i].short_desc, sizeof(smdh.titles[i].short_desc) / 2);
-				Lname = to_UTF8(smdh.titles[i].long_desc, sizeof(smdh.titles[i].long_desc) / 2);
-				Publisher = to_UTF8(smdh.titles[i].publisher, sizeof(smdh.titles[i].publisher) / 2);
-				if (!Sname.empty() && !Lname.empty() && !Publisher.empty())
+				*Sname = to_UTF8(smdh.titles[i].short_desc, sizeof(smdh.titles[i].short_desc) / 2);
+				*Lname = to_UTF8(smdh.titles[i].long_desc, sizeof(smdh.titles[i].long_desc) / 2);
+				*Publisher = to_UTF8(smdh.titles[i].publisher, sizeof(smdh.titles[i].publisher) / 2);
+				if (!Sname->empty() && !Lname->empty() && !Publisher->empty()) {
 					break;
+				}
 			}
 		}
 		NNC_RS_CALL0(f, close);
@@ -206,7 +207,7 @@ int SetSMDH(std::string inpath, std::string Newicon, std::string outpath) {
 	
 	parameters.icon = Newicon;
 	
-	res = setIcon(parameters.icon, parameters.Sname, parameters.Lname, parameters.publisher);
+	res = setIcon(parameters.icon, &parameters.Sname, &parameters.Lname, &parameters.publisher);
 	
 	saveParameters(outpath, parameters);
 	
@@ -337,7 +338,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 	return res;
 }
 
-int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::string seedpath) {
+int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::string seedPath) {
 	VI9Pparameters parameters;
 	parameters.PTitleVec.clear();
 	parameters.MoflexVec.clear();
@@ -352,9 +353,9 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 	std::string exefspath = outDir + "/exefs";
 	std::vector<std::string> trimmed;
 	
-	static nnc_result res;
+	
 	std::error_code error;
-	/*std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*outDir.c_str()), error);//probably dont delete outDir because people might have other stuff in here for some reason
+	/*std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*outDir.c_str()), error);// probably dont delete outDir because people might have other stuff in here for some reason
 	if (error) {
 		std::cout << ErrorText << ' ' << outDir << '\n' << error.message() << std::endl;
 		return 1;
@@ -364,218 +365,21 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 		std::cout << ErrorText << ' ' << outDir << '\n' << error.message() << std::endl;
 		return 1;
 	}
-	//extract important files from the romfs and exefs of cia
+	// extract important files from the romfs and exefs of cia
 	if(!dopatch) {
-		#define CUREC_SIZE 1024
-
-		std::string extractErr = "";
-
-		//stolen from the NNC cia test code and other places
-		nnc_exefs_file_header headers[NNC_EXEFS_MAX_FILES];
-		nnc_keyset kset = NNC_KEYSET_INIT;
-		nnc_seeddb::nnc_seeddb_entry ent;
-		nnc_cia_content_reader reader;
-		nnc_cia_content_stream ncch;
-		nnc_ncch_section_stream rrs;
-		nnc_ncch_exefs_stream ers;
-		nnc_ncch_header ncch_hdr;
-		nnc_chunk_record* chunk;
-		nnc_cia_header header;
-		nnc_romfs_info info;
-		nnc_romfs_ctx ctx;
-		nnc_keypair kp;
-		nnc_subview sv;
-		nnc_seeddb sdb = {};
-		sdb.size = 1;
-		nnc_file f;
-
-		res = nnc_file_open(&f, inArc.c_str());
-		if (res != NNC_R_OK)
-			goto end;
-
-		res = nnc_read_cia_header(NNC_RSP(&f), &header);
-		if (res != NNC_R_OK)
-			goto end0;
-
-		nnc_keyset_default(&kset, NNC_KEYSET_RETAIL);
-		res = nnc_cia_make_reader(&header, NNC_RSP(&f), &kset, &reader);
-		if (res != NNC_R_OK)
-			goto end1;
-
-		res = nnc_cia_open_content(&reader, 0, &ncch, &chunk);//read main content (index 0)
-		if (res != NNC_R_OK)
-			goto end1;
-
-		//this section is here to test CBC seeking
-		NNC_RS_CALL(ncch, seek_abs, 0);
-		//DSiWare doesn't have an NCCH, lets not make this a fatal error...
-		res = nnc_read_ncch_header(NNC_RSP(&ncch), &ncch_hdr);
-		if (res != NNC_R_OK)
-			goto end2;
-
-		res = nnc_fill_keypair(&kp, &kset, NULL, &ncch_hdr);
-		if (res == NNC_R_SEED_NOT_FOUND) {
-			uint8_t seedData[NNC_SEED_SIZE];
-			std::ifstream seedfile;
-			if (seedpath.substr(seedpath.find_last_of("/\\") + 1) == "seeddb.bin") {
-				if(getSeedFromTID(seedpath, ncch_hdr.title_id, seedData) != 0)
-					std::cout << ErrorText << ' ' << SeedNotFound << std::endl;
-			}
-			else {
-				if (std::filesystem::file_size(std::filesystem::path((const char8_t*)&*seedpath.c_str()), error) != NNC_SEED_SIZE) {
-					if (error) {
-						std::cout << ErrorText << ' ' << seedpath << '\n' << error.message() << std::endl;
-					}
-					goto end2;
-				}
-				if (error) {
-					std::cout << ErrorText << ' ' << seedpath << '\n' << error.message() << std::endl;
-					goto end2;
-				}
-				seedfile.open(std::filesystem::path((const char8_t*)&*seedpath.c_str()), std::ios_base::in | std::ios_base::binary);
-				seedfile.read(reinterpret_cast<char*>(seedData), NNC_SEED_SIZE);
-			}
-			memcpy(ent.seed, seedData, NNC_SEED_SIZE);
-			ent.title_id = ncch_hdr.title_id;
-			sdb.entries = &ent;
-			res = nnc_fill_keypair(&kp, &kset, &sdb, &ncch_hdr);
-			if (error) {
-				std::cout << ErrorText << ' ' << seedpath << '\n' << error.message() << std::endl;
-				goto end2;
-			}
+		// extract CIA
+		int ret = extractCIA(inArc, outDir, seedPath);
+		
+		if (ret) {
+			return ret;
 		}
-		if (res != NNC_R_OK) {
-			goto end2;
-		}
-
-		res = nnc_ncch_exefs_full_stream(&ers, &ncch_hdr, NNC_RSP(&ncch), &kp);
-		if (res != NNC_R_OK)
-			goto end2;
-
-		res = nnc_read_exefs_header(NNC_RSP(&ers), headers, NULL);//read exefs
-		if (res != NNC_R_OK)
-			goto end2;
-
-		char pathbuf[2048];
-		for (nnc_u8 i = 0; i < NNC_EXEFS_MAX_FILES && nnc_exefs_file_in_use(&headers[i]); ++i)
-		{
-			nnc_exefs_subview(NNC_RSP(&ers), &sv, &headers[i]);
-
-			const char* fname = NULL;
-			if (strcmp(headers[i].name, "banner") == 0)
-				fname = "banner.bin";
-			else if (strcmp(headers[i].name, "icon") == 0)
-				fname = "icon.bin";
-			else
-			{
-				continue;
-			}
-
-			nnc_u32 read_size;
-			std::vector<nnc_u8> buf = std::vector<nnc_u8>(headers[i].size);
-			NNC_RS_CALL(sv, seek_abs, 0);
-			if (NNC_RS_CALL(sv, read, buf.data(), headers[i].size, &read_size) != NNC_R_OK || read_size != headers[i].size) {
-				std::cout << ErrorText << ' ' << FailedToReadFile << " \"" << headers[i].name << '\"' << std::endl;
-				continue;
-			}
-			std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*exefspath.c_str()), error);
-			if (error) {
-				std::cout << ErrorText << ' ' << exefspath << '\n' << error.message() << std::endl;
-				return 2;
-			}
-			sprintf(pathbuf, "%s/%s", exefspath.c_str(), fname);
-			FILE* ef = fopen(pathbuf, "wb");
-			if (fwrite(buf.data(), headers[i].size, 1, ef) != 1)
-				std::cout << ErrorText << ' ' << FailedToCreateFile << " \"" << pathbuf << '\"' << std::endl;
-			fclose(ef);
-		}
-
-		res = nnc_ncch_section_romfs(&ncch_hdr, NNC_RSP(&ncch), &kp, &rrs);//read romfs
-		if (res != NNC_R_OK)
-			goto end2;
-
-		res = nnc_init_romfs(NNC_RSP(&rrs), &ctx);
-		if (res != NNC_R_OK)
-			goto end2;
-
-		res = nnc_get_info(&ctx, &info, "/");
-		if (res != NNC_R_OK)
-			goto end2;
-
-		extractErr = extract_dir(&ctx, &info, romfspath.c_str(), romfspath.size());
-
-		end2:
-			NNC_RS_CALL0(ncch, close);
-		end1:
-			nnc_cia_free_reader(&reader);
-		end0:
-			NNC_RS_CALL0(f, close);
-		end:
-			if (!extractErr.empty()) {
-				std::cout << ErrorText << ' ' << extractErr << std::endl;
-			}
-			if (res != NNC_R_OK)
-			{
-				std::cout << ErrorText << ' ' << nnc_strerror(res) << std::endl;
-				return 3;
-			}
-			//nnc_free_seeddb(&sdb);
 	}
 	else {
-		int ret = 0;
-		mtar_t tar;
-
-		/* Open archive for reading */
-		ret = mtar_open(&tar, inArc.c_str(), "rb");//doesnt work with unicode
+		// extract TAR
+		int ret = extractTAR(inArc, outDir, &parameters);
+		
 		if (ret) {
-			std::cout << ErrorText << ' ' << inArc << '\n' << mtar_strerror(ret) << std::endl;
-			return 4;
-		}
-		ret = extract_content(&tar, inArc, exportsPath, 30000000);
-		if (ret) {
-			std::cout << ErrorText << ' ' << inArc << '\n' << mtar_strerror(ret) << std::endl;
-			mtar_close(&tar);
-			return 5;
-		}
-		mtar_close(&tar);
-		std::filesystem::create_directory(std::filesystem::path((const char8_t*)&*romfspath.c_str()), error);
-		std::string lumaromfs = "";
-		for (const auto& entry : std::filesystem::recursive_directory_iterator(std::filesystem::path((const char8_t*)&*std::string(exportsPath + "/luma").c_str()), error)) {//do this because we dont know the title ID
-			auto filename = std::filesystem::canonical(entry);
-			if (std::filesystem::is_directory(entry, error) && filename.string().rfind("romfs") != std::string::npos) {//this only works because we know there isnt gonna be a "romfs" subdir
-				lumaromfs = filename.string();
-				break;
-			}
-		}
-		for (int i = 0; i < MAX_ROWS; i++)//uh probably better than checking the string
-			if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(lumaromfs + "/movie/movie_" + std::to_string(i) + ".moflex").c_str()))) {
-				parameters.splitPos = i & 0xFF;
-				break;
-			}
-		for (const auto& entry : std::filesystem::recursive_directory_iterator(std::filesystem::path((const char8_t*)&*lumaromfs.c_str()), error)) {
-			auto filename = std::filesystem::canonical(entry);
-			std::string outdir = std::string(outDir + "/romfs/");
-			outdir += std::filesystem::relative(filename, std::filesystem::path((const char8_t*)&*lumaromfs.c_str())).string();
-			if (std::filesystem::is_directory(filename, error)) {
-				std::filesystem::create_directory(std::filesystem::path((const char8_t*)&*outdir.c_str()), error);
-				if (error) {
-					std::cout << ErrorText << ' ' << filename << '\n' << error.message() << std::endl;
-					return 6;
-				}
-			}
-			else if (std::filesystem::is_regular_file(filename, error)) {
-				std::filesystem::rename(filename, std::filesystem::path((const char8_t*)&*outdir.c_str()), error);
-			}
-
-			if (std::filesystem::is_regular_file(entry, error)) {
-				if (error) {
-					std::cout << ErrorText << ' ' << filename << '\n' << error.message() << std::endl;
-				}
-			}
-		}
-		std::filesystem::remove_all(exportsPath.c_str(), error);//lol
-		if (error) {
-			std::cout << ErrorText << ' ' << exportsPath << '\n' << error.message() << std::endl;
+			return ret;
 		}
 	}
 	//information_buttons.csv
@@ -633,7 +437,7 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 		parameters.icon = std::string(exefspath + "/icon.bin");
 		parameters.iconBorder = 0;
 		
-		(void)setIcon(std::string(exefspath + "/icon.bin").c_str(), parameters.Sname, parameters.Lname, parameters.publisher);
+		(void)setIcon(std::string(exefspath + "/icon.bin").c_str(), &parameters.Sname, &parameters.Lname, &parameters.publisher);
 	}
 	//settingTL.csv
 	{
@@ -750,11 +554,10 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 			}
 		}
 	}
-	if (res != NNC_R_OK)
-		good = false;
+	
 	if(good) std::cout << ParametersLoaded << '\n' << SuccessfullyLoaded << ' ' << inArc.substr(inArc.find_last_of("/\\") + 1) << '.' << std::endl;
 	else std::cout << ParametersLoaded << '\n' << FailedToLoad << ' ' << inArc.substr(inArc.find_last_of("/\\") + 1) << ".\n" << ValidStillLoaded << std::endl;
-
+	
 	std::cout << CreatingFile << " \"" << outDir + "/parameters.vi9p\"" << std::endl;
 	
 	saveParameters(std::string(outDir + "/parameters.vi9p"), parameters);
@@ -770,7 +573,7 @@ uint8_t UTF16fileToUTF8str(const std::string path, std::vector<std::string>* out
 	input.open(std::filesystem::path((const char8_t*)&*path.c_str()), std::ios_base::in | std::ios_base::binary);
 	if (!input)
 		return 1;
-
+	
 	char Byte;
 	//size_t it = 0;
 	input.read(&Byte, 1);//grab first byte of file
@@ -784,7 +587,7 @@ uint8_t UTF16fileToUTF8str(const std::string path, std::vector<std::string>* out
 	output.erase(output.begin(), output.begin() + 2);//delete byte order mask
 	outputUTF8 = UTF16toUTF8(output);
 	std::istringstream Textstream(outputUTF8);
-
+	
 	while (getline(Textstream, Line)) {
 		if (Line[0] == '#' || Line[0] == 0xA || Line[0] == 0xD)//do 0xD too because I think windows is being annoying with line breaks as usual
 			continue;
@@ -792,74 +595,4 @@ uint8_t UTF16fileToUTF8str(const std::string path, std::vector<std::string>* out
 		//printf("%s\n", Line.c_str());
 	}
 	return 0;
-}
-
-// stolen from NNC romfs test
-std::string extract_dir(nnc_romfs_ctx* ctx, nnc_romfs_info* info, const char* path, int baselen) {
-	std::error_code error;
-	std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*path), error);
-	if (error) {
-		std::cout << ErrorText << ' ' << path << '\n' << error.message() << std::endl;
-		return "create_directories failed";
-	}
-
-	nnc_result res = NNC_R_OK;
-	nnc_romfs_iterator it = nnc_romfs_mkit(ctx, info);
-	nnc_romfs_info ent;
-	char pathbuf[2048];
-	size_t len = strlen(path);
-	strcpy(pathbuf, path);
-	pathbuf[len++] = '/';
-	while (nnc_romfs_next(&it, &ent))
-	{
-		std::string dir(nnc_romfs_info_filename(ctx, &ent));
-		if (ent.type == nnc_romfs_info::NNC_ROMFS_DIR && strcmp(dir.c_str(), "movie") != 0 && strcmp(dir.c_str(), "settings") != 0)// R.I.P. to all the files that we do not care about
-			continue;
-		strcpy(pathbuf + len, dir.c_str());
-		if (ent.type == nnc_romfs_info::NNC_ROMFS_DIR)
-			extract_dir(ctx, &ent, pathbuf, baselen);
-		else
-		{
-			nnc_wfile outf;
-			res = nnc_wfile_open(&outf, pathbuf);
-			if (res != NNC_R_OK) {
-				continue;
-			}
-			/* empty files just need to be touched */
-			if (ent.u.f.size)
-			{
-				nnc_u32 r;
-				nnc_subview sv;
-				res = nnc_romfs_open_subview(ctx, &sv, &ent);
-				if (res != NNC_R_OK) {
-					return "nnc_romfs_open_subview(ctx, &sv, &ent);";
-				}
-				nnc_copy(NNC_RSP(&sv), NNC_WSP(&outf), &r);
-			}
-			NNC_WS_CALL0(outf, close);
-		}
-	}
-	if (res != NNC_R_OK)
-		return nnc_strerror(res);
-	return "";
-}
-
-// based off of NNC because NNC wasnt working
-uint8_t getSeedFromTID(std::string infile, uint64_t TID, uint8_t* outseed) {
-	std::ifstream seeddb;
-	seeddb.open(std::filesystem::path((const char8_t*)&*infile.c_str()), std::ios_base::in | std::ios_base::binary);
-	uint32_t expected_size = 0;
-	seeddb.seekg(0);
-	seeddb.read(reinterpret_cast<char*>(&expected_size), 0x4);
-	for (uint32_t i = 0x10; i < (expected_size * 0x20) + 0x10; i += 0x20) {
-		uint64_t inTID = 0;
-		seeddb.seekg(i);
-		seeddb.read(reinterpret_cast<char*>(&inTID), 0x8);
-		if (inTID == TID) {
-			seeddb.seekg(i + 0x8);
-			seeddb.read(reinterpret_cast<char*>(outseed), 0x10);//read seed
-			return 0;
-		}
-	}
-	return 1;
 }
