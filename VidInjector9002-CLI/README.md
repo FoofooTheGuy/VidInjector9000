@@ -82,7 +82,7 @@ VidInjector9002-CLI -set_parameter \<input .vi9p file\> \<number\> \<new value\>
 <details>
 <summary>-set_smdh | -ss</summary>
 
-Similar to -sp, this reads the titles from an SMDH and sets them to short name, long name, and publisher in the output .vi9p file. Useful for when first using an SMDH for the icon (Do -pp to see a list of possible numbers) (Output file can be the same as input file)
+Similar to -sp, this reads the titles from an SMDH and sets them to short name, long name, and publisher in the output .vi9p file. Useful for when first using an SMDH for the icon (Output file can be the same as input file)
 
 Usage:
 
