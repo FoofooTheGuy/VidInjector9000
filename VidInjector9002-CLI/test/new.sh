@@ -7,6 +7,3 @@ mkdir out
 
 # create new vi9p file
 ${CLI} -new out/a.vi9p
-
-# print contents
-${CLI} -print_parameters out/a.vi9p
