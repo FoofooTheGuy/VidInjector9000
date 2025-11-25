@@ -24,16 +24,17 @@ std::string UTF8toUTF16(const std::string input) {
 
 std::string UTF16toUTF8(const std::string& input) {
 	size_t outLen = 0;
-	size_t utf16length = input.size() / 2;//divide by 2 because it's a u8 size going into a u16 array
+	size_t utf16length = input.size() / 2; // divide by 2 because it's a u8 size going into a u16 array
+	
 	std::vector<uint16_t> utf16 = std::vector<uint16_t>(utf16length);
-	memcpy(utf16.data(), &input[0], input.size());
+	memcpy(utf16.data(), input.data(), input.size());
 	size_t utf8length = nnc_utf16_to_utf8(NULL, 0, utf16.data(), utf16length) + 1;
 	std::vector<uint8_t> utf8 = std::vector<uint8_t>(utf8length);
 	memset(utf8.data(), 0, utf8length);
-
+	
 	outLen = nnc_utf16_to_utf8(utf8.data(), utf8length, utf16.data(), utf16length);
 	std::string output(reinterpret_cast<char*>(utf8.data()), outLen);
-
+	
 	return output;
 }
 

@@ -6,6 +6,7 @@
 #include <fstream>
 #include <chrono>
 #include <random>
+#include <ranges>
 
 #include "zip_file.hpp"
 #include "archive.hpp"
