@@ -597,7 +597,7 @@ uint8_t UTF16fileToUTF8str(const std::string path, std::vector<std::string>* out
 	}
 	
 	std::string Line = "";
-	uint8_t byte;
+	char byte;
 	while(input.read(reinterpret_cast<char*>(&byte), sizeof byte)) {
 		if (byte == 0x0A) {
 			if (Line[0] != '#' && !Line.empty()) { // skip notes and empty lines
@@ -617,7 +617,7 @@ uint8_t UTF16fileToUTF8str(const std::string path, std::vector<std::string>* out
 			input.get(); // 00
 			continue;
 		}
-		Line += reinterpret_cast<unsigned char>(byte);
+		Line += byte;
 	}
 	input.close();
 	return 0;
