@@ -95,7 +95,18 @@ out: std::vector<std::string> containing each line per element (without notes or
 out: std::string containing everything except the byte order mark
 return 0 if succeeded or other numbers for fail*/
 template<class T>
-uint8_t UTF16fileToUTF8str(const std::string path, T* out) {	
+uint8_t UTF16fileToUTF8str(const std::string path, T* out) {
+	// first check T is supported
+	if constexpr (std::is_same<T, std::string>::value) {
+		;
+	}
+	else if constexpr (std::is_same<T, std::vector<std::string>>::value) {
+		;
+	}
+	else {
+		// https://stackoverflow.com/a/16504506
+		static_assert(false, "Invalid use of UTF16fileToUTF8str(const std::string path, T* out). 'T*' only supports 'std::string*' or 'std::vector<std::string>*'");
+	}
 	std::ifstream input(std::filesystem::path((const char8_t*)&*path.c_str()), std::ios::binary);
 	if (!input.is_open()) {
 		std::cout << ErrorText << ' ' << FailedToReadFile << " \"" << path << "\"" << std::endl;
@@ -138,9 +149,6 @@ uint8_t UTF16fileToUTF8str(const std::string path, T* out) {
 				continue;
 			}
 			Lines += byte;
-		}
-		else {
-			return 3;
 		}
 	}
 	if constexpr (std::is_same<T, std::string>::value) {
