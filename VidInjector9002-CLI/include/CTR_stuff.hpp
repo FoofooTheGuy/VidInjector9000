@@ -91,7 +91,60 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR = "
 int extract_archive(std::string inArc, std::string outDir, bool dopatch = false, std::string seedPath = "");
 
 /*path: input path to text file containing utf16 text
-outVec: output vector containing each line per element
-trim: true for remove lines that start with '#' and empty lines, false for write all lines to outVec
+out: std::vector<std::string> containing each line per element (without notes or empty lines)
+out: std::string containing everything except the byte order mark
 return 0 if succeeded or other numbers for fail*/
-uint8_t UTF16fileToUTF8str(const std::string path, std::vector<std::string>* outVec);
+template<class T>
+uint8_t UTF16fileToUTF8str(const std::string path, T* out) {	
+	std::ifstream input(std::filesystem::path((const char8_t*)&*path.c_str()), std::ios::binary);
+	if (!input.is_open()) {
+		std::cout << ErrorText << ' ' << FailedToReadFile << " \"" << path << "\"" << std::endl;
+		return 1;
+	}
+	
+	// read byte order mark
+	uint16_t BOM;
+	input.read(reinterpret_cast<char*>(&BOM), sizeof BOM);
+	//std::cout << std::hex << BOM << std::endl;
+	
+	if ((BOM & 0xFF) != 0xFF && ((BOM & 0xFF00) >> 8) != 0xFE) { // if not little endian
+		std::cout << ErrorText << ' ' << std::hex << BOM << std::endl;
+		return 2;
+	}
+	
+	std::string Lines = "";
+	char byte;
+	while(input.read(reinterpret_cast<char*>(&byte), sizeof byte)) {
+		if constexpr (std::is_same<T, std::string>::value) {
+			Lines += byte;
+		}
+		else if constexpr (std::is_same<T, std::vector<std::string>>::value) {
+			if (byte == 0x0A) {
+				if (Lines[0] != '#' && !Lines.empty()) { // skip notes and empty lines
+					out->push_back(UTF16toUTF8(Lines));
+				}
+				Lines.clear();
+				input.get(); // 00
+				continue;
+			}
+			else if (byte == 0x0D) {
+				if (Lines[0] != '#' && !Lines.empty()) { // skip notes and empty lines
+					out->push_back(UTF16toUTF8(Lines));
+				}
+				Lines.clear();
+				input.get(); // 00
+				input.get(); // 0A
+				input.get(); // 00
+				continue;
+			}
+			Lines += byte;
+		}
+		else {
+			return 3;
+		}
+	}
+	if constexpr (std::is_same<T, std::string>::value) {
+		*(out) = UTF16toUTF8(Lines);
+	}
+	return 0;
+}

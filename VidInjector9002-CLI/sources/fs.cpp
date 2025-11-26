@@ -64,6 +64,9 @@ int settingsTL(VI9Pparameters& parameters, std::string& romfsPath, std::string u
 	std::ofstream settingsTL(std::string(romfsPath + "/settings/settingsTL.csv").c_str(), std::ios_base::out | std::ios_base::binary);
 
 	std::string outlongname = parameters.Lname;
+	if (outlongname.empty()) { // it will read the file wrong if this is missing
+		outlongname = " ";
+	}
 	if (outlongname[0] == '#') { // sneakily fix the string huhuhu
 		outlongname[0] = '\\';
 		outlongname.insert(1, "x23");
@@ -82,6 +85,9 @@ int settingsTL(VI9Pparameters& parameters, std::string& romfsPath, std::string u
 	}
 
 	std::string outpublisher = parameters.publisher;
+	if (outpublisher.empty()) {
+		outpublisher = " ";
+	}
 	if (outpublisher[0] == '#') { // sneakily fix the string huhuhu
 		outpublisher[0] = '\\';
 		outpublisher.insert(1, "x23");

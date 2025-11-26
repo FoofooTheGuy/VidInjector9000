@@ -351,7 +351,6 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 	std::string exportsPath = tempPath + "/exports";
 	std::string romfspath = outDir + "/romfs";
 	std::string exefspath = outDir + "/exefs";
-	std::vector<std::string> trimmed;
 	
 	
 	std::error_code error;
@@ -386,6 +385,7 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 	{
 		uint8_t ret;
 		std::vector<std::string> trimmed;
+		
 		if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfspath + "/settings/information_buttons.csv").c_str()))) {
 			std::cout << "information_buttons.csv" << std::endl;
 			
@@ -402,38 +402,22 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 	}
 	//copyright.txt
 	{
+		uint8_t ret;
+		std::string trimmed = "";
+		
 		if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfspath + "/settings/copyright.txt").c_str()))) {
 			std::cout << "copyright.txt" << std::endl;
 			
-			std::string output = "";
-			std::string outputUTF8 = "";
-			std::string Line;
-			std::ifstream input;
-			input.open(std::filesystem::path((const char8_t*)&*std::string(romfspath + "/settings/copyright.txt").c_str()), std::ios_base::in | std::ios_base::binary);
-			if (!input) {
-				std::cout << ErrorText << ' ' << FailedToReadFile << '\n' << romfspath + "/settings/copyright.txt" << std::endl;
-				return 7;
+			ret = UTF16fileToUTF8str(std::string(romfspath + "/settings/copyright.txt"), &trimmed);
+			if (ret > 0) {
+				std::cout << ErrorText << " (" << std::to_string(ret) << ")\n" << FailedToReadFile << ": \"copyright.txt\"" << std::endl;
 			}
-
-			char Byte;
-			//size_t it = 0;
-			input.read(&Byte, 1);//grab first byte of file
-			while (input) {//continue until input stream fails
-				output += Byte;//append byte to string
-				input.read(&Byte, 1);//grab next byte of file
+			else {
+				parameters.mode = 1;
+				parameters.copyrightInfo = trimmed; // why is it like this? im too scared to change it
 			}
-			input.close();
-			if ((output[0] & 0xFF) == 0xFE && (output[1] & 0xFF) == 0xFF) {//if little endian (they should be in big endian anyway and i dont want to convert it)
-				std::cout << ErrorText << ' ' << FailedToReadFile << '\n' << romfspath + "/settings/copyright.txt" << std::endl;
-				return 8;
-			}
-			output.erase(output.begin(), output.begin() + 2);//delete byte order mask
-			outputUTF8 = UTF16toUTF8(output); // TODO: fix this too
-			parameters.copyrightInfo = outputUTF8;//why is it like this? im too scared to change it
-			input.close();
 		}
 	}
-	uint8_t ret;
 	bool good = true;
 	//set banner and icon
 	{
@@ -445,6 +429,9 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 	}
 	//settingTL.csv
 	{
+		uint8_t ret;
+		std::vector<std::string> trimmed;
+		
 		std::cout << "settingTL.csv" << std::endl; 
 		ret = UTF16fileToUTF8str(std::string(romfspath + "/settings/settingsTL.csv"), &trimmed);
 		if (ret > 0) {
@@ -462,6 +449,9 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 	}
 	//movie_bnrname.csv
 	{
+		uint8_t ret;
+		std::vector<std::string> trimmed;
+		
 		if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfspath + "/settings/movie_bnrname.csv").c_str()))) {
 			std::cout << "movie_bnrname.csv" << std::endl;
 			
@@ -508,6 +498,9 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 	}
 	//movie_title.csv
 	{
+		uint8_t ret;
+		std::vector<std::string> trimmed;
+		
 		std::cout << "movie_title.csv" << std::endl;
 		ret = UTF16fileToUTF8str(std::string(romfspath + "/movie/movie_title.csv"), &trimmed);
 		if (ret > 0) {
@@ -576,49 +569,5 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 	
 	saveParameters(std::string(outDir + "/parameters.vi9p"), parameters);
 	
-	return 0;
-}
-
-uint8_t UTF16fileToUTF8str(const std::string path, std::vector<std::string>* outVec) {
-	std::ifstream input(std::filesystem::path((const char8_t*)&*path.c_str()), std::ios::binary);
-	if (!input.is_open()) {
-		std::cout << ErrorText << ' ' << FailedToReadFile << " \"" << path << "\"" << std::endl;
-		return 1;
-	}
-	
-	// read byte order mark
-	uint16_t BOM;
-	input.read(reinterpret_cast<char*>(&BOM), sizeof BOM);
-	//std::cout << std::hex << BOM << std::endl;
-	
-	if ((BOM & 0xFF) != 0xFF && ((BOM & 0xFF00) >> 8) != 0xFE) { // if not little endian
-		std::cout << ErrorText << ' ' << std::hex << BOM << std::endl;
-		return 2;
-	}
-	
-	std::string Line = "";
-	char byte;
-	while(input.read(reinterpret_cast<char*>(&byte), sizeof byte)) {
-		if (byte == 0x0A) {
-			if (Line[0] != '#' && !Line.empty()) { // skip notes and empty lines
-				outVec->push_back(UTF16toUTF8(Line));
-			}
-			Line.clear();
-			input.get(); // 00
-			continue;
-		}
-		else if (byte == 0x0D) {
-			if (Line[0] != '#' && !Line.empty()) { // skip notes and empty lines
-				outVec->push_back(UTF16toUTF8(Line));
-			}
-			Line.clear();
-			input.get(); // 00
-			input.get(); // 0A
-			input.get(); // 00
-			continue;
-		}
-		Line += byte;
-	}
-	input.close();
 	return 0;
 }
