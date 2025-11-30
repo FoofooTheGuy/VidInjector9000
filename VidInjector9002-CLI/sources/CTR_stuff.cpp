@@ -249,12 +249,13 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 				return 7;
 			}
 		}
-		if(!dopatch)
+		if(!dopatch) {
 			Generate_Files(tempPath.c_str(), parameters.mode);
+		}
 		std::cout << CreatingFile << " romfs" << std::endl;
 		// make movie_title.csv (player title)
 		{	
-			int ret = movie_title(parameters, romfsPath, outCIA, outTAR, dopatch);
+			int ret = make_movie_title(parameters, romfsPath, outCIA, outTAR, dopatch);
 			
 			if (ret) {
 				return ret;
@@ -262,7 +263,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 		}
 		// make settingsTL.csv (menu title and stuff)
 		{
-			int ret = settingsTL(parameters, romfsPath, uniqueIDstr, outCIA, outTAR, dopatch);
+			int ret = make_settingsTL(parameters, romfsPath, uniqueIDstr, outCIA, outTAR, dopatch);
 			
 			if (ret) {
 				return ret;
@@ -270,7 +271,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 		}
 		// make copyright stuff (multi vid only)
 		if (parameters.mode == 1 && !dopatch) {
-			int ret = information_buttons(parameters, romfsPath, outCIA);
+			int ret = make_information_buttons(parameters, romfsPath, outCIA);
 			
 			if (ret) {
 				return ret;
@@ -278,7 +279,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 		}
 		// copy moflex
 		{
-			int ret = copyMoflex(parameters, romfsPath, outCIA, outTAR, dopatch);
+			int ret = make_Moflex(parameters, romfsPath, outCIA, outTAR, dopatch);
 			
 			if (ret) {
 				return ret;
@@ -286,7 +287,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 		}
 		// convert to bimg (multi vid only)
 		if (parameters.mode == 1) {
-			int ret = makeBimgs(parameters, romfsPath, outCIA, outTAR, dopatch);
+			int ret = make_Bimgs(parameters, romfsPath, outCIA, outTAR, dopatch);
 			
 			if (ret) {
 				return ret;
@@ -295,14 +296,14 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 		// do exefs (icon and banner)
 		if (!dopatch) {// dont need exefs for luma patch
 			{
-				int ret = makeIcon(parameters, romfsPath, tempPath);
+				int ret = make_Icon(parameters, romfsPath, tempPath);
 				
 				if (ret) {
 					return ret;
 				}
 			}
 			//make banner
-			int ret = makeBanner(parameters, tempPath);
+			int ret = make_Banner(parameters, tempPath);
 				
 			if (ret) {
 				return ret;
@@ -310,7 +311,18 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 		}
 		// modify exheader
 		if (!dopatch) { // don't need this in a patch either
-			editExheader(tempPath, uniqueID, ApplicationName);
+			std::fstream exheader(std::string(tempPath + "/exheader.bin").c_str(), std::ios::in | std::ios::out | std::ios::binary);
+			for (int i = 0; i < 8; i++) { // write application name only 8 bytes because that's the limit. i had to do this loop because it was being weird with .write ???
+				exheader.seekp(i);
+				exheader << char(ApplicationName.c_str()[i]);
+			}
+			exheader.seekp(0x1C9);
+			exheader.write(reinterpret_cast<const char*>(&uniqueID), sizeof(uint32_t));
+			exheader.seekp(0x201);
+			exheader.write(reinterpret_cast<const char*>(&uniqueID), sizeof(uint32_t));
+			exheader.seekp(0x601);
+			exheader.write(reinterpret_cast<const char*>(&uniqueID), sizeof(uint32_t));
+			exheader.close();
 		}
 		// CIA creation
 		if (!dopatch) {
@@ -354,7 +366,7 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 	
 	
 	std::error_code error;
-	/*std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*outDir.c_str()), error);// probably dont delete outDir because people might have other stuff in here for some reason
+	/*std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*outDir.c_str()), error); // probably dont delete outDir because people might have other stuff in here for some reason
 	if (error) {
 		std::cout << ErrorText << ' ' << outDir << '\n' << error.message() << std::endl;
 		return 1;
@@ -381,174 +393,62 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 			return ret;
 		}
 	}
-	//information_buttons.csv
+	// information_buttons.csv
 	{
-		uint8_t ret;
-		std::vector<std::string> trimmed;
+		int ret = get_information_buttons(&parameters, romfspath);
 		
-		if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfspath + "/settings/information_buttons.csv").c_str()))) {
-			std::cout << "information_buttons.csv" << std::endl;
-			
-			ret = UTF16fileToUTF8str(std::string(romfspath + "/settings/information_buttons.csv"), &trimmed);
-			if (ret > 0) {
-				std::cout << ErrorText << " (" << std::to_string(ret) << ")\n" << FailedToReadFile << ": \"information_buttons.csv\"" << std::endl;
-			}
-			else {
-				parameters.mode = 1;
-				parameters.copycheck = (trimmed.size() > 0 && strcmp(trimmed.at(0).c_str(), "Copyright") == 0) ? 1 : 0;
-			}
-		}
-		trimmed.clear();
-	}
-	//copyright.txt
-	{
-		uint8_t ret;
-		std::string trimmed = "";
-		
-		if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfspath + "/settings/copyright.txt").c_str()))) {
-			std::cout << "copyright.txt" << std::endl;
-			
-			ret = UTF16fileToUTF8str(std::string(romfspath + "/settings/copyright.txt"), &trimmed);
-			if (ret > 0) {
-				std::cout << ErrorText << " (" << std::to_string(ret) << ")\n" << FailedToReadFile << ": \"copyright.txt\"" << std::endl;
-			}
-			else {
-				parameters.mode = 1;
-				parameters.copyrightInfo = trimmed; // why is it like this? im too scared to change it
-			}
+		if (ret) {
+			return ret;
 		}
 	}
 	bool good = true;
-	//set banner and icon
+	// copyright.txt
 	{
-		parameters.banner = std::string(exefspath + "/banner.bin");//do it like this because the vi9p is in outDir
+		int ret = get_copyright(&parameters, romfspath);
+		
+		if (ret) {
+			good = false;
+		}
+	}
+	// set banner and icon
+	{
+		parameters.banner = std::string(exefspath + "/banner.bin"); // do it like this because the vi9p is in outDir
 		parameters.icon = std::string(exefspath + "/icon.bin");
 		parameters.iconBorder = 0;
 		
 		(void)setIcon(std::string(exefspath + "/icon.bin").c_str(), &parameters.Sname, &parameters.Lname, &parameters.publisher);
 	}
-	//settingTL.csv
+	// settingsTL.csv
 	{
-		uint8_t ret;
-		std::vector<std::string> trimmed;
+		int ret = get_settingsTL(&parameters, romfspath);
 		
-		std::cout << "settingTL.csv" << std::endl; 
-		ret = UTF16fileToUTF8str(std::string(romfspath + "/settings/settingsTL.csv"), &trimmed);
-		if (ret > 0) {
-			std::cout << ErrorText << " (" << std::to_string(ret) << ")\n" << FailedToReadFile << ": \"settingsTL.csv\"" << std::endl;
+		if (ret) {
 			good = false;
 		}
-		else {
-			if (trimmed.size() > 29) {
-				parameters.rows = 1;
-				parameters.FFrewind = (strstr(trimmed.at(29).c_str(), "true") != NULL) ? 1 : 0;
-				parameters.FadeOpt = (strstr(trimmed.at(30).c_str(), "true") != NULL) ? 1 : 0;
-			}
-		}
-		trimmed.clear();
 	}
-	//movie_bnrname.csv
+	// movie_bnrname.csv
 	{
-		uint8_t ret;
-		std::vector<std::string> trimmed;
+		int ret = get_movie_bnrname(&parameters, romfspath);
 		
-		if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfspath + "/settings/movie_bnrname.csv").c_str()))) {
-			std::cout << "movie_bnrname.csv" << std::endl;
-			
-			ret = UTF16fileToUTF8str(std::string(romfspath + "/settings/movie_bnrname.csv"), &trimmed);
-			if (ret > 0) {
-				std::cout << ErrorText << " (" << std::to_string(ret) << ")\n" << FailedToReadFile << ": \"movie_bnrname.csv\"" << std::endl;
-				good = false;
-			}
-			else {
-				parameters.mode = 1;
-				parameters.rows = 0;
-				std::vector<std::string> output;
-				for (auto& LN : trimmed) {
-					std::string extension = LN;
-					if (extension.find_last_of(".") != std::string::npos)
-						extension.erase(extension.begin(), extension.begin() + extension.find_last_of("."));
-					while (!extension.empty() && extension.back() != 'g')//remove any extra stuff like a line break (make sure last char is 'g')
-						extension.pop_back();
-					if (strcmp(extension.c_str(), ".bimg") == 0) {
-						while (!LN.empty() && LN.back() != 'g')
-							LN.pop_back();
-						output.push_back(std::string(romfspath + "/movie/" + LN));
-						++parameters.rows;
-					}
-				}
-				if (output.size() > MAX_ROWS) {
-					std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << std::to_string(output.size()) << ")\n" << noMoreThan27 << '.' << std::endl;
-					while (output.size() > MAX_ROWS) {
-						output.pop_back();
-						--parameters.rows;
-					}
-				}
-				for (size_t i = 0; i < output.size(); i++) {
-					parameters.MBannerVec.push_back(output.at(i));
-				}
-			}
-		}
-		else {//this pretty much means it's a single video
-			parameters.rows = 1;
-			parameters.mode = 0;
-			parameters.MBannerVec.push_back("");
-		}
-		trimmed.clear();
-	}
-	//movie_title.csv
-	{
-		uint8_t ret;
-		std::vector<std::string> trimmed;
-		
-		std::cout << "movie_title.csv" << std::endl;
-		ret = UTF16fileToUTF8str(std::string(romfspath + "/movie/movie_title.csv"), &trimmed);
-		if (ret > 0) {
-			std::cout << ErrorText << " (" << std::to_string(ret) << ")\n" << FailedToReadFile << ": \"movie_title.csv\"" << std::endl;
-			parameters.rows = 1;
-			for (int i = 0; i < parameters.rows; i++) {
-				parameters.PTitleVec.push_back("");
-			}
+		if (ret) {
 			good = false;
 		}
-		else {
-			parameters.rows = 0;
-			std::vector<std::string> output;
-			for (auto& LN : trimmed) {
-				while (LN[0] == ',') {
-					LN.erase(0, 1);
-				}
-				if (LN.find(',') < LN.size()) {
-					LN.erase(LN.find(','), LN.size() - 1);
-				}
-				output.push_back(LN);
-				++parameters.rows;
-			}
-			if (output.size() > MAX_ROWS) {
-				std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << std::to_string(output.size()) << ")\n" << noMoreThan27 << '.' << std::endl;
-				while (output.size() > MAX_ROWS) {
-					output.pop_back();
-					--parameters.rows;
-				}
-			}
-			for (size_t i = 0; i < output.size(); i++) {
-				//std::cout << "\"" << output.at(i) << "\"" << std::endl; // dude
-				if (strcmp(output.at(i).c_str(), "\r") == 0) { // this will happen if it was empty so don't push the carriage return
-					parameters.PTitleVec.push_back("");
-				}
-				else {
-					parameters.PTitleVec.push_back(output.at(i));
-				}
-			}
-		}
-		trimmed.clear();
 	}
-	//set moflex files
+	// movie_title.csv
 	{
-		if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfspath + "/movie/movie.moflex").c_str()))) {//single video only has this
+		int ret = get_movie_bnrname(&parameters, romfspath);
+		
+		if (ret) {
+			good = false;
+		}
+	}
+	// set moflex files
+	{
+		if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfspath + "/movie/movie.moflex").c_str()))) { // single video only has this
 			parameters.MoflexVec.push_back(std::string(romfspath + "/movie/movie.moflex"));
-			if (parameters.rows > 1)
+			if (parameters.rows > 1) {
 				parameters.rows = 1;
+			}
 		}
 		else {
 			for (int i = 0; i < parameters.rows; i++) {

@@ -1,8 +1,8 @@
 #include "fs.hpp"
 
-int movie_title(const VI9Pparameters& parameters, const std::string& romfsPath, const std::string& outCIA, const std::string& outTAR, const bool& dopatch) {
+int make_movie_title(const VI9Pparameters& parameters, const std::string& romfsPath, const std::string& outCIA, const std::string& outTAR, const bool& dopatch) {
 	std::error_code error;
-
+	
 	std::cout << CreatingFile << " romfs/movie_title.csv" << std::endl;
 	
 	std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie").c_str()), error);
@@ -11,13 +11,13 @@ int movie_title(const VI9Pparameters& parameters, const std::string& romfsPath, 
 		std::cout << ErrorText << ' ' << FailedToCreateFile << " \"" << (dopatch ? outTAR : outCIA) << '\"' << std::endl;
 		return 8;
 	}
-
+	
 	std::ofstream movie_title(std::string(romfsPath + "/movie/movie_title.csv").c_str(), std::ios_base::out | std::ios_base::binary);
-
+	
 	movie_title << "\xFF\xFE" + UTF8toUTF16("#JP,#EN,#FR,#GE,#IT,#SP,#CH,#KO,#DU,#PO,#RU,#TW\x0D\x0A");
 	for (int i = 0; i < (parameters.mode ? ((parameters.splitPos && !dopatch) ? parameters.splitPos : parameters.rows) : 1); i++) { // this should be fine since we don't need this in extended anyway
 		std::string outstr = parameters.PTitleVec.at(i);
-
+		
 		if (outstr[0] == '#') { // sneakily fix the string huhuhu
 			outstr[0] = '\\';
 			outstr.insert(1, "x23");
@@ -47,14 +47,15 @@ int movie_title(const VI9Pparameters& parameters, const std::string& romfsPath, 
 	if (error) {
 		return 10;
 	}
+	
 	return 0;
 }
 
-int settingsTL(VI9Pparameters& parameters, std::string& romfsPath, std::string uniqueIDstr, std::string& outCIA, std::string& outTAR, bool& dopatch) {
+int make_settingsTL(const VI9Pparameters& parameters, const std::string& romfsPath, const std::string uniqueIDstr, const std::string& outCIA, const std::string& outTAR, const bool& dopatch) {
 	std::error_code error;
-
+	
 	std::cout << CreatingFile << " romfs/settings/settingsTL.csv" << std::endl;
-
+	
 	std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/settings").c_str()), error);
 	if (error) {
 		std::cout << ErrorText << ' ' << romfsPath + "/settings" << '\n' << error.message() << std::endl;
@@ -62,7 +63,7 @@ int settingsTL(VI9Pparameters& parameters, std::string& romfsPath, std::string u
 		return 11;
 	}
 	std::ofstream settingsTL(std::string(romfsPath + "/settings/settingsTL.csv").c_str(), std::ios_base::out | std::ios_base::binary);
-
+	
 	std::string outlongname = parameters.Lname;
 	if (outlongname.empty()) { // it will read the file wrong if this is missing
 		outlongname = " ";
@@ -83,7 +84,7 @@ int settingsTL(VI9Pparameters& parameters, std::string& romfsPath, std::string u
 			outlongname.insert(j + 1, "n");
 		}
 	}
-
+	
 	std::string outpublisher = parameters.publisher;
 	if (outpublisher.empty()) {
 		outpublisher = " ";
@@ -104,7 +105,7 @@ int settingsTL(VI9Pparameters& parameters, std::string& romfsPath, std::string u
 			outpublisher.insert(j + 1, "n");
 		}
 	}
-
+	
 	settingsTL << "\xFF\xFE" +
 		UTF8toUTF16("# おしらせURL\x0D\x0A" // announcement URL?
 			"# JP:\x0D\x0A"
@@ -200,7 +201,7 @@ int settingsTL(VI9Pparameters& parameters, std::string& romfsPath, std::string u
 			"\x0D\x0A"
 			"# 優しさ演出のあり、なし\x0D\x0A" // gentleness
 			+ (parameters.FadeOpt ? "true" : "false") + "\x0D\x0A");
-
+	
 	if (parameters.mode) {
 		settingsTL << UTF8toUTF16("\x0D\x0A"
 			"# 動画の数\x0D\x0A" // amount of videos
@@ -287,15 +288,15 @@ int settingsTL(VI9Pparameters& parameters, std::string& romfsPath, std::string u
 	if(error) {
 		return 13;
 	}
-
+	
 	return 0;
 }
 
-int information_buttons(VI9Pparameters& parameters, std::string& romfsPath, std::string& outCIA) {
+int make_information_buttons(const VI9Pparameters& parameters, const std::string& romfsPath, const std::string& outCIA) {
 	std::error_code error;
-
+	
 	std::cout << CreatingFile << " romfs/settings/information_buttons.csv" << std::endl;
-
+	
 	std::filesystem::create_directories(std::string(romfsPath + "/settings").c_str(), error); // just in case Hehehhhah
 	if (error) {
 		std::cout << ErrorText << ' ' << romfsPath + "/settings" << '\n' << error.message() << std::endl;
@@ -312,10 +313,10 @@ int information_buttons(VI9Pparameters& parameters, std::string& romfsPath, std:
 	if(error) {
 		return 16;
 	}
-
+	
 	if (parameters.copycheck) {
 		std::cout << CreatingFile << " romfs/settings/copyright.txt" << std::endl;
-	
+		
 		std::ofstream copyrighttxt(std::string(romfsPath + "/settings/copyright.txt").c_str(), std::ios_base::out | std::ios_base::binary);
 		copyrighttxt << "\xFF\xFE" + UTF8toUTF16(parameters.copyrightInfo);
 		copyrighttxt.close();
@@ -327,13 +328,13 @@ int information_buttons(VI9Pparameters& parameters, std::string& romfsPath, std:
 			return 18;
 		}
 	}
-
+	
 	return 0;
 }
 
-int copyMoflex(VI9Pparameters& parameters, std::string& romfsPath, std::string& outCIA, std::string& outTAR, bool& dopatch) {
+int make_Moflex(const VI9Pparameters& parameters, const std::string& romfsPath, const std::string& outCIA, const std::string& outTAR, const bool& dopatch) {
 	std::error_code error;
-
+	
 	uint8_t Checker[4];
 	for (int i = dopatch ? parameters.splitPos : 0; i < (parameters.mode ? ((parameters.splitPos && !dopatch) ? parameters.splitPos : parameters.rows) : 1); i++) {
 		if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*parameters.MoflexVec.at(i).c_str()), error)) {
@@ -344,8 +345,9 @@ int copyMoflex(VI9Pparameters& parameters, std::string& romfsPath, std::string& 
 			return 20;
 		}
 		std::string extension = parameters.MoflexVec.at(i).c_str();
-		if (extension.find_last_of(".") != std::string::npos)
+		if (extension.find_last_of(".") != std::string::npos) {
 			extension.erase(extension.begin(), extension.begin() + extension.find_last_of("."));
+		}
 		std::ifstream inmoflex(std::filesystem::path((const char8_t*)&*parameters.MoflexVec.at(i).c_str()), std::ios_base::in | std::ios::binary);
 		for (int j = 0; j < 4; j++) {
 			inmoflex >> Checker[j]; // https://stackoverflow.com/a/2974735
@@ -399,18 +401,18 @@ int copyMoflex(VI9Pparameters& parameters, std::string& romfsPath, std::string& 
 			}
 		}
 	}
-
+	
 	return 0;
 }
 
-int makeBimgs(VI9Pparameters& parameters, std::string& romfsPath, std::string& outCIA, std::string& outTAR, bool& dopatch) {
+int make_Bimgs(const VI9Pparameters& parameters, const std::string& romfsPath, const std::string& outCIA, const std::string& outTAR, const bool& dopatch) {
 	std::error_code error;
-
+	
 	for (int i = dopatch ? parameters.splitPos : 0; i < ((parameters.splitPos && !dopatch) ? parameters.splitPos : parameters.rows); i++) {
 		std::vector<uint8_t> bimg = std::vector<uint8_t>(256 * 128 * sizeof(nnc_u16) + 0x20);
-
+		
 		std::cout << CreatingFile << " romfs/movie/movie_" << std::to_string(i) << ".bimg" << std::endl;
-
+		
 		uint8_t ret = convertToBimg(parameters.MBannerVec.at(i), bimg.data(), true);
 		if (ret > 0) {
 			std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/movie/movie_" << std::to_string(i) << ".bimg\n(" << std::to_string(ret) << ')' << std::endl;
@@ -446,13 +448,13 @@ int makeBimgs(VI9Pparameters& parameters, std::string& romfsPath, std::string& o
 	if(error) {
 		return 33;
 	}
-
+	
 	return 0;
 }
 
-int makeIcon(VI9Pparameters& parameters, std::string& romfsPath, std::string& tempPath) {
+int make_Icon(const VI9Pparameters& parameters, const std::string& romfsPath, const std::string& tempPath) {
 	std::error_code error;
-
+	
 	std::cout << CreatingFile << " exefs/icon" << std::endl;
 	uint8_t ret = 0;
 	ret = convertToIcon(parameters.icon, std::string(tempPath + "/exefs/icon"), UTF8toUTF16(parameters.Sname), UTF8toUTF16(parameters.Lname), UTF8toUTF16(parameters.publisher), parameters.iconBorder);
@@ -477,10 +479,11 @@ int makeIcon(VI9Pparameters& parameters, std::string& romfsPath, std::string& te
 			return 37;
 		}
 	}
+	
 	return 0;
 }
 
-int makeBanner(VI9Pparameters& parameters, std::string& tempPath) {
+int make_Banner(const VI9Pparameters& parameters, const std::string& tempPath) {
 	std::error_code error;
 	
 	uint8_t ret = 0;
@@ -519,28 +522,28 @@ int makeBanner(VI9Pparameters& parameters, std::string& tempPath) {
 			std::cout << ErrorText << ' ' << BadValue << '\n' << FailedToConvertImage << " \"" << parameters.banner << "\"\n(" << std::to_string(ret) << ')' << std::endl;
 			return 40;
 		}
-
+		
 		// create bcmdl
 		std::vector<uint8_t> bcmdl;
 		bcmdl = std::vector<uint8_t>(sizeof(bannerheader) + sizeof(buffer) + sizeof(bannerfooter));
 		memcpy(bcmdl.data(), bannerheader, sizeof(bannerheader));
 		memcpy(bcmdl.data() + sizeof(bannerheader), buffer, sizeof(buffer));
 		memcpy(bcmdl.data() + sizeof(bannerheader) + sizeof(buffer), bannerfooter, sizeof(bannerfooter));
-
+		
 		// build banner (stolen from bannertool)
 		CBMD cbmd;
 		memset(&cbmd, 0, sizeof(cbmd));
-
+		
 		cbmd.cgfxSizes[0] = sizeof(bannerheader) + sizeof(buffer) + sizeof(bannerfooter);
 		cbmd.cgfxs[0] = bcmdl.data();
-
+		
 		cbmd.cwavSize = sizeof(BCWAV_array);
 		cbmd.cwav = (void*)BCWAV_array;
-
+		
 		uint32_t bnrSize = 0;
-
+		
 		void* bnr = cbmd_build_data(&bnrSize, cbmd);
-
+		
 		std::ofstream bnrfile(std::string(tempPath + "/exefs/banner").c_str(), std::ios_base::out | std::ios_base::binary);
 		bnrfile.write(reinterpret_cast<const char*>(bnr), bnrSize);
 		bnrfile.close();
@@ -556,18 +559,161 @@ int makeBanner(VI9Pparameters& parameters, std::string& tempPath) {
 	return 0;
 }
 
-void editExheader(std::string& tempPath, uint32_t& uniqueID, std::string& ApplicationName) {
-	std::fstream exheader(std::string(tempPath + "/exheader.bin").c_str(), std::ios::in | std::ios::out | std::ios::binary);
-	for (int i = 0; i < 8; i++) { // write application name only 8 bytes because that's the limit. i had to do this loop because it was being weird with .write ???
-		exheader.seekp(i);
-		exheader << char(ApplicationName.c_str()[i]);
+int get_information_buttons(VI9Pparameters* parameters, const std::string& romfsPath) { // should this return uint8_t to save 3 bytes of memory? :>
+	std::vector<std::string> trimmed;
+	
+	if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/settings/information_buttons.csv").c_str()))) {
+		
+		std::cout << "information_buttons.csv" << std::endl;
+		
+		int ret = UTF16fileToUTF8str(std::string(romfsPath + "/settings/information_buttons.csv"), &trimmed);
+		if (ret > 0) {
+			std::cout << ErrorText << " (" << std::to_string(ret) << ")\n" << FailedToReadFile << ": \"information_buttons.csv\"" << std::endl;
+		}
+		else {
+			parameters->mode = 1;
+			parameters->copycheck = (trimmed.size() > 0 && strcmp(trimmed.at(0).c_str(), "Copyright") == 0) ? 1 : 0;
+		}
 	}
-	exheader.seekp(0x1C9);
-	exheader.write(reinterpret_cast<const char*>(&uniqueID), sizeof(uint32_t));
-	exheader.seekp(0x201);
-	exheader.write(reinterpret_cast<const char*>(&uniqueID), sizeof(uint32_t));
-	exheader.seekp(0x601);
-	exheader.write(reinterpret_cast<const char*>(&uniqueID), sizeof(uint32_t));
-	exheader.close();
-	return;
+	
+	return 0;
+}
+
+int get_copyright(VI9Pparameters* parameters, const std::string& romfsPath) {
+	std::string trimmed = "";
+	
+	if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/settings/copyright.txt").c_str()))) {
+		
+		std::cout << "copyright.txt" << std::endl;
+		
+		int ret = UTF16fileToUTF8str(std::string(romfsPath + "/settings/copyright.txt"), &trimmed);
+		if (ret > 0) {
+			std::cout << ErrorText << " (" << std::to_string(ret) << ")\n" << FailedToReadFile << ": \"copyright.txt\"" << std::endl;
+			return ret;
+		}
+		
+		parameters->mode = 1;
+		parameters->copyrightInfo = trimmed;
+	}
+	
+	return 0;
+}
+
+int get_settingsTL(VI9Pparameters* parameters, const std::string& romfsPath) {
+	std::vector<std::string> trimmed;
+	
+	std::cout << "settingsTL.csv" << std::endl;
+	
+	int ret = UTF16fileToUTF8str(std::string(romfsPath + "/settings/settingsTL.csv"), &trimmed);
+	if (ret > 0) {
+		std::cout << ErrorText << " (" << std::to_string(ret) << ")\n" << FailedToReadFile << ": \"settingsTL.csv\"" << std::endl;
+		return ret;
+	}
+	
+	if (trimmed.size() > 29) {
+		parameters->rows = 1;
+		parameters->FFrewind = (strstr(trimmed.at(29).c_str(), "true") != NULL) ? 1 : 0;
+		parameters->FadeOpt = (strstr(trimmed.at(30).c_str(), "true") != NULL) ? 1 : 0;
+	}
+	
+	return 0;
+}
+
+int get_movie_bnrname(VI9Pparameters* parameters, const std::string& romfsPath) {
+	std::vector<std::string> trimmed;
+	
+	if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/settings/movie_bnrname.csv").c_str()))) {
+		
+		std::cout << "movie_bnrname.csv" << std::endl;
+		
+		int ret = UTF16fileToUTF8str(std::string(romfsPath + "/settings/movie_bnrname.csv"), &trimmed);
+		if (ret > 0) {
+			std::cout << ErrorText << " (" << std::to_string(ret) << ")\n" << FailedToReadFile << ": \"movie_bnrname.csv\"" << std::endl;
+			return ret;
+		}
+		
+		parameters->mode = 1;
+		parameters->rows = 0;
+		std::vector<std::string> output;
+		for (auto& LN : trimmed) {
+			std::string extension = LN;
+			if (extension.find_last_of(".") != std::string::npos) {
+				extension.erase(extension.begin(), extension.begin() + extension.find_last_of("."));
+			}
+			while (!extension.empty() && extension.back() != 'g') { // remove any extra stuff like a line break (make sure last char is 'g')
+				extension.pop_back();
+			}
+			if (strcmp(extension.c_str(), ".bimg") == 0) {
+				while (!LN.empty() && LN.back() != 'g') {
+					LN.pop_back();
+				}
+				output.push_back(std::string(romfsPath + "/movie/" + LN));
+				++parameters->rows;
+			}
+		}
+		if (output.size() > MAX_ROWS) {
+			std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << std::to_string(output.size()) << ")\n" << noMoreThan27 << '.' << std::endl;
+			while (output.size() > MAX_ROWS) {
+				output.pop_back();
+				--parameters->rows;
+			}
+		}
+		for (size_t i = 0; i < output.size(); i++) {
+			parameters->MBannerVec.push_back(output.at(i));
+		}
+	}
+	else { // this pretty much means it's a single video
+		parameters->rows = 1;
+		parameters->mode = 0;
+		parameters->MBannerVec.push_back("");
+	}
+	
+	return 0;
+}
+
+int get_movie_title(VI9Pparameters* parameters, const std::string& romfsPath) {
+	std::vector<std::string> trimmed;
+	
+	std::cout << "movie_title.csv" << std::endl;
+	
+	int ret = UTF16fileToUTF8str(std::string(romfsPath + "/movie/movie_title.csv"), &trimmed);
+	if (ret > 0) {
+		std::cout << ErrorText << " (" << std::to_string(ret) << ")\n" << FailedToReadFile << ": \"movie_title.csv\"" << std::endl;
+		parameters->rows = 1;
+		for (int i = 0; i < parameters->rows; i++) {
+			parameters->PTitleVec.push_back("");
+		}
+		return ret;
+	}
+	
+	parameters->rows = 0;
+	std::vector<std::string> output;
+	for (auto& LN : trimmed) {
+		while (LN[0] == ',') {
+			LN.erase(0, 1);
+		}
+		if (LN.find(',') < LN.size()) {
+			LN.erase(LN.find(','), LN.size() - 1);
+		}
+		output.push_back(LN);
+		++parameters->rows;
+	}
+	if (output.size() > MAX_ROWS) {
+		std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << std::to_string(output.size()) << ")\n" << noMoreThan27 << '.' << std::endl;
+		while (output.size() > MAX_ROWS) {
+			output.pop_back();
+			--parameters->rows;
+		}
+	}
+	for (size_t i = 0; i < output.size(); i++) {
+		//std::cout << "\"" << output.at(i) << "\"" << std::endl; // dude
+		if (strcmp(output.at(i).c_str(), "\r") == 0) { // this will happen if it was empty so don't push the carriage return
+			parameters->PTitleVec.push_back("");
+		}
+		else {
+			parameters->PTitleVec.push_back(output.at(i));
+		}
+	}
+	
+	return 0;
 }

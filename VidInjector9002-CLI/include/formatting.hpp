@@ -31,7 +31,8 @@ void encode_bigend_u64(uint64_t value, void* dest);
 
 std::string fixSlashes(std::string instr);
 
-/*memory efficient tar file adding
+/*
+memory efficient tar file adding
 tar: mtar tar thing. be sure to call mtar_open before doing this
 filename: input file path to add
 arcname: filename to write to the tar archive. must only be a file name.
@@ -40,7 +41,8 @@ return value: std::error_code probably from std::filesystem
 */
 std::error_code add_file(mtar_t* tar, std::string filename, std::string arcname, size_t buffersize);
 
-/*add all of a directory to a tar using
+/*
+add all of a directory to a tar using
 tar: mtar tar thing. be sure to call mtar_open before doing this
 dirname: directory to put in the tar, must be an absolute path.
 buffersize: size of chunk to read from the file at a time.
@@ -48,7 +50,8 @@ return value: std::error_code probably from std::filesystem
 */
 std::error_code add_directory(mtar_t* tar, std::string dirname, size_t buffersize);
 
-/*extract all records from a tar
+/*
+extract all records from a tar
 tar: mtar tar thing. be sure to call mtar_open before doing this
 h: mtar tar header. so it knows which file to get
 inputfile: file path of the tar
@@ -58,7 +61,8 @@ return value: int from mtar, use mtar_strerror to see what it means
 */
 int read_record_data(mtar_t* tar, mtar_header_t* h, std::string inputfile, std::string outputdir, size_t buffersize);
 
-/*extract all records from a tar
+/*
+extract all records from a tar
 tar: mtar tar thing. be sure to call mtar_open before doing this
 inputfile: file path of the tar
 outputdir: directory to extract to
