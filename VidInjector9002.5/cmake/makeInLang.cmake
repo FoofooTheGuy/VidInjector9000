@@ -41,15 +41,6 @@ endfunction()
 function(MakeInLang)
 	GenInLang(var)
 	target_sources(InLang PUBLIC ${var})
-	
-	add_custom_command(
-		OUTPUT ${var}
-		COMMAND ${CMAKE_COMMAND}
-		-DRUN_FILE_EMBED_GENERATE=1
-		-DFILE_EMBED_GENERATE_PATH=${file}
-		-P ${CMAKE_SOURCE_DIR}/cmake/FileEmbed.cmake
-		MAIN_DEPENDENCY ${file}
-	)
 endfunction()
 
 function(GenInLang inLang_cpp)
