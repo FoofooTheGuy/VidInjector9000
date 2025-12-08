@@ -39,12 +39,21 @@ function(InLangSetup)
 endfunction()
 
 function(MakeInLang)
-	GenInLang(var)
+	set(file "${CMAKE_SOURCE_DIR}/language-strings/sources/strings.cpp")
+	GenInLang(${file} var)
 	target_sources(InLang PUBLIC ${var})
+	
+	add_custom_command(
+		OUTPUT ${var}
+		COMMAND ${CMAKE_COMMAND}
+		-DRUN_GEN_INLANG=1
+		-DFILE_GEN_INLANG_PATH=${file}
+		-P ${CMAKE_SOURCE_DIR}/cmake/makeInLang.cmake
+		MAIN_DEPENDENCY ${file}
+	)
 endfunction()
 
-function(GenInLang inLang_cpp)
-	set(file "${CMAKE_SOURCE_DIR}/language-strings/sources/strings.cpp")
+function(GenInLang file inLang_cpp)
 	#message("${file}")
 	
 	# read and convert to list https://cmake.cmake.narkive.com/hNRFK8tA/reading-in-a-file-and-splitting-by-line#post3
@@ -200,3 +209,7 @@ function(GenInLang inLang_cpp)
 	
 	set(${inLang_cpp} ${CMAKE_BINARY_DIR}/InLang/inLang.cpp PARENT_SCOPE)
 endfunction()
+
+if (RUN_GEN_INLANG)
+	GenInLang(${FILE_GEN_INLANG_PATH} var)
+endif ()
