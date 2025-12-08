@@ -99,6 +99,19 @@ jobs:
         name: Linux
         path: ${{github.workspace}}/bin
 
+
+    - name: Copy Generated English File
+      working-directory: ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources/language
+      run: |
+           mkdir -p ${{github.workspace}}/out/newLang/VidInjector9000Resources/language
+           cp -a English ${{github.workspace}}/out/newLang/VidInjector9000Resources/language
+  
+    - name: Upload English
+      uses: actions/upload-artifact@v4
+      with:
+        name: English
+        path: ${{github.workspace}}/out/newLang/
+
   macOS:
     strategy:
       matrix:
