@@ -27,10 +27,12 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g")
 #set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 
 file(GLOB MY_SRC
-	"src/*.cpp"
-	"src/*.hpp"
-	"src/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/sources/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp"
 )
+
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 # https://github.com/gammasoft71/Examples_wxWidgets/tree/master/wxCore/Applications/ApplicationIcon
 # Resources
@@ -116,7 +118,13 @@ endif()
 # https://docs.wxwidgets.org/3.3.1/overview_cmake.html
 set(wxBUILD_SHARED OFF)
 add_subdirectory(wxWidgets-3.3.1)
+
+include(cmake/makeInLang.cmake)
+
 add_executable(${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${MY_SRC} ${RESOURCES})
+
+inLangSetup()
+MakeInLang()
 
 if (LINUX)
 	set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -126,7 +134,7 @@ if (LINUX)
 	)
 endif()
 
-target_link_libraries(${PROJECT_NAME} wx::net wx::core wx::base)
+target_link_libraries(${PROJECT_NAME} InLang wx::net wx::core wx::base)
 #if (UNIX)
 #	find_package(X11)
 #	if(X11_FOUND)
