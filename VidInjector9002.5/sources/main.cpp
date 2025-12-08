@@ -77,23 +77,6 @@ int progmain(int argc, char* argv[]) {
 	//init widgets
 	InitWidgets wid;
 	
-	{//test CLI
-		wxArrayString output;
-		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + '\"');
-		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-
-		wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-		for (auto &s : output) {
-			wid.consoleLog->LogTextAtLevel(0, s);
-		}
-		wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
-		
-		if(ret != 1) {//1 is the expected return value of that command
-			wxMessageBox(wxString::FromUTF8(CLIError), wxString::FromUTF8(ErrorText), wxICON_ERROR);
-		}
-	}
-	
 	if(VI9P::WorkingFile.empty())
 		VI9P::WorkingFile = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "parameters.vi9p";
 	VI9Pparameters parameters;
@@ -132,6 +115,23 @@ int progmain(int argc, char* argv[]) {
 	getAppearance(&wid);
 	setAppearance(&wid, Settings::ColorMode);
 	setCursors(&wid);
+	
+	{//test CLI
+		wxArrayString output;
+		wxArrayString errors;
+		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + '\"');
+		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+
+		wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+		for (auto &s : output) {
+			wid.consoleLog->LogTextAtLevel(0, s);
+		}
+		wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		
+		if(ret != 1) {//1 is the expected return value of that command
+			wxMessageBox(wxString::FromUTF8(CLIError), wxString::FromUTF8(ErrorText), wxICON_ERROR);
+		}
+	}
 	
 	auto applyAddRows = [&]() {
 		//row stuff is here too

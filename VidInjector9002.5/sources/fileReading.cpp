@@ -20,14 +20,10 @@ bool parseLines(std::string& out, std::vector<std::string> filelines, std::strin
 				if (first) {
 					//std::cout << filelines.at(i).substr(first);
 					second = filelines.at(i).substr(first).find_last_of("\x1F");
-					if(second == std::string::npos)
-						return false;
 				}
-				
 				if(second > filelines.at(i).size()) {
 					second = 0;
 				}
-				
 				if(second) {
 					out = filelines.at(i).substr(first).substr(0, second);
 				}
