@@ -4,7 +4,7 @@ int writeCIA(const std::string& romfsPath, const std::string& tempPath, const st
 	std::cout << CreatingFile << ' ' << outCIA.substr(outCIA.find_last_of("/\\") + 1) << std::endl;
 
 	std::ofstream baseCIA(std::filesystem::path((const char8_t*)&*std::string(tempPath + "/base.cia").c_str()), std::ios_base::out | std::ios_base::binary);
-	baseCIA.write(reinterpret_cast<const char*>(base_cia), sizeof(base_cia));
+	baseCIA.write(reinterpret_cast<const char*>(base_cia_data), sizeof(base_cia_data));
 	baseCIA.close();
 
 	#define TRYB(expr, lbl) if((res = ( expr )) != NNC_R_OK) goto lbl

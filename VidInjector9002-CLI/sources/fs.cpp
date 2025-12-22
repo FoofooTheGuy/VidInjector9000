@@ -537,8 +537,8 @@ int make_Banner(const VI9Pparameters& parameters, const std::string& tempPath) {
 		cbmd.cgfxSizes[0] = sizeof(bannerheader) + sizeof(buffer) + sizeof(bannerfooter);
 		cbmd.cgfxs[0] = bcmdl.data();
 		
-		cbmd.cwavSize = sizeof(BCWAV_array);
-		cbmd.cwav = (void*)BCWAV_array;
+		cbmd.cwavSize = sizeof(banner_bcwav_data);
+		cbmd.cwav = (void*)banner_bcwav_data;
 		
 		uint32_t bnrSize = 0;
 		

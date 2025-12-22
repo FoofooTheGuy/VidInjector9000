@@ -12,6 +12,9 @@
 #include "archive.hpp"
 #include "fs.hpp"
 
+#include <single_zip.hpp>
+#include <multi_zip.hpp>
+
 /*this only exists for generating a preview of what the banner or icon could look like
 parampath: vi9p file
 number: index of which thing to generate (do -pp to see list)

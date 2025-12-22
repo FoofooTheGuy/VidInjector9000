@@ -106,7 +106,18 @@ std::error_code Generate_Files(std::string dir, bool Multi) {
 		return error;
 	}
 	miniz_cpp::zip_file file;
-	file.load(Multi ? Multivid : Singlevid);
+	switch(Multi) {
+		case 0: {
+			std::cout << "single" << std::endl; // dude
+			file.load(single_zip_data);
+		}
+		break;
+		case 1: {
+			std::cout << "multi" << std::endl; // dude
+			file.load(multi_zip_data);
+		}
+		break;
+	}
 	std::vector<std::string> list = file.namelist();
 	for (auto& member : list) {//plant seeds
 		if (member.find_last_of("/") == member.size() - 1) {

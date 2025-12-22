@@ -11,12 +11,13 @@
 #include "formatting.hpp"
 #include "microtar.hpp"
 #include "strings.hpp"
-#include "files.hpp"
 #include "vi9p.hpp"
 
 #include <nnc/swizzle.h>
 #include <nnc/romfs.h>
 #include <nnc/cia.h>
+
+#include <base_cia.hpp>
 
 typedef std::string TARpath;
 typedef std::string CIApath;
