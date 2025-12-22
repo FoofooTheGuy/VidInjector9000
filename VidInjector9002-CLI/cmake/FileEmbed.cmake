@@ -66,7 +66,7 @@ function(FileEmbedVector file var)
 		OUTPUT ${var}
 		COMMAND ${CMAKE_COMMAND}
 		-DRUN_FILE_EMBED_GENERATE_VECTOR=1
-		-DFILE_EMBED_GENERATE_PATH_ARRAY=${file}
+		-DFILE_EMBED_GENERATE_PATH_VECTOR=${file}
 		-P ${CMAKE_SOURCE_DIR}/cmake/FileEmbed.cmake
 		MAIN_DEPENDENCY ${file}
 	)
