@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.20)
 project(VidInjector9002-CLI)
 
 set(CMAKE_C_STANDARD 99)
@@ -59,7 +59,18 @@ if (MSVC)
 	)
 endif()
 
+include(cmake/FileEmbed.cmake)
+
 add_executable(${PROJECT_NAME} ${MY_SRC})
+
+FileEmbedSetup()
+FileEmbedAddArray("${CMAKE_CURRENT_SOURCE_DIR}/files/banner.bcwav")
+FileEmbedAddArray("${CMAKE_CURRENT_SOURCE_DIR}/files/base.cia")
+
+FileEmbedAddVector("${CMAKE_CURRENT_SOURCE_DIR}/files/single.zip")
+FileEmbedAddVector("${CMAKE_CURRENT_SOURCE_DIR}/files/multi.zip")
+
+target_link_libraries(${PROJECT_NAME} file_embed)
 
 if (BUILD_TESTING AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/test/CMakeLists.txt")
 	enable_testing()
