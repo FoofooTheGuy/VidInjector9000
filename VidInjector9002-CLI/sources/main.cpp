@@ -229,12 +229,9 @@ std::string WstrToUtf8Str(const std::wstring& wstr)
 int wmain(int argc, wchar_t** argv) {
 	// put argv in std::vector (yay!)
 	std::vector<std::string> argvecmb;
-	{
-		int j = 0;
-		for(size_t i = 0; i < argc; i++) {
-			std::string arg = WstrToUtf8Str(argv[i]);
-			argvecmb.push_back(arg);
-		}
+	for(size_t i = 0; i < argc; i++) {
+		std::string arg = WstrToUtf8Str(argv[i]);
+		argvecmb.push_back(arg);
 	}
 
 	// string vector to char**
@@ -248,7 +245,7 @@ int wmain(int argc, wchar_t** argv) {
 	int ret = progmain(argc, charcharArray);
 	
 	//delete everything from the char**
-	for (size_t i = 0; i < argvecmb.size(); ++i) {
+	for (size_t i = 0; i < argvecmb.size(); i++) {
 		delete[] charcharArray[i];
 	}
 	delete[] charcharArray;
