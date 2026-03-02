@@ -94,7 +94,7 @@ int generate_preview(std::string inpath, uint8_t number, std::string outpath) {
 }
 
 
-std::error_code Generate_Files(std::string dir, bool Multi) {
+std::error_code Generate_Files(std::string dir, int mode) {
 	std::error_code error;
 	if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*dir.c_str()), error)) {
 		if (error) {
@@ -106,15 +106,16 @@ std::error_code Generate_Files(std::string dir, bool Multi) {
 		return error;
 	}
 	miniz_cpp::zip_file file;
-	switch(Multi) {
+	switch(mode) {
 		case 0: {
-			std::cout << "single" << std::endl; // dude
 			file.load(single_zip_data);
 		}
 		break;
 		case 1: {
-			std::cout << "multi" << std::endl; // dude
 			file.load(multi_zip_data);
+		}
+		case 2: {
+			file.load(extended_zip_data);
 		}
 		break;
 	}
@@ -131,26 +132,26 @@ std::error_code Generate_Files(std::string dir, bool Multi) {
 	return error;
 }
 
-bool TIDisValid(uint32_t TID) {//https://github.com/ihaveamac/videoinject/blob/master/videoinject.py#L9
+bool TIDisValid(uint32_t TID) { // https://github.com/ihaveamac/videoinject/blob/master/videoinject.py#L9
 	uint32_t min = 0xC0000;
 	uint32_t max = 0xEFFFF;
 	switch (TID)
 	{
-	case 0xc0d00://Side-Scrolling Example
-	case 0xce1cc://CHMM
-	case 0xd921e://homebrew launcher loader
-	case 0xda001://Smash Bros Dummy Application
-	case 0xda002://3ds quick shutdown
-	case 0xda003://Wifi Toggle
-	case 0xDEAD1://MCU Bricker
-	case 0xe7a5a://NASA ALL
-	case 0xec100://PKSM
-	case 0xEC600://Video player for 3DS
-	case 0xed990://NotifyMii
-	case 0xED000://Google Translate
-	case 0xEE3EE://MurderLands
-	case 0xeffec://FileKong
-	case 0xeffed://TriaAl
+	case 0xc0d00: // Side-Scrolling Example
+	case 0xce1cc: // CHMM
+	case 0xd921e: // homebrew launcher loader
+	case 0xda001: // Smash Bros Dummy Application
+	case 0xda002: // 3ds quick shutdown
+	case 0xda003: // Wifi Toggle
+	case 0xDEAD1: // MCU Bricker
+	case 0xe7a5a: // NASA ALL
+	case 0xec100: // PKSM
+	case 0xEC600: // Video player for 3DS
+	case 0xed990: // NotifyMii
+	case 0xED000: // Google Translate
+	case 0xEE3EE: // MurderLands
+	case 0xeffec: // FileKong
+	case 0xeffed: // TriaAl
 	case 0:
 	{
 		return false;
@@ -265,7 +266,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 		}
 		std::cout << CreatingFile << " romfs" << std::endl;
 		// make movie_title.csv (player title)
-		{	
+		if(parameters.mode <= 1) {	
 			int ret = make_movie_title(parameters, romfsPath, outCIA, outTAR, dopatch);
 			
 			if (ret) {
@@ -273,7 +274,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			}
 		}
 		// make settingsTL.csv (menu title and stuff)
-		{
+		if(parameters.mode <= 1) {
 			int ret = make_settingsTL(parameters, romfsPath, uniqueIDstr, outCIA, outTAR, dopatch);
 			
 			if (ret) {
@@ -353,7 +354,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 			dopatch = false;
 		}
 	} while (dopatch);
-	std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*tempPath.c_str()), error);
+	//std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*tempPath.c_str()), error); dude
 	if (error) {
 		std::cout << ErrorText << ' ' << tempPath << '\n' << error.message() << std::endl;
 		//no return becuase nobody cares
