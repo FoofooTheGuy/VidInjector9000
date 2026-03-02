@@ -69,6 +69,7 @@ FileEmbedAddArray("${CMAKE_CURRENT_SOURCE_DIR}/files/base.cia")
 
 FileEmbedAddVector("${CMAKE_CURRENT_SOURCE_DIR}/files/single.zip")
 FileEmbedAddVector("${CMAKE_CURRENT_SOURCE_DIR}/files/multi.zip")
+FileEmbedAddVector("${CMAKE_CURRENT_SOURCE_DIR}/files/extended.zip")
 
 target_link_libraries(${PROJECT_NAME} file_embed)
 

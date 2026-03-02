@@ -14,6 +14,7 @@
 
 #include <single_zip.hpp>
 #include <multi_zip.hpp>
+#include <extended_zip.hpp>
 
 /*this only exists for generating a preview of what the banner or icon could look like
 parampath: vi9p file
@@ -28,7 +29,7 @@ int generate_preview(std::string parampath, uint8_t number, std::string outpath)
 
 
 // only put the name of the dir (not / at the end)
-std::error_code Generate_Files(std::string dir, bool Multi);
+std::error_code Generate_Files(std::string dir, int mode);
 
 bool TIDisValid(uint32_t TID);
 

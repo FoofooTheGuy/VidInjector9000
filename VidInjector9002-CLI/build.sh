@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 cmake -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build --config Release --parallel 4
+cmake --build build --config Release
 echo finished

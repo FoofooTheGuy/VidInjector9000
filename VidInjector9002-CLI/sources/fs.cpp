@@ -372,15 +372,15 @@ int make_Moflex(const VI9Pparameters& parameters, const std::string& romfsPath, 
 					std::cout << ErrorText << ' ' << FailedToCreateFile << ' ' << romfsPath << "/movie/movie.moflex" << std::endl;
 					return 26;
 				}
-				if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie/movie.moflex").c_str()), error)) {//this probably only happens if there's no disk space
+				if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie/movie.moflex").c_str()), error)) { // this probably only happens if there's no disk space
 					std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/movie/movie.moflex" << std::endl;
 					return 27;
 				}
 				if(error) {
 					return 28;
 				}
-				break;
 			}
+			break;
 			case 1: {
 				std::cout << CopyingMoflex << ' ' << std::to_string(i + 1) << '/' << std::to_string(parameters.rows) << std::endl;
 				//std::error_code error;
@@ -390,14 +390,44 @@ int make_Moflex(const VI9Pparameters& parameters, const std::string& romfsPath, 
 					std::cout << ErrorText << ' ' << FailedToCreateFile << ' ' << romfsPath << "/movie/movie_" << std::to_string(i) << ".moflex" << std::endl;
 					return 23;
 				}
-				if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie/movie_" + std::to_string(i) + ".moflex").c_str()), error)) {//this probably only happens if there's no disk space
+				if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie/movie_" + std::to_string(i) + ".moflex").c_str()), error)) {
 					std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << "/movie/movie_" << std::to_string(i) << ".moflex" << std::endl;
 					return 24;
 				}
 				if(error) {
 					return 25;
 				}
-				break;
+			}
+			break;
+			case 2: {
+				std::cout << CopyingMoflex << ' ' << std::to_string(i + 1) << '/' << std::to_string(parameters.rows) << std::endl;
+				//std::error_code error;
+				std::string moflexFile;
+				size_t start = parameters.MoflexVec.at(i).find_last_of("\\/");
+				if (start == std::string::npos) { // no path
+					moflexFile = parameters.MoflexVec.at(i);
+					std::cout << "BRUHHUHUHAUHAUHUAHUAHAHUHAUHAUHAUHAUHAUHAUHAUHAUHAUHAUHUAHAHHAHAUHUAHU" << std::endl; // dude
+					std::cout << moflexFile << std::endl;
+				}
+				else {
+					moflexFile = parameters.MoflexVec.at(i);
+					moflexFile.erase(moflexFile.begin(), moflexFile.begin() + start);
+					std::cout << "BRUHHUHUHAUHAUHUAHUAHAHUHAUHAUHAUHAUHAUHAUHAUHAUHAUHAUHUAHAHHAHAUHUAHU" << std::endl; // dude
+					std::cout << moflexFile << std::endl;
+				}
+				error = copyfile(parameters.MoflexVec.at(i).c_str(), std::string(romfsPath + '/' + moflexFile).c_str());
+				if (error) {
+					std::cout << ErrorText << ' ' << FailedToCopyFile << "\n\"" << parameters.MoflexVec.at(i) << "\" -> \"" << romfsPath << '/' << moflexFile << "\"\n" << error.message() << std::endl;
+					std::cout << ErrorText << ' ' << FailedToCreateFile << ' ' << romfsPath << '/' << moflexFile << std::endl;
+					return 26;
+				}
+				if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + '/' + moflexFile).c_str()), error)) {
+					std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << romfsPath << '/' << moflexFile << std::endl;
+					return 27;
+				}
+				if(error) {
+					return 28;
+				}
 			}
 		}
 	}
@@ -506,7 +536,7 @@ int make_Banner(const VI9Pparameters& parameters, const std::string& tempPath) {
 	if(error) {
 		return 38;
 	}
-	if (bannerbool) {
+	if (bannerbool) { // if CBMD
 		//std::error_code error;
 		error = copyfile(parameters.banner, std::string(tempPath + "/exefs/banner").c_str());
 		if (error) {
@@ -547,6 +577,7 @@ int make_Banner(const VI9Pparameters& parameters, const std::string& tempPath) {
 		std::ofstream bnrfile(std::string(tempPath + "/exefs/banner").c_str(), std::ios_base::out | std::ios_base::binary);
 		bnrfile.write(reinterpret_cast<const char*>(bnr), bnrSize);
 		bnrfile.close();
+		//free(bnr); // TODO: test this
 	}
 	if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(tempPath + "/exefs/banner").c_str()), error)) {
 		std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << tempPath << "/exefs/banner" << std::endl;
