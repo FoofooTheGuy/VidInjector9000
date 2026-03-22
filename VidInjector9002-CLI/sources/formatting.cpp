@@ -15,7 +15,7 @@ std::string UTF8toUTF16(const std::string input) {
 	std::vector<uint16_t> utf16 = std::vector<uint16_t>(chrcount(input) * 2);
 	memcpy(utf8.data(), input.c_str(), input.size());
 	utf8[input.size()] = '\0';
-	nnc_utf8_to_utf16(utf16.data(), chrcount(input) * 2 + 1, utf8.data(), input.size());
+	nnc_utf8_to_utf16(utf16.data(), chrcount(input) * 2, utf8.data(), input.size());
 
 	std::string output(reinterpret_cast<char*>(utf16.data()), chrcount(input) * 2);
 
