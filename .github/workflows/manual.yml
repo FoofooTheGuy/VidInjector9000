@@ -15,13 +15,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
 
     - name: Init Submodules
       run: git submodule update --init --recursive
 
     - name: Upload Source Code Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: SRC
         path: ${{github.workspace}}
@@ -32,7 +32,7 @@ jobs:
     outputs:
       directories: ${{ steps.directories.outputs.dirs }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       - id: directories
         working-directory: ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources/language
@@ -48,7 +48,7 @@ jobs:
       matrix:
         dir: ${{fromJSON(needs.get-languages.outputs.directories)}}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       - name: Copy Directories
         working-directory: ${{github.workspace}}/VidInjector9002.5/VidInjector9000Resources/language
@@ -57,7 +57,7 @@ jobs:
              cp -a "${{matrix.dir}}" ${{github.workspace}}/out/VidInjector9000Resources/language
   
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{matrix.dir}}
           path: ${{github.workspace}}/out
