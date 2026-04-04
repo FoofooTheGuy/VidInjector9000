@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
 
     - name: Init Submodules
       run: git submodule update --init --recursive
@@ -94,7 +94,7 @@ jobs:
            cp 'VidInjector9002-CLI' ${{github.workspace}}/bin/VidInjector9000/VidInjector9000Resources
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: Linux
         path: ${{github.workspace}}/bin
@@ -107,7 +107,7 @@ jobs:
            cp -a English ${{github.workspace}}/out/newLang/VidInjector9000Resources/language
   
     - name: Upload English
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: English
         path: ${{github.workspace}}/out/newLang/
@@ -125,7 +125,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
 
     - name: Init Submodules
       run: git submodule update --init --recursive
@@ -178,7 +178,7 @@ jobs:
            cp 'VidInjector9002-CLI' ${{github.workspace}}/bin/VidInjector9000/VidInjector9002.5.app/Contents/MacOS/VidInjector9000Resources
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: ${{ matrix.artifact }}
         path: ${{github.workspace}}/bin
@@ -190,7 +190,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
 
     - name: Init Submodules
       run: git submodule update --init --recursive
@@ -241,7 +241,7 @@ jobs:
            if ($? -le 1) { exit 0 }
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: Windows
         path: ${{github.workspace}}/bin
