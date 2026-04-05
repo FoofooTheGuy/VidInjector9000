@@ -321,13 +321,24 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 				return ret;
 			}
 		}
+		puts("modify exheader");
 		// modify exheader
 		if (!dopatch) { // don't need this in a patch either
 			std::fstream exheader(std::string(tempPath + "/exheader.bin").c_str(), std::ios::in | std::ios::out | std::ios::binary);
-			for (int i = 0; i < 8; i++) { // write application name only 8 bytes because that's the limit. i had to do this loop because it was being weird with .write ???
-				exheader.seekp(i);
-				exheader << char(ApplicationName.c_str()[i]);
+			size_t max_len = 8;
+			size_t writesize = ApplicationName.size();
+			if(writesize > max_len) {
+				writesize = max_len;
 			}
+			exheader.seekp(0);
+			exheader.write(reinterpret_cast<const char*>(ApplicationName.data()), writesize); // write application name only 8 bytes because that's the limit.
+			
+			exheader.seekp(writesize);
+			for(size_t i = writesize; i < max_len; i++) {
+				uint8_t zero = 0;
+				exheader.write(reinterpret_cast<const char*>(&zero), sizeof(uint8_t));
+			}
+			
 			exheader.seekp(0x1C9);
 			exheader.write(reinterpret_cast<const char*>(&uniqueID), sizeof(uint32_t));
 			exheader.seekp(0x201);

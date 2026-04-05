@@ -572,12 +572,12 @@ int make_Banner(const VI9Pparameters& parameters, const std::string& tempPath) {
 		
 		uint32_t bnrSize = 0;
 		
-		void* bnr = cbmd_build_data(&bnrSize, cbmd);
+		void* bnr = cbmd_build_data(&bnrSize, cbmd); // calloc
 		
 		std::ofstream bnrfile(std::string(tempPath + "/exefs/banner").c_str(), std::ios_base::out | std::ios_base::binary);
 		bnrfile.write(reinterpret_cast<const char*>(bnr), bnrSize);
 		bnrfile.close();
-		//free(bnr); // TODO: test this
+		free(bnr); // TODO: test this
 	}
 	if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(tempPath + "/exefs/banner").c_str()), error)) {
 		std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << tempPath << "/exefs/banner" << std::endl;
