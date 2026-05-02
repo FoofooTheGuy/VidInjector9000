@@ -8,9 +8,12 @@
 
 #include "stbiStuff.hpp"
 #include "strings.hpp"
-#include "arrays.hpp"
 #include "vi9p.hpp"
 
+#include <bannerfooter_bin.hpp>
+#include <bannerheader_bin.hpp>
+#include <bannerMagic_bin.hpp>
+#include <moflexMagic_bin.hpp>
 #include <banner_bcwav.hpp>
 
 int make_movie_title(const VI9Pparameters& parameters, const std::string& romfsPath, const std::string& outCIA, const std::string& outTAR, const bool& dopatch);

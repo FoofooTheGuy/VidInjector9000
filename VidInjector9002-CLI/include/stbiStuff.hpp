@@ -7,12 +7,17 @@
 
 #include "formatting.hpp"
 #include "strings.hpp"
-#include "arrays.hpp"
 #include "banner.hpp"
 #include "image.hpp"
 
 #include <nnc/swizzle.h>
 #include <nnc/smdh.h>
+
+#include <icon_border24_bin.hpp>
+#include <icon_border48_bin.hpp>
+#include <film_overlay_bin.hpp>
+#include <bannerMagic_bin.hpp>
+#include <bimgheader_bin.hpp>
 
 void resize_crop(const uint8_t* input_pixels, int input_w, int input_h, uint8_t* output_pixels, int output_w, int output_h, int num_channels);
 

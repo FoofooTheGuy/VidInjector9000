@@ -64,12 +64,23 @@ include(cmake/FileEmbed.cmake)
 add_executable(${PROJECT_NAME} ${MY_SRC})
 
 FileEmbedSetup()
-FileEmbedAddArray("${CMAKE_CURRENT_SOURCE_DIR}/files/banner.bcwav")
-FileEmbedAddArray("${CMAKE_CURRENT_SOURCE_DIR}/files/base.cia")
 
-FileEmbedAddVector("${CMAKE_CURRENT_SOURCE_DIR}/files/single.zip")
-FileEmbedAddVector("${CMAKE_CURRENT_SOURCE_DIR}/files/multi.zip")
-FileEmbedAddVector("${CMAKE_CURRENT_SOURCE_DIR}/files/extended.zip")
+file(GLOB ARRAYS_DATA
+	"${CMAKE_CURRENT_SOURCE_DIR}/assets/arrays/*"
+)
+
+file(GLOB FILES_DATA
+	"${CMAKE_CURRENT_SOURCE_DIR}/assets/files/*.*"
+)
+
+file(GLOB FILES_DATA_VECTOR
+	"${CMAKE_CURRENT_SOURCE_DIR}/assets/files/vector/*"
+)
+
+FileEmbedAddArray("${ARRAYS_DATA}")
+
+FileEmbedAddArray("${FILES_DATA}")
+FileEmbedAddVector("${FILES_DATA_VECTOR}")
 
 target_link_libraries(${PROJECT_NAME} file_embed)
 

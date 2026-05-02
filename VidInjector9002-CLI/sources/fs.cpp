@@ -351,7 +351,7 @@ int make_Moflex(const VI9Pparameters& parameters, const std::string& romfsPath, 
 		std::ifstream inmoflex(std::filesystem::path((const char8_t*)&*parameters.MoflexVec.at(i).c_str()), std::ios_base::in | std::ios::binary);
 		for (int j = 0; j < 4; j++) {
 			inmoflex >> Checker[j]; // https://stackoverflow.com/a/2974735
-			if (extension != ".moflex" || Checker[j] != moflexMagic[j]) {
+			if (extension != ".moflex" || Checker[j] != moflexMagic_bin_data[j]) {
 				std::cout << ErrorText << ' ' << BadValue << "\n\"" << parameters.MoflexVec.at(i) << "\" " << MoflexError << std::endl;
 				return 21;
 			}
@@ -524,7 +524,7 @@ int make_Banner(const VI9Pparameters& parameters, const std::string& tempPath) {
 	if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*parameters.banner.c_str()), error)) {
 		for (int i = 0; i < 4; i++) {
 			inbanner >> Checker[i]; // https://stackoverflow.com/a/2974735
-			if (Checker[i] == bannerMagic[i]) {
+			if (Checker[i] == bannerMagic_bin_data[i]) {
 				bannerbool = true;
 			}
 			else {
@@ -555,16 +555,16 @@ int make_Banner(const VI9Pparameters& parameters, const std::string& tempPath) {
 		
 		// create bcmdl
 		std::vector<uint8_t> bcmdl;
-		bcmdl = std::vector<uint8_t>(sizeof(bannerheader) + sizeof(buffer) + sizeof(bannerfooter));
-		memcpy(bcmdl.data(), bannerheader, sizeof(bannerheader));
-		memcpy(bcmdl.data() + sizeof(bannerheader), buffer, sizeof(buffer));
-		memcpy(bcmdl.data() + sizeof(bannerheader) + sizeof(buffer), bannerfooter, sizeof(bannerfooter));
+		bcmdl = std::vector<uint8_t>(sizeof(bannerheader_bin_data) + sizeof(buffer) + sizeof(bannerfooter_bin_data));
+		memcpy(bcmdl.data(), bannerheader_bin_data, sizeof(bannerheader_bin_data));
+		memcpy(bcmdl.data() + sizeof(bannerheader_bin_data), buffer, sizeof(buffer));
+		memcpy(bcmdl.data() + sizeof(bannerheader_bin_data) + sizeof(buffer), bannerfooter_bin_data, sizeof(bannerfooter_bin_data));
 		
 		// build banner (stolen from bannertool)
 		CBMD cbmd;
 		memset(&cbmd, 0, sizeof(cbmd));
 		
-		cbmd.cgfxSizes[0] = sizeof(bannerheader) + sizeof(buffer) + sizeof(bannerfooter);
+		cbmd.cgfxSizes[0] = sizeof(bannerheader_bin_data) + sizeof(buffer) + sizeof(bannerfooter_bin_data);
 		cbmd.cgfxs[0] = bcmdl.data();
 		
 		cbmd.cwavSize = sizeof(banner_bcwav_data);
@@ -577,7 +577,7 @@ int make_Banner(const VI9Pparameters& parameters, const std::string& tempPath) {
 		std::ofstream bnrfile(std::string(tempPath + "/exefs/banner").c_str(), std::ios_base::out | std::ios_base::binary);
 		bnrfile.write(reinterpret_cast<const char*>(bnr), bnrSize);
 		bnrfile.close();
-		free(bnr); // TODO: test this
+		free(bnr);
 	}
 	if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(tempPath + "/exefs/banner").c_str()), error)) {
 		std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << tempPath << "/exefs/banner" << std::endl;

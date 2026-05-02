@@ -50,7 +50,7 @@ int generateBlankBanner(std::string &outfile) {
 	memset(output_4c.data(), 0xFF, out_w * out_h * ch);
 
 	std::vector<uint8_t> output_film(film_w * film_h * 4);
-	layer_pixels(output_film.data(), film_overlay, output_4c.data(), film_w, film_h, 2, out_w, out_h, ch, 32, 11);
+	layer_pixels(output_film.data(), film_overlay_bin_data, output_4c.data(), film_w, film_h, 2, out_w, out_h, ch, 32, 11);
 	
 	std::cout << CreatingFile << ' ' << std::filesystem::absolute(outfile.c_str()) << std::endl;
 	stbi_write_png(outfile.c_str(), film_w, film_h, 4, output_film.data(), 0);
@@ -98,7 +98,7 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 	}
 	for (int i = 0; i < 4; i++) {
 		inbanner >> Checker[i];//https://stackoverflow.com/a/2974735
-		if (Checker[i] == bannerMagic[i]) {
+		if (Checker[i] == bannerMagic_bin_data[i]) {
 			banner = true;
 		}
 		else {
@@ -168,7 +168,7 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 		std::vector<uint8_t> output_cropped(out_w * out_w * och);
 		crop_pixels(output_pixels.data(), w, h, och, output_cropped.data(), 0, 0, out_w, out_h);
 		std::vector<uint8_t> output_film(film_w * film_h * 4);
-		layer_pixels(output_film.data(), film_overlay, output_cropped.data(), film_w, film_h, 2, out_w, out_h, 4, 32, 11);
+		layer_pixels(output_film.data(), film_overlay_bin_data, output_cropped.data(), film_w, film_h, 2, out_w, out_h, 4, 32, 11);
 		//write banner png here
 		std::cout << CreatingFile << ' ' << std::filesystem::absolute(outfile.c_str()) << std::endl;
 		stbi_write_png(outfile.c_str(), film_w, film_h, 4, output_film.data(), 0);
@@ -204,7 +204,7 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 			input.read(reinterpret_cast<char*>(input_data.data()), (w * h * ich) + 0x20);
 			input.close();
 			for (int i = 0; i < 0x1C; i++) {
-				if (input_data[i] != bimgheader[i]) {
+				if (input_data[i] != bimgheader_bin_data[i]) {
 					//setDefaultBannerPreview(bannerpreview, &bannererror);
 					return 20;
 				}
@@ -214,7 +214,7 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 			std::vector<uint8_t> output_cropped(out_w * out_w * och);
 			crop_pixels(output_pixels.data(), w, h, och, output_cropped.data(), 0, 0, out_w, out_h);
 			std::vector<uint8_t> output_film(film_w * film_h * 4);
-			layer_pixels(output_film.data(), film_overlay, output_cropped.data(), film_w, film_h, 2, out_w, out_h, 4, 32, 11);
+			layer_pixels(output_film.data(), film_overlay_bin_data, output_cropped.data(), film_w, film_h, 2, out_w, out_h, 4, 32, 11);
 			//write banner png here
 			std::cout << CreatingFile << ' ' << std::filesystem::absolute(outfile.c_str()) << std::endl;
 			stbi_write_png(outfile.c_str(), film_w, film_h, 4, output_film.data(), 0);
@@ -262,7 +262,7 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 			layer_pixels(output_4c.data(), output_pixels.data(), white.data(), out_w, out_h, ch, out_w, out_h, 4, 0, 0);
 			std::vector<uint8_t> output_film(film_w * film_h * 4);
 			//memcpy(output_film, film_overlay, film_w * film_h * 4);
-			layer_pixels(output_film.data(), film_overlay, output_4c.data(), film_w, film_h, 2, out_w, out_h, 4, 32, 11);
+			layer_pixels(output_film.data(), film_overlay_bin_data, output_4c.data(), film_w, film_h, 2, out_w, out_h, 4, 32, 11);
 			//write banner png here
 			std::cout << CreatingFile << ' ' << std::filesystem::absolute(outfile.c_str()) << std::endl;
 			stbi_write_png(outfile.c_str(), film_w, film_h, 4, output_film.data(), 0);
@@ -380,7 +380,7 @@ int generateIconPreview(std::string infile, int borderMode, std::string outfile)
 		std::vector<uint8_t> white_background(largeWH * largeWH * 4);//fix the bugs by not fixing the bugs! :D
 		memset(white_background.data(), FF, largeWH * largeWH * 4);
 		layer_pixels(output_4c.data(), output_pixels.data(), white_background.data(), largeWH, largeWH, ch, largeWH, largeWH, 4, 0, 0);//it warns about output_pixels being potentially uninitialized but that is impossible
-		layer_pixels(output_4c.data(), icon_border48, output_4c.data(), largeWH, largeWH, 4, largeWH, largeWH, 4, 0, 0);
+		layer_pixels(output_4c.data(), icon_border48_bin_data, output_4c.data(), largeWH, largeWH, 4, largeWH, largeWH, 4, 0, 0);
 		ch = 4;// important later
 		output_pixels = std::vector<uint8_t>(largeWH * largeWH * ch);
 		memcpy(output_pixels.data(), output_4c.data(), largeWH * largeWH * ch);
@@ -393,7 +393,7 @@ int generateIconPreview(std::string infile, int borderMode, std::string outfile)
 		ch = 4;
 		std::vector<uint8_t> scaled(largeWH * largeWH * ch);
 		stbir_resize_uint8_linear(output_4c.data(), largeWH, largeWH, 0, scaled.data(), largeWH - 10, largeWH - 10, 0, STBIR_RGBA);//scale it down
-		layer_pixels(output_4c.data(), icon_border48, scaled.data(), largeWH, largeWH, ch, largeWH - 10, largeWH - 10, ch, 5, 5);
+		layer_pixels(output_4c.data(), icon_border48_bin_data, scaled.data(), largeWH, largeWH, ch, largeWH - 10, largeWH - 10, ch, 5, 5);
 		output_pixels = std::vector<uint8_t>(largeWH * largeWH * ch);
 		memcpy(output_pixels.data(), output_4c.data(), largeWH * largeWH * ch);
 	}
@@ -474,7 +474,7 @@ uint8_t convertToBimg(const std::string input, uint8_t* outBuffer, bool writeHea
 				infile.read(reinterpret_cast<char*>(input_data.data()), (w * h * ich) + 0x20);
 				infile.close();
 				for (int i = 0; i < 0x1C; i++) {
-					if (input_data[i] != bimgheader[i]) {
+					if (input_data[i] != bimgheader_bin_data[i]) {
 						return 1;
 					}
 				}
@@ -535,8 +535,8 @@ uint8_t convertToBimg(const std::string input, uint8_t* outBuffer, bool writeHea
 	uint8_t tiledbanner[new_w * new_h * sizeof(nnc_u16)];
 	nnc_swizzle_zorder_be_rgba8_to_le_rgb565(reinterpret_cast<nnc_u32*>(output_fin.data()), reinterpret_cast<nnc_u16*>(tiledbanner), new_w, new_h);
 	if (writeHeader) {
-		memcpy(outBuffer, bimgheader, sizeof(bimgheader));
-		memcpy(outBuffer + sizeof(bimgheader), tiledbanner, sizeof(tiledbanner));
+		memcpy(outBuffer, bimgheader_bin_data, sizeof(bimgheader_bin_data));
+		memcpy(outBuffer + sizeof(bimgheader_bin_data), tiledbanner, sizeof(tiledbanner));
 	}
 	else {
 		memcpy(outBuffer, tiledbanner, sizeof(tiledbanner));
@@ -608,19 +608,19 @@ uint8_t convertToIcon(const std::string input, std::string output, std::string s
 	stbir_resize_uint8_linear(large_4c.data(), largeWH, largeWH, 0, small_4c.data(), smallWH, smallWH, 0, STBIR_RGBA);// make the small icon
 
 	if (borderMode == 1) {
-		layer_pixels(small_4c.data(), icon_border24, small_4c.data(), smallWH, smallWH, 4, smallWH, smallWH, 4, 0, 0);
+		layer_pixels(small_4c.data(), icon_border24_bin_data, small_4c.data(), smallWH, smallWH, 4, smallWH, smallWH, 4, 0, 0);
 
-		layer_pixels(large_4c.data(), icon_border48, large_4c.data(), largeWH, largeWH, 4, largeWH, largeWH, 4, 0, 0);
+		layer_pixels(large_4c.data(), icon_border48_bin_data, large_4c.data(), largeWH, largeWH, 4, largeWH, largeWH, 4, 0, 0);
 	}
 	else if (borderMode == 2) {
 		std::vector<uint8_t> scaled((smallWH - 6) * (smallWH - 6) * 4);
 		stbir_resize_uint8_linear(small_4c.data(), smallWH, smallWH, 0, scaled.data(), smallWH - 6, smallWH - 6, 0, STBIR_RGBA);// scale it down
-		layer_pixels(small_4c.data(), icon_border24, scaled.data(), smallWH, smallWH, 4, smallWH - 6, smallWH - 6, 4, 3, 3);
+		layer_pixels(small_4c.data(), icon_border24_bin_data, scaled.data(), smallWH, smallWH, 4, smallWH - 6, smallWH - 6, 4, 3, 3);
 
 		scaled.clear();
 		scaled = std::vector<uint8_t>((largeWH - 10) * (largeWH - 10) * 4);
 		stbir_resize_uint8_linear(large_4c.data(), largeWH, largeWH, 0, scaled.data(), largeWH - 10, largeWH - 10, 0, STBIR_RGBA);// scale it down
-		layer_pixels(large_4c.data(), icon_border48, scaled.data(), largeWH, largeWH, 4, largeWH - 10, largeWH - 10, 4, 5, 5);
+		layer_pixels(large_4c.data(), icon_border48_bin_data, scaled.data(), largeWH, largeWH, 4, largeWH - 10, largeWH - 10, 4, 5, 5);
 	}
 
 	uint8_t tiledsmall[smallWH * smallWH * sizeof(nnc_u16)];

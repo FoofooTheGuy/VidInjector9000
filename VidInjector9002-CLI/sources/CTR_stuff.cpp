@@ -321,7 +321,6 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 				return ret;
 			}
 		}
-		puts("modify exheader");
 		// modify exheader
 		if (!dopatch) { // don't need this in a patch either
 			std::fstream exheader(std::string(tempPath + "/exheader.bin").c_str(), std::ios::in | std::ios::out | std::ios::binary);
