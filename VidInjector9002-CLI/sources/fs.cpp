@@ -489,6 +489,7 @@ int make_U_Title(const VI9Pparameters& parameters, const std::string& romfsPath,
 	std::cout << CreatingFile << " romfs/layout/U_Title.arc.l" << std::endl;
 	uint8_t ret = 0;
 	
+	return ret;
 }
 
 
