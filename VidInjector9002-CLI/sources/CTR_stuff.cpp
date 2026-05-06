@@ -106,18 +106,14 @@ std::error_code Generate_Files(std::string dir, int mode) {
 		return error;
 	}
 	miniz_cpp::zip_file file;
-	switch(mode) {
-		case 0: {
+	if(mode == 0) {
 			file.load(single_zip_data);
-		}
-		break;
-		case 1: {
+	}
+	else if(mode == 1) {
 			file.load(multi_zip_data);
-		}
-		case 2: {
+	}
+	else if(mode == 2) {
 			file.load(extended_zip_data);
-		}
-		break;
 	}
 	std::vector<std::string> list = file.namelist();
 	for (auto& member : list) {//plant seeds

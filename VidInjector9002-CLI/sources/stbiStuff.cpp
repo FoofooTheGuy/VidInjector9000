@@ -13,11 +13,11 @@ void resize_crop(const uint8_t* input_pixels, int input_w, int input_h, uint8_t*
 	int width, height;
 
 	//"inspired" by https://github.com/endlessm/chromium-browser/blob/aa8c819d5ad2fcb3854a688a0401975eca721f43/ui/gfx/favicon_size.cc#L13
-	if (input_w > input_h) {//panoramic
+	if (input_w > input_h) { // panoramic
 		height = output_h;
 		width = static_cast<int>(output_h * static_cast<float>(input_w) / static_cast<float>(input_h));
 	}
-	else if (input_w < input_h) {//portrait
+	else if (input_w < input_h) { // portrait
 		height = static_cast<int>(input_h / (static_cast<float>(input_w) / static_cast<float>(output_w)));
 		width = output_w;
 	}
@@ -46,8 +46,7 @@ int generateBlankBanner(std::string &outfile) {
 	int out_h = 120;
 	int film_w = 264;
 	int film_h = 154;
-	std::vector<uint8_t> output_4c(out_w * out_h * ch);
-	memset(output_4c.data(), 0xFF, out_w * out_h * ch);
+	std::vector<uint8_t> output_4c(out_w * out_h * ch, 0xFF);
 
 	std::vector<uint8_t> output_film(film_w * film_h * 4);
 	layer_pixels(output_film.data(), film_overlay_bin_data, output_4c.data(), film_w, film_h, 2, out_w, out_h, ch, 32, 11);
@@ -264,9 +263,8 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 			}
 			free(input_pixels);
 			std::vector<uint8_t> output_4c(out_w * out_h * 4);
-			std::vector<uint8_t> white(out_w * out_h * 4);
-			memset(white.data(), 0xFF, out_w * out_h * 4);
-			layer_pixels(output_4c.data(), output_pixels.data(), white.data(), out_w, out_h, ch, out_w, out_h, 4, 0, 0);
+			std::vector<uint8_t> white_background(out_w * out_h * 4, 0xFF);
+			layer_pixels(output_4c.data(), output_pixels.data(), white_background.data(), out_w, out_h, ch, out_w, out_h, 4, 0, 0);
 			std::vector<uint8_t> output_film(film_w * film_h * 4);
 			//memcpy(output_film, film_overlay, film_w * film_h * 4);
 			layer_pixels(output_film.data(), film_overlay_bin_data, output_4c.data(), film_w, film_h, 2, out_w, out_h, 4, 32, 11);
@@ -350,7 +348,7 @@ int generateIconPreview(std::string infile, int borderMode, std::string outfile)
 					if (!shortname.text().empty() && !longname.text().empty() && !publisher.text().empty())
 						break;
 				}
-				borderMode = 0;//if we just wanted the image, this would not be wanted
+				borderMode = 0; // if we just wanted the image, this would not be wanted
 			}*/
 			
 			ch = 4;
@@ -389,8 +387,7 @@ int generateIconPreview(std::string infile, int borderMode, std::string outfile)
 	}
 	if (borderMode == 1) { // under border
 		std::vector<uint8_t> output_4c(largeWH * largeWH * 4);
-		std::vector<uint8_t> white_background(largeWH * largeWH * 4); // fix the bugs by not fixing the bugs! :D
-		memset(white_background.data(), FF, largeWH * largeWH * 4);
+		std::vector<uint8_t> white_background(largeWH * largeWH * 4, 0xFF); // fix the bugs by not fixing the bugs! :D
 		layer_pixels(output_4c.data(), output_pixels.data(), white_background.data(), largeWH, largeWH, ch, largeWH, largeWH, 4, 0, 0); // it warns about output_pixels being potentially uninitialized but that is impossible
 		layer_pixels(output_4c.data(), icon_border48_bin_data, output_4c.data(), largeWH, largeWH, 4, largeWH, largeWH, 4, 0, 0);
 		ch = 4; // important later
@@ -399,8 +396,7 @@ int generateIconPreview(std::string infile, int borderMode, std::string outfile)
 	}
 	else if (borderMode == 2) { // inside border
 		std::vector<uint8_t> output_4c(largeWH * largeWH * 4);
-		std::vector<uint8_t> white_background(largeWH * largeWH * 4); // fix the bugs by not fixing the bugs! :D
-		memset(white_background.data(), FF, largeWH * largeWH * 4);
+		std::vector<uint8_t> white_background(largeWH * largeWH * 4, 0xFF); // fix the bugs by not fixing the bugs! :D
 		layer_pixels(output_4c.data(), output_pixels.data(), white_background.data(), largeWH, largeWH, ch, largeWH, largeWH, 4, 0, 0);
 		ch = 4;
 		std::vector<uint8_t> scaled(largeWH * largeWH * ch);
@@ -411,43 +407,8 @@ int generateIconPreview(std::string infile, int borderMode, std::string outfile)
 	}
 
 	large_3c = std::vector<uint8_t>(largeWH * largeWH * 3);
-	if (ch == 4) { // rgba
-		std::vector<uint8_t> white_background(largeWH * largeWH * 4);
-		memset(white_background.data(), FF, largeWH * largeWH * 4);
-		layer_pixels(output_pixels.data(), output_pixels.data(), white_background.data(), largeWH, largeWH, ch, largeWH, largeWH, 4, 0, 0);
-		int newi = 0;
-		for (int i = 0; i < largeWH * largeWH * ch; i += ch) {
-			for (int c = 0; c < 3; c++) {
-				large_3c[newi + c] = output_pixels[i + c];
-			}
-			newi += 3;
-		}
-	}
-	else if (ch == 3) { // rgb
-		memcpy(large_3c.data(), output_pixels.data(), largeWH * largeWH * ch);
-	}
-	else if (ch == 2) { // grayscale a
-		std::vector<uint8_t> white_background(largeWH * largeWH * ch);
-		std::vector<uint8_t> output_4c(largeWH * largeWH * 4);
-		memset(white_background.data(), FF, largeWH * largeWH * ch);
-		layer_pixels(output_4c.data(), output_pixels.data(), white_background.data(), largeWH, largeWH, ch, largeWH, largeWH, ch, 0, 0);
-		int newi = 0;
-		for (int i = 0; i < largeWH * largeWH * 4; i += 4) {
-			for (int c = 0; c < 3; c++) {
-				large_3c[newi + c] = output_4c[i + c];
-			}
-			newi += 3;
-		}
-	}
-	else if (ch == 1) { // grayscale
-		int ch1 = 0;
-		for (int i = 0; i < largeWH * largeWH * 3; i += 3) {
-			for (int c = 0; c < 3; c++) {
-				large_3c[i + c] = output_pixels[ch1];
-			}
-			ch1++;
-		}
-	}
+	ToRGB(output_pixels.data(), large_3c.data(), largeWH, largeWH, ch);
+	
 	// write icon png here
 	std::cout << CreatingFile << ' ' << std::filesystem::absolute(outfile.c_str()) << std::endl;
 	stbi_write_png(outfile.c_str(), largeWH, largeWH, 3, large_3c.data(), 0);
@@ -461,12 +422,11 @@ int generateIconPreview(std::string infile, int borderMode, std::string outfile)
 	return 0;
 }
 
-uint8_t convertToBimg(const std::string input, uint8_t* outBuffer, bool writeHeader)// true for write header, false for dont write header
-{
+uint8_t convertToBimg(const std::string input, uint8_t* outBuffer, bool writeHeader) { // true for write header, false for dont write header
 	uint8_t* input_pixels;
 	std::vector<uint8_t> output_pixels;
 	std::vector<uint8_t> output_4c;
-	std::vector<uint8_t> white;
+	std::vector<uint8_t> white_background;
 	std::vector<uint8_t> output_fin;
 	int w, h, ch, comp;
 	const int new_w = 256;
@@ -484,7 +444,7 @@ uint8_t convertToBimg(const std::string input, uint8_t* outBuffer, bool writeHea
 				h = 128;
 				int ich = sizeof(nnc_u16);
 				std::ifstream infile;
-				infile.open(std::filesystem::path((const char8_t*)&*input.c_str()), std::ios_base::in | std::ios_base::binary);//input file
+				infile.open(std::filesystem::path((const char8_t*)&*input.c_str()), std::ios_base::in | std::ios_base::binary); // input file
 				std::vector<uint8_t> input_data((w * h * ich) + 0x20);
 				infile.read(reinterpret_cast<char*>(input_data.data()), (w * h * ich) + 0x20);
 				infile.close();
@@ -534,24 +494,23 @@ uint8_t convertToBimg(const std::string input, uint8_t* outBuffer, bool writeHea
 
 	output_4c = std::vector<uint8_t>(out_w * out_h * 4);
 	ToRGBA(output_pixels.data(), output_4c.data(), out_w, out_h, ch);
-	white = std::vector<uint8_t>(out_w * out_h * 4);
+	white_background = std::vector<uint8_t>(out_w * out_h * 4, 0xFF);
 	//stbi_write_png("output_pixels.png", out_w, out_h, ch, output_pixels, 0);
-	memset(white.data(), 0xFF, out_w * out_h * 4);
-	layer_pixels(output_4c.data(), output_pixels.data(), white.data(), out_w, out_h, ch, out_w, out_h, 4, 0, 0);
+	layer_pixels(output_4c.data(), output_pixels.data(), white_background.data(), out_w, out_h, ch, out_w, out_h, 4, 0, 0);
 	//stbi_write_png("output_4c.png", out_w, out_h, 4, output_pixels, 0);
 
 	// layer 200x120 image on a 256x128 image
-	output_fin = std::vector<uint8_t>(new_w * new_h * 4);
+	output_fin = std::vector<uint8_t>(new_w * new_h * 4, 0);
 
-	memset(output_fin.data(), 0, new_w * new_h * 4);
 	for (int i = 3; i < new_w * new_h * 4; i += 4) {
 		output_fin[i] = 0xFF; // make alpha 0xFF
 	}
 	//layer_pixels(output_fin, output_4c, black, out_w, out_h, 4, new_w, new_h, 3, 0, 0); // why doesnt this work for this????
 	for (int y = 0; y < out_h; y++) {
 		for (int x = 0; x < out_w; x++) {
-			for (int c = 0; c < 4; c++)
-				output_fin[(y * (new_w)+x) * 4 + c] = output_4c[(y * (out_w)+x) * 4 + c];
+			for (int c = 0; c < 4; c++) {
+				output_fin[(y * (new_w) + x) * 4 + c] = output_4c[(y * (out_w) + x) * 4 + c];
+			}
 		}
 	}
 	//stbi_write_png("output_fin.png", new_w, new_h, 4, output_fin, 0);
@@ -624,8 +583,7 @@ uint8_t convertToIcon(const std::string input, std::string output, std::string s
 	}
 
 	large_4c = std::vector<uint8_t>(largeWH * largeWH * 4);
-	std::vector<uint8_t> white_background(largeWH * largeWH * 4);// fix the bugs by not fixing the bugs! :D
-	memset(white_background.data(), FF, largeWH * largeWH * 4);
+	std::vector<uint8_t> white_background(largeWH * largeWH * 4, 0xFF); // fix the bugs by not fixing the bugs! :D
 	layer_pixels(large_4c.data(), output_pixels.data(), white_background.data(), largeWH, largeWH, ch, largeWH, largeWH, 4, 0, 0);
 
 	small_4c = std::vector<uint8_t>(smallWH * smallWH * 4);

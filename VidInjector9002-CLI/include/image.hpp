@@ -20,11 +20,15 @@ out_h: height of cropped image*/
 void crop_pixels(const uint8_t* input, int width, int height, int channels, uint8_t* output, int x_offset, int y_offset, int out_w, int out_h);
 
 /*convert any format to rgba
+channels: number of channels in input
 (1 channel, 2 channel, 3 channel, 4 channel)
 if you input 4 channel it will just memcpy it so never do that
 make sure output is initialized to width * height * 4
 */
 void ToRGBA(const uint8_t* input, uint8_t* output, int width, int height, int channels);
+
+// same as above but with 3 channel output
+void ToRGB(const uint8_t* input, uint8_t* output, int width, int height, int channels);
 
 /*layers pixel array onto another
 it wont resize if you put a larger image onto a smaller one, (only put a smaller image on a larger image)
