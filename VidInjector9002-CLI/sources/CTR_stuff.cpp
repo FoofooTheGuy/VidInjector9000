@@ -266,7 +266,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 		}
 		std::cout << CreatingFile << " romfs" << std::endl;
 		// make movie_title.csv (player title)
-		if(parameters.mode <= 1) {	
+		if(parameters.mode <= 1) {
 			int ret = make_movie_title(parameters, romfsPath, outCIA, outTAR, dopatch);
 			
 			if (ret) {
@@ -305,8 +305,16 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 				return ret;
 			}
 		}
+		// set top image (extended multi vid only)
+		if (parameters.mode == 2 && !dopatch) {
+			int ret = make_U_Title(parameters, romfsPath, tempPath);
+			
+			if (ret) {
+				return ret;
+			}
+		}
 		// do exefs (icon and banner)
-		if (!dopatch) {// dont need exefs for luma patch
+		if (!dopatch) { // don't need exefs for luma patch
 			{
 				int ret = make_Icon(parameters, romfsPath, tempPath);
 				

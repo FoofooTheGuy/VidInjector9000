@@ -30,7 +30,8 @@ int generateIconPreview(std::string infile, int borderMode, std::string outfile)
 // return 0 if it completed otherwise return some greater number
 uint8_t convertToBimg(const std::string input, uint8_t* outBuffer, bool writeHeader);
 
-/*note: text has to be utf16
+/*bare bones SMDH creation. thanks 3dbrew
+(note: text has to be utf16)
 input: path to input image (size doesnt really matter)
 output: icon.bin out
 borderMode: 0 for no border, 1 for overlap, 2 for fit within it

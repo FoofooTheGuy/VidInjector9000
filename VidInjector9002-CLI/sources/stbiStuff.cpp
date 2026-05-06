@@ -66,7 +66,7 @@ int generateBlankBanner(std::string &outfile) {
 }
 
 int generateBannerPreview(std::string infile, std::string outfile, bool multibanner) {
-	//first fix the outfile extension if needed
+	// first fix the outfile extension if needed
 	{
 		std::string outExtension = outfile;
 		if(outExtension.find_last_of(".") != std::string::npos) {
@@ -89,15 +89,15 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 	std::error_code error;
 	if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*infile.c_str()), error)) {
 		int blankret = generateBlankBanner(outfile);
-		return 16 + blankret;//kind of stupid, (16 or 44 or 45) at least now you know if it was an infile problem
+		return 16 + blankret; // kind of stupid, (16 or 44 or 45) at least now you know if it was an infile problem
 	}
 	if (error) {
 		std::cout << ErrorText << ' ' << infile << '\n' << error.message() << std::endl;
 		int blankret = generateBlankBanner(outfile);
-		return 18 + blankret;//18 or 46 or 47
+		return 18 + blankret; // 18 or 46 or 47
 	}
 	for (int i = 0; i < 4; i++) {
-		inbanner >> Checker[i];//https://stackoverflow.com/a/2974735
+		inbanner >> Checker[i]; // https://stackoverflow.com/a/2974735
 		if (Checker[i] == bannerMagic_bin_data[i]) {
 			banner = true;
 		}
@@ -126,7 +126,7 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 			if (ret > 0) {
 				//bannerpreview.image(empty(0, 0));
 				//customnotif.show();
-				return 17;//same as the previous one, i guess this will just mean it is a custom banner thus no preview which is fine really
+				return 17; // same as the previous one, i guess this will just mean it is a custom banner thus no preview which is fine really
 			}
 		}
 
@@ -156,7 +156,7 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 			return 17;
 		}
 
-		uint32_t hash = CRC32(&CGFXdecomp[dataOffset1], size1);//get COMMON1 hash
+		uint32_t hash = CRC32(&CGFXdecomp[dataOffset1], size1); // get COMMON1 hash
 		if (hash != 0x2DB769E8) {
 			//bannerpreview.image(empty(0, 0));
 			//customnotif.show();
@@ -169,20 +169,22 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 		crop_pixels(output_pixels.data(), w, h, och, output_cropped.data(), 0, 0, out_w, out_h);
 		std::vector<uint8_t> output_film(film_w * film_h * 4);
 		layer_pixels(output_film.data(), film_overlay_bin_data, output_cropped.data(), film_w, film_h, 2, out_w, out_h, 4, 32, 11);
-		//write banner png here
+		// write banner png here
 		std::cout << CreatingFile << ' ' << std::filesystem::absolute(outfile.c_str()) << std::endl;
 		stbi_write_png(outfile.c_str(), film_w, film_h, 4, output_film.data(), 0);
 		if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*outfile.c_str()), error)) {
-			/*int blankret = generateBlankBanner(outfile);//we dont actually want blank banner since it's an output problem
-			if(blankret)
-				return blankret;*/
+			/*int blankret = generateBlankBanner(outfile); // we don't actually want blank banner since it's an output problem
+			if(blankret) {
+				return blankret;
+			}*/
 			return 18;
 		}
 		if (error) {
 			std::cout << ErrorText << ' ' << outfile << '\n' << error.message() << std::endl;
 			/*int blankret = generateBlankBanner(outfile);
-			if(blankret)
-				return blankret;*/
+			if(blankret) {
+				return blankret;
+			}*/
 			return 19;
 		}
 		//bannerpreview.image(pixels_to_image(output_film.data(), film_w, film_h, 4));
@@ -199,7 +201,7 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 			h = 128;
 			int och = sizeof(nnc_u32);
 			std::ifstream input;
-			input.open(std::filesystem::path((const char8_t*)&*infile.c_str()), std::ios_base::in | std::ios_base::binary);//input file
+			input.open(std::filesystem::path((const char8_t*)&*infile.c_str()), std::ios_base::in | std::ios_base::binary); // input file
 			std::vector<uint8_t> input_data((w * h * ich) + 0x20);
 			input.read(reinterpret_cast<char*>(input_data.data()), (w * h * ich) + 0x20);
 			input.close();
@@ -215,13 +217,14 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 			crop_pixels(output_pixels.data(), w, h, och, output_cropped.data(), 0, 0, out_w, out_h);
 			std::vector<uint8_t> output_film(film_w * film_h * 4);
 			layer_pixels(output_film.data(), film_overlay_bin_data, output_cropped.data(), film_w, film_h, 2, out_w, out_h, 4, 32, 11);
-			//write banner png here
+			// write banner png here
 			std::cout << CreatingFile << ' ' << std::filesystem::absolute(outfile.c_str()) << std::endl;
 			stbi_write_png(outfile.c_str(), film_w, film_h, 4, output_film.data(), 0);
 			if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*outfile.c_str()), error)) {
 				/*int blankret = generateBlankBanner(outfile);
-				if(blankret)
-					return blankret;*/
+				if(blankret) {
+					return blankret;
+				}*/
 				return 21;
 			}
 			if (error) {
@@ -248,13 +251,17 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 		if (stbi_info(infile.c_str(), &w, &h, &ch)) {
 			uint8_t* input_pixels = stbi_load(infile.c_str(), &w, &h, &ch, 0);
 			if (input_pixels == NULL) {
-				//maybe put a message here
+				// maybe put a message here
 				return 24;
 			}
 			std::vector<uint8_t> output_pixels(out_w * out_h * ch);
 
-			if (w == out_w && h == out_h) memcpy(output_pixels.data(), input_pixels, w * h * ch);
-			else resize_crop(input_pixels, w, h, output_pixels.data(), out_w, out_h, ch);//scale to 200x120 if needed
+			if (w == out_w && h == out_h) {
+				memcpy(output_pixels.data(), input_pixels, w * h * ch);
+			}
+			else {
+				resize_crop(input_pixels, w, h, output_pixels.data(), out_w, out_h, ch); // scale to 200x120 if needed
+			}
 			free(input_pixels);
 			std::vector<uint8_t> output_4c(out_w * out_h * 4);
 			std::vector<uint8_t> white(out_w * out_h * 4);
@@ -263,7 +270,7 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 			std::vector<uint8_t> output_film(film_w * film_h * 4);
 			//memcpy(output_film, film_overlay, film_w * film_h * 4);
 			layer_pixels(output_film.data(), film_overlay_bin_data, output_4c.data(), film_w, film_h, 2, out_w, out_h, 4, 32, 11);
-			//write banner png here
+			// write banner png here
 			std::cout << CreatingFile << ' ' << std::filesystem::absolute(outfile.c_str()) << std::endl;
 			stbi_write_png(outfile.c_str(), film_w, film_h, 4, output_film.data(), 0);
 			if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*outfile.c_str()), error)) {
@@ -275,8 +282,9 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 			if (error) {
 				std::cout << ErrorText << ' ' << outfile << '\n' << error.message() << std::endl;
 				/*int blankret = generateBlankBanner(outfile);
-				if(blankret)
-					return blankret;*/
+				if(blankret) {
+					return blankret;
+				}*/
 				return 26;
 			}
 			//bannerpreview.image(pixels_to_image(output_film.data(), film_w, film_h, 4));
@@ -284,9 +292,9 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 			//customnotif.hide();
 			return 0;
 		}
-		/*else {//i dont think we even need this since we do it later anyway
+		/*else { // i dont think we even need this since we do it later anyway
 			int blankret = generateBlankBanner(outfile);
-			return 27 + blankret;//27 or 55 or 56 (this only happens if input is bad)
+			return 27 + blankret; // 27 or 55 or 56 (this only happens if input is bad)
 		}*/
 	}
 	//if we got here, something is wrong
@@ -296,9 +304,9 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 	return 28;
 }
 
-//TODO: write small icon?
+// TODO: write small icon?
 int generateIconPreview(std::string infile, int borderMode, std::string outfile) {
-	//first fix the outfile extension if needed
+	// first fix the outfile extension if needed
 	{
 		std::string outExtension = outfile;
 		if(outExtension.find_last_of(".") != std::string::npos) {
@@ -371,69 +379,76 @@ int generateIconPreview(std::string infile, int borderMode, std::string outfile)
 			}
 		}
 		output_pixels = std::vector<uint8_t>(largeWH * largeWH * ch);
-		if (w == largeWH && h == largeWH) memcpy(output_pixels.data(), input_pixels, w * h * ch);
-		else resize_crop(input_pixels, w, h, output_pixels.data(), largeWH, largeWH, ch);//scale to 48x48 if needed
+		if (w == largeWH && h == largeWH) {
+			memcpy(output_pixels.data(), input_pixels, w * h * ch);
+		}
+		else {
+			resize_crop(input_pixels, w, h, output_pixels.data(), largeWH, largeWH, ch); // scale to 48x48 if needed
+		}
 		free(input_pixels);
 	}
-	if (borderMode == 1) {//under border
+	if (borderMode == 1) { // under border
 		std::vector<uint8_t> output_4c(largeWH * largeWH * 4);
-		std::vector<uint8_t> white_background(largeWH * largeWH * 4);//fix the bugs by not fixing the bugs! :D
+		std::vector<uint8_t> white_background(largeWH * largeWH * 4); // fix the bugs by not fixing the bugs! :D
 		memset(white_background.data(), FF, largeWH * largeWH * 4);
-		layer_pixels(output_4c.data(), output_pixels.data(), white_background.data(), largeWH, largeWH, ch, largeWH, largeWH, 4, 0, 0);//it warns about output_pixels being potentially uninitialized but that is impossible
+		layer_pixels(output_4c.data(), output_pixels.data(), white_background.data(), largeWH, largeWH, ch, largeWH, largeWH, 4, 0, 0); // it warns about output_pixels being potentially uninitialized but that is impossible
 		layer_pixels(output_4c.data(), icon_border48_bin_data, output_4c.data(), largeWH, largeWH, 4, largeWH, largeWH, 4, 0, 0);
-		ch = 4;// important later
+		ch = 4; // important later
 		output_pixels = std::vector<uint8_t>(largeWH * largeWH * ch);
 		memcpy(output_pixels.data(), output_4c.data(), largeWH * largeWH * ch);
 	}
-	else if (borderMode == 2) {//inside border
+	else if (borderMode == 2) { // inside border
 		std::vector<uint8_t> output_4c(largeWH * largeWH * 4);
-		std::vector<uint8_t> white_background(largeWH * largeWH * 4);//fix the bugs by not fixing the bugs! :D
+		std::vector<uint8_t> white_background(largeWH * largeWH * 4); // fix the bugs by not fixing the bugs! :D
 		memset(white_background.data(), FF, largeWH * largeWH * 4);
 		layer_pixels(output_4c.data(), output_pixels.data(), white_background.data(), largeWH, largeWH, ch, largeWH, largeWH, 4, 0, 0);
 		ch = 4;
 		std::vector<uint8_t> scaled(largeWH * largeWH * ch);
-		stbir_resize_uint8_linear(output_4c.data(), largeWH, largeWH, 0, scaled.data(), largeWH - 10, largeWH - 10, 0, STBIR_RGBA);//scale it down
+		stbir_resize_uint8_linear(output_4c.data(), largeWH, largeWH, 0, scaled.data(), largeWH - 10, largeWH - 10, 0, STBIR_RGBA); // scale it down
 		layer_pixels(output_4c.data(), icon_border48_bin_data, scaled.data(), largeWH, largeWH, ch, largeWH - 10, largeWH - 10, ch, 5, 5);
 		output_pixels = std::vector<uint8_t>(largeWH * largeWH * ch);
 		memcpy(output_pixels.data(), output_4c.data(), largeWH * largeWH * ch);
 	}
 
 	large_3c = std::vector<uint8_t>(largeWH * largeWH * 3);
-	if (ch == 4) {//rgba
+	if (ch == 4) { // rgba
 		std::vector<uint8_t> white_background(largeWH * largeWH * 4);
 		memset(white_background.data(), FF, largeWH * largeWH * 4);
 		layer_pixels(output_pixels.data(), output_pixels.data(), white_background.data(), largeWH, largeWH, ch, largeWH, largeWH, 4, 0, 0);
 		int newi = 0;
 		for (int i = 0; i < largeWH * largeWH * ch; i += ch) {
-			for (int c = 0; c < 3; c++)
+			for (int c = 0; c < 3; c++) {
 				large_3c[newi + c] = output_pixels[i + c];
+			}
 			newi += 3;
 		}
 	}
-	else if (ch == 3) {//rgb
+	else if (ch == 3) { // rgb
 		memcpy(large_3c.data(), output_pixels.data(), largeWH * largeWH * ch);
 	}
-	else if (ch == 2) {//grayscale a
+	else if (ch == 2) { // grayscale a
 		std::vector<uint8_t> white_background(largeWH * largeWH * ch);
 		std::vector<uint8_t> output_4c(largeWH * largeWH * 4);
 		memset(white_background.data(), FF, largeWH * largeWH * ch);
 		layer_pixels(output_4c.data(), output_pixels.data(), white_background.data(), largeWH, largeWH, ch, largeWH, largeWH, ch, 0, 0);
 		int newi = 0;
 		for (int i = 0; i < largeWH * largeWH * 4; i += 4) {
-			for (int c = 0; c < 3; c++)
+			for (int c = 0; c < 3; c++) {
 				large_3c[newi + c] = output_4c[i + c];
+			}
 			newi += 3;
 		}
 	}
-	else if (ch == 1) {//grayscale
+	else if (ch == 1) { // grayscale
 		int ch1 = 0;
 		for (int i = 0; i < largeWH * largeWH * 3; i += 3) {
-			for (int c = 0; c < 3; c++)
+			for (int c = 0; c < 3; c++) {
 				large_3c[i + c] = output_pixels[ch1];
+			}
 			ch1++;
 		}
 	}
-	//write icon png here
+	// write icon png here
 	std::cout << CreatingFile << ' ' << std::filesystem::absolute(outfile.c_str()) << std::endl;
 	stbi_write_png(outfile.c_str(), largeWH, largeWH, 3, large_3c.data(), 0);
 	//iconpreview.image(pixels_to_image(large_3c.data(), largeWH, largeWH, 3));
@@ -489,8 +504,9 @@ uint8_t convertToBimg(const std::string input, uint8_t* outBuffer, bool writeHea
 			return 2;
 		}
 	}
-	if(error)
+	if(error) {
 		return 3;
+	}
 	if (!stbi_info(input.c_str(), &w, &h, &comp)) {
 		w = out_w;
 		h = out_h;
@@ -501,13 +517,19 @@ uint8_t convertToBimg(const std::string input, uint8_t* outBuffer, bool writeHea
 		}
 		memset(input_pixels, FF, out_w * out_h * ch);
 	}
-	else input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
+	else {
+		input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
+	}
 	if (input_pixels == NULL) {
 		return 5;
 	}
 	output_pixels = std::vector<uint8_t>(out_w * out_h * ch);
-	if (w == out_w && h == out_h) memcpy(output_pixels.data(), input_pixels, w * h * ch);
-	else resize_crop(input_pixels, w, h, output_pixels.data(), out_w, out_h, ch);//scale to 200x120 if needed
+	if (w == out_w && h == out_h) {
+		memcpy(output_pixels.data(), input_pixels, w * h * ch);
+	}
+	else {
+		resize_crop(input_pixels, w, h, output_pixels.data(), out_w, out_h, ch); // scale to 200x120 if needed
+	}
 	free(input_pixels);
 
 	output_4c = std::vector<uint8_t>(out_w * out_h * 4);
@@ -518,18 +540,20 @@ uint8_t convertToBimg(const std::string input, uint8_t* outBuffer, bool writeHea
 	layer_pixels(output_4c.data(), output_pixels.data(), white.data(), out_w, out_h, ch, out_w, out_h, 4, 0, 0);
 	//stbi_write_png("output_4c.png", out_w, out_h, 4, output_pixels, 0);
 
-	//layer 200x120 image on a 256x128 image
+	// layer 200x120 image on a 256x128 image
 	output_fin = std::vector<uint8_t>(new_w * new_h * 4);
 
 	memset(output_fin.data(), 0, new_w * new_h * 4);
-	for (int i = 3; i < new_w * new_h * 4; i += 4)
-		output_fin[i] = 0xFF;//make alpha 0xFF
-	//layer_pixels(output_fin, output_4c, black, out_w, out_h, 4, new_w, new_h, 3, 0, 0);//why doesnt this work for this????
-	for (int y = 0; y < out_h; y++)
+	for (int i = 3; i < new_w * new_h * 4; i += 4) {
+		output_fin[i] = 0xFF; // make alpha 0xFF
+	}
+	//layer_pixels(output_fin, output_4c, black, out_w, out_h, 4, new_w, new_h, 3, 0, 0); // why doesnt this work for this????
+	for (int y = 0; y < out_h; y++) {
 		for (int x = 0; x < out_w; x++) {
 			for (int c = 0; c < 4; c++)
 				output_fin[(y * (new_w)+x) * 4 + c] = output_4c[(y * (out_w)+x) * 4 + c];
 		}
+	}
 	//stbi_write_png("output_fin.png", new_w, new_h, 4, output_fin, 0);
 
 	uint8_t tiledbanner[new_w * new_h * sizeof(nnc_u16)];
@@ -544,7 +568,7 @@ uint8_t convertToBimg(const std::string input, uint8_t* outBuffer, bool writeHea
 	return 0;
 }
 
-uint8_t convertToIcon(const std::string input, std::string output, std::string shortname, std::string longname, std::string publisher, int borderMode) {//bare bones SMDH creation. thanks 3dbrew
+uint8_t convertToIcon(const std::string input, std::string output, std::string shortname, std::string longname, std::string publisher, int borderMode) {
 	uint8_t* input_pixels;
 	std::vector<uint8_t> output_pixels;
 	std::vector<uint8_t> large_4c;

@@ -482,6 +482,16 @@ int make_Bimgs(const VI9Pparameters& parameters, const std::string& romfsPath, c
 	return 0;
 }
 
+
+int make_U_Title(const VI9Pparameters& parameters, const std::string& romfsPath, const std::string& tempPath) {
+	std::error_code error;
+	
+	std::cout << CreatingFile << " romfs/layout/U_Title.arc.l" << std::endl;
+	uint8_t ret = 0;
+	
+}
+
+
 int make_Icon(const VI9Pparameters& parameters, const std::string& romfsPath, const std::string& tempPath) {
 	std::error_code error;
 	
@@ -492,7 +502,7 @@ int make_Icon(const VI9Pparameters& parameters, const std::string& romfsPath, co
 		std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << tempPath << "/exefs/icon\n(" << std::to_string(ret) << ')' << std::endl;
 		return 34;
 	}
-	if (parameters.mode == 1) { // multi vid needs an icon here so that it can make ext data or something (the game crashes if it isnt here)
+	if (parameters.mode == 1) { // multi vid needs an icon here so that it can make ext data or something (the game crashes if it isn't here)
 		std::cout << CreatingFile << " romfs/icon.icn" << std::endl;
 		//std::error_code error;
 		error = copyfile(std::string(tempPath + "/exefs/icon").c_str(), std::string(romfsPath + "/icon.icn").c_str());

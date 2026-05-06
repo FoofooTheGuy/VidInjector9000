@@ -21,6 +21,7 @@ int make_settingsTL(const VI9Pparameters& parameters, const std::string& romfsPa
 int make_information_buttons(const VI9Pparameters& parameters, const std::string& romfsPath, const std::string& outCIA);
 int make_Moflex(const VI9Pparameters& parameters, const std::string& romfsPath, const std::string& outCIA, const std::string& outTAR, const bool& dopatch);
 int make_Bimgs(const VI9Pparameters& parameters, const std::string& romfsPath, const std::string& outCIA, const std::string& outTAR, const bool& dopatch);
+int make_U_Title(const VI9Pparameters& parameters, const std::string& romfsPath, const std::string& tempPath);
 int make_Icon(const VI9Pparameters& parameters, const std::string& romfsPath, const std::string& tempPath);
 int make_Banner(const VI9Pparameters& parameters, const std::string& tempPath);
 
