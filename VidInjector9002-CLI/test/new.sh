@@ -6,4 +6,4 @@ echo ${CLI}
 mkdir out
 
 # create new vi9p file
-${CLI} -new out/a.vi9p
+valgrind ${CLI} -new out/a.vi9p
