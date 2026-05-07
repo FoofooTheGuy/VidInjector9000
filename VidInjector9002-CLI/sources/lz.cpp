@@ -139,7 +139,13 @@ uint32_t Get_Decompressed_size(const uint8_t* in) {
 
 // https://github.com/citra-emu/citra/blob/bfb6a5b5de1e7a89ceebabe33e792d5c03a2cf46/src/core/hle/service/apt/apt.cpp#L135
 uint32_t DecompressLZ11(const uint8_t* in, uint8_t* out) {
-	uint32_t decompressed_size = Get_Decompressed_size(in);
+	uint32_t decompressed_size;
+	memcpy(&decompressed_size, in, sizeof(uint32_t));
+	in += 4;
+
+	uint8_t type = decompressed_size & 0xFF;
+	if (type != 0x11) return 0xFFFFFFFF;
+	decompressed_size >>= 8;
 
 	uint32_t current_out_size = 0;
 	uint8_t flags = 0, mask = 1;
@@ -149,7 +155,7 @@ uint32_t DecompressLZ11(const uint8_t* in, uint8_t* out) {
 			mask = 0x80;
 		}
 		else {
-			mask >>= 1;
+			mask >>= 1; 
 		}
 
 		if (flags & mask) {

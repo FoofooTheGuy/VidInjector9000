@@ -56,16 +56,16 @@ int extract_darc(const std::string inpath, const std::string outdir) {
 	
 	darc::endian endianess = arc.get_endianess();
 	if (endianess == darc::endian::mixed) {
-		std::cout << "bad endianess value" << std::endl;
+		std::cout << BadEndianness << " (MIXED)" << std::endl;
 		return 3;
 	}
 	else if (endianess == darc::endian::big) {
-		std::cout << "We don't actually support big endian (yet?)" << std::endl;
+		std::cout << BadEndianness << " (BIG)" << std::endl;
 		return 4;
 	}
-	else if (endianess == darc::endian::little) {
+	/*else if (endianess == darc::endian::little) {
 		std::cout << "little endian, good" << std::endl;
-	}
+	}*/
 	
 	puts("");
 	

@@ -123,6 +123,7 @@ extern std::string CreatingFile;
 extern std::string CopyingMoflex;
 extern std::string MoflexError;
 extern std::string ProductCodetext;
+extern std::string BadEndianness;
 extern std::string CIAopenInput;
 extern std::string CIAopenOutput;
 extern std::string CIAreadHeader;

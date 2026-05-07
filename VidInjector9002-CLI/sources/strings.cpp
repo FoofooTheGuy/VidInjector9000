@@ -131,6 +131,7 @@ std::string CreatingFile = "Creating the file:";
 std::string CopyingMoflex = "Copying MoFlex files...";
 std::string MoflexError = "is not in MoFlex format";
 std::string ProductCodetext = "Product code:";
+std::string BadEndianness = "Bad endianess value";
 std::string CIAopenInput = "Open the input file...";
 std::string CIAopenOutput = "Open the output file...";
 std::string CIAreadHeader = "Read the CIA header...";

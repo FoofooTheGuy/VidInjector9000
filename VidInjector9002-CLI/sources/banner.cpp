@@ -135,7 +135,7 @@ uint8_t CBMDgetCommonCGFX(const std::string inpath, const uint32_t compressedSiz
 		return 3;
 	}
 	std::vector<uint8_t> CGFX(compressedSize);
-	//get stuff and decompress that stuff
+	// get stuff and decompress that stuff
 	CBMD.seekg(CGFXoffset);
 	CBMD.read(reinterpret_cast<char*>(CGFX.data()), compressedSize);
 

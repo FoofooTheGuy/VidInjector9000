@@ -484,12 +484,46 @@ int make_Bimgs(const VI9Pparameters& parameters, const std::string& romfsPath, c
 
 
 int make_U_Title(const VI9Pparameters& parameters, const std::string& romfsPath, const std::string& tempPath) {
+	std::string U_Title_file = romfsPath + "/layout/U_Title.arc.l";
 	std::error_code error;
 	
 	std::cout << CreatingFile << " romfs/layout/U_Title.arc.l" << std::endl;
-	uint8_t ret = 0;
+	//uint8_t ret = 0;
+	
+	if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(U_Title_file).c_str()), error)) {
+		std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << U_Title_file << std::endl;
+		return 34;
+	}
+	if(error) {
+		std::cout << ErrorText << ' ' << romfsPath + U_Title_file << '\n' << error.message() << std::endl;
+		return 35;
+	}
+	
+	// load data
+	std::ifstream U_Title_stream(std::string(U_Title_file).c_str(), std::ios_base::binary | std::ios_base::ate);
+	auto size = U_Title_stream.tellg();
+	std::vector<uint8_t> lzFile(size);
+	U_Title_stream.seekg(0);
+	U_Title_stream.read(reinterpret_cast<char*>(lzFile.data()), size);
+	U_Title_stream.close();
 	
 	// decompress .arc.l
+	uint32_t decompressedsize = Get_Decompressed_size(lzFile.data());
+	if (decompressedsize == 0xFFFFFFFF) {
+		return 37;
+	}
+	std::cout << size << std::endl;
+	std::cout << decompressedsize << std::endl;
+	
+	std::vector<uint8_t> U_Title_decomp(decompressedsize);
+	
+	if (DecompressLZ11(lzFile.data(), U_Title_decomp.data()) == 0xFFFFFFFF) {
+		return 38;
+	}
+	
+	std::ofstream darcfile(std::string(tempPath + "/U_Title.arc").c_str(), std::ios_base::out | std::ios_base::binary);
+	darcfile.write(reinterpret_cast<const char*>(U_Title_decomp.data()), U_Title_decomp.size());
+	darcfile.close();
 	
 	// extract darc
 	
@@ -499,10 +533,10 @@ int make_U_Title(const VI9Pparameters& parameters, const std::string& romfsPath,
 	
 	// compress new darc
 	
-	return ret;
+	return 0;
 }
 
-
+// TODO: redo these return values when you finish the U_Title stuff
 int make_Icon(const VI9Pparameters& parameters, const std::string& romfsPath, const std::string& tempPath) {
 	std::error_code error;
 	
@@ -569,7 +603,7 @@ int make_Banner(const VI9Pparameters& parameters, const std::string& tempPath) {
 	else if (!bannerbool) {
 		uint8_t buffer[256 * 128 * sizeof(nnc_u16)];
 		ret = convertToBimg(parameters.banner, buffer, false);
-		if (ret > 0) {
+		if (ret) {
 			std::cout << ErrorText << ' ' << BadValue << '\n' << FailedToConvertImage << " \"" << parameters.banner << "\"\n(" << std::to_string(ret) << ')' << std::endl;
 			return 40;
 		}
@@ -608,7 +642,7 @@ int make_Banner(const VI9Pparameters& parameters, const std::string& tempPath) {
 		return 42;
 	}
 	
-	return 0;
+	return ret;
 }
 
 int get_information_buttons(VI9Pparameters* parameters, const std::string& romfsPath) { // should this return uint8_t to save 3 bytes of memory? :>
