@@ -21,7 +21,9 @@ set(ENABLE_TESTING CACHE BOOL OFF FORCE)
 set(ENABLE_PROGRAMS CACHE BOOL OFF FORCE)
 set(INSTALL_MBEDTLS_HEADERS CACHE BOOL OFF FORCE)
 
-add_subdirectory(nnc EXCLUDE_FROM_ALL)
+add_subdirectory(extern/nnc EXCLUDE_FROM_ALL)
+
+add_subdirectory(extern/libdarc/lib EXCLUDE_FROM_ALL)
 
 find_package(MbedTLS)
 
@@ -33,7 +35,7 @@ find_package(MbedTLS)
 #    add_subdirectory(extern/mbedtls EXCLUDE_FROM_ALL)
 #endif()
 
-link_libraries(MbedTLS::mbedcrypto nnc)
+link_libraries(MbedTLS::mbedcrypto nnc darc)
 
 file(GLOB MY_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/sources/*.cpp"
