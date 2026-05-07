@@ -22,11 +22,8 @@ set(ENABLE_PROGRAMS CACHE BOOL OFF FORCE)
 set(INSTALL_MBEDTLS_HEADERS CACHE BOOL OFF FORCE)
 
 add_subdirectory(extern/nnc EXCLUDE_FROM_ALL)
-<<<<<<< HEAD
 
 add_subdirectory(extern/libdarc/lib EXCLUDE_FROM_ALL)
-=======
->>>>>>> cfabd37a87d3bb7253c533dedb087e9cea7cf591
 
 find_package(MbedTLS)
 
