@@ -109,6 +109,8 @@ extern std::string FailedToFindFile;
 extern std::string FailedToReadFile;
 extern std::string FailedToCopyFile;
 extern std::string FailedToCreateFile;
+extern std::string FailedToCreateDirectory;
+extern std::string DirectoryExists;
 extern std::string FailedToConvertImage;
 extern std::string FailedToReadExHeader;
 extern std::string ValueNoChange;

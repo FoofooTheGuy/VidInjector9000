@@ -489,6 +489,16 @@ int make_U_Title(const VI9Pparameters& parameters, const std::string& romfsPath,
 	std::cout << CreatingFile << " romfs/layout/U_Title.arc.l" << std::endl;
 	uint8_t ret = 0;
 	
+	// decompress .arc.l
+	
+	// extract darc
+	
+	// convert image to clim
+	
+	// build darc
+	
+	// compress new darc
+	
 	return ret;
 }
 
