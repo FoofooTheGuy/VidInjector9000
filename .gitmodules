@@ -4,3 +4,6 @@
 [submodule "VidInjector9002-CLI/nnc"]
 	path = VidInjector9002-CLI/extern/nnc
 	url = https://github.com/FoofooTheGuy/nnc
+[submodule "VidInjector9002-CLI/extern/libdarc"]
+	path = VidInjector9002-CLI/extern/libdarc
+	url = https://github.com/FoofooTheGuy/libdarc
