@@ -37,3 +37,10 @@ output: icon.bin out
 borderMode: 0 for no border, 1 for overlap, 2 for fit within it
 */
 uint8_t convertToIcon(const std::string input, std::string output, std::string shortname, std::string longname, std::string publisher, int borderMode);
+
+/*make clim (for custom Title_rogo)
+input: path of image file
+outBuffer: 400 * 240 * 2 + (size of footer)
+because that's what this actually does
+*/
+uint8_t convertToClim(const std::string input, uint8_t* outBuffer);

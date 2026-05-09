@@ -321,7 +321,6 @@ int generateIconPreview(std::string infile, int borderMode, std::string outfile)
 	std::vector<uint8_t> output_pixels;
 	std::vector<uint8_t> large_3c;
 	//uint16_t smallLW = 24;
-	const uint8_t FF = 0xFF;
 	bool smdhinput = true;
 
 	while(smdhinput)
@@ -368,7 +367,7 @@ int generateIconPreview(std::string infile, int borderMode, std::string outfile)
 			if (input_pixels == NULL) {
 				return 30;
 			}
-			memset(input_pixels, FF, largeWH * largeWH * ch);
+			memset(input_pixels, 0xFF, largeWH * largeWH * ch);
 		}
 		else {
 			input_pixels = stbi_load(infile.c_str(), &w, &h, &ch, 0);
@@ -433,7 +432,6 @@ uint8_t convertToBimg(const std::string input, uint8_t* outBuffer, bool writeHea
 	const int new_h = 128;
 	const int out_w = 200;
 	const int out_h = 120;
-	const uint8_t FF = 0xFF;
 	std::error_code error;
 	if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*input.c_str()), error)) {
 		std::string extension = input;
@@ -475,7 +473,7 @@ uint8_t convertToBimg(const std::string input, uint8_t* outBuffer, bool writeHea
 		if (input_pixels == NULL) {
 			return 4;
 		}
-		memset(input_pixels, FF, out_w * out_h * ch);
+		memset(input_pixels, 0xFF, out_w * out_h * ch);
 	}
 	else {
 		input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
@@ -535,7 +533,6 @@ uint8_t convertToIcon(const std::string input, std::string output, std::string s
 	int w, h, ch, comp;
 	const int largeWH = 48;
 	const int smallWH = 24;
-	const uint8_t FF = 0xFF;
 	bool smdhinput = true;
 	nnc_smdh smdhIn;
 
@@ -570,7 +567,7 @@ uint8_t convertToIcon(const std::string input, std::string output, std::string s
 			if (input_pixels == NULL) {
 				return 1;
 			}
-			memset(input_pixels, FF, largeWH * largeWH * ch);
+			memset(input_pixels, 0xFF, largeWH * largeWH * ch);
 		}
 		else input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
 		if (input_pixels == NULL) {
@@ -647,5 +644,9 @@ uint8_t convertToIcon(const std::string input, std::string output, std::string s
 	smdhOut.close();
 
 	//stbi_write_png(output.c_str(), largeLW, largeLW, 3, large_3c, 0);
+	return 0;
+}
+
+uint8_t convertToClim(const std::string input, uint8_t* outBuffer) {
 	return 0;
 }

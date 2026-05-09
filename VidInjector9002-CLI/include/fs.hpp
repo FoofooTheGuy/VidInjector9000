@@ -6,6 +6,7 @@
 #include <iostream>
 #include <fstream>
 
+#include "darc_stuff.hpp"
 #include "stbiStuff.hpp"
 #include "strings.hpp"
 #include "vi9p.hpp"
