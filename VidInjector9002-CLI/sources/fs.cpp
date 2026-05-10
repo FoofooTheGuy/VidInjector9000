@@ -402,19 +402,18 @@ int make_Moflex(const VI9Pparameters& parameters, const std::string& romfsPath, 
 			case 2: {
 				std::cout << CopyingMoflex << ' ' << std::to_string(i + 1) << '/' << std::to_string(parameters.rows) << std::endl;
 				//std::error_code error;
-				std::string moflexFile;
-				size_t start = parameters.MoflexVec.at(i).find_last_of("\\/");
+				std::string moflexFile = parameters.PTitleVec.at(i) + ".moflex";
+				/*size_t start = parameters.MoflexVec.at(i).find_last_of("\\/");
 				if (start == std::string::npos) { // no path
 					moflexFile = parameters.MoflexVec.at(i);
-					std::cout << "BRUHHUHUHAUHAUHUAHUAHAHUHAUHAUHAUHAUHAUHAUHAUHAUHAUHAUHUAHAHHAHAUHUAHU" << std::endl; // dude
 					std::cout << moflexFile << std::endl;
 				}
 				else {
 					moflexFile = parameters.MoflexVec.at(i);
 					moflexFile.erase(moflexFile.begin(), moflexFile.begin() + start);
-					std::cout << "BRUHHUHUHAUHAUHUAHUAHAHUHAUHAUHAUHAUHAUHAUHAUHAUHAUHAUHUAHAHHAHAUHUAHU" << std::endl; // dude
 					std::cout << moflexFile << std::endl;
-				}
+				}*/
+				
 				error = copyfile(parameters.MoflexVec.at(i).c_str(), std::string(romfsPath + '/' + moflexFile).c_str());
 				if (error) {
 					std::cout << ErrorText << ' ' << FailedToCopyFile << "\n\"" << parameters.MoflexVec.at(i) << "\" -> \"" << romfsPath << '/' << moflexFile << "\"\n" << error.message() << std::endl;
@@ -526,9 +525,8 @@ int make_U_Title(const VI9Pparameters& parameters, const std::string& romfsPath,
 		darcfile.close();
 	}
 	// extract darc
-	int ret = 0;
 	{
-		ret = extract_darc(std::string(tempPath + "/U_Title.arc").c_str(), std::string(tempPath + "/U_Title").c_str());
+		int ret = extract_darc(std::string(tempPath + "/U_Title.arc").c_str(), std::string(tempPath + "/U_Title").c_str());
 		if(ret) {
 			std::cout << ErrorText << ' ' << FailedToCreateDirectory << ' ' << tempPath << "/U_Title\n(" << std::to_string(ret) << ')' << std::endl;
 			return 39;
@@ -536,15 +534,38 @@ int make_U_Title(const VI9Pparameters& parameters, const std::string& romfsPath,
 	}
 	// convert image to Title_rogo
 	{
-		ret = convertToClim(parameters.MBannerVec.at(0), std::string(tempPath + "/U_Title/timg/Title_rogo.bclim").c_str());
-		if(ret == 0) { // the custom image is real
-			
+		int ret = convertToClim(parameters.MBannerVec.at(0), std::string(tempPath + "/U_Title/timg/Title_rogo.bclim").c_str());
+		if(ret == 0) { // the custom image is real!! write custom blyt
+			std::ofstream bclyt(std::string(tempPath + "/U_Title/blyt/U_Title.bclyt").c_str(), std::ios_base::out | std::ios_base::binary);
+			bclyt.write(reinterpret_cast<const char*>(U_Title_bclyt_data), sizeof(U_Title_bclyt_data));
+			bclyt.close();
 		}
 	}
 	// build darc
-	
+	{
+		// TODO: make darctool write to memory because we need to read it back anyway and it's small enough
+		darctool::return_code ret = darctool::write_darc(std::string(tempPath + "/U_Title").c_str(), std::string(tempPath + "/new_U_Title.arc").c_str());
+		if(ret != darctool::return_code::OK) {
+			std::cout << ErrorText << ' ' << FailedToCreateFile << ' ' << tempPath << "/U_Title\n(" << darctool::return_str(ret) << ')' << std::endl;
+			return 40;
+		}
+	}
 	// compress new darc
-	
+	{
+		std::ifstream infile(std::string(tempPath + "/new_U_Title.arc").c_str(), std::ios_base::binary | std::ios_base::ate);
+		auto size = infile.tellg();
+		std::vector<uint8_t> uncompressed(size);
+		infile.seekg(0);
+		infile.read(reinterpret_cast<char*>(uncompressed.data()), size);
+		infile.close();
+		
+		uint32_t lzSize = 0;
+		void* lzFile = lz11_compress(&lzSize, uncompressed.data(), uncompressed.size());
+
+		std::ofstream outfile(U_Title_file, std::ios_base::binary); // finally...
+		outfile.write(reinterpret_cast<const char*>(lzFile), lzSize);
+		free(lzFile);
+	}
 	return 0;
 }
 

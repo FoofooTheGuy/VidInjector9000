@@ -767,7 +767,7 @@ uint8_t convertToClim(const std::string input, const std::string output) {
 		}
 	}
 	
-	stbi_write_png("output_fin.png", new_w, new_h, 4, output_fin.data(), 0);
+	//stbi_write_png("output_fin.png", new_w, new_h, 4, output_fin.data(), 0);
 	
 	nnc_swizzle_zorder_be_rgba8_to_le_rgb565(reinterpret_cast<nnc_u32*>(output_fin.data()), reinterpret_cast<nnc_u16*>(rgb565_pixels.data()), new_w, new_h);
 	

@@ -4,7 +4,7 @@
 #include <vector>
 #include <fstream>
 
-// this should probably be a own class
+// TODO: put all this stuff in a class to better organize things
 // https://problemkaputt.de/gbatek-3ds-files-video-layout-images-clim-flim.htm
 enum encoding {
     L8, // 0

@@ -20,7 +20,8 @@
 #include <bannerMagic_bin.hpp>
 #include <bimgheader_bin.hpp>
 
-/* basically the same as crop_pixels
+/*
+basically the same as crop_pixels
 just make sure every image has the same amount of channels (num_channels)
 */
 void resize_crop(const uint8_t* input_pixels, int input_w, int input_h, uint8_t* output_pixels, int output_w, int output_h, int num_channels);
