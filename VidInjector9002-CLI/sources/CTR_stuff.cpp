@@ -303,10 +303,17 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 		}
 		// set top image (extended multi vid only)
 		if (parameters.mode == 2 && !dopatch) {
-			int ret = make_U_Title(parameters, romfsPath, tempPath);
-			
-			if (ret) {
-				return ret;
+			// only do it if you have set the MBanner (Top image) TODO: fix all these names lol
+			if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*parameters.MBannerVec.at(0).c_str()), error)) {
+				int ret = make_U_Title(parameters, romfsPath, tempPath);
+				
+				if (ret) {
+					return ret;
+				}
+			}
+			if(error) {
+				std::cout << ErrorText << ' ' << romfsPath + "/layout/U_Title.arc.l" << '\n' << error.message() << std::endl;
+				return 34;
 			}
 		}
 		// do exefs (icon and banner)

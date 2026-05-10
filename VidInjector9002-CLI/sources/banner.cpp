@@ -1,6 +1,6 @@
 #include "banner.hpp"
 
-void* cbmd_build_data(uint32_t* size, CBMD cbmd) {//this is here because it has to be static for some reason (it's from bannertool)
+void* cbmd_build_data(uint32_t* size, CBMD cbmd) { // from bannertool
 	CBMDHeader header;
 	memset(&header, 0, sizeof(header));
 

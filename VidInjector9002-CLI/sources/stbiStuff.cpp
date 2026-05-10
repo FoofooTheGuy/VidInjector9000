@@ -434,9 +434,10 @@ uint8_t convertToBimg(const std::string input, uint8_t* outBuffer, bool writeHea
 	const int out_h = 120;
 	std::error_code error;
 	if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*input.c_str()), error)) {
+		std::string dotbimg = ".bimg";
 		std::string extension = input;
-		extension.erase(extension.begin(), extension.end() - 5);
-		if (extension == ".bimg") {
+		extension.erase(extension.begin(), extension.end() - dotbimg.size());
+		if (extension == dotbimg) {
 			if (std::filesystem::file_size(std::filesystem::path((const char8_t*)&*input.c_str()), error) == 0x10020) {
 				w = 256;
 				h = 128;
@@ -647,6 +648,140 @@ uint8_t convertToIcon(const std::string input, std::string output, std::string s
 	return 0;
 }
 
-uint8_t convertToClim(const std::string input, uint8_t* outBuffer) {
+uint8_t convertToClim(const std::string input, const std::string output) {
+	std::vector<uint8_t> output_pixels;
+	int w, h, ch, comp;
+	const int out_w = 400;
+	const int out_h = 240;
+	const int new_w = 512;
+	const int new_h = 256;
+	const uint8_t bclim_footer_size = 0x28;
+	std::vector<uint8_t> rgb565_pixels(new_w * new_h * sizeof(uint16_t));
+	std::error_code error;
+	bool climInput = true;
+
+	while (climInput) {
+		if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*input.c_str()), error)) {
+			std::string dotbclim = ".bclim";
+			std::string extension = input;
+			extension.erase(extension.begin(), extension.end() - dotbclim.size());
+			std::cout << extension << std::endl;
+			if (extension == dotbclim) { // only convert if it's the wrong size, otherwise copy
+				std::ifstream infile;
+				infile.open(std::filesystem::path((const char8_t*)&*input.c_str()), std::ios_base::in | std::ios_base::ate);
+				size_t filesize = infile.tellg();
+				infile.seekg(0);
+				if (filesize < bclim_footer_size) { // bruh
+					climInput = false;
+					break;
+				}
+				// seek to footer
+				infile.seekg(filesize - bclim_footer_size);
+				size_t read_footeroffset = infile.tellg();
+				footer r_footer;
+				infile.read(reinterpret_cast<char*>(&r_footer), bclim_footer_size); // how much u bet this works?
+				// check the info
+				if (strcmp(r_footer.magic, "CLIM") != 0) {
+					climInput = false;
+					break;
+				}
+				if (r_footer.version != 0x0202) {
+					climInput = false;
+					break;
+				}
+				if (strcmp(r_footer.imag.magic, "imag") != 0) {
+					climInput = false;
+					break;
+				}
+				if (r_footer.imag.format != encoding::RGB565) { // TODO: decode this?
+					climInput = false;
+					break;
+				}
+				if(r_footer.imag.footeroffset != read_footeroffset) {
+					climInput = false;
+					break;
+				}
+				
+				infile.seekg(0); // we should now be at the image data
+				if (r_footer.imag.width == out_w && r_footer.imag.height == out_h) {
+					infile.read(reinterpret_cast<char*>(rgb565_pixels.data()), r_footer.imag.footeroffset);
+				}
+				else {
+					// we could try to get the actual image size and properly crop itself.. or simply quit
+					return 1;
+					/*ch = 4;
+					std::vector<uint8_t> converted_og(r_footer.imag.width * r_footer.imag.height * ch);
+					nnc_unswizzle_zorder_le_rgb565_to_be_rgba8(reinterpret_cast<nnc_u16*>(rgb565_pixels.data()), reinterpret_cast<nnc_u32*>(converted_og.data()), r_footer.imag.width, r_footer.imag.height);
+					
+					output_pixels = std::vector<uint8_t>(out_w * out_h * ch);
+					resize_crop(converted_og.data(), r_footer.imag.width, r_footer.imag.height, output_pixels.data(), out_w, out_h, ch);*/
+				}
+				break;
+			}
+		}
+		if (error) {
+			return 2;
+		}
+		climInput = false;
+		break;
+	}
+	
+	if(!climInput) {
+		uint8_t* input_pixels;
+		
+		if (!stbi_info(input.c_str(), &w, &h, &comp)) {
+			return 4;// if everything goes wrong, we'll end up here
+		}
+		else {
+			input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
+		}
+		if (input_pixels == NULL) {
+			return 5;
+		}
+		output_pixels = std::vector<uint8_t>(out_w * out_h * ch);
+		if (w == out_w && h == out_h) {
+			memcpy(output_pixels.data(), input_pixels, w * h * ch);
+		}
+		else {
+			resize_crop(input_pixels, w, h, output_pixels.data(), out_w, out_h, ch);
+		}
+		free(input_pixels);
+	}
+	
+	std::vector<uint8_t> white_background(out_w * out_h * 4, 0xFF);
+	std::vector<uint8_t> backgrounded (out_w * out_h * 4, 0xFF);
+	layer_pixels(backgrounded.data(), output_pixels.data(), white_background.data(), out_w, out_h, ch, out_w, out_h, 4, 0, 0);
+	
+	// layer 400x240 image on a 512x256 image
+	std::vector<uint8_t> output_fin(new_w * new_h * 4, 0);
+
+	for (int i = 3; i < new_w * new_h * 4; i += 4) {
+		output_fin[i] = 0xFF; // make alpha 0xFF
+	}
+	
+	for (int y = 0; y < out_h; y++) {
+		for (int x = 0; x < out_w; x++) {
+			for (int c = 0; c < 4; c++) {
+				output_fin[(y * (new_w) + x) * 4 + c] = backgrounded[(y * (out_w) + x) * 4 + c];
+			}
+		}
+	}
+	
+	stbi_write_png("output_fin.png", new_w, new_h, 4, output_fin.data(), 0);
+	
+	nnc_swizzle_zorder_be_rgba8_to_le_rgb565(reinterpret_cast<nnc_u32*>(output_fin.data()), reinterpret_cast<nnc_u16*>(rgb565_pixels.data()), new_w, new_h);
+	
+	std::ofstream bclimOut(std::filesystem::path((const char8_t*)&*output.c_str()), std::ios_base::out | std::ios_base::binary);
+	
+	footer forfree;
+	forfree.filesize = rgb565_pixels.size() + bclim_footer_size;
+	forfree.imag.width = out_w;
+	forfree.imag.height = out_h;
+	forfree.imag.format = encoding::RGB565;
+	forfree.imag.footeroffset = rgb565_pixels.size();
+	
+	bclimOut.write(reinterpret_cast<const char*>(rgb565_pixels.data()), rgb565_pixels.size());
+	
+	write_footer(&bclimOut, &forfree);
 	return 0;
 }

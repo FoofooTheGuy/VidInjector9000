@@ -9,6 +9,7 @@
 #include "strings.hpp"
 #include "banner.hpp"
 #include "image.hpp"
+#include "clim.hpp"
 
 #include <nnc/swizzle.h>
 #include <nnc/smdh.h>
@@ -19,6 +20,9 @@
 #include <bannerMagic_bin.hpp>
 #include <bimgheader_bin.hpp>
 
+/* basically the same as crop_pixels
+just make sure every image has the same amount of channels (num_channels)
+*/
 void resize_crop(const uint8_t* input_pixels, int input_w, int input_h, uint8_t* output_pixels, int output_w, int output_h, int num_channels);
 
 int generateBlankBanner(std::string &outfile);
@@ -40,7 +44,7 @@ uint8_t convertToIcon(const std::string input, std::string output, std::string s
 
 /*make clim (for custom Title_rogo)
 input: path of image file
-outBuffer: 400 * 240 * 2 + (size of footer)
-because that's what this actually does
+output: Title_Rogo.bclim out
+output image will be rgb565 and resized to 400x240
 */
-uint8_t convertToClim(const std::string input, uint8_t* outBuffer);
+uint8_t convertToClim(const std::string input, const std::string output);

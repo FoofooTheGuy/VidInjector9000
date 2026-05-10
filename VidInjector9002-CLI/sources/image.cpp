@@ -70,7 +70,7 @@ void ToRGB(const uint8_t* input, uint8_t* output, int width, int height, int cha
 	}
 }
 
-//only works if the foreground image is larger than the background image
+// only works if the foreground image is larger than the background image
 void layer_pixels(uint8_t* out, const uint8_t* foreground, const uint8_t* background, int forewidth, int foreheight, int forechannels, int backwidth, int backheight, int backchannels, int x_offset, int y_offset) {
 	std::vector<uint8_t> foreground_4c(forewidth * foreheight * 4);
 	std::vector<uint8_t> background_4c(backwidth * backheight * 4);
@@ -82,7 +82,7 @@ void layer_pixels(uint8_t* out, const uint8_t* foreground, const uint8_t* backgr
 	for (int y = 0; y < foreheight; y++)
 		for (int x = 0; x < forewidth; x++) {
 			if (x >= x_offset && x < forewidth - x_offset && y >= y_offset && y < backheight + y_offset) {
-				//https://stackoverflow.com/a/64655571
+				// https://stackoverflow.com/a/64655571
 				uint8_t alpha_out = foreground_4c.at((y * foreheight + x) * 4 + 3) + (background_4c.at(((y - y_offset) * backwidth + (x - x_offset)) * 4 + 3) * (FF - foreground_4c.at((y * foreheight + x) * 4 + 3)) / FF);
 				for (int ch = 0; ch < 3; ch++)
 					out[(y * forewidth + x) * 4 + ch] = (foreground_4c.at((y * forewidth + x) * 4 + ch) * foreground_4c.at((y * forewidth + x) * 4 + 3) + background_4c.at(((y - y_offset) * backwidth + (x - x_offset)) * 4 + ch) * FF * (FF - foreground_4c.at((y * forewidth + x) * 4 + 3)) / FF) / alpha_out;

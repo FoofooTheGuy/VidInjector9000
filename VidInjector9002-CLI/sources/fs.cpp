@@ -439,7 +439,7 @@ int make_Bimgs(const VI9Pparameters& parameters, const std::string& romfsPath, c
 	std::error_code error;
 	
 	for (int i = dopatch ? parameters.splitPos : 0; i < ((parameters.splitPos && !dopatch) ? parameters.splitPos : parameters.rows); i++) {
-		std::vector<uint8_t> bimg = std::vector<uint8_t>(256 * 128 * sizeof(nnc_u16) + 0x20);
+		std::vector<uint8_t> bimg(256 * 128 * sizeof(nnc_u16) + 0x20);
 		
 		std::cout << CreatingFile << " romfs/movie/movie_" << std::to_string(i) << ".bimg" << std::endl;
 		
@@ -487,15 +487,15 @@ int make_U_Title(const VI9Pparameters& parameters, const std::string& romfsPath,
 	std::string U_Title_file = romfsPath + "/layout/U_Title.arc.l";
 	std::error_code error;
 	
-	std::cout << CreatingFile << " romfs/layout/U_Title.arc.l" << std::endl;
+	std::cout << CreatingFile << ' ' << U_Title_file << std::endl;
 	
 	if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(U_Title_file).c_str()), error)) {
 		std::cout << ErrorText << ' ' << FailedToFindPath << '\n' << FailedToCreateFile << ' ' << U_Title_file << std::endl;
-		return 34;
+		return 35;
 	}
 	if(error) {
 		std::cout << ErrorText << ' ' << romfsPath + U_Title_file << '\n' << error.message() << std::endl;
-		return 35;
+		return 36;
 	}
 	
 	// load data
@@ -536,7 +536,10 @@ int make_U_Title(const VI9Pparameters& parameters, const std::string& romfsPath,
 	}
 	// convert image to Title_rogo
 	{
-		
+		ret = convertToClim(parameters.MBannerVec.at(0), std::string(tempPath + "/U_Title/timg/Title_rogo.bclim").c_str());
+		if(ret == 0) { // the custom image is real
+			
+		}
 	}
 	// build darc
 	

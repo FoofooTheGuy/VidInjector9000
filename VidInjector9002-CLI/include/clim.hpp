@@ -1,7 +1,10 @@
 #pragma once
 
 #include <cstdint>
+#include <vector>
+#include <fstream>
 
+// this should probably be a own class
 // https://problemkaputt.de/gbatek-3ds-files-video-layout-images-clim-flim.htm
 enum encoding {
     L8, // 0
@@ -20,9 +23,9 @@ enum encoding {
     A4, // D
 };
 
-struct chunk {
-    char imag[4];
-    uint32_t chunksize;
+struct block {
+    char magic[4] = {'i', 'm', 'a', 'g'};
+    uint32_t chunksize = 0x10;
     uint16_t width;
     uint16_t height;
     uint8_t format;
@@ -33,11 +36,13 @@ struct chunk {
 };
 
 struct footer {
-    char clim[4];
-    uint8_t endianess[2];
-    uint32_t footersize;
-    uint16_t version;
+    char magic[4] = {'C', 'L', 'I', 'M'};
+    uint8_t endianess[2] = {0xFF, 0xFE};
+    uint32_t footersize = 0x14;
+    uint16_t version = 0x0202;
     uint32_t filesize;
-    uint32_t blockcount;
-    chunk imag;
+    uint32_t blockcount = 1;
+    block imag;
 };
+
+void write_footer(std::ofstream *out, const footer *clim);
