@@ -402,17 +402,23 @@ int make_Moflex(const VI9Pparameters& parameters, const std::string& romfsPath, 
 			case 2: {
 				std::cout << CopyingMoflex << ' ' << std::to_string(i + 1) << '/' << std::to_string(parameters.rows) << std::endl;
 				//std::error_code error;
-				std::string moflexFile = parameters.PTitleVec.at(i) + ".moflex";
-				/*size_t start = parameters.MoflexVec.at(i).find_last_of("\\/");
-				if (start == std::string::npos) { // no path
-					moflexFile = parameters.MoflexVec.at(i);
-					std::cout << moflexFile << std::endl;
+				
+				std::string moflexFile = "";
+				if(parameters.PTitleVec.at(i).empty()) {
+					size_t start = parameters.MoflexVec.at(i).find_last_of("\\/");
+					if (start == std::string::npos) { // no path
+						moflexFile = parameters.MoflexVec.at(i);
+						std::cout << moflexFile << std::endl;
+					}
+					else {
+						moflexFile = parameters.MoflexVec.at(i);
+						moflexFile.erase(moflexFile.begin(), moflexFile.begin() + start);
+						std::cout << moflexFile << std::endl;
+					}
 				}
-				else {
-					moflexFile = parameters.MoflexVec.at(i);
-					moflexFile.erase(moflexFile.begin(), moflexFile.begin() + start);
-					std::cout << moflexFile << std::endl;
-				}*/
+				else { // rename to player title
+					moflexFile = parameters.PTitleVec.at(i) + ".moflex";
+				}
 				
 				error = copyfile(parameters.MoflexVec.at(i).c_str(), std::string(romfsPath + '/' + moflexFile).c_str());
 				if (error) {
