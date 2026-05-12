@@ -3,7 +3,7 @@
 CLI="../build/VidInjector9002-CLI"
 
 # set Ptitles
-${CLI} -set_parameter out/a.vi9p 12 'ONE あ' out/a.vi9p
-${CLI} -set_parameter out/a.vi9p 13 'TWO あ \hi' out/a.vi9p
-${CLI} -set_parameter out/a.vi9p 14 'THREE あ \ncool' out/a.vi9p
-${CLI} -set_parameter out/a.vi9p 15 'FOUR あ' out/a.vi9p
+${CLI} -set_parameter out/a.vi9p 12 '9 ONE あ' out/a.vi9p
+${CLI} -set_parameter out/a.vi9p 13 '8 TWO あ \hi' out/a.vi9p
+${CLI} -set_parameter out/a.vi9p 14 '7 THREE あ \ncool' out/a.vi9p
+${CLI} -set_parameter out/a.vi9p 15 '6 FOUR あ' out/a.vi9p
