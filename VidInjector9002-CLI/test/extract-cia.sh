@@ -3,4 +3,4 @@
 CLI="../build/VidInjector9002-CLI"
 
 # extract
-${CLI} -extract_cia out/a.cia out/a
+valgrind --leak-check=full ${CLI} -extract_cia out/a.cia out/a
