@@ -332,10 +332,12 @@ int extractCIA(const std::string& inArc, const std::string& outDir, const std::s
 	
 	res = nnc_get_info(&ctx, &info, "/");
 	if (res != NNC_R_OK)
-		goto end2;
+		goto end3;
 	
 	extractErr = extract_dir(&ctx, &info, romfspath.c_str(), romfspath.size());
 	
+	end3:
+		nnc_free_romfs(&ctx);
 	end2:
 		NNC_RS_CALL0(ncch, close);
 	end1:
@@ -442,10 +444,10 @@ std::string extract_dir(nnc_romfs_ctx* ctx, nnc_romfs_info* info, const char* pa
 	while (nnc_romfs_next(&it, &ent))
 	{
 		std::string dir(nnc_romfs_info_filename(ctx, &ent));
-		//std::string extension = dir;
-		//if (extension.find_last_of(".") != std::string::npos)
-		//	extension.erase(extension.begin(), extension.begin() + extension.find_last_of("."));
-		if (ent.type == nnc_romfs_info::NNC_ROMFS_DIR && strcmp(dir.c_str(), "movie") != 0 && strcmp(dir.c_str(), "settings") != 0) {// R.I.P. to all the files that we do not care about
+		/*std::string extension = dir;
+		if (extension.find_last_of(".") != std::string::npos)
+			extension.erase(extension.begin(), extension.begin() + extension.find_last_of("."));*/
+		if (ent.type == nnc_romfs_info::NNC_ROMFS_DIR && strcmp(dir.c_str(), "movie") != 0 && strcmp(dir.c_str(), "settings") != 0 && strcmp(dir.c_str(), "layout") != 0) { // R.I.P. to all the files that we do not care about
 			continue;
 		}
 		strcpy(pathbuf + len, dir.c_str());

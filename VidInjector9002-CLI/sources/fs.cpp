@@ -356,11 +356,13 @@ int make_Moflex(const VI9Pparameters& parameters, const std::string& romfsPath, 
 				return 21;
 			}
 		}
-		std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie").c_str()), error);
-		if (error) {
-			std::cout << ErrorText << ' ' << romfsPath + "/movie" << '\n' << error.message() << std::endl;
-			std::cout << ErrorText << ' ' << FailedToCreateFile << " \"" << (dopatch ? outTAR : outCIA) << '\"' << std::endl;
-			return 22;
+		if(parameters.mode < 2) {
+			std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie").c_str()), error);
+			if (error) {
+				std::cout << ErrorText << ' ' << romfsPath + "/movie" << '\n' << error.message() << std::endl;
+				std::cout << ErrorText << ' ' << FailedToCreateFile << " \"" << (dopatch ? outTAR : outCIA) << '\"' << std::endl;
+				return 22;
+			}
 		}
 		switch(parameters.mode) {
 			case 0: {
