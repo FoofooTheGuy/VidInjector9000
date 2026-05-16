@@ -93,7 +93,6 @@ int generate_preview(std::string inpath, uint8_t number, std::string outpath) {
 	return res;
 }
 
-
 std::error_code Generate_Files(std::string dir, int mode) {
 	std::error_code error;
 	if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*dir.c_str()), error)) {
@@ -165,7 +164,7 @@ uint32_t RandomTID() {
 	uint32_t TID = 0;
 	static std::mt19937 rng;
 
-	while (!TIDisValid(TID)) {//loop until we get a good value
+	while (!TIDisValid(TID)) { // loop until we get a good value
 		rng.seed(static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count()));
 		std::uniform_int_distribution<unsigned long> uniform(min, max);
 		TID = uniform(rng);
@@ -223,7 +222,7 @@ int SetSMDH(std::string inpath, std::string Newicon, std::string outpath) {
 }
 
 int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, uint32_t uniqueID, std::string ApplicationName, std::string ProductCode) {
-	//default finalization stuff
+	// default finalization stuff
 	/*uint32_t uniqueID = RandomTID();
 	std::string ApplicationName = "video";
 	std::string ProductCode = "VDIJ";*/
@@ -428,14 +427,14 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 	}
 	// U_Title.bclim
 	{
-		int ret = get_U_Title(&parameters, romfspath);
+		int ret = get_U_Title(&parameters, outDir);
 		
 		if (ret) {
 			return ret;
 		}
 	}
 	// information_buttons.csv
-	{
+	if (parameters.mode < 2) {
 		int ret = get_information_buttons(&parameters, romfspath);
 		
 		if (ret) {
@@ -444,7 +443,7 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 	}
 	bool good = true;
 	// copyright.txt
-	{
+	if (parameters.mode < 2) {
 		int ret = get_copyright(&parameters, romfspath);
 		
 		if (ret) {
@@ -460,7 +459,7 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 		(void)setIcon(std::string(exefspath + "/icon.bin").c_str(), &parameters.Sname, &parameters.Lname, &parameters.publisher);
 	}
 	// settingsTL.csv
-	{
+	if (parameters.mode < 2) {
 		int ret = get_settingsTL(&parameters, romfspath);
 		
 		if (ret) {
@@ -468,7 +467,7 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 		}
 	}
 	// movie_bnrname.csv
-	{
+	if (parameters.mode < 2) {
 		int ret = get_movie_bnrname(&parameters, romfspath);
 		
 		if (ret) {
@@ -476,7 +475,7 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 		}
 	}
 	// movie_title.csv
-	{
+	if (parameters.mode < 2) {
 		int ret = get_movie_title(&parameters, romfspath);
 		
 		if (ret) {
@@ -485,22 +484,10 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 	}
 	// set moflex files
 	{
-		if (parameters.mode == 2) {
-			
-		}
-		else if (parameters.mode < 2) {
-			if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfspath + "/movie/movie.moflex").c_str()))) { // single video only has this
-				parameters.MoflexVec.push_back(std::string(romfspath + "/movie/movie.moflex"));
-				if (parameters.rows > 1) {
-					parameters.rows = 1;
-				}
-			}
-			else {
-				for (int i = 0; i < parameters.rows; i++) {
-					parameters.MoflexVec.push_back(std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfspath + "/movie/movie_" + std::to_string(i) + ".moflex").c_str())) ? std::string(romfspath + "/movie/movie_" + std::to_string(i) + ".moflex") : "");
-					std::cout << (std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfspath + "/movie/movie_" + std::to_string(i) + ".moflex").c_str())) ? std::string(romfspath + "/movie/movie_" + std::to_string(i) + ".moflex") : "") << std::endl;
-				}
-			}
+		int ret = get_moflex(&parameters, romfspath);
+		
+		if (ret) {
+			good = false;
 		}
 	}
 	

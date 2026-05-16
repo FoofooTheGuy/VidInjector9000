@@ -102,9 +102,10 @@ int UTF16fileToUTF8str(const std::string path, T* out) {
 	return 0;
 }
 
-int get_U_Title(const VI9Pparameters* parameters, const std::string& romfsPath);
+int get_U_Title(VI9Pparameters* parameters, const std::string& romfsPath);
 int get_information_buttons(VI9Pparameters* parameters, const std::string& romfsPath);
 int get_copyright(VI9Pparameters* parameters, const std::string& romfsPath);
 int get_settingsTL(VI9Pparameters* parameters, const std::string& romfsPath);
 int get_movie_bnrname(VI9Pparameters* parameters, const std::string& romfsPath);
 int get_movie_title(VI9Pparameters* parameters, const std::string& romfsPath);
+int get_moflex(VI9Pparameters* parameters, const std::string& romfsPath);

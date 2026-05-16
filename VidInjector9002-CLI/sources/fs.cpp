@@ -489,7 +489,6 @@ int make_Bimgs(const VI9Pparameters& parameters, const std::string& romfsPath, c
 	return 0;
 }
 
-
 int make_U_Title(const VI9Pparameters& parameters, const std::string& romfsPath, const std::string& tempPath) {
 	std::string U_Title_file = romfsPath + "/layout/U_Title.arc.l";
 	std::error_code error;
@@ -686,7 +685,52 @@ int make_Banner(const VI9Pparameters& parameters, const std::string& tempPath) {
 	return ret;
 }
 
-int get_U_Title(const VI9Pparameters* parameters, const std::string& romfsPath) {
+int get_U_Title(VI9Pparameters* parameters, const std::string& outDir) {
+	std::string U_Title_file = outDir + "/romfs/layout/U_Title.arc.l";
+	
+	if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(U_Title_file).c_str()))) {
+		std::cout << "U_Title.arc.l" << std::endl;
+		
+		std::error_code error;
+		
+		// load data
+		{
+			std::ifstream U_Title_stream(std::string(U_Title_file).c_str(), std::ios_base::binary | std::ios_base::ate);
+			auto size = U_Title_stream.tellg();
+			std::vector<uint8_t> lzFile(size);
+			U_Title_stream.seekg(0);
+			U_Title_stream.read(reinterpret_cast<char*>(lzFile.data()), size);
+			U_Title_stream.close();
+			
+			// decompress .arc.l
+			uint32_t decompressedsize = Get_Decompressed_size(lzFile.data());
+			if (decompressedsize == 0xFFFFFFFF) {
+				return 0;
+			}
+			std::cout << size << std::endl;
+			std::cout << decompressedsize << std::endl;
+			
+			std::vector<uint8_t> U_Title_decomp(decompressedsize);
+			
+			if (DecompressLZ11(lzFile.data(), U_Title_decomp.data()) == 0xFFFFFFFF) {
+				return 0;
+			}
+			
+			std::ofstream darcfile(std::string(outDir + "/U_Title.arc").c_str(), std::ios_base::out | std::ios_base::binary);
+			darcfile.write(reinterpret_cast<const char*>(U_Title_decomp.data()), U_Title_decomp.size());
+			darcfile.close();
+		}
+		// extract darc
+		{
+			int ret = extract_darc(std::string(outDir + "/U_Title.arc").c_str(), std::string(outDir + "/U_Title").c_str());
+			if(ret) {
+				std::cout << ErrorText << ' ' << FailedToCreateDirectory << ' ' << outDir << "/U_Title\n(" << std::to_string(ret) << ')' << std::endl;
+				return 0;
+			}
+		}
+		parameters->MBannerVec.push_back(outDir + "/U_Title/timg/Title_rogo.bclim");
+		parameters->mode = 2;
+	}
 	
 	return 0;
 }
@@ -844,6 +888,28 @@ int get_movie_title(VI9Pparameters* parameters, const std::string& romfsPath) {
 		}
 		else {
 			parameters->PTitleVec.push_back(output.at(i));
+		}
+	}
+	
+	return 0;
+}
+
+int get_moflex(VI9Pparameters* parameters, const std::string& romfsPath) {
+	if (parameters->mode == 2) {
+		
+	}
+	else if (parameters->mode < 2) {
+		if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie/movie.moflex").c_str()))) { // single video only has this
+			parameters->MoflexVec.push_back(std::string(romfsPath + "/movie/movie.moflex"));
+			if (parameters->rows > 1) {
+				parameters->rows = 1;
+			}
+		}
+		else {
+			for (int i = 0; i < parameters->rows; i++) {
+				parameters->MoflexVec.push_back(std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie/movie_" + std::to_string(i) + ".moflex").c_str())) ? std::string(romfsPath + "/movie/movie_" + std::to_string(i) + ".moflex") : "");
+				std::cout << (std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie/movie_" + std::to_string(i) + ".moflex").c_str())) ? std::string(romfsPath + "/movie/movie_" + std::to_string(i) + ".moflex") : "") << std::endl;
+			}
 		}
 	}
 	
