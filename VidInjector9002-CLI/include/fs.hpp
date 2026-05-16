@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <iostream>
 #include <fstream>
+#include <chrono>
 
 #include "darc_stuff.hpp"
 #include "stbiStuff.hpp"

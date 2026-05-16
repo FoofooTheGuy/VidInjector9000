@@ -1,12 +1,15 @@
 #include "vi9p.hpp"
 
 int saveParameters(std::string parampath, VI9Pparameters parameters) {
-	if((parameters.PTitleVec.size() & 0xFF) < parameters.rows)
-		parameters.PTitleVec = std::vector<std::string>(parameters.rows, "");
-	if((parameters.MoflexVec.size() & 0xFF) < parameters.rows)
-		parameters.MoflexVec = std::vector<std::string>(parameters.rows, "");
-	if((parameters.MBannerVec.size() & 0xFF) < parameters.rows)
-		parameters.MBannerVec = std::vector<std::string>(parameters.rows, "");
+	while((parameters.PTitleVec.size() & 0xFF) < parameters.rows) {
+		parameters.PTitleVec.push_back("");
+	}
+	while((parameters.MoflexVec.size() & 0xFF) < parameters.rows) {
+		parameters.MoflexVec.push_back("");
+	}
+	while((parameters.MBannerVec.size() & 0xFF) < parameters.rows) {
+		parameters.MBannerVec.push_back("");
+	}
 	std::ofstream outparams(std::filesystem::path((const char8_t*)&*parampath.c_str()), std::ios_base::out | std::ios_base::binary);
 	outparams <<
 		StrVerParam << "=" << "\x1F" << VI9PVER << "\x1F" << "\n" <<

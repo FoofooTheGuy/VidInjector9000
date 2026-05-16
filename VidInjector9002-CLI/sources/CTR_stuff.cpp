@@ -387,9 +387,11 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 	parameters.PTitleVec.clear();
 	parameters.MoflexVec.clear();
 	parameters.MBannerVec.clear();
+	parameters.rows = 0;
 	
-	if (std::filesystem::path((const char8_t*)&*outDir.c_str()).is_relative())
+	if (std::filesystem::path((const char8_t*)&*outDir.c_str()).is_relative()) {
 		outDir = std::filesystem::absolute(std::filesystem::path((const char8_t*)&*outDir.c_str())).string();
+	}
 	
 	std::string tempPath = resourcesPath + "/CLItemp";
 	std::string exportsPath = tempPath + "/exports";

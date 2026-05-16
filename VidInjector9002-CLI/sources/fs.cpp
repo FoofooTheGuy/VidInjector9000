@@ -687,6 +687,7 @@ int make_Banner(const VI9Pparameters& parameters, const std::string& tempPath) {
 
 int get_U_Title(VI9Pparameters* parameters, const std::string& outDir) {
 	std::string U_Title_file = outDir + "/romfs/layout/U_Title.arc.l";
+	std::string extract_path = outDir + "/U_Title";
 	
 	if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(U_Title_file).c_str()))) {
 		std::cout << "U_Title.arc.l" << std::endl;
@@ -716,19 +717,19 @@ int get_U_Title(VI9Pparameters* parameters, const std::string& outDir) {
 				return 0;
 			}
 			
-			std::ofstream darcfile(std::string(outDir + "/U_Title.arc").c_str(), std::ios_base::out | std::ios_base::binary);
+			std::ofstream darcfile(std::string(extract_path + ".arc").c_str(), std::ios_base::out | std::ios_base::binary);
 			darcfile.write(reinterpret_cast<const char*>(U_Title_decomp.data()), U_Title_decomp.size());
 			darcfile.close();
 		}
 		// extract darc
 		{
-			int ret = extract_darc(std::string(outDir + "/U_Title.arc").c_str(), std::string(outDir + "/U_Title").c_str());
+			int ret = extract_darc(std::string(extract_path + ".arc").c_str(), std::string(extract_path).c_str());
 			if(ret) {
-				std::cout << ErrorText << ' ' << FailedToCreateDirectory << ' ' << outDir << "/U_Title\n(" << std::to_string(ret) << ')' << std::endl;
+				std::cout << ErrorText << ' ' << FailedToCreateDirectory << ' ' << extract_path << "\n(" << std::to_string(ret) << ')' << std::endl;
 				return 0;
 			}
 		}
-		parameters->MBannerVec.push_back(outDir + "/U_Title/timg/Title_rogo.bclim");
+		parameters->MBannerVec.push_back(extract_path + "/timg/Title_rogo.bclim");
 		parameters->mode = 2;
 	}
 	
@@ -896,7 +897,36 @@ int get_movie_title(VI9Pparameters* parameters, const std::string& romfsPath) {
 
 int get_moflex(VI9Pparameters* parameters, const std::string& romfsPath) {
 	if (parameters->mode == 2) {
-		
+		std::error_code error;
+		std::filesystem::path dir = romfsPath;
+		for (const auto& entry : std::filesystem::directory_iterator(dir)) {
+			if (std::filesystem::is_regular_file(entry, error)) {
+				// https://stackoverflow.com/a/68593141
+				std::filesystem::file_time_type fileTime = std::filesystem::last_write_time(entry.path());
+				std::chrono::time_point systemTime = std::chrono::clock_cast<std::chrono::system_clock>(fileTime);
+				time_t time = std::chrono::system_clock::to_time_t(systemTime);
+				
+				std::cout << time << " : " << entry.path().filename() << std::endl;
+				
+				uint8_t Checker[4];
+				std::string extension = entry.path().string();
+				if (extension.find_last_of(".") != std::string::npos) {
+					extension.erase(extension.begin(), extension.begin() + extension.find_last_of("."));
+				}
+				std::ifstream inmoflex(std::filesystem::path((const char8_t*)&*entry.path().string().c_str()), std::ios_base::in | std::ios::binary);
+				for (int j = 0; j < 4; j++) {
+					inmoflex >> Checker[j]; // https://stackoverflow.com/a/2974735
+					if (extension != ".moflex" || Checker[j] != moflexMagic_bin_data[j]) {
+						continue;
+					}
+				}
+				parameters->MoflexVec.push_back(entry.path().string());
+				parameters->rows++;
+			}
+			if (error) {
+				std::cout << ErrorText << ' ' << entry.path().filename() << '\n' << error.message() << std::endl;
+			}
+		}
 	}
 	else if (parameters->mode < 2) {
 		if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/movie/movie.moflex").c_str()))) { // single video only has this
