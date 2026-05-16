@@ -895,16 +895,22 @@ int get_movie_title(VI9Pparameters* parameters, const std::string& romfsPath) {
 	return 0;
 }
 
+// https://stackoverflow.com/a/61067330
+template <typename TP>
+std::time_t to_time_t(TP tp)
+{
+    auto sctp = std::chrono::time_point_cast<std::chrono::system_clock::duration>(tp - TP::clock::now() + std::chrono::system_clock::now());
+    return std::chrono::system_clock::to_time_t(sctp);
+}
+
 int get_moflex(VI9Pparameters* parameters, const std::string& romfsPath) {
 	if (parameters->mode == 2) {
 		std::error_code error;
 		std::filesystem::path dir = romfsPath;
 		for (const auto& entry : std::filesystem::directory_iterator(dir)) {
 			if (std::filesystem::is_regular_file(entry, error)) {
-				// https://stackoverflow.com/a/68593141
 				std::filesystem::file_time_type fileTime = std::filesystem::last_write_time(entry.path());
-				std::chrono::time_point systemTime = std::chrono::clock_cast<std::chrono::system_clock>(fileTime);
-				time_t time = std::chrono::system_clock::to_time_t(systemTime);
+				time_t time = to_time_t<std::filesystem::file_time_type>(fileTime);
 				
 				std::cout << time << " : " << entry.path().filename() << std::endl;
 				
