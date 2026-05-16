@@ -17,3 +17,5 @@ void write_footer(std::ofstream *out, const footer *clim) {
 	out->write(reinterpret_cast<const char*>(&clim->imag.reserved2), sizeof(clim->imag.reserved2));
 	out->write(reinterpret_cast<const char*>(&clim->imag.footeroffset), sizeof(clim->imag.footeroffset));
 }
+
+//void read_footer();

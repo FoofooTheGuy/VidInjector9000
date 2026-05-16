@@ -686,6 +686,11 @@ int make_Banner(const VI9Pparameters& parameters, const std::string& tempPath) {
 	return ret;
 }
 
+int get_U_Title(const VI9Pparameters* parameters, const std::string& romfsPath) {
+	
+	return 0;
+}
+
 int get_information_buttons(VI9Pparameters* parameters, const std::string& romfsPath) { // should this return uint8_t to save 3 bytes of memory? :>
 	std::vector<std::string> trimmed;
 	

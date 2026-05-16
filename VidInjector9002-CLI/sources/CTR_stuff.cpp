@@ -426,6 +426,14 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 			return ret;
 		}
 	}
+	// U_Title.bclim
+	{
+		int ret = get_U_Title(&parameters, romfspath);
+		
+		if (ret) {
+			return ret;
+		}
+	}
 	// information_buttons.csv
 	{
 		int ret = get_information_buttons(&parameters, romfspath);
@@ -469,7 +477,7 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 	}
 	// movie_title.csv
 	{
-		int ret = get_movie_bnrname(&parameters, romfspath);
+		int ret = get_movie_title(&parameters, romfspath);
 		
 		if (ret) {
 			good = false;
@@ -477,16 +485,21 @@ int extract_archive(std::string inArc, std::string outDir, bool dopatch, std::st
 	}
 	// set moflex files
 	{
-		if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfspath + "/movie/movie.moflex").c_str()))) { // single video only has this
-			parameters.MoflexVec.push_back(std::string(romfspath + "/movie/movie.moflex"));
-			if (parameters.rows > 1) {
-				parameters.rows = 1;
-			}
+		if (parameters.mode == 2) {
+			
 		}
-		else {
-			for (int i = 0; i < parameters.rows; i++) {
-				parameters.MoflexVec.push_back(std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfspath + "/movie/movie_" + std::to_string(i) + ".moflex").c_str())) ? std::string(romfspath + "/movie/movie_" + std::to_string(i) + ".moflex") : "");
-				std::cout << (std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfspath + "/movie/movie_" + std::to_string(i) + ".moflex").c_str())) ? std::string(romfspath + "/movie/movie_" + std::to_string(i) + ".moflex") : "") << std::endl;
+		else if (parameters.mode < 2) {
+			if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfspath + "/movie/movie.moflex").c_str()))) { // single video only has this
+				parameters.MoflexVec.push_back(std::string(romfspath + "/movie/movie.moflex"));
+				if (parameters.rows > 1) {
+					parameters.rows = 1;
+				}
+			}
+			else {
+				for (int i = 0; i < parameters.rows; i++) {
+					parameters.MoflexVec.push_back(std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfspath + "/movie/movie_" + std::to_string(i) + ".moflex").c_str())) ? std::string(romfspath + "/movie/movie_" + std::to_string(i) + ".moflex") : "");
+					std::cout << (std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(romfspath + "/movie/movie_" + std::to_string(i) + ".moflex").c_str())) ? std::string(romfspath + "/movie/movie_" + std::to_string(i) + ".moflex") : "") << std::endl;
+				}
 			}
 		}
 	}
