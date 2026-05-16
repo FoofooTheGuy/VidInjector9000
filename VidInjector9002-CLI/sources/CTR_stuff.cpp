@@ -96,9 +96,6 @@ int generate_preview(std::string inpath, uint8_t number, std::string outpath) {
 std::error_code Generate_Files(std::string dir, int mode) {
 	std::error_code error;
 	if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*dir.c_str()), error)) {
-		if (error) {
-			return error;
-		}
 		std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*dir.c_str()), error);
 	}
 	if (error) {
@@ -106,16 +103,16 @@ std::error_code Generate_Files(std::string dir, int mode) {
 	}
 	miniz_cpp::zip_file file;
 	if(mode == 0) {
-			file.load(single_zip_data);
+		file.load(single_zip_data);
 	}
 	else if(mode == 1) {
-			file.load(multi_zip_data);
+		file.load(multi_zip_data);
 	}
 	else if(mode == 2) {
-			file.load(extended_zip_data);
+		file.load(extended_zip_data);
 	}
 	std::vector<std::string> list = file.namelist();
-	for (auto& member : list) {//plant seeds
+	for (auto& member : list) { // plant seeds
 		if (member.find_last_of("/") == member.size() - 1) {
 			std::filesystem::create_directory(std::filesystem::path((const char8_t*)&*std::string(dir + "/" + member).c_str()), error);
 			if (error) {
@@ -123,7 +120,7 @@ std::error_code Generate_Files(std::string dir, int mode) {
 			}
 		}
 	}
-	file.extractall(dir, list);//grow fruit (don't you mean grow tree?)
+	file.extractall(dir, list); // grow fruit (don't you mean grow tree?)
 	return error;
 }
 
@@ -242,21 +239,25 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 	do {
 		if (dopatch) {
 			romfsPath = tempPath + "/luma/titles/000400000" + uniqueIDstr + "00/romfs";
-			std::cout << romfsPath << std::endl;
+			if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*romfsPath.c_str()), error)) {
+				std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*romfsPath.c_str()), error);
+			}
+			if (error) {
+				std::cout << ErrorText << ' ' << romfsPath << '\n' << error.message() << std::endl;
+				return 7;
+			}
 		}
 		else {
 			romfsPath = tempPath + "/romfs";
 		}
 		// extract base
-		{
+		if(!dopatch) {
 			std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*tempPath.c_str()), error);
 			if (error) {
 				std::cout << ErrorText << ' ' << tempPath << '\n' << error.message() << std::endl;
 				std::cout << ErrorText << ' ' << FailedToCreateFile << " \"" << (dopatch ? outTAR : outCIA) << '\"' << std::endl;
-				return 7;
+				return 8;
 			}
-		}
-		if(!dopatch) {
 			Generate_Files(tempPath.c_str(), parameters.mode);
 		}
 		std::cout << CreatingFile << " romfs" << std::endl;
@@ -302,7 +303,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 		}
 		// set top image (extended multi vid only)
 		if (parameters.mode == 2 && !dopatch) {
-			// only do it if you have set the MBanner (Top image) TODO: fix all these names lol
+			// only do it if you have set the MBanner (Top image) TODO: fix all these parmameter names lol
 			if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*parameters.MBannerVec.at(0).c_str()), error)) {
 				int ret = make_U_Title(parameters, romfsPath, tempPath);
 				

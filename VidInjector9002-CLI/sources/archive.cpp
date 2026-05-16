@@ -288,18 +288,19 @@ int extractCIA(const std::string& inArc, const std::string& outDir, const std::s
 	if (res != NNC_R_OK)
 		goto end2;
 	
-	char pathbuf[2048];
+	//char pathbuf[2048];
 	for (nnc_u8 i = 0; i < NNC_EXEFS_MAX_FILES && nnc_exefs_file_in_use(&headers[i]); ++i)
 	{
 		nnc_exefs_subview(NNC_RSP(&ers), &sv, &headers[i]);
 		
-		const char* fname = NULL;
-		if (strcmp(headers[i].name, "banner") == 0)
+		std::string fname = "";
+		if (strcmp(headers[i].name, "banner") == 0) {
 			fname = "banner.bin";
-		else if (strcmp(headers[i].name, "icon") == 0)
+		}
+		else if (strcmp(headers[i].name, "icon") == 0) {
 			fname = "icon.bin";
-		else
-		{
+		}
+		else {
 			continue;
 		}
 		
@@ -315,10 +316,12 @@ int extractCIA(const std::string& inArc, const std::string& outDir, const std::s
 			std::cout << ErrorText << ' ' << exefspath << '\n' << error.message() << std::endl;
 			return 2;
 		}
-		sprintf(pathbuf, "%s/%s", exefspath.c_str(), fname);
-		FILE* ef = fopen(pathbuf, "wb");
-		if (fwrite(buf.data(), headers[i].size, 1, ef) != 1)
-			std::cout << ErrorText << ' ' << FailedToCreateFile << " \"" << pathbuf << '\"' << std::endl;
+		std::string path(exefspath + '/' + fname);
+		//sprintf(pathbuf, "%s/%s", exefspath.c_str(), fname);
+		FILE* ef = fopen(path.c_str(), "wb");
+		if (fwrite(buf.data(), headers[i].size, 1, ef) != 1) {
+			std::cout << ErrorText << ' ' << FailedToCreateFile << " \"" << path << '\"' << std::endl;
+		}
 		fclose(ef);
 	}
 	

@@ -899,7 +899,7 @@ int get_movie_title(VI9Pparameters* parameters, const std::string& romfsPath) {
 template <typename TP>
 std::time_t to_time_t(TP tp)
 {
-    auto sctp = std::chrono::time_point_cast<std::chrono::system_clock::duration>(tp - TP::clock::now() + std::chrono::system_clock::now());
+    std::chrono::time_point sctp = std::chrono::time_point_cast<std::chrono::system_clock::duration>(tp - TP::clock::now() + std::chrono::system_clock::now());
     return std::chrono::system_clock::to_time_t(sctp);
 }
 
