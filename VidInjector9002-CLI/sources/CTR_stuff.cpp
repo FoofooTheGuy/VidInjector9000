@@ -368,7 +368,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 		else {//TAR creation
 			writeTAR(tempPath, outTAR);
 		}
-		if (parameters.mode && !outTAR.empty() && parameters.splitPos && !dopatch) {
+		if (parameters.mode == 1 && !outTAR.empty() && parameters.splitPos && !dopatch) {
 			dopatch = true;
 		}
 		else if (dopatch) {
@@ -378,7 +378,7 @@ int build_archive(std::string inVi9p, std::string outCIA, std::string outTAR, ui
 	//std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*tempPath.c_str()), error); dude
 	if (error) {
 		std::cout << ErrorText << ' ' << tempPath << '\n' << error.message() << std::endl;
-		//no return becuase nobody cares
+		// no return becuase nobody cares
 	}
 	return res;
 }
