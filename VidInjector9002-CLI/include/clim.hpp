@@ -26,13 +26,13 @@ enum encoding {
 struct block {
     char magic[4] = {'i', 'm', 'a', 'g'};
     uint32_t chunksize = 0x10;
-    uint16_t width;
-    uint16_t height;
-    uint8_t format;
+    uint16_t width = 0;
+    uint16_t height = 0;
+    uint8_t format = 0;
     uint8_t reserved = 0;
     uint8_t reserved1 = 0;
     uint8_t reserved2 = 0;
-    uint32_t footeroffset;
+    uint32_t footeroffset = 0;
 };
 
 struct footer {
@@ -40,9 +40,16 @@ struct footer {
     uint8_t endianess[2] = {0xFF, 0xFE};
     uint32_t footersize = 0x14;
     uint16_t version = 0x0202;
-    uint32_t filesize;
+    uint32_t filesize = 0;
     uint32_t blockcount = 1;
     block imag;
 };
 
 void write_footer(std::ofstream *out, const footer *clim);
+
+/* this will mess with the seek position
+return:
+(file size - footer size): read footer offset
+0: bad, file is too small
+*/
+size_t read_footer(std::ifstream *file, footer *clim);
