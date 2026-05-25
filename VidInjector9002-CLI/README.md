@@ -256,12 +256,14 @@ romfs/lang/
 To remedy this, you can use [lumalocaleswitcher](https://github.com/Possum/LumaLocaleSwitcher/releases/latest).
 
 ## Credits and Stuff
-~~[nnc](https://github.com/MyPasswordIsWeak/nnc)~~ [(my fork of nnc)](https://github.com/FoofooTheGuy/nnc): Converting banner and icon images, packing and unpacking CIA files
+~~[nnc](https://github.com/MyPasswordIsWeak/nnc)~~ [(my fork of nnc)](https://github.com/FoofooTheGuy/nnc): Converting images, packing and unpacking CIA files
 
 [stb image](https://github.com/nothings/stb): Manipulating images
 
 [miniz cpp](https://github.com/tfussell/miniz-cpp): Zip extraction
 
 [microtar](https://github.com/mudita/microtar): TAR reading and writing
+
+[darctool](https://github.com/yellows8/darctool): Writing darc
 
 [3DBrew](https://www.3dbrew.org/): Emotional support
