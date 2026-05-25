@@ -17,7 +17,6 @@
 #include <icon_border24_bin.hpp>
 #include <icon_border48_bin.hpp>
 #include <film_overlay_bin.hpp>
-#include <bannerMagic_bin.hpp>
 #include <bimgheader_bin.hpp>
 
 /*

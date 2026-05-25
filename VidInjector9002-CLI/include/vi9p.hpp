@@ -8,7 +8,7 @@
 #include "formatting.hpp"
 #include "strings.hpp"
 
-#define MAX_ROWS 27
+extern uint8_t MAX_ROWS;
 
 struct VI9Pparameters {
 	std::string ver = VI9PVER;

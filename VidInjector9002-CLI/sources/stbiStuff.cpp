@@ -97,7 +97,7 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 	}
 	for (int i = 0; i < 4; i++) {
 		inbanner >> Checker[i]; // https://stackoverflow.com/a/2974735
-		if (Checker[i] == bannerMagic_bin_data[i]) {
+		if (Checker[i] == "CBMD"[i]) {
 			banner = true;
 		}
 		else {
@@ -116,15 +116,11 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 			uint32_t CGFXoffset = 0;
 			ret = getCBMDInfo(infile, &compressedSize, &decompressedSize, &CGFXoffset);
 			if (ret > 0) {
-				//bannerpreview.image(empty(0, 0));
-				//customnotif.show();
 				return 17;
 			}
 			CGFXdecomp = std::vector<uint8_t>(decompressedSize);
 			ret = CBMDgetCommonCGFX(infile, compressedSize, CGFXoffset, CGFXdecomp.data());
 			if (ret > 0) {
-				//bannerpreview.image(empty(0, 0));
-				//customnotif.show();
 				return 17; // same as the previous one, i guess this will just mean it is a custom banner thus no preview which is fine really
 			}
 		}
@@ -137,8 +133,6 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 		uint32_t size0;
 		ret = getCGFXtextureInfo(CGFXdecomp.data(), "COMMON0", dataOffset0, height0, width0, mipmap0, formatID0, size0);
 		if (ret > 0 || height0 != 0x80 || width0 != 0x100 || formatID0 != 0x3) {
-			//bannerpreview.image(empty(0, 0));
-			//customnotif.show();
 			return 17;
 		}
 
@@ -150,15 +144,11 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 		uint32_t size1;
 		ret = getCGFXtextureInfo(CGFXdecomp.data(), "COMMON1", dataOffset1, height1, width1, mipmap1, formatID1, size1);
 		if (ret > 0 || height1 != 0x80 || width1 != 0x100 || formatID1 != 0xC) {
-			//bannerpreview.image(empty(0, 0));
-			//customnotif.show();
 			return 17;
 		}
 
 		uint32_t hash = CRC32(&CGFXdecomp[dataOffset1], size1); // get COMMON1 hash
 		if (hash != 0x2DB769E8) {
-			//bannerpreview.image(empty(0, 0));
-			//customnotif.show();
 			return 17;
 		}
 		int och = sizeof(nnc_u32);
@@ -171,24 +161,14 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 		// write banner png here
 		std::cout << CreatingFile << ' ' << std::filesystem::absolute(outfile.c_str()) << std::endl;
 		stbi_write_png(outfile.c_str(), film_w, film_h, 4, output_film.data(), 0);
+		
 		if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*outfile.c_str()), error)) {
-			/*int blankret = generateBlankBanner(outfile); // we don't actually want blank banner since it's an output problem
-			if(blankret) {
-				return blankret;
-			}*/
 			return 18;
 		}
 		if (error) {
 			std::cout << ErrorText << ' ' << outfile << '\n' << error.message() << std::endl;
-			/*int blankret = generateBlankBanner(outfile);
-			if(blankret) {
-				return blankret;
-			}*/
 			return 19;
 		}
-		//bannerpreview.image(pixels_to_image(output_film.data(), film_w, film_h, 4));
-		//bannererror.hide();
-		//customnotif.hide();
 		return 0;
 	}
 	std::string extension = infile;
@@ -206,7 +186,6 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 			input.close();
 			for (int i = 0; i < 0x1C; i++) {
 				if (input_data[i] != bimgheader_bin_data[i]) {
-					//setDefaultBannerPreview(bannerpreview, &bannererror);
 					return 20;
 				}
 			}
@@ -220,28 +199,15 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 			std::cout << CreatingFile << ' ' << std::filesystem::absolute(outfile.c_str()) << std::endl;
 			stbi_write_png(outfile.c_str(), film_w, film_h, 4, output_film.data(), 0);
 			if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*outfile.c_str()), error)) {
-				/*int blankret = generateBlankBanner(outfile);
-				if(blankret) {
-					return blankret;
-				}*/
 				return 21;
 			}
 			if (error) {
 				std::cout << ErrorText << ' ' << outfile << '\n' << error.message() << std::endl;
-				/*int blankret = generateBlankBanner(outfile);
-				if(blankret)
-					return blankret;*/
 				return 22;
 			}
-			//bannerpreview.image(pixels_to_image(output_film.data(), film_w, film_h, 4));
-			//bannererror.hide();
-			//customnotif.hide();
-		}
-		else {
-			//setDefaultBannerPreview(bannerpreview, &bannererror);
 		}
 		if (error) {
-			//xtd::forms::message_box::show(*this, xtd::ustring::format("{}\n{}", bannerbox.text(), error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
+			std::cout << ErrorText << ' ' << outfile << '\n' << error.message() << std::endl;
 			return 23;
 		}
 		return 0;
@@ -272,33 +238,19 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 			std::cout << CreatingFile << ' ' << std::filesystem::absolute(outfile.c_str()) << std::endl;
 			stbi_write_png(outfile.c_str(), film_w, film_h, 4, output_film.data(), 0);
 			if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*outfile.c_str()), error)) {
-				/*int blankret = generateBlankBanner(outfile);
-				if(blankret)
-					return blankret;*/
 				return 25;
 			}
 			if (error) {
 				std::cout << ErrorText << ' ' << outfile << '\n' << error.message() << std::endl;
-				/*int blankret = generateBlankBanner(outfile);
-				if(blankret) {
-					return blankret;
-				}*/
 				return 26;
 			}
-			//bannerpreview.image(pixels_to_image(output_film.data(), film_w, film_h, 4));
-			//bannererror.hide();
-			//customnotif.hide();
 			return 0;
 		}
-		/*else { // i dont think we even need this since we do it later anyway
-			int blankret = generateBlankBanner(outfile);
-			return 27 + blankret; // 27 or 55 or 56 (this only happens if input is bad)
-		}*/
 	}
 	//if we got here, something is wrong
 	int blankret = generateBlankBanner(outfile);
 	if (blankret) {
-		return 27 + blankret;
+		return 27 + blankret; // 27 or 55 or 56 (this only happens if input is bad)
 	}
 	return 28;
 }

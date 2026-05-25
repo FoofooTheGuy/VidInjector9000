@@ -619,7 +619,7 @@ int make_Banner(const VI9Pparameters& parameters, const std::string& tempPath) {
 	if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*parameters.banner.c_str()), error)) {
 		for (int i = 0; i < 4; i++) {
 			inbanner >> Checker[i]; // https://stackoverflow.com/a/2974735
-			if (Checker[i] == bannerMagic_bin_data[i]) {
+			if (Checker[i] == "CBMD"[i]) {
 				bannerbool = true;
 			}
 			else {

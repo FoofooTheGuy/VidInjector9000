@@ -1,5 +1,7 @@
 #include "vi9p.hpp"
 
+uint8_t MAX_ROWS = 27;
+
 int saveParameters(std::string parampath, VI9Pparameters parameters) {
 	while((parameters.PTitleVec.size() & 0xFF) < parameters.rows) {
 		parameters.PTitleVec.push_back("");

@@ -14,7 +14,6 @@
 
 #include <bannerfooter_bin.hpp>
 #include <bannerheader_bin.hpp>
-#include <bannerMagic_bin.hpp>
 #include <moflexMagic_bin.hpp>
 #include <U_Title_bclyt.hpp>
 #include <banner_bcwav.hpp>
