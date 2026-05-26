@@ -828,9 +828,9 @@ int get_movie_bnrname(VI9Pparameters* parameters, const std::string& romfsPath) 
 				++parameters->rows;
 			}
 		}
-		if (output.size() > MAX_ROWS) {
-			std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << std::to_string(output.size()) << ")\n" << noMoreThan27 << '.' << std::endl;
-			while (output.size() > MAX_ROWS) {
+		if (output.size() > MAX_ROWS_MULTI) {
+			std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << std::to_string(output.size()) << ")\n" << maximumRows << " (" << MAX_ROWS_MULTI << ')'  << std::endl;
+			while (output.size() > MAX_ROWS_MULTI) {
 				output.pop_back();
 				--parameters->rows;
 			}
@@ -875,9 +875,9 @@ int get_movie_title(VI9Pparameters* parameters, const std::string& romfsPath) {
 		output.push_back(LN);
 		++parameters->rows;
 	}
-	if (output.size() > MAX_ROWS) {
-		std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << std::to_string(output.size()) << ")\n" << noMoreThan27 << '.' << std::endl;
-		while (output.size() > MAX_ROWS) {
+	if (output.size() > MAX_ROWS_MULTI) {
+		std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << std::to_string(output.size()) << ")\n" << maximumRows << " (" << MAX_ROWS_MULTI << ')' << std::endl;
+		while (output.size() > MAX_ROWS_MULTI) {
 			output.pop_back();
 			--parameters->rows;
 		}

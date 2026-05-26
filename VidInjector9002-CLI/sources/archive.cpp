@@ -393,7 +393,7 @@ int extractTAR(const std::string& inArc, const std::string& outDir, VI9Pparamete
 			break;
 		}
 	}
-	for (int i = 0; i < MAX_ROWS; i++) { // uh probably better than checking the string
+	for (int i = 0; i < MAX_ROWS_MULTI; i++) { // uh probably better than checking the string
 		if (std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(lumaromfs + "/movie/movie_" + std::to_string(i) + ".moflex").c_str()))) {
 			parameters->splitPos = i & 0xFF;
 			break;

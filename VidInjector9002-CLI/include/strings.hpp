@@ -114,7 +114,7 @@ extern std::string DirectoryExists;
 extern std::string FailedToConvertImage;
 extern std::string FailedToReadExHeader;
 extern std::string ValueNoChange;
-extern std::string noMoreThan27;
+extern std::string maximumRows;
 extern std::string ParametersLoaded;
 extern std::string SuccessfullyLoaded;
 extern std::string FailedToLoad;

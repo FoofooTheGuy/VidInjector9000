@@ -1,6 +1,7 @@
 #include "vi9p.hpp"
 
-uint8_t MAX_ROWS = 27;
+uint8_t MAX_ROWS = 127;
+uint8_t MAX_ROWS_MULTI = 27;
 
 int saveParameters(std::string parampath, VI9Pparameters parameters) {
 	while((parameters.PTitleVec.size() & 0xFF) < parameters.rows) {
@@ -179,7 +180,7 @@ int loadParameters(std::string parampath, VI9Pparameters* parameters) {
 			good = false;
 		}
 		if ((outrealint & 0xFF) > MAX_ROWS) {
-			std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << outstr << ")\n" << noMoreThan27 << '.' << std::endl;
+			std::cout << ErrorText << ' ' << BadValue << '\n' << BadValue << ": (" << outstr << ")\n" << maximumRows << " (" << MAX_ROWS << ')' << std::endl;
 			outrealint = MAX_ROWS;
 			good = false;
 		}
@@ -402,10 +403,9 @@ int add_row(std::string inpath, std::string outpath) {
 	
 	int res = loadParameters(inpath, &parameters);
 	
-	//mode = 1;//this shouldn't really be done here
-	if(parameters.rows == MAX_ROWS) {
-		std::cout << ErrorText << ' ' << noMoreThan27 << std::endl;
-		return 7;//7 because we used loadParameters
+	if (parameters.rows == MAX_ROWS) {
+		std::cout << ErrorText << ' ' << maximumRows << " (" << MAX_ROWS << ')' << std::endl;
+		return 7; // 7 because we used loadParameters
 	}
 	parameters.rows++;
 	parameters.PTitleVec.push_back("");

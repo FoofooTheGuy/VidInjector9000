@@ -9,6 +9,7 @@
 #include "strings.hpp"
 
 extern uint8_t MAX_ROWS;
+extern uint8_t MAX_ROWS_MULTI;
 
 struct VI9Pparameters {
 	std::string ver = VI9PVER;
