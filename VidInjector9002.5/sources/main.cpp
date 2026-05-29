@@ -20,17 +20,17 @@ int PointsToNativeFontGraphicsUntit(int size) {
 int progmain(int argc, char* argv[]) {
 	AppInitializer appInitializer;
 
-	{//get program dir
+	{// get program dir
 		std::string programpath(std::filesystem::absolute(std::filesystem::path((const char8_t*)&*std::string(argv[0]).c_str())).string());
 		programpath = programpath.substr(0, programpath.find_last_of("\\/"));
 		ProgramDir = wxString::FromUTF8(programpath);
 		//wxMessageBox(ProgramDir);
 	}
 	
-	//load settings and handle errors
+	// load settings and handle errors
 	{
 		std::vector<int> ret = loadSettings();
-		//contain the repetitive setting strings (You will likely want to put your stuff here when adding new Settings)
+		// contain the repetitive setting strings (You will likely want to put your stuff here when adding new Settings)
 		std::vector<std::string> SettingStrings = {
 			IntDefaultLanguage,
 			IntShowLog,
@@ -42,12 +42,15 @@ int progmain(int argc, char* argv[]) {
 		};
 		for(const auto &i : ret) {
 			int cases = 0;
-			if(i == cases++)//0
-				continue;//:)
-			if(i == cases++)//1
-				continue;//uhhh i dont care
-			if(i == cases++)//2
-				continue;//this is actually bad so there should probably be a message here even though it's rare
+			if(i == cases++) { // 0
+				continue; // :)
+			}
+			if(i == cases++) {// 1
+				continue; // uhhh i dont care
+			}
+			if(i == cases++) {// 2
+				continue; // this is actually bad so there should probably be a message here even though it's rare
+			}
 			
 			for(const auto &s : SettingStrings) {
 				(void)s;
@@ -74,17 +77,19 @@ int progmain(int argc, char* argv[]) {
 		
 	}
 	
-	//init widgets
+	// init widgets
 	InitWidgets wid;
 	
-	if(VI9P::WorkingFile.empty())
+	if(VI9P::WorkingFile.empty()) {
 		VI9P::WorkingFile = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "parameters.vi9p";
+	}
 	VI9Pparameters parameters;
 	
-	//apply settings
+	// apply settings
 	if(Settings::ShowLog) {
 		wid.menuItemOptionsLog->Check();
 	}
+	
 	if(Settings::ColorMode == 0) {
 		wid.menuItemOptionsLight->Check();
 	}
@@ -94,6 +99,7 @@ int progmain(int argc, char* argv[]) {
 	else if(Settings::ColorMode == 2) {
 		wid.menuItemOptionsSystem->Check();
 	}
+	
 	if(Settings::DeleteTemp) {
 		wid.menuItemOptionsDeleteTemp->Check();
 	}
@@ -116,7 +122,7 @@ int progmain(int argc, char* argv[]) {
 	setAppearance(&wid, Settings::ColorMode);
 	setCursors(&wid);
 	
-	{//test CLI
+	{ // test CLI
 		wxArrayString output;
 		wxArrayString errors;
 		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + '\"');
@@ -128,44 +134,44 @@ int progmain(int argc, char* argv[]) {
 		}
 		wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 		
-		if(ret != 1) {//1 is the expected return value of that command
+		if(ret != 1) { // 1 is the expected return value of that command
 			wxMessageBox(wxString::FromUTF8(CLIError), wxString::FromUTF8(ErrorText), wxICON_ERROR);
 		}
 	}
 	
 	auto applyAddRows = [&]() {
-		//row stuff is here too
-		//well what do you know... it worked
+		// row stuff is here too
+		// well what do you know... it worked
 		for(const auto &row : wid.PlayerTitles) {
-			row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
-				(void)event;//do as I say not as I do
+			row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) { // memory leak city???
+				(void)event; // do as I say not as I do
 				PlayerTitles_wxEVT_TEXT(&wid, &parameters, row);
 			});
 		}
 		for(const auto &row : wid.MoflexFiles) {
-			row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
+			row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
 				(void)event;
 				MoflexFiles_wxEVT_TEXT(&wid, &parameters, row);
 			});
 		}
 		for(const auto &row : wid.MenuBanners) {
-			row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {//memory leak city???
+			row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
 				(void)event;
 				MenuBanners_wxEVT_TEXT(&wid, &parameters, row);
 			});
-			row->Bind(wxEVT_TEXT_ENTER, [&](wxCommandEvent& event) {//memory leak city???
+			row->Bind(wxEVT_TEXT_ENTER, [&](wxCommandEvent& event) {
 				(void)event;
 				MenuBanners_EVT_TEXT_ENTER(&wid, &parameters, row);
 			});
 		}
 		for(const auto &row : wid.MultiUp) {
-			row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
+			row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 				(void)event;
 				MultiUp_wxEVT_BUTTON(&wid, row);
 			});
 		}
 		for(const auto &row : wid.MultiDown) {
-			row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {//memory leak city???
+			row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 				(void)event;
 				MultiDown_wxEVT_BUTTON(&wid, row);
 			});
@@ -187,7 +193,7 @@ int progmain(int argc, char* argv[]) {
 		VI9P::OutFile = VI9Pfile;
 		
 		std::error_code error;
-		error = copyfile(VI9P::OutFile, VI9P::WorkingFile);//copy chosen file to temp
+		error = copyfile(VI9P::OutFile, VI9P::WorkingFile); // copy chosen file to temp
 		if (error) {
 			wxMessageBox(wxString::FromUTF8(CopyFileError + '\n' + VI9P::OutFile + " -> " +  VI9P::WorkingFile + '\n' + error.message()), wxString::FromUTF8(ErrorText));
 		}
@@ -226,7 +232,7 @@ int progmain(int argc, char* argv[]) {
 		(void)event;
 		bannerBrowse_wxEVT_BUTTON(&wid, &parameters);
 	});
-
+	
 	wid.iconBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
 		(void)event;
 		iconBox_wxEVT_TEXT(&wid, &parameters);
@@ -236,7 +242,7 @@ int progmain(int argc, char* argv[]) {
 		(void)event;
 		iconPreview_wxEVT_BUTTON(&wid, &parameters);
 	});
-
+	
 	wid.iconBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
 		iconBrowse_wxEVT_BUTTON(&wid, &parameters);
@@ -246,7 +252,7 @@ int progmain(int argc, char* argv[]) {
 		(void)event;
 		shortnameBox_wxEVT_TEXT(&wid, &parameters);
 	});
-
+	
 	wid.longnameBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
 		(void)event;
 		longnameBox_wxEVT_TEXT(&wid, &parameters);
@@ -256,22 +262,22 @@ int progmain(int argc, char* argv[]) {
 		(void)event;
 		publisherBox_wxEVT_TEXT(&wid, &parameters);
 	});
-
+	
 	wid.copyBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
 		(void)event;
 		copyBox_wxEVT_TEXT(&wid, &parameters);
 	});
-
+	
 	wid.copyCheck->Bind(wxEVT_CHECKBOX, [&](wxCommandEvent& event) {
 		(void)event;
 		copyCheck_wxEVT_CHECKBOX(&wid, &parameters);
 	});
-
+	
 	wid.ffRewindCheck->Bind(wxEVT_CHECKBOX, [&](wxCommandEvent& event) {
 		(void)event;
 		ffRewindCheck_wxEVT_CHECKBOX(&wid, &parameters);
 	});
-
+	
 	wid.dimCheck->Bind(wxEVT_CHECKBOX, [&](wxCommandEvent& event) {
 		(void)event;
 		dimCheck_wxEVT_CHECKBOX(&wid, &parameters);
@@ -281,24 +287,24 @@ int progmain(int argc, char* argv[]) {
 		(void)event;
 		multiBannerPreview_wxEVT_BUTTON(&wid, &parameters);
 	});
-
+	
 	wid.multiBannerPreviewLeft->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
 		multiBannerPreviewLeft_wxEVT_BUTTON(&wid, &parameters);
 	});
-
+	
 	wid.multiBannerPreviewRight->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
 		multiBannerPreviewRight_wxEVT_BUTTON(&wid, &parameters);
 	});
 	
-	applyAddRows();//make sure the row info is ok before we add events to it
+	applyAddRows(); // make sure the row info is ok before we add events to it
 	
 	wid.moflexBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
 		moflexBrowse_wxEVT_BUTTON(&wid, &parameters);
 	});
-
+	
 	wid.multiBannerBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
 		multiBannerBrowse_wxEVT_BUTTON(&wid, &parameters);
@@ -309,12 +315,13 @@ int progmain(int argc, char* argv[]) {
 		removeRow_wxEVT_BUTTON(&wid, &parameters);
 	});
 	
-	//add row
+	// add row
 	wid.appendRow->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		if(!wid.appendRow->IsEnabled())
+		if(!wid.appendRow->IsEnabled()) {
 			return;
-		wid.removeRow->Enable(false);//disable so you cant press it too much
+		}
+		wid.removeRow->Enable(false); // disable so you cant press it too much
 		wid.appendRow->Enable(false);
 		
 		addRows(&wid, &parameters);
@@ -356,7 +363,7 @@ int progmain(int argc, char* argv[]) {
 		(void)event;
 		splitPatchUp_wxEVT_BUTTON(&wid, &parameters);
 	});
-
+	
 	wid.splitPatchDown->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
 		splitPatchDown_wxEVT_BUTTON(&wid, &parameters);
@@ -366,20 +373,23 @@ int progmain(int argc, char* argv[]) {
 		switch(event.GetId()) {
 			case wxID_NEW:
 				{
-					{//clear temp
+					{ // clear temp
 						std::error_code error;
 						
 						std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath).c_str()), error);
-						if (error)
+						if (error) {
 							wxMessageBox(wxString::FromUTF8(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '\n' + error.message()), wxString::FromUTF8(ErrorText));
-
+						}
+						
 						std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLItempPath).c_str()), error);
-						if (error)
+						if (error) {
 							wxMessageBox(wxString::FromUTF8(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLItempPath + '\n' + error.message()), wxString::FromUTF8(ErrorText));
-
+						}
+						
 						std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath).c_str()), error);
-						if (error)
+						if (error) {
 							wxMessageBox(wxString::FromUTF8(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '\n' + error.message()), wxString::FromUTF8(ErrorText));
+						}
 					}
 					
 					VI9P::WorkingFile = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "parameters.vi9p";

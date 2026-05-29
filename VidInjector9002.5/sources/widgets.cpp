@@ -47,7 +47,7 @@ void doAddRows(InitWidgets* wid, int rows) {
 }
 
 void initAllWidgets(InitWidgets* wid) {
-	//main menu
+	// main menu
 	wid->menuItemFileNew->SetBitmap(wxArtProvider::GetBitmap(wxART_NEW, wxART_MENU));
 	wid->menuItemFileOpen->SetBitmap(wxArtProvider::GetBitmap(wxART_FILE_OPEN, wxART_MENU));
 	wid->menuItemFileSave->SetBitmap(wxArtProvider::GetBitmap(wxART_FILE_SAVE, wxART_MENU));
@@ -65,15 +65,15 @@ void initAllWidgets(InitWidgets* wid) {
 	wid->frame->SetMenuBar(wid->mainMenu);
 	wid->frame->SetIcon(wxString::FromUTF8(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + imagePath + "/icon.png"));
 	
-	//panel
+	// panel
 	for (const auto &s : {wxString::FromUTF8(SingleVideo), wxString::FromUTF8(MultiVideo)})//https://github.com/gammasoft71/Examples_wxWidgets/blob/adbd395081bf25c9034f2b64eee62608a943441f/src/CommonControls/Choice/Choice.cpp#L10
         wid->modeChoiceBox->Append(s);
 	//wid->modeChoiceBox->SetSelection(0);
 	
 	wid->scrolledPanel->SetScrollRate(10, 10);
 	
-	{//row stuff
-		int rows = 1;//yes this is loop executes once. the plan is to reuse this code when adding many rows at once. yes, yes, I know...
+	{ // row stuff
+		int rows = 1; // yes this is loop executes once. the plan is to reuse this code when adding many rows at once. yes, yes, I know...
 		
 		doAddRows(wid, rows);
 		ShowMultiUpDown(wid);
@@ -82,14 +82,14 @@ void initAllWidgets(InitWidgets* wid) {
 	/*{//splitPatchLine
 	
 	}*/
-	{//splitPatchUp
+	{ // splitPatchUp
 		int width, height;
 		wxFont f = wid->splitPatchUp->GetFont();
 		
 		wid->splitPatchUp->GetTextExtent(wid->splitPatchUp->GetLabel(), &width, &height, nullptr, nullptr, &f);
 		wid->splitPatchUp->SetSize(width + Borders::width + 5, height + Borders::height);
 	}
-	{//splitPatchDown
+	{ // splitPatchDown
 		int width, height;
 		wxFont f = wid->splitPatchDown->GetFont();
 		
@@ -97,7 +97,7 @@ void initAllWidgets(InitWidgets* wid) {
 		wid->splitPatchDown->SetSize(width + Borders::width + 5, height + Borders::height);
 	}
 
-	{//buildButton
+	{ // buildButton
 		int w, buttwidth, h, buttheight;
 		wxFont f;
 		
@@ -111,13 +111,13 @@ void initAllWidgets(InitWidgets* wid) {
 
 		wid->buildButton->SetSize(w + (buttwidth * 2), h + (buttheight * 2));
 	}
-	{//extractDialog
+	{ // extractDialog
 		wid->extractDialog->Destroy();
 	}
 }
 
 void setFonts(InitWidgets* wid) {
-	{//modeText
+	{ // modeText
 		int w, h;
 		wxFont f(15, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
 		
@@ -126,7 +126,7 @@ void setFonts(InitWidgets* wid) {
 		wid->modeText->SetSize(w, h);
 	}
 	
-	{//bannerText
+	{ // bannerText
 		int w, h;
 		wxFont f;
 		
@@ -136,7 +136,7 @@ void setFonts(InitWidgets* wid) {
 		wid->bannerText->GetTextExtent(wid->bannerText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->bannerText->SetSize(w, h);
 	}
-	{//bannerBrowse
+	{ // bannerBrowse
 		int w, h;
 		wxFont f;
 		
@@ -145,7 +145,7 @@ void setFonts(InitWidgets* wid) {
 
 		wid->bannerBrowse->SetSize((w / 2) + (w * 2), (h / 2) + (h * 2));
 	}
-	{//bannerError
+	{ // bannerError
 		int w, h;
 		wxFont f;
 		
@@ -158,7 +158,7 @@ void setFonts(InitWidgets* wid) {
 		//wid->bannerError->Show(false);
 	}
 	
-	{//iconText
+	{ // iconText
 		int w, h;
 		wxFont f;
 		
@@ -168,7 +168,7 @@ void setFonts(InitWidgets* wid) {
 		wid->iconText->GetTextExtent(wid->iconText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->iconText->SetSize(w, h);
 	}
-	{//iconBrowse
+	{ // iconBrowse
 		int w, h;
 		wxFont f;
 
@@ -177,7 +177,7 @@ void setFonts(InitWidgets* wid) {
 
 		wid->iconBrowse->SetSize((w / 2) + (w * 2), (h / 2) + (h * 2));
 	}
-	{//iconError
+	{ // iconError
 		int w, h;
 		wxFont f;
 		
@@ -190,7 +190,7 @@ void setFonts(InitWidgets* wid) {
 		//wid->iconError->Show(false);
 	}
 
-	{//shortnameText
+	{ // shortnameText
 		int w, h;
 		wxFont f;
 		
@@ -200,7 +200,7 @@ void setFonts(InitWidgets* wid) {
 		wid->shortnameText->GetTextExtent(wid->shortnameText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->shortnameText->SetSize(w, h);
 	}
-	{//shortnameBox
+	{ // shortnameBox
 		int w, h;
 		wxFont f;
 		
@@ -211,7 +211,7 @@ void setFonts(InitWidgets* wid) {
 		wid->shortnameBox->GetSize(&w, NULL);
 		wid->shortnameBox->SetSize(w, (h * 2) + 10);//uhhhhhh
 	}
-	{//shortnameError
+	{ // shortnameError
 		int w, h;
 		wxFont f;
 		
@@ -223,7 +223,7 @@ void setFonts(InitWidgets* wid) {
 		wid->shortnameError->SetSize(w, h);
 	}
 	
-	{//longnameText
+	{ // longnameText
 		int w, h;
 		wxFont f;
 		
@@ -233,7 +233,7 @@ void setFonts(InitWidgets* wid) {
 		wid->longnameText->GetTextExtent(wid->longnameText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->longnameText->SetSize(w, h);
 	}
-	{//longnameBox
+	{ // longnameBox
 		int w, h;
 		wxFont f;
 		
@@ -242,9 +242,9 @@ void setFonts(InitWidgets* wid) {
 		wid->longnameBox->SetFont(f);
 		wid->longnameBox->GetTextExtent("A", &w, &h, nullptr, nullptr, &f);
 		wid->longnameBox->GetSize(&w, NULL);
-		wid->longnameBox->SetSize(w, (h * 2) + 10);//uhhhhhh
+		wid->longnameBox->SetSize(w, (h * 2) + 10); // uhhhhhh
 	}
-	{//longnameError
+	{ // longnameError
 		int w, h;
 		wxFont f;
 		
@@ -255,7 +255,7 @@ void setFonts(InitWidgets* wid) {
 		wid->longnameError->SetSize(w, h);
 	}
 	
-	{//publisherText
+	{ // publisherText
 		int w, h;
 		wxFont f;
 		
@@ -265,7 +265,7 @@ void setFonts(InitWidgets* wid) {
 		wid->publisherText->GetTextExtent(wid->publisherText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->publisherText->SetSize(w, h);
 	}
-	{//publisherBox
+	{ // publisherBox
 		int w, h;
 		wxFont f;
 		
@@ -276,7 +276,7 @@ void setFonts(InitWidgets* wid) {
 		wid->publisherBox->GetSize(&w, NULL);
 		wid->publisherBox->SetSize(w, (h * 2) + 10);//uhhhhhh
 	}
-	{//publisherError
+	{ // publisherError
 		int w, h;
 		wxFont f;
 		
@@ -287,7 +287,7 @@ void setFonts(InitWidgets* wid) {
 		wid->publisherError->SetSize(w, h);
 	}
 	
-	{//bannerCustomText
+	{ // bannerCustomText
 		int w, h;
 		wxFont f;
 		
@@ -297,7 +297,7 @@ void setFonts(InitWidgets* wid) {
 		wid->bannerCustomText->GetTextExtent(wid->bannerCustomText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->bannerCustomText->SetSize(w, h);
 	}
-	{//bannerPreviewText
+	{ // bannerPreviewText
 		int w, h;
 		wxFont f;
 		
@@ -308,7 +308,7 @@ void setFonts(InitWidgets* wid) {
 		wid->bannerPreviewText->SetSize(w, h);
 	}
 
-	{//copyCheck
+	{ // copyCheck
 		int w, width, mywidth, boxwidth, h;
 		wxFont f;
 		
@@ -327,7 +327,7 @@ void setFonts(InitWidgets* wid) {
 		wid->copyCheck->SetSize(w + boxwidth, h);
 	}
 	
-	{//ffRewindCheck
+	{ // ffRewindCheck
 		int w, width, mywidth, boxwidth, h;
 		wxFont f;
 		
@@ -345,7 +345,7 @@ void setFonts(InitWidgets* wid) {
 		wid->ffRewindCheck->GetTextExtent(wid->ffRewindCheck->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->ffRewindCheck->SetSize(w + boxwidth, h);
 	}
-	{//dimCheck
+	{ // dimCheck
 		int w, width, mywidth, boxwidth, h;
 		wxFont f;
 		
@@ -364,7 +364,7 @@ void setFonts(InitWidgets* wid) {
 		wid->dimCheck->SetSize(w + boxwidth, h);
 	}
 
-	{//multiBannerPreviewIndex
+	{ // multiBannerPreviewIndex
 		int w, h;
 		wxFont f;
 		
@@ -375,7 +375,7 @@ void setFonts(InitWidgets* wid) {
 		wid->multiBannerPreviewIndex->SetSize(w, h);
 	}
 	
-	{//playerTitleText
+	{ // playerTitleText
 		int w, h;
 		wxFont f;
 		
@@ -385,7 +385,7 @@ void setFonts(InitWidgets* wid) {
 		wid->playerTitleText->GetTextExtent(wid->playerTitleText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->playerTitleText->SetSize(w, h);
 	}
-	{//moflexFileText
+	{ // moflexFileText
 		int w, h;
 		wxFont f;
 		
@@ -395,7 +395,7 @@ void setFonts(InitWidgets* wid) {
 		wid->moflexFileText->GetTextExtent(wid->moflexFileText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->moflexFileText->SetSize(w, h);
 	}
-	{//menuBannerText
+	{ // menuBannerText
 		int w, h;
 		wxFont f;
 		
@@ -405,8 +405,8 @@ void setFonts(InitWidgets* wid) {
 		wid->menuBannerText->GetTextExtent(wid->menuBannerText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->menuBannerText->SetSize(w, h);
 	}
-
-	{//moflexBrowse
+	
+	{ // moflexBrowse
 		int w, h;
 		wxFont f;
 		
@@ -415,7 +415,7 @@ void setFonts(InitWidgets* wid) {
 
 		wid->moflexBrowse->SetSize((w / 2) + (w * 2), (h / 2) + (h * 2));
 	}
-	{//multiBannerBrowse
+	{ // multiBannerBrowse
 		int w, h;
 		wxFont f;
 		
@@ -425,7 +425,7 @@ void setFonts(InitWidgets* wid) {
 		wid->multiBannerBrowse->SetSize((w / 2) + (w * 2), (h / 2) + (h * 2));
 	}
 	
-	{//removeRow
+	{ // removeRow
 		int w, h;
 		wxFont f;
 		
@@ -436,7 +436,7 @@ void setFonts(InitWidgets* wid) {
 		wid->removeRow->GetSize(&w, NULL);
 		wid->removeRow->SetSize(w, h + (h / 2));
 	}
-	{//appendRow
+	{ // appendRow
 		int w, h;
 		wxFont f;
 		
@@ -459,7 +459,7 @@ void setFonts(InitWidgets* wid) {
 		wid->splitPatchButton->SetSize(w + (w / 4), h + (h / 2));
 	}
 	
-	{//rowText
+	{ // rowText
 		int w, h;
 		wxFont f;
 		
@@ -469,8 +469,8 @@ void setFonts(InitWidgets* wid) {
 		wid->rowText->GetTextExtent(wid->rowText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->rowText->SetSize(w, h);
 	}
-	//buildpanel
-	{//titleIDText
+	// buildpanel
+	{ // titleIDText
 		int w, h;
 		wxFont f;
 		
@@ -480,7 +480,7 @@ void setFonts(InitWidgets* wid) {
 		wid->titleIDText->GetTextExtent(wid->titleIDText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->titleIDText->SetSize(w, h);
 	}
-	{//titleIDBox
+	{ // titleIDBox
 		int w, h;
 		wxFont f;
 		
@@ -491,7 +491,7 @@ void setFonts(InitWidgets* wid) {
 		wid->titleIDBox->GetTextExtent(wxString::FromUTF8("12345"), &w, &h, nullptr, nullptr, &f);
 		wid->titleIDBox->SetSize(w + 20, h + 10);
 	}
-	{//zerozero
+	{ // zerozero
 		int w, h;
 		wxFont f;
 		
@@ -501,7 +501,7 @@ void setFonts(InitWidgets* wid) {
 		wid->zerozero->GetTextExtent(wid->zerozero->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->zerozero->SetSize(w, h);
 	}
-	{//titleIDButton
+	{ // titleIDButton
 		int w, h;
 		wxFont f;
 		
@@ -512,7 +512,7 @@ void setFonts(InitWidgets* wid) {
 		wid->titleIDButton->SetSize(w > h ? w : h, w > h ? w : h);
 	}
 	
-	{//applicationTitleText
+	{ // applicationTitleText
 		int w, h;
 		wxFont f;
 		
@@ -522,7 +522,7 @@ void setFonts(InitWidgets* wid) {
 		wid->applicationTitleText->GetTextExtent(wid->applicationTitleText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->applicationTitleText->SetSize(w, h);
 	}
-	{//applicationTitleBox
+	{ // applicationTitleBox
 		wxFont f;
 		
 		f = wid->productCodeBox->GetFont();
@@ -531,7 +531,7 @@ void setFonts(InitWidgets* wid) {
 		wid->applicationTitleBox->SetFont(f);
 	}
 	
-	{//productCodeText
+	{ // productCodeText
 		int w, h;
 		wxFont f;
 		
@@ -541,7 +541,7 @@ void setFonts(InitWidgets* wid) {
 		wid->productCodeText->GetTextExtent(wid->productCodeText->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		wid->productCodeText->SetSize(w, h);
 	}
-	{//productCodeBox
+	{ // productCodeBox
 		int w, h;
 		wxFont f;
 		
@@ -553,7 +553,7 @@ void setFonts(InitWidgets* wid) {
 		wid->productCodeBox->SetSize(w + 20, h + 10);
 	}
 	
-	{//statusText
+	{ // statusText
 		int w, h;
 		wxFont f;
 		
@@ -566,7 +566,7 @@ void setFonts(InitWidgets* wid) {
 		wid->statusText->Show(false);
 	}
 	
-	{//gitHubLinker
+	{ // gitHubLinker
 		int w, h;
 		wxFont f;
 		
@@ -725,7 +725,7 @@ void setCursors(InitWidgets* wid) {
 }
 
 void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
-	{//modeChoiceBox
+	{ // modeChoiceBox
 		int x, y, height;
 		wid->modeText->GetPosition(&x, &y);
 		wid->modeText->GetSize(NULL, &height);
@@ -733,14 +733,14 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->modeChoiceBox->Move(x, y + height);
 	}
 	
-	{//bannerText
+	{ // bannerText
 		int x, y, height;
 		wid->modeChoiceBox->GetPosition(&x, &y);
 		wid->modeChoiceBox->GetSize(NULL, &height);
 		
 		wid->bannerText->Move(x, y + (height * 2));
 	}
-	{//bannerBox
+	{ // bannerBox
 		int x, y, width, height, myheight;
 		wid->bannerText->GetPosition(&x, &y);
 		wid->bannerText->GetSize(&width, &height);
@@ -748,7 +748,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->bannerBox->Move(x + width + 5, y + ((height - myheight) / 2));
 	}
-	{//bannerBrowse y
+	{ // bannerBrowse y
 		int myx, y, height, myheight;
 		wid->bannerBox->GetPosition(NULL, &y);
 		wid->bannerBox->GetSize(NULL, &height);
@@ -757,7 +757,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->bannerBrowse->Move(myx, y + ((height - myheight) / 2));
 	}
-	{//bannerError
+	{ // bannerError
 		int x, y, height;
 		wid->bannerBox->GetPosition(&x, NULL);
 		wid->bannerBrowse->GetPosition(NULL, &y);
@@ -766,7 +766,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->bannerError->Move(x, y + height);
 	}
 	
-	{//iconText
+	{ // iconText
 		int x, y, height, myheight, browseheight;
 		wid->modeText->GetPosition(&x, NULL);
 		wid->bannerError->GetPosition(NULL, &y);
@@ -776,7 +776,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->iconText->Move(x, y + height + ((browseheight - myheight) / 2));
 	}
-	{//iconBox
+	{ // iconBox
 		int x, y, width, height, myheight;
 		wid->iconText->GetPosition(&x, &y);
 		wid->iconText->GetSize(&width, &height);
@@ -785,7 +785,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->iconBox->Move(x + width + 5, y + ((height - myheight) / 2));
 		//wid->iconBox->SetSize(, &myheight);
 	}
-	{//iconBrowse y
+	{ // iconBrowse y
 		int myx, y, height;
 		wid->iconBrowse->GetPosition(&myx, NULL);
 		wid->bannerError->GetPosition(NULL, &y);
@@ -793,7 +793,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->iconBrowse->Move(myx, y + height);
 	}
-	{//iconError
+	{ // iconError
 		int x, y, height;
 		wid->iconBox->GetPosition(&x, NULL);
 		wid->iconBrowse->GetPosition(NULL, &y);
@@ -802,7 +802,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->iconError->Move(x, y + height);
 	}
 	
-	{//bannerPreview y
+	{ // bannerPreview y
 		int x, y;
 		wid->modeText->GetPosition(NULL, &y);
 		wid->bannerPreview->GetPosition(&x, NULL);
@@ -810,7 +810,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->bannerPreview->Move(x, y);
 	}
 	
-	{//shortnameText
+	{ // shortnameText
 		int x, y, bannerPreviewY, iconBrowseY, height, bannerPreviewHeight, bannerPreviewTextHeight, iconPreviewHeight;
 		wid->modeText->GetPosition(&x, NULL);
 		wid->iconError->GetPosition(NULL, &y);
@@ -823,22 +823,22 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->iconPreview->GetSize(NULL, &iconPreviewHeight);
 		
 		std::vector<int> sizes(3, 0);
-		sizes.at(0) = (bannerPreviewY + bannerPreviewHeight + bannerPreviewTextHeight);//banner preview
-		sizes.at(1) = (y + height);//icon error
-		sizes.at(2) = (iconBrowseY + iconPreviewHeight);//icon preview
+		sizes.at(0) = (bannerPreviewY + bannerPreviewHeight + bannerPreviewTextHeight); // banner preview
+		sizes.at(1) = (y + height); // icon error
+		sizes.at(2) = (iconBrowseY + iconPreviewHeight); // icon preview
 		
-		std::vector<int>::iterator Heightest = std::max_element(sizes.begin(), sizes.end());//dont even worry
+		std::vector<int>::iterator Heightest = std::max_element(sizes.begin(), sizes.end()); // dont even worry
 		
 		wid->shortnameText->Move(x, (*Heightest) + 6);
 	}
-	{//shortnameBox
+	{ // shortnameBox
 		int x, y, width;
 		wid->shortnameText->GetPosition(&x, &y);
 		wid->shortnameText->GetSize(&width, NULL);
 		
 		wid->shortnameBox->Move(x + width + 5, y);
 	}
-	{//shortnameError
+	{ // shortnameError
 		int x, y, height;
 		wid->shortnameBox->GetPosition(&x, &y);
 		wid->shortnameBox->GetSize(NULL, &height);
@@ -846,7 +846,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->shortnameError->Move(x, y + height);
 	}
 	
-	{//longnameText
+	{ // longnameText
 		int x, y, height;
 		wid->modeText->GetPosition(&x, NULL);
 		wid->shortnameError->GetPosition(NULL, &y);
@@ -854,14 +854,14 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->longnameText->Move(x, y + height);
 	}
-	{//longnameBox
+	{ // longnameBox
 		int x, y, width;
 		wid->longnameText->GetPosition(&x, &y);
 		wid->longnameText->GetSize(&width, NULL);
 		
 		wid->longnameBox->Move(x + width + 5, y);
 	}
-	{//longnameError
+	{ // longnameError
 		int x, y, height;
 		wid->longnameBox->GetPosition(&x, &y);
 		wid->longnameBox->GetSize(NULL, &height);
@@ -869,7 +869,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->longnameError->Move(x, y + height);
 	}
 	
-	{//publisherText
+	{ // publisherText
 		int x, y, height;
 		wid->modeText->GetPosition(&x, NULL);
 		wid->longnameError->GetPosition(NULL, &y);
@@ -877,14 +877,14 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->publisherText->Move(x, y + height);
 	}
-	{//publisherBox
+	{ // publisherBox
 		int x, y, width;
 		wid->publisherText->GetPosition(&x, &y);
 		wid->publisherText->GetSize(&width, NULL);
 		
 		wid->publisherBox->Move(x + width + 5, y);
 	}
-	{//publisherError
+	{ // publisherError
 		int x, y, height;
 		wid->publisherBox->GetPosition(&x, &y);
 		wid->publisherBox->GetSize(NULL, &height);
@@ -892,14 +892,14 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->publisherError->Move(x, y + height);
 	}
 	
-	{//ffRewindCheck
+	{ // ffRewindCheck
 		int x, y, height;
 		wid->publisherError->GetPosition(&x, &y);
 		wid->publisherError->GetSize(NULL, &height);
 		
 		wid->ffRewindCheck->Move(x, y + height);
 	}
-	{//dimCheck
+	{ // dimCheck
 		int x, y, height;
 		wid->ffRewindCheck->GetPosition(&x, &y);
 		wid->ffRewindCheck->GetSize(NULL, &height);
@@ -907,8 +907,8 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->dimCheck->Move(x, y + height);
 	}
 	
-	//stuff that moves or changes size
-	{//copyBox
+	// stuff that moves or changes size
+	{ // copyBox
 		int x, y, width, mywidth, checkwidth, checkheight;
 		wid->modeText->GetPosition(&x, &y);
 		wid->panel->GetSize(&width, NULL);
@@ -930,15 +930,15 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 			wid->copyBox->Move(iconErrorX + iconErrorW + iconPreviewW + 5 + (bannerPreviewW > bannerPreviewTextW ? bannerPreviewW : bannerPreviewTextW) + 15, y + checkheight);
 		}
 	}
-	{//copyCheck
+	{ // copyCheck
 		int x, y, myheight;
 		wid->copyBox->GetPosition(&x, &y);
 		wid->copyCheck->GetSize(NULL, &myheight);
 		
-		wid->copyCheck->Move(x, y - myheight);//why not just put this in before the box?
+		wid->copyCheck->Move(x, y - myheight); // why not just put this in before the box?
 	}
 	
-	{//bannerPreview x
+	{ // bannerPreview x
 		int x, y, mywidth, bannerPreviewTextW;
 		wid->copyCheck->GetPosition(&x, NULL);
 		wid->bannerPreview->GetPosition(NULL, &y);
@@ -947,7 +947,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->bannerPreview->Move(x - (mywidth > bannerPreviewTextW ? mywidth : ((bannerPreviewTextW - mywidth) * 2)) - (mywidth > bannerPreviewTextW ? 15 : 15 * 2), y);
 	}
-	{//bannerCustomText
+	{ // bannerCustomText
 		int x, y, width, mywidth, height, myheight;
 		wid->bannerPreview->GetPosition(&x, &y);
 		wid->bannerPreview->GetSize(&width, &height);
@@ -955,7 +955,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->bannerCustomText->Move(x + ((width - mywidth) / 2), y + ((height - myheight) / 2));
 	}
-	{//bannerPreviewText
+	{ // bannerPreviewText
 		int x, y, width, mywidth, height;
 		wid->bannerPreview->GetPosition(&x, &y);
 		wid->bannerPreview->GetSize(&width, &height);
@@ -964,7 +964,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->bannerPreviewText->Move(x + ((width - mywidth) / 2), y + height);
 	}
 	
-	{//iconPreview
+	{ // iconPreview
 		int x, bannerPreviewTextx, y, mywidth;
 		wid->iconBrowse->GetPosition(NULL, &y);
 		wid->bannerPreview->GetPosition(&x, NULL);
@@ -973,7 +973,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->iconPreview->Move((x < bannerPreviewTextx ? x : bannerPreviewTextx) - mywidth - 5, y);
 	}
-	{//bannerBrowse x
+	{ // bannerBrowse x
 		int x, bannerPreviewTextx, myy, mywidth;
 		wid->bannerPreview->GetPosition(&x, NULL);
 		wid->bannerBrowse->GetPosition(NULL, &myy);
@@ -982,7 +982,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->bannerBrowse->Move((x < bannerPreviewTextx ? x : bannerPreviewTextx) - mywidth - 5, myy);
 	}
-	{//iconBrowse x
+	{ // iconBrowse x
 		int x, myy, mywidth;
 		wid->iconPreview->GetPosition(&x, NULL);
 		wid->iconBrowse->GetPosition(NULL, &myy);
@@ -990,7 +990,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->iconBrowse->Move(x - mywidth - 2, myy);
 	}
-	{//bannerBox width
+	{ // bannerBox width
 		int myx, browsex, myheight;
 		wid->bannerBrowse->GetPosition(&browsex, NULL);
 		wid->bannerBox->GetPosition(&myx, NULL);
@@ -998,7 +998,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->bannerBox->SetSize(browsex - myx - 2, myheight);
 	}
-	{//iconBox width
+	{ // iconBox width
 		int myx, browsex, myheight;
 		wid->iconBrowse->GetPosition(&browsex, NULL);
 		wid->iconBox->GetPosition(&myx, NULL);
@@ -1006,7 +1006,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->iconBox->SetSize(browsex - myx - 2, myheight);
 	}
-	{//shortnameBox width
+	{ // shortnameBox width
 		int myx, x, bannerPreviewTextx, width, bannerPreviewTextW, myheight;
 		wid->bannerPreview->GetPosition(&x, NULL);
 		wid->bannerPreview->GetSize(&width, NULL);
@@ -1017,7 +1017,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->shortnameBox->SetSize(((x < bannerPreviewTextx ? x : bannerPreviewTextx) + (width > bannerPreviewTextW ? width : bannerPreviewTextW)) - myx, myheight);
 	}
-	{//longnameBox width
+	{ // longnameBox width
 		int myx, x, bannerPreviewTextx, width, bannerPreviewTextW, myheight;
 		wid->bannerPreview->GetPosition(&x, NULL);
 		wid->bannerPreview->GetSize(&width, NULL);
@@ -1028,7 +1028,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->longnameBox->SetSize(((x < bannerPreviewTextx ? x : bannerPreviewTextx) + (width > bannerPreviewTextW ? width : bannerPreviewTextW)) - myx, myheight);
 	}
-	{//publisherBox width
+	{ // publisherBox width
 		int myx, x, bannerPreviewTextx, width, bannerPreviewTextW, myheight;
 		wid->bannerPreview->GetPosition(&x, NULL);
 		wid->bannerPreview->GetSize(&width, NULL);
@@ -1039,7 +1039,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->publisherBox->SetSize(((x < bannerPreviewTextx ? x : bannerPreviewTextx) + (width > bannerPreviewTextW ? width : bannerPreviewTextW)) - myx, myheight);
 	}
-	{//multiBannerPreview
+	{ // multiBannerPreview
 		int x, y, width, mywidth, height;
 		wid->copyBox->GetPosition(&x, &y);
 		wid->copyBox->GetSize(&width, &height);
@@ -1047,7 +1047,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->multiBannerPreview->Move(x + ((width - mywidth) / 2), y + height + 10);
 	}
-	{//multiBannerPreviewIndex
+	{ // multiBannerPreviewIndex
 		int x, y, width, mywidth, height;
 		wid->multiBannerPreview->GetPosition(&x, &y);
 		wid->multiBannerPreview->GetSize(&width, &height);
@@ -1055,7 +1055,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->multiBannerPreviewIndex->Move(x + ((width - mywidth) / 2), y + height);
 	}
-	{//multiBannerPreviewLeft
+	{ // multiBannerPreviewLeft
 		int x, y, height;
 		wid->multiBannerPreview->GetPosition(&x, &y);
 		wid->multiBannerPreview->GetSize(NULL, &height);
@@ -1063,7 +1063,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->multiBannerPreviewLeft->Move(x, y + height);
 	}
-	{//multiBannerPreviewRight
+	{ // multiBannerPreviewRight
 		int x, y, width, mywidth, height;
 		wid->multiBannerPreview->GetPosition(&x, &y);
 		wid->multiBannerPreview->GetSize(&width, &height);
@@ -1071,7 +1071,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->multiBannerPreviewRight->Move((x + width) - mywidth, y + height);
 	}
-	{//playerTitleText y
+	{ // playerTitleText y
 		int x, y, checky, height, checkheight;
 		wid->multiBannerPreviewLeft->GetPosition(NULL, &y);
 		wid->dimCheck->GetPosition(NULL, &checky);
@@ -1081,7 +1081,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->playerTitleText->Move(x, (y > checky ? (y + height + 5) : (checky + checkheight + 5)));
 	}
-	{//moflexFileText y
+	{ // moflexFileText y
 		int x, y, checky, height, checkheight;
 		wid->multiBannerPreviewLeft->GetPosition(NULL, &y);
 		wid->dimCheck->GetPosition(NULL, &checky);
@@ -1091,7 +1091,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->moflexFileText->Move(x, (y > checky ? (y + height + 5) : (checky + checkheight + 5)));
 	}
-	{//menuBannerText y
+	{ // menuBannerText y
 		int x, y, checky, height, checkheight;
 		wid->multiBannerPreviewLeft->GetPosition(NULL, &y);
 		wid->multiBannerPreviewLeft->GetSize(NULL, &height);
@@ -1101,7 +1101,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->menuBannerText->Move(x, (y > checky ? (y + height + 5) : (checky + checkheight + 5)));
 	}
-	{//mediaPanel
+	{ // mediaPanel
 		int x, myx, y, myy, width, height;
 		wid->modeText->GetPosition(&x, NULL);
 		wid->playerTitleText->GetPosition(NULL, &y);
@@ -1123,7 +1123,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->multiBannerBrowse->GetSize(&sizes[4], NULL);
 		std::vector<int>::iterator widestText = std::max_element(sizes.begin(), sizes.end());
 		
-		{//PlayerTitles
+		{ // PlayerTitles
 			for(size_t row = 0; row < wid->PlayerTitles.size(); row++) {
 				int scrolledx, scrolledy, ppux, ppuy, previousy, width, upwidth, downwidth, upheight, height;
 				wid->mediaPanel->GetSize(&width, NULL);
@@ -1165,7 +1165,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 				}
 			}
 		}
-		{//MoflexFiles
+		{ // MoflexFiles
 			for(size_t row = 0; row < wid->MoflexFiles.size(); row++) {
 				int scrolledx, scrolledy, ppux, ppuy, previousy, width, upwidth, downwidth, upheight, height;
 				wid->mediaPanel->GetSize(&width, NULL);
@@ -1210,7 +1210,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 				}
 			}
 		}
-		{//MenuBanners
+		{ // MenuBanners
 			for(size_t row = 0; row < wid->MenuBanners.size(); row++) {
 				int scrolledx, scrolledy, ppux, ppuy, previousy, width, upwidth, downwidth, upheight, height;
 				wid->mediaPanel->GetSize(&width, NULL);
@@ -1255,7 +1255,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 			}
 		}
 	}
-	{//playerTitleText x
+	{ // playerTitleText x
 		int x, boxx, y, width, mywidth;
 		wid->mediaPanel->GetPosition(&x, NULL);
 		wid->PlayerTitles.at(0)->GetSize(&width, NULL);
@@ -1265,7 +1265,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->playerTitleText->Move(x + boxx + ((width - mywidth) / 2), y);
 	}
-	{//moflexFileText x
+	{ // moflexFileText x
 		int x, boxx, y, width, mywidth;
 		wid->mediaPanel->GetPosition(&x, NULL);
 		wid->MoflexFiles.at(0)->GetSize(&width, NULL);
@@ -1275,7 +1275,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->moflexFileText->Move(x + boxx + ((width - mywidth) / 2), y);
 	}
-	{//menuBannerText x
+	{ // menuBannerText x
 		int x, boxx, y, width, mywidth;
 		wid->mediaPanel->GetPosition(&x, NULL);
 		wid->MenuBanners.at(0)->GetSize(&width, NULL);
@@ -1285,7 +1285,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->menuBannerText->Move(x + boxx + ((width - mywidth) / 2), y);
 	}
-	{//MultiUp
+	{ // MultiUp
 		int x, y, width, height, myheight;
 		for(size_t i = 0; i < wid->MenuBanners.size(); i++) {
 			wid->MenuBanners.at(i)->GetSize(&width, &height);
@@ -1295,7 +1295,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 			wid->MultiUp.at(i)->Move(x + width, y + ((height - myheight) / 2));
 		}
 	}
-	{//MultiDown
+	{ // MultiDown
 		int x, y, width;
 		for(size_t i = 0; i < wid->MultiUp.size(); i++) {
 			wid->MultiUp.at(i)->GetSize(&width, NULL);
@@ -1304,7 +1304,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 			wid->MultiDown.at(i)->Move(x + width + 3, y);
 		}
 	}
-	{//moflexBrowse
+	{ // moflexBrowse
 		int x, y, width, mywidth, height;
 		wid->MoflexFiles.back()->GetSize(&width, &height);
 		wid->MoflexFiles.back()->GetPosition(&x, &y);
@@ -1312,7 +1312,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->moflexBrowse->Move(x + ((width - mywidth) / 2), y + height);
 	}
-	{//multiBannerBrowse
+	{ // multiBannerBrowse
 		int x, y, width, mywidth, height;
 		wid->MenuBanners.back()->GetSize(&width, &height);
 		wid->MenuBanners.back()->GetPosition(&x, &y);
@@ -1320,7 +1320,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->multiBannerBrowse->Move(x + ((width - mywidth) / 2), y + height);
 	}
-	{//removeRow
+	{ // removeRow
 		int y, width, mywidth, appendrowwidth, height;
 		wid->multiBannerBrowse->GetSize(NULL, &height);
 		wid->multiBannerBrowse->GetPosition(NULL, &y);
@@ -1330,14 +1330,14 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->removeRow->Move(((width - (mywidth + 2 + appendrowwidth)) / 2), y + height + 2);
 	}
-	{//appendRow
+	{ // appendRow
 		int x, y, width;
 		wid->removeRow->GetSize(&width, NULL);
 		wid->removeRow->GetPosition(&x, &y);
 		
 		wid->appendRow->Move(x + width + 2, y);
 	}
-	{//splitPatchButton
+	{ // splitPatchButton
 		int x, y, width, mywidth, appendrowwidth, height;
 		wid->removeRow->GetSize(&width, &height);
 		wid->removeRow->GetPosition(&x, &y);
@@ -1346,7 +1346,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->splitPatchButton->Move(x + (((width + 2 + appendrowwidth) - mywidth) / 2), y + height + 2);
 	}
-	{//splitPatchDown
+	{ // splitPatchDown
 		int x, y, width, mywidth, myheight;
 		wid->MenuBanners.at(parameters->splitPos)->GetSize(&width, NULL);
 		wid->MenuBanners.at(parameters->splitPos)->GetPosition(&x, &y);
@@ -1354,14 +1354,14 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->splitPatchDown->Move((x + width) - mywidth, y - myheight);
 	}
-	{//splitPatchUp
+	{ // splitPatchUp
 		int x, y, mywidth;
 		wid->splitPatchDown->GetPosition(&x, &y);
 		wid->splitPatchUp->GetSize(&mywidth, NULL);
 		
 		wid->splitPatchUp->Move(x - 3 - mywidth, y);
 	}
-	{//splitPatchLine
+	{ // splitPatchLine
 		int x, upx, upy, downwidth, upwidth, upheight;
 		wid->PlayerTitles.at(parameters->splitPos)->GetPosition(&x, NULL);
 		wid->splitPatchUp->GetPosition(&upx, &upy);
@@ -1371,7 +1371,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->splitPatchLine->Move(x + upwidth + 3 + downwidth + 3, upy + ((upheight - 3) / 2));
 		wid->splitPatchLine->SetSize(upx - 3 - x - upwidth - 3 - downwidth - 3, 3);
 	}
-	{//rowText
+	{ // rowText
 		int x, y, width, mywidth, height;
 		wid->splitPatchButton->GetSize(&width, &height);
 		wid->splitPatchButton->GetPosition(&x, &y);
@@ -1379,13 +1379,13 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->rowText->Move(x + ((width - mywidth) / 2), y + height + 2);
 	}
-	{//scrolledPanel
-		int width, boxwidth, upwidth, height, boxheight, browseheight, removeheight, splitpatchheight, splitupheight, rowtextheight;//todo: splitpatch line
+	{ // scrolledPanel
+		int width, boxwidth, upwidth, height, boxheight, browseheight, removeheight, splitpatchheight, splitupheight, rowtextheight; // todo: splitpatch line
 		wid->mediaPanel->GetSize(&width, &height);
 		wid->PlayerTitles.at(0)->GetSize(&boxwidth, &boxheight);
-		wid->MultiUp.at(0)->GetSize(&upwidth, NULL);//up and down are the same size so just use this (or are they...?)
+		wid->MultiUp.at(0)->GetSize(&upwidth, NULL); // up and down are the same size so just use this (or are they...?)
 		wid->moflexBrowse->GetSize(NULL, &browseheight);
-		wid->removeRow->GetSize(NULL, &removeheight);//- and + are the same size
+		wid->removeRow->GetSize(NULL, &removeheight); // - and + are the same size
 		wid->splitPatchButton->GetSize(NULL, &splitpatchheight);
 		wid->splitPatchUp->GetSize(NULL, &splitupheight);
 		wid->rowText->GetSize(NULL, &rowtextheight);
@@ -1393,14 +1393,16 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 
 		wid->scrolledPanel->SetSize(width, height);
 		if(wid->PlayerTitles.size() == 1) {
-			wid->scrolledPanel->SetVirtualSize(boxwidth * 3, boxheight * wid->PlayerTitles.size() + splitupheight + browseheight + 2 + removeheight + 2 + splitpatchheight + 2 + rowtextheight);//size to contain all widgets (dont use coordinates)
+			// size to contain all widgets (dont use coordinates)
+			wid->scrolledPanel->SetVirtualSize(boxwidth * 3, boxheight * wid->PlayerTitles.size() + splitupheight + browseheight + 2 + removeheight + 2 + splitpatchheight + 2 + rowtextheight);
 		}
 		else {
-			wid->scrolledPanel->SetVirtualSize((boxwidth * 3) + upwidth + 3 + upwidth, boxheight * wid->PlayerTitles.size() + splitupheight + browseheight + 2 + removeheight + 2 + splitpatchheight + 2 + rowtextheight);//size to contain all widgets (dont use coordinates)
+			// size to contain all widgets (dont use coordinates)
+			wid->scrolledPanel->SetVirtualSize((boxwidth * 3) + upwidth + 3 + upwidth, boxheight * wid->PlayerTitles.size() + splitupheight + browseheight + 2 + removeheight + 2 + splitpatchheight + 2 + rowtextheight);
 		}
 	}
-	//buildpanel stuff
-	{//titleIDText
+	// buildpanel stuff
+	{ // titleIDText
 		int panelwidth, mywidth, boxwidth, zzwidth, buttwidth;
 		wid->buildpanel->GetSize(&panelwidth, NULL);
 		wid->titleIDText->GetSize(&mywidth, NULL);
@@ -1410,7 +1412,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->titleIDText->Move((panelwidth - (mywidth + boxwidth + zzwidth + 3 + buttwidth)) / 2, 15);
 	}
-	{//titleIDBox
+	{ // titleIDBox
 		int x, y, width, height, myheight;
 		wid->titleIDText->GetPosition(&x, &y);
 		wid->titleIDText->GetSize(&width, &height);
@@ -1418,7 +1420,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->titleIDBox->Move(x + width, ((myheight > height) ? y - ((myheight - height) / 2) : y + ((height - myheight) / 2)));
 	}
-	{//zerozero
+	{ // zerozero
 		int x, y, width;
 		wid->titleIDText->GetPosition(NULL, &y);
 		wid->titleIDBox->GetPosition(&x, NULL);
@@ -1426,7 +1428,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->zerozero->Move(x + width, y);
 	}
-	{//titleIDButton
+	{ // titleIDButton
 		int x, y, width, height, myheight;
 		wid->zerozero->GetPosition(&x, &y);
 		wid->zerozero->GetSize(&width, &height);
@@ -1435,15 +1437,15 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->titleIDButton->Move(x + width + 3, ((myheight > height) ? y - ((myheight - height) / 2) : y + ((height - myheight) / 2)));
 	}
 	
-	{//applicationTitleText
+	{ // applicationTitleText
 		int x, y, height;
-		wid->titleIDButton->GetSize(NULL, &height);//this is probably the largest thing
+		wid->titleIDButton->GetSize(NULL, &height); // this is probably the largest thing
 		wid->titleIDText->GetPosition(&x, NULL);
 		wid->titleIDButton->GetPosition(NULL, &y);
 		
 		wid->applicationTitleText->Move(x, y + height + 10);
 	}
-	{//applicationTitleBox
+	{ // applicationTitleBox
 		int x, y, width, height, myheight;
 		wid->applicationTitleText->GetPosition(&x, &y);
 		wid->applicationTitleText->GetSize(&width, &height);
@@ -1451,7 +1453,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->applicationTitleBox->Move(x + width + 5, ((myheight > height) ? y - ((myheight - height) / 2) : y + ((height - myheight) / 2)));
 	}
-	{//applicationTitleBox width
+	{ // applicationTitleBox width
 		int tidwidth, boxwidth, zzwidth, buttwidth, textwidth, myheight;
 		wid->titleIDText->GetSize(&tidwidth, NULL);
 		wid->titleIDBox->GetSize(&boxwidth, NULL);
@@ -1463,7 +1465,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->applicationTitleBox->SetSize((tidwidth + boxwidth + zzwidth + 3 + buttwidth) - (textwidth + 5), myheight);
 	}
 	
-	{//productCodeText
+	{ // productCodeText
 		int texty, boxy, panelwidth, mywidth, boxwidth, boxheight, textheight;
 		wid->buildpanel->GetSize(&panelwidth, NULL);
 		wid->productCodeText->GetSize(&mywidth, NULL);
@@ -1475,7 +1477,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->productCodeText->Move((panelwidth - (mywidth + boxwidth)) / 2, (texty + textheight) > (boxy + boxheight) ? texty + textheight + 10 : boxy + boxheight + 10);
 	}
-	{//productCodeBox
+	{ // productCodeBox
 		int x, y, width, height, myheight;
 		wid->productCodeText->GetPosition(&x, &y);
 		wid->productCodeText->GetSize(&width, &height);
@@ -1484,7 +1486,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->productCodeBox->Move(x + width, ((myheight > height) ? y - ((myheight - height) / 2) : y + ((height - myheight) / 2)));
 	}
 	
-	{//statusText
+	{ // statusText
 		int prodcodey, panelwidth, mywidth, myheight, panelheight, barheight, buildheight, cancelheight, prodcodeheight;
 		wid->buildpanel->GetSize(&panelwidth, &panelheight);
 		wid->buildBar->GetSize(NULL, &barheight);
@@ -1498,7 +1500,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		else
 			wid->statusText->Move((panelwidth - mywidth) / 2, prodcodey + prodcodeheight + 15);
 	}
-	{//buildBar
+	{ // buildBar
 		int y, panelwidth, statusheight;
 		wid->statusText->GetPosition(NULL, &y);
 		wid->statusText->GetSize(NULL, &statusheight);
@@ -1507,7 +1509,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->buildBar->SetSize(panelwidth, 25);
 		wid->buildBar->Move(0, y + statusheight + 5);
 	}
-	{//buildButton
+	{ // buildButton
 		int y, mywidth, panelwidth, barheight;
 		wid->buildpanel->GetSize(&panelwidth, NULL);
 		wid->buildBar->GetPosition(NULL, &y);
@@ -1516,7 +1518,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->buildButton->Move((panelwidth - mywidth) / 2, y + barheight + 10);
 	}
-	{//cancelButt
+	{ // cancelButt
 		int y, mywidth, panelwidth, buildheight;
 		wid->buildpanel->GetSize(&panelwidth, NULL);
 		wid->buildButton->GetPosition(NULL, &y);
@@ -1525,14 +1527,14 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->cancelButton->Move((panelwidth - mywidth) / 2, y + buildheight + 2);
 	}
-	{//titleLogo
+	{ // titleLogo
 		int width, panelwidth;
 		wid->aboutpanel->GetSize(&panelwidth, NULL);
 		wid->titleLogo->GetSize(&width, NULL);
 		
 		wid->titleLogo->Move((panelwidth - width) / 2, 20);
 	}
-	{//byMeText
+	{ // byMeText
 		int x, y, mywidth, titlewidth, titleheight;
 		wid->titleLogo->GetSize(&titlewidth, &titleheight);
 		wid->titleLogo->GetPosition(&x, &y);
@@ -1540,7 +1542,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->byMeText->Move(x + ((titlewidth - mywidth) / 2), y + titleheight);
 	}
-	{//gitHubLinker
+	{ // gitHubLinker
 		int y, mywidth, myheight, bymeheight, panelwidth, panelheight, versionheight;
 		wid->aboutpanel->GetSize(&panelwidth, &panelheight);
 		wid->byMeText->GetPosition(NULL, &y);
@@ -1553,7 +1555,7 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		else
 			wid->gitHubLinker->Move((panelwidth - mywidth) / 2, y + bymeheight);
 	}
-	{//versionText
+	{ // versionText
 		int y, mywidth, myheight, bymeheight, panelwidth, panelheight, linkheight;
 		wid->aboutpanel->GetSize(&panelwidth, &panelheight);
 		wid->byMeText->GetPosition(NULL, &y);
@@ -1816,7 +1818,7 @@ void getAppearance(InitWidgets* wid) {
 }
 
 void setAppearance(InitWidgets* wid, unsigned int Mode) {
-	if(Mode < 2) {//0 light 1 black
+	if(Mode < 2) { // 0 light 1 black
 		wid->panel->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->mainMenu->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		wid->modeText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
@@ -1933,7 +1935,7 @@ void setAppearance(InitWidgets* wid, unsigned int Mode) {
 		wid->productCodeText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->productCodeBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->statusText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		//wid->buildBar->SetForegroundColour(*(Mode ? wxBLACK : wxWHITE));//uhhhhhhh
+		//wid->buildBar->SetForegroundColour(*(Mode ? wxBLACK : wxWHITE)); // uhhhhhhh
 		wid->buildButton->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->cancelButton->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		wid->aboutpanel->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
@@ -2122,7 +2124,7 @@ void setAppearance(InitWidgets* wid, unsigned int Mode) {
 					row->SetBackgroundColour(BackOdd);
 				}
 				else {
-					row->SetBackgroundColour(BackColor::bannerBox);//not worth getting the color from these actual boxes
+					row->SetBackgroundColour(BackColor::bannerBox); // not worth getting the color from these actual boxes
 				}
 				row->SetForegroundColour(ForeColor::bannerBox);
 				++rows;
@@ -2133,7 +2135,7 @@ void setAppearance(InitWidgets* wid, unsigned int Mode) {
 					row->SetBackgroundColour(BackOdd);
 				}
 				else {
-					row->SetBackgroundColour(BackColor::bannerBox);//not worth getting the color from these actual boxes
+					row->SetBackgroundColour(BackColor::bannerBox);
 				}
 				row->SetForegroundColour(ForeColor::bannerBox);
 				++rows;
@@ -2144,7 +2146,7 @@ void setAppearance(InitWidgets* wid, unsigned int Mode) {
 					row->SetBackgroundColour(BackOdd);
 				}
 				else {
-					row->SetBackgroundColour(BackColor::bannerBox);//not worth getting the color from these actual boxes
+					row->SetBackgroundColour(BackColor::bannerBox);
 				}
 				row->SetForegroundColour(ForeColor::bannerBox);
 				++rows;
@@ -2160,7 +2162,7 @@ void setAppearance(InitWidgets* wid, unsigned int Mode) {
 			row->SetForegroundColour(ForeColor::splitPatchDown);
 		}
 	}
-	{//titleLogo
+	{ // titleLogo
 		int width, height;
 		wxImage top;
 		wxImage bottom;
@@ -2171,24 +2173,24 @@ void setAppearance(InitWidgets* wid, unsigned int Mode) {
 		
 		width = top.GetWidth();
 		height = top.GetHeight();
-		//maybe check bottom size? oh well they are supposed to be the same
+		// maybe check bottom size? oh well they are supposed to be the same
 		
-		wxImage back(width, height);//LOOK LOOK IM RIGHT HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		wxImage back(width, height); // LOOK LOOK IM RIGHT HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		
 		wxBrush MY_BRUSH(((Settings::ColorMode < 2) ? *(Settings::ColorMode ? wxBLACK : wxWHITE) : wid->aboutpanel->GetBackgroundColour()));
-		//wxBrush MY_BRUSH(BackColor::aboutpanel);//what why not?
+		//wxBrush MY_BRUSH(BackColor::aboutpanel); // what why not?
 		
 		
-		//https://stackoverflow.com/a/35179780
+		// https://stackoverflow.com/a/35179780
 		wxBitmap bitmap(back);
 		wxMemoryDC memdc(bitmap);
 		memdc.SetBackground(MY_BRUSH);
-		memdc.Clear();    //fills the entire bitmap with green colour
+		memdc.Clear(); // fills the entire bitmap with green colour
 		memdc.SelectObject(wxNullBitmap);
-		back = bitmap.ConvertToImage();    //optionally
+		back = bitmap.ConvertToImage(); // optionally
 		back.InitAlpha();
 		
-		for(int y = 0; y < height; y++)
+		for(int y = 0; y < height; y++) {
 			for(int x = 0; x < width; x++) {
 				uint8_t r1 = bottom.GetRed(x, y);
 				uint8_t g1 = bottom.GetGreen(x, y);
@@ -2199,9 +2201,10 @@ void setAppearance(InitWidgets* wid, unsigned int Mode) {
 				uint8_t g2 = back.GetGreen(x, y);
 				uint8_t b2 = back.GetBlue(x, y);
 				
-				back.SetRGB(x, y, r1 - r2, g1 - g2, b1 - b2);//difference blend
+				back.SetRGB(x, y, r1 - r2, g1 - g2, b1 - b2); // difference blend
 				back.SetAlpha(x, y, a1);
 			}
+		}
 		
 		back.Paste(top, 0, 0, wxIMAGE_ALPHA_BLEND_COMPOSE);
 		
@@ -2380,7 +2383,7 @@ int loadParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 }
 
 void applyMode(InitWidgets* wid, VI9Pparameters* parameters) {
-	if(parameters->mode) {//the main stuff that changes base on what mode youre in
+	if(parameters->mode) { // the main stuff that changes base on what mode youre in
 		wid->copyBox->Enable(wid->copyCheck->GetValue());
 		wid->copyCheck->Enable(true);
 		wid->rowText->Show(true);
@@ -2433,7 +2436,7 @@ void applyMode(InitWidgets* wid, VI9Pparameters* parameters) {
 			wid->splitPatchButton->Enable(false);
 		}
 		wid->appendRow->Enable(false);
-		bool first = true;//lol
+		bool first = true; // lol
 		for(const auto &row : wid->PlayerTitles) {
 			if(!first) {
 				row->Enable(false);
@@ -2474,7 +2477,7 @@ void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 
 	if(wid->PlayerTitles.size() < parameters->rows) {
 		int count = parameters->rows - wid->PlayerTitles.size();
-		if(wid->PlayerTitles.size() + count <= 28) {
+		if(static_cast<int>(wid->PlayerTitles.size() & 0xFF) + count <= MAX_ROWS + 1) {
 			doAddRows(wid, count);
 		}
 	}
@@ -2522,7 +2525,7 @@ void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 	if(parameters->rows + count <= MAX_ROWS) {
 		for(int i = 0; i < count; i++) {
-			{//-ar
+			{ // -ar
 				wxArrayString output;
 				wxArrayString errors;
 				wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -ar \"" + VI9P::WorkingFile + "\" \"" + VI9P::WorkingFile + '\"');
@@ -2538,7 +2541,7 @@ void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 	}
 	
 	int ret = 0;
-	{//-rr
+	{ // -rr
 		wxArrayString output;
 		wxArrayString errors;
 		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -rr \"" + VI9P::WorkingFile + '\"');
@@ -2555,7 +2558,7 @@ void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 		}
 		//else return ret;
 	}
-	{//-pp
+	{ // -pp
 		wxArrayString output;
 		wxArrayString errors;
 		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -pp \"" + VI9P::WorkingFile + '\"');
@@ -2568,7 +2571,7 @@ void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 			pp += std::string(s.ToUTF8()) + '\n';
 		}
 		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
-		{//PTitleVec
+		{ // PTitleVec
 			parameters->PTitleVec.clear();
 			for(uint8_t i = 0; i < parameters->rows; i++) {
 				std::string value = "";
@@ -2576,7 +2579,7 @@ void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 				parameters->PTitleVec.push_back(value);
 			}
 		}
-		{//StrMoflexParam
+		{ // StrMoflexParam
 			parameters->MoflexVec.clear();
 			for(uint8_t i = 0; i < parameters->rows; i++) {
 				std::string value = "";
@@ -2584,7 +2587,7 @@ void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 				parameters->MoflexVec.push_back(value);
 			}
 		}
-		{//StrMBannerParam
+		{ // StrMBannerParam
 			parameters->MBannerVec.clear();
 			for(uint8_t i = 0; i < parameters->rows; i++) {
 				std::string value = "";
@@ -2593,7 +2596,7 @@ void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 			}
 		}
 		int count = parameters->rows - wid->PlayerTitles.size();
-		if(parameters->rows + count <= 28) {//??????? im sure this makes sense in some other universe
+		if(parameters->rows + count <= MAX_ROWS + 1) { // rows + (rows - size)
 			doAddRows(wid, count);
 		}
 	}
@@ -2603,7 +2606,7 @@ void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 void removeRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 	if(parameters->rows - count >= 1) {
 		for(int i = 0; i < count; i++) {
-			{//-sr
+			{ // -sr
 				wxArrayString output;
 				wxArrayString errors;
 				wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sr \"" + VI9P::WorkingFile + "\" \"" + VI9P::WorkingFile + '\"');
@@ -2619,7 +2622,7 @@ void removeRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 	}
 	//loadParameters(wid, parameters);
 	int ret = 0;
-	{//-rr
+	{ // -rr
 		wxArrayString output;
 		wxArrayString errors;
 		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -rr \"" + VI9P::WorkingFile + '\"');
@@ -2636,7 +2639,7 @@ void removeRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 		}
 		//else return ret;
 	}
-	{//-pp
+	{ // -pp
 		wxArrayString output;
 		wxArrayString errors;
 		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -pp \"" + VI9P::WorkingFile + '\"');
@@ -2649,7 +2652,7 @@ void removeRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 			pp += std::string(s.ToUTF8()) + '\n';
 		}
 		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
-		{//PTitleVec
+		{ // PTitleVec
 			parameters->PTitleVec.clear();
 			for(uint8_t i = 0; i < parameters->rows; i++) {
 				std::string value = "";
@@ -2657,7 +2660,7 @@ void removeRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 				parameters->PTitleVec.push_back(value);
 			}
 		}
-		{//StrMoflexParam
+		{ // StrMoflexParam
 			parameters->MoflexVec.clear();
 			for(uint8_t i = 0; i < parameters->rows; i++) {
 				std::string value = "";
@@ -2665,7 +2668,7 @@ void removeRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 				parameters->MoflexVec.push_back(value);
 			}
 		}
-		{//StrMBannerParam
+		{ // StrMBannerParam
 			parameters->MBannerVec.clear();
 			for(uint8_t i = 0; i < parameters->rows; i++) {
 				std::string value = "";
@@ -2674,7 +2677,7 @@ void removeRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 			}
 		}
 		int count = wid->PlayerTitles.size() - parameters->rows;
-		if(parameters->rows - count >= 0) {//???????????????????
+		if(parameters->rows - count >= 0) { // ???????????????????
 			for(uint8_t i = 0; i < count; i++) {
 				wid->PlayerTitles.back()->Destroy();
 				wid->PlayerTitles.pop_back();
@@ -2698,9 +2701,10 @@ void removeRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 		}
 	}
 	
-	if(VI9P::MultiBannerIndex > wid->MenuBanners.size() - 1)
+	if(VI9P::MultiBannerIndex > wid->MenuBanners.size() - 1) {
 		VI9P::MultiBannerIndex = wid->MenuBanners.size() - 1;
-	{//-gp
+	}
+	{ // -gp
 		std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/bannerpreview" + std::to_string(VI9P::MultiBannerIndex) + ".png";
 		wxArrayString output;
 		wxArrayString errors;
@@ -2721,15 +2725,15 @@ void removeRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 }
 
 void getBorders(InitWidgets* wid) {
-	int ImageSize = 100;//width and height
+	int ImageSize = 100; // width and height
 	
 	wxImage Picture = wxImage(ImageSize, ImageSize);
 	wxBitmapButton* tempButton = new wxBitmapButton(wid->panel, wxID_ANY, wxBitmap(Picture), wxDefaultPosition, wxDefaultSize);
-	//i think it already does this
+	// i think it already does this
 	tempButton->Fit();
 	
 	tempButton->GetSize(&Borders::width, &Borders::height);
-	//border should be larger than the image in the button
+	// border should be larger than the image in the button
 	Borders::width -= ImageSize;
 	Borders::height -= ImageSize;
 	//wxMessageBox(std::to_string(Borders::width));

@@ -69,16 +69,16 @@ enum wxOwnedID {
 	ID_LANG7,
 	ID_LANG8,
 	ID_LANG9,
-	ID_LANG10,//sorry if you speak more than 10 languages
+	ID_LANG10, // sorry if you speak more than 10 languages
 	ID_ABOUT,
 };
 
-/*struct MediaPanelMedia {//just use the pointer as a unique ID number
+/*struct MediaPanelMedia { // just use the pointer as a unique ID number
 	uint8_t index;
 	wxTextCtrl* box;
 };*/
 
-//https://github.com/gammasoft71/Examples_wxWidgets/blob/0337d5a59aaf5753d9a2f11bc39198f7875c9677/wxCore/UserControls/Line/Line.cpp#L5
+// https://github.com/gammasoft71/Examples_wxWidgets/blob/0337d5a59aaf5753d9a2f11bc39198f7875c9677/wxCore/UserControls/Line/Line.cpp#L5
 class wxColouredLine : public wxPanel {
 public:
 	wxColouredLine(wxWindow* parent, const wxColour& colour, const wxPoint& position = wxDefaultPosition, const wxSize& size = wxDefaultSize) : wxPanel {parent, wxID_ANY, position, size} {
@@ -115,10 +115,10 @@ struct InitWidgets {
 	wxMenu* menuHelp = new wxMenu();
 	wxMenuItem* menuItemHelpAbout = menuHelp->Append(ID_ABOUT, wxString::FromUTF8(helpAbout + "\tF1"));
 	
-	//frame
+	// frame
 	wxLogWindow* consoleLog = new wxLogWindow(frame, wxString::FromUTF8(logFrameText), false);
 
-	//panel
+	// panel
 	wxStaticText* modeText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(ModeText), {10, 10});
 	wxChoice* modeChoiceBox = new wxChoice(panel, wxID_ANY);
 	
@@ -168,7 +168,7 @@ struct InitWidgets {
 	wxStaticText* moflexFileText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(MoflexFileText));
 	wxStaticText* menuBannerText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(MenuBannerText));
 	
-	//mediaPanel
+	// mediaPanel
 	wxPanel* mediaPanel = new wxPanel(panel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL | wxBORDER_THEME);
 	wxScrolled<wxPanel>* scrolledPanel = new wxScrolled<wxPanel>(mediaPanel);
 	
@@ -395,7 +395,7 @@ void applyParameters(InitWidgets* wid, VI9Pparameters* parameters);
 
 /*count: how many rows to add
 note that this also called -ar to the CLI to add rows to VI9P::WorkingFile
-MAX_ROWS (27) is maximum because if there are more then your 3ds will crash when loading it
+MAX_ROWS is maximum because if there are more then your 3ds will crash when loading it
 hopefully this doesnt leak memory*/
 void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count = 1);
 

@@ -4,7 +4,8 @@
 #include <vector>
 #include "programStrings.hpp"
 
-#define MAX_ROWS 27
+extern uint8_t MAX_ROWS;
+extern uint8_t MAX_ROWS_MULTI;
 
 struct VI9Pparameters {
 	int mode = 0;//0

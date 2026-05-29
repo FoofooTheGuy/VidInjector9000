@@ -1,5 +1,8 @@
 #include "vi9p.hpp"
 
+uint8_t MAX_ROWS = 127;
+uint8_t MAX_ROWS_MULTI = 27;
+
 bool VI9P::Loading = false;
 std::string VI9P::WorkingFile = "";
 std::string VI9P::OutFile = "";
