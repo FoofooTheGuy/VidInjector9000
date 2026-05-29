@@ -37,6 +37,7 @@ std::string Return = "Return";
 std::string ModeText = "Mode:";
 std::string SingleVideo = "Single video";
 std::string MultiVideo = "Multi video";
+std::string ExtendedMulti = "Extended multi";
 std::string Browse = "Browse";
 std::string BannerText = "Banner:";
 std::string IconText = "Icon:";

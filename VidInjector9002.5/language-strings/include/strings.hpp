@@ -49,6 +49,7 @@ extern std::string Return;
 extern std::string ModeText;
 extern std::string SingleVideo;
 extern std::string MultiVideo;
+extern std::string ExtendedMulti;
 extern std::string Browse;
 extern std::string BannerText;
 extern std::string IconText;

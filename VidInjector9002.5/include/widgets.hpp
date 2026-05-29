@@ -388,7 +388,8 @@ void setAppearance(InitWidgets* wid, unsigned int Mode);
 //send VI9P::WorkingFile to cli -pp to get parameters from the file
 int loadParameters(InitWidgets* wid, VI9Pparameters* parameters);
 
-//enables or disables stuff based on parameters->mode
+// the main stuff that changes based on what mode youre in
+// this enables or disables stuff based on parameters->mode
 void applyMode(InitWidgets* wid, VI9Pparameters* parameters);
 
 void applyParameters(InitWidgets* wid, VI9Pparameters* parameters);

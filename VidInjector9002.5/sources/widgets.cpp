@@ -66,8 +66,9 @@ void initAllWidgets(InitWidgets* wid) {
 	wid->frame->SetIcon(wxString::FromUTF8(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + imagePath + "/icon.png"));
 	
 	// panel
-	for (const auto &s : {wxString::FromUTF8(SingleVideo), wxString::FromUTF8(MultiVideo)})//https://github.com/gammasoft71/Examples_wxWidgets/blob/adbd395081bf25c9034f2b64eee62608a943441f/src/CommonControls/Choice/Choice.cpp#L10
+	for (const auto &s : {wxString::FromUTF8(SingleVideo), wxString::FromUTF8(MultiVideo), wxString::FromUTF8(ExtendedMulti)}) { // https://github.com/gammasoft71/Examples_wxWidgets/blob/adbd395081bf25c9034f2b64eee62608a943441f/src/CommonControls/Choice/Choice.cpp#L10
         wid->modeChoiceBox->Append(s);
+	}
 	//wid->modeChoiceBox->SetSelection(0);
 	
 	wid->scrolledPanel->SetScrollRate(10, 10);
@@ -79,7 +80,7 @@ void initAllWidgets(InitWidgets* wid) {
 		ShowMultiUpDown(wid);
 	}
 	
-	/*{//splitPatchLine
+	/*{ // splitPatchLine
 	
 	}*/
 	{ // splitPatchUp
@@ -2383,7 +2384,43 @@ int loadParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 }
 
 void applyMode(InitWidgets* wid, VI9Pparameters* parameters) {
-	if(parameters->mode) { // the main stuff that changes base on what mode youre in
+	if(parameters->mode == 0) {
+		wid->copyBox->Enable(false);
+		wid->copyCheck->Enable(false);
+		wid->rowText->Show(false);
+		wid->multiBannerPreview->Enable(false);
+		wid->multiBannerPreviewIndex->Show(false);
+		wid->multiBannerPreviewLeft->Enable(false);
+		wid->multiBannerPreviewRight->Enable(false);
+		if(parameters->rows > 1) {
+			wid->removeRow->Enable(true);
+			wid->splitPatchButton->Enable(true);
+		}
+		else {
+			wid->removeRow->Enable(false);
+			wid->splitPatchButton->Enable(false);
+		}
+		wid->appendRow->Enable(false);
+		bool first = true; // lol
+		for(const auto &row : wid->PlayerTitles) {
+			if(!first) {
+				row->Enable(false);
+			}
+			first = false;
+		}
+		first = true;
+		for(const auto &row : wid->MoflexFiles) {
+			if(!first) {
+				row->Enable(false);
+			}
+			first = false;
+		}
+		for(const auto &row : wid->MenuBanners) {
+			row->Enable(false);
+		}
+		wid->multiBannerBrowse->Enable(false);
+	}
+	else if(parameters->mode == 1) {
 		wid->copyBox->Enable(wid->copyCheck->GetValue());
 		wid->copyCheck->Enable(true);
 		wid->rowText->Show(true);
@@ -2419,41 +2456,41 @@ void applyMode(InitWidgets* wid, VI9Pparameters* parameters) {
 
 		wid->multiBannerBrowse->Enable(true);
 	}
-	else {
-		wid->copyBox->Enable(false);
-		wid->copyCheck->Enable(false);
-		wid->rowText->Show(false);
-		wid->multiBannerPreview->Enable(false);
-		wid->multiBannerPreviewIndex->Show(false);
-		wid->multiBannerPreviewLeft->Enable(false);
-		wid->multiBannerPreviewRight->Enable(false);
-		if(parameters->rows > 1) {
+	else if(parameters->mode == 2) {
+		wid->copyBox->Enable(wid->copyCheck->GetValue());
+		wid->copyCheck->Enable(true);
+		wid->rowText->Show(true);
+		wid->multiBannerPreview->Enable(true);
+		wid->multiBannerPreviewIndex->Show(true);
+		
+		EnableBannerLeftRight(wid);
+		
+		if(parameters->rows > 1 && parameters->rows < MAX_ROWS) {
+			wid->appendRow->Enable(true);
 			wid->removeRow->Enable(true);
 			wid->splitPatchButton->Enable(true);
 		}
-		else {
+		if(parameters->rows <= 1) {
+			wid->appendRow->Enable(true);
 			wid->removeRow->Enable(false);
 			wid->splitPatchButton->Enable(false);
 		}
-		wid->appendRow->Enable(false);
-		bool first = true; // lol
-		for(const auto &row : wid->PlayerTitles) {
-			if(!first) {
-				row->Enable(false);
-			}
-			first = false;
+		else if(parameters->rows >= MAX_ROWS) {
+			wid->appendRow->Enable(false);
+			wid->removeRow->Enable(true);
+			wid->splitPatchButton->Enable(true);
 		}
-		first = true;
+		for(const auto &row : wid->PlayerTitles) {
+			row->Enable(true);
+		}
 		for(const auto &row : wid->MoflexFiles) {
-			if(!first) {
-				row->Enable(false);
-			}
-			first = false;
+			row->Enable(true);
 		}
 		for(const auto &row : wid->MenuBanners) {
-			row->Enable(false);
+			row->Enable(true);
 		}
-		wid->multiBannerBrowse->Enable(false);
+
+		wid->multiBannerBrowse->Enable(true);
 	}
 	setCursors(wid);
 }
