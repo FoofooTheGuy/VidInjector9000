@@ -589,7 +589,7 @@ void EnableBannerLeftRight(InitWidgets* wid) {
 			wid->multiBannerPreviewLeft->Enable(false);
 			wid->multiBannerPreviewRight->Enable(true);
 		}
-		if(VI9P::MultiBannerIndex >= wid->MenuBanners.size() - 1) {
+		if(VI9P::MultiBannerIndex >= wid->MenuBanners.size() - 1 && VI9P::MultiBannerIndex >= MAX_ROWS_MULTI - 1) {
 			wid->multiBannerPreviewLeft->Enable(true);
 			wid->multiBannerPreviewRight->Enable(false);
 		}
@@ -598,6 +598,7 @@ void EnableBannerLeftRight(InitWidgets* wid) {
 		wid->multiBannerPreviewLeft->Enable(false);
 		wid->multiBannerPreviewRight->Enable(false);
 	}
+	setCursors(wid);
 }
 
 void ShowMultiUpDown(InitWidgets* wid) {
@@ -2260,7 +2261,7 @@ int loadParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 				parameters->mode = 0;
 			}
 			else {
-				parameters->mode = (outnum ? 1 : 0);
+				parameters->mode = ((outnum <= 2) ? outnum : 0);
 			}
 		}
 		{//banner
@@ -2428,70 +2429,102 @@ void applyMode(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->multiBannerPreviewIndex->Show(true);
 		
 		EnableBannerLeftRight(wid);
+		wid->splitPatchButton->Enable(true);
 		
-		if(parameters->rows > 1 && parameters->rows < MAX_ROWS) {
+		size_t count = 0;
+		for(const auto &row : wid->PlayerTitles) {
+			if(count < MAX_ROWS_MULTI) {
+				row->Enable(true);
+			}
+			else {
+				row->Enable(false);
+			}
+			++count;
+		}
+		count = 0;
+		for(const auto &row : wid->MoflexFiles) {
+			row->Enable(true);
+			if(count < MAX_ROWS_MULTI) {
+				row->Enable(true);
+			}
+			else {
+				row->Enable(false);
+			}
+			++count;
+		}
+		count = 0;
+		for(const auto &row : wid->MenuBanners) {
+			row->Enable(true);
+			if(count < MAX_ROWS_MULTI) {
+				row->Enable(true);
+			}
+			else {
+				row->Enable(false);
+			}
+			++count;
+		}
+		
+		if(parameters->rows > 1 && parameters->rows < MAX_ROWS_MULTI) {
 			wid->appendRow->Enable(true);
 			wid->removeRow->Enable(true);
-			wid->splitPatchButton->Enable(true);
 		}
 		if(parameters->rows <= 1) {
 			wid->appendRow->Enable(true);
 			wid->removeRow->Enable(false);
-			wid->splitPatchButton->Enable(false);
 		}
-		else if(parameters->rows >= MAX_ROWS) {
+		else if(parameters->rows >= MAX_ROWS_MULTI) {
 			wid->appendRow->Enable(false);
 			wid->removeRow->Enable(true);
-			wid->splitPatchButton->Enable(true);
 		}
-		for(const auto &row : wid->PlayerTitles) {
-			row->Enable(true);
-		}
-		for(const auto &row : wid->MoflexFiles) {
-			row->Enable(true);
-		}
-		for(const auto &row : wid->MenuBanners) {
-			row->Enable(true);
-		}
-
+		setRowIndex(wid, parameters);
+		
 		wid->multiBannerBrowse->Enable(true);
 	}
 	else if(parameters->mode == 2) {
-		wid->copyBox->Enable(wid->copyCheck->GetValue());
-		wid->copyCheck->Enable(true);
+		wid->copyBox->Enable(false);
+		wid->copyCheck->Enable(false);
 		wid->rowText->Show(true);
 		wid->multiBannerPreview->Enable(true);
-		wid->multiBannerPreviewIndex->Show(true);
+		wid->multiBannerPreviewIndex->Show(false);
+		wid->multiBannerPreviewLeft->Enable(false);
+		wid->multiBannerPreviewRight->Enable(false);
 		
-		EnableBannerLeftRight(wid);
+		wid->splitPatchButton->Enable(false);
 		
-		if(parameters->rows > 1 && parameters->rows < MAX_ROWS) {
-			wid->appendRow->Enable(true);
-			wid->removeRow->Enable(true);
-			wid->splitPatchButton->Enable(true);
-		}
-		if(parameters->rows <= 1) {
-			wid->appendRow->Enable(true);
-			wid->removeRow->Enable(false);
-			wid->splitPatchButton->Enable(false);
-		}
-		else if(parameters->rows >= MAX_ROWS) {
-			wid->appendRow->Enable(false);
-			wid->removeRow->Enable(true);
-			wid->splitPatchButton->Enable(true);
-		}
 		for(const auto &row : wid->PlayerTitles) {
 			row->Enable(true);
 		}
 		for(const auto &row : wid->MoflexFiles) {
 			row->Enable(true);
 		}
+		bool first = true; // lol
 		for(const auto &row : wid->MenuBanners) {
-			row->Enable(true);
+			if(first) {
+				row->Enable(true);
+			}
+			else {
+				row->Enable(false);
+			}
+			first = false;
 		}
-
+		
+		if(parameters->rows > 1 && parameters->rows < MAX_ROWS) {
+			wid->appendRow->Enable(true);
+			wid->removeRow->Enable(true);
+		}
+		if(parameters->rows <= 1) {
+			wid->appendRow->Enable(true);
+			wid->removeRow->Enable(false);
+		}
+		else if(parameters->rows >= MAX_ROWS) {
+			wid->appendRow->Enable(false);
+			wid->removeRow->Enable(true);
+		}
+		setRowIndex(wid, parameters);
+		
 		wid->multiBannerBrowse->Enable(true);
 	}
+	
 	setCursors(wid);
 }
 
@@ -2514,7 +2547,7 @@ void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 
 	if(wid->PlayerTitles.size() < parameters->rows) {
 		int count = parameters->rows - wid->PlayerTitles.size();
-		if(static_cast<int>(wid->PlayerTitles.size() & 0xFF) + count <= MAX_ROWS + 1) {
+		if(static_cast<int>(wid->PlayerTitles.size() & 0xFF) + count <= MAX_ROWS + 1) { // probably dangerous but i trust these enough
 			doAddRows(wid, count);
 		}
 	}
@@ -2608,6 +2641,7 @@ void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 			pp += std::string(s.ToUTF8()) + '\n';
 		}
 		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		
 		{ // PTitleVec
 			parameters->PTitleVec.clear();
 			for(uint8_t i = 0; i < parameters->rows; i++) {
@@ -2776,4 +2810,14 @@ void getBorders(InitWidgets* wid) {
 	//wxMessageBox(std::to_string(Borders::width));
 	//wxMessageBox(std::to_string(Borders::height));
 	delete tempButton;
+}
+
+void setRowIndex(InitWidgets* wid, VI9Pparameters* parameters) {
+	if(parameters->mode == 1) {
+		wid->multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string((wid->MenuBanners.size() < MAX_ROWS_MULTI) ? wid->MenuBanners.size() : MAX_ROWS_MULTI)));
+		wid->rowText->SetLabel(wxString::FromUTF8(std::to_string((parameters->rows < MAX_ROWS_MULTI) ? parameters->rows : 27) + "/" + std::to_string(MAX_ROWS_MULTI)));
+	}
+	else if(parameters->mode == 2) {
+		wid->rowText->SetLabel(wxString::FromUTF8(std::to_string(parameters->rows) + "/" + std::to_string(MAX_ROWS)));
+	}
 }

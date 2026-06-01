@@ -98,6 +98,11 @@ void modeChoiceBox_wxEVT_CHOICE(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 	}
 	
+	// extended doesn't work with patch
+	if(parameters->mode == 2) {
+		wid->splitPatchButton->SetValue(false);
+		splitPatchButton_wxEVT_TOGGLEBUTTON(wid, parameters);
+	}
 	applyMode(wid, parameters);
 }
 
@@ -569,7 +574,7 @@ void multiBannerPreviewLeft_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* param
 		
 		wid->multiBannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(bannerImagePath), wxBITMAP_TYPE_ANY));
 	}
-	wid->multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string(wid->MenuBanners.size())));
+	setRowIndex(wid, parameters);
 	wid->multiBannerPreviewRight->Enable(true);
 
 	wid->multiBannerPreviewLeft->SetCursor(wid->multiBannerPreviewLeft->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
@@ -582,6 +587,9 @@ void multiBannerPreviewRight_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* para
 	}
 	if(VI9P::MultiBannerIndex < wid->MenuBanners.size() - 1) {
 		++VI9P::MultiBannerIndex;
+	}
+	if(VI9P::MultiBannerIndex >= MAX_ROWS_MULTI - 1) {
+		VI9P::MultiBannerIndex = MAX_ROWS_MULTI - 1;
 	}
 	if(VI9P::MultiBannerIndex >= wid->MenuBanners.size() - 1) {
 		wid->multiBannerPreviewRight->Enable(false);
@@ -601,20 +609,16 @@ void multiBannerPreviewRight_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* para
 		
 		wid->multiBannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(bannerImagePath), wxBITMAP_TYPE_ANY));
 	}
-	wid->multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string(wid->MenuBanners.size())));
+	setRowIndex(wid, parameters);
 	wid->multiBannerPreviewLeft->Enable(true);
 	
-	wid->multiBannerPreviewLeft->SetCursor(wid->multiBannerPreviewLeft->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
-	wid->multiBannerPreviewRight->SetCursor(wid->multiBannerPreviewRight->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
+	setCursors(wid);
 }
 
 void PlayerTitles_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxTextCtrl* row) {
 	size_t rowReal;
 	for(rowReal = 0; rowReal < wid->PlayerTitles.size(); rowReal++) { // get row
 		if(reinterpret_cast<intptr_t>(wid->PlayerTitles.at(rowReal)) == reinterpret_cast<intptr_t>(row)) { // compare pointers
-			if(!row->IsEnabled()) {
-				return;
-			}
 			parameters->PTitleVec.at(rowReal) = std::string(row->GetValue().ToUTF8());
 			
 			{ // -sp
@@ -637,9 +641,6 @@ void MoflexFiles_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxText
 	size_t rowReal;
 	for(rowReal = 0; rowReal < wid->MoflexFiles.size(); rowReal++) { // get row
 		if(reinterpret_cast<intptr_t>(wid->MoflexFiles.at(rowReal)) == reinterpret_cast<intptr_t>(row)) { // compare pointers
-			if(!row->IsEnabled()) {
-				return;
-			}
 			parameters->MoflexVec.at(rowReal) = std::string(row->GetValue().ToUTF8());
 			
 			{ // -sp
@@ -660,17 +661,20 @@ void MoflexFiles_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxText
 
 void MenuBanners_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxTextCtrl* row) {
 	size_t rowReal;
-	for(rowReal = 0; rowReal < wid->MenuBanners.size(); rowReal++) {//get row
+	for(rowReal = 0; rowReal < wid->MenuBanners.size(); rowReal++) { // get row
 		if(reinterpret_cast<intptr_t>(wid->MenuBanners.at(rowReal)) == reinterpret_cast<intptr_t>(row)) { // compare pointers
-			VI9P::MultiBannerIndex = rowReal;
+			if(static_cast<int>(rowReal & 0xFF) < MAX_ROWS_MULTI) {
+				VI9P::MultiBannerIndex = rowReal;
+			}
+			
 			EnableBannerLeftRight(wid);
 			
-			parameters->MBannerVec.at(VI9P::MultiBannerIndex) = std::string(row->GetValue().ToUTF8());
+			parameters->MBannerVec.at(rowReal) = std::string(row->GetValue().ToUTF8());
 			
 			{ // -sp
 				wxArrayString output;
 				wxArrayString errors;
-				wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters->rows * 2) + VI9P::MultiBannerIndex) + " \"" + parameters->MBannerVec.at(rowReal) + "\" \"" + VI9P::WorkingFile + '\"');
+				wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters->rows * 2) + rowReal) + " \"" + parameters->MBannerVec.at(rowReal) + "\" \"" + VI9P::WorkingFile + '\"');
 				int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 				
 				wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
@@ -683,7 +687,7 @@ void MenuBanners_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxText
 				std::string bannerImagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/bannerpreview" + std::to_string(VI9P::MultiBannerIndex) + ".png";
 				wxArrayString output;
 				wxArrayString errors;
-				wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters->rows * 2) + VI9P::MultiBannerIndex) + " \"" + bannerImagePath + '\"');
+				wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters->rows * 2) + rowReal) + " \"" + bannerImagePath + '\"');
 				int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 				
 				wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
@@ -694,7 +698,7 @@ void MenuBanners_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxText
 				
 				wid->multiBannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(bannerImagePath), wxBITMAP_TYPE_ANY));
 			}
-			wid->multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string(wid->MenuBanners.size())));
+			setRowIndex(wid, parameters);
 		}
 	}
 }
@@ -821,15 +825,14 @@ void multiBannerBrowse_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters
 		}
 		else {
 			for(size_t i = 0; i < paths.GetCount(); i++) {
-				if(i < wid->MenuBanners.size())
+				if(i < wid->MenuBanners.size()) {
 					wid->MenuBanners.at(i)->SetValue(paths.Item(i));
+				}
 			}
 		}
 	}
 	
 	EnableBannerLeftRight(wid);
-	wid->multiBannerPreviewLeft->SetCursor(wid->multiBannerPreviewLeft->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
-	wid->multiBannerPreviewRight->SetCursor(wid->multiBannerPreviewRight->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
 }
 
 void removeRow_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
@@ -845,15 +848,42 @@ void removeRow_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->appendRow->Enable(false);
 	
 		removeRows(wid, parameters);
-		wid->rowText->SetLabel(wxString::FromUTF8(std::to_string(parameters->rows) + "/" + std::to_string(MAX_ROWS)));
-		wid->multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string(wid->MenuBanners.size())));
+		setRowIndex(wid, parameters);
 	}
 	
-	if(parameters->mode) {
+	if(parameters->mode == 0) {
+		wid->rowText->Show(false);
+		if(parameters->rows > 1) {
+			wid->removeRow->Enable(true);
+			wid->splitPatchButton->Enable(true);
+		}
+		else {
+			wid->removeRow->Enable(false);
+			wid->splitPatchButton->Enable(false);
+		}
+		wid->appendRow->Enable(false);
+	}
+	else if(parameters->mode == 1) {
 		EnableBannerLeftRight(wid);
-		wid->multiBannerPreviewLeft->SetCursor(wid->multiBannerPreviewLeft->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
-		wid->multiBannerPreviewRight->SetCursor(wid->multiBannerPreviewRight->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
 		
+		wid->rowText->Show(true);
+		if(parameters->rows > 1 && parameters->rows < MAX_ROWS_MULTI) {
+			wid->appendRow->Enable(true);
+			wid->removeRow->Enable(true);
+			wid->splitPatchButton->Enable(true);
+		}
+		if(parameters->rows <= 1) {
+			wid->appendRow->Enable(true);
+			wid->removeRow->Enable(false);
+			wid->splitPatchButton->Enable(false);
+		}
+		else if(parameters->rows >= MAX_ROWS_MULTI) {
+			wid->appendRow->Enable(false);
+			wid->removeRow->Enable(true);
+			wid->splitPatchButton->Enable(true);
+		}
+	}
+	else if(parameters->mode == 2) {
 		wid->rowText->Show(true);
 		if(parameters->rows > 1 && parameters->rows < MAX_ROWS) {
 			wid->appendRow->Enable(true);
@@ -870,18 +900,6 @@ void removeRow_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 			wid->removeRow->Enable(true);
 			wid->splitPatchButton->Enable(true);
 		}
-	}
-	else {
-		wid->rowText->Show(false);
-		if(parameters->rows > 1) {
-			wid->removeRow->Enable(true);
-			wid->splitPatchButton->Enable(true);
-		}
-		else {
-			wid->removeRow->Enable(false);
-			wid->splitPatchButton->Enable(false);
-		}
-		wid->appendRow->Enable(false);
 	}
 	ShowPatchUpDown(wid, parameters);
 	ShowMultiUpDown(wid);
@@ -1049,7 +1067,7 @@ void buildButton_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 	}
 	Exports::CIA = addMissingFileExtension(std::string(saveCIADialog.GetPath().ToUTF8()), ".cia");
 	
-	if(parameters->mode && parameters->splitPos) {
+	if(parameters->mode == 1 && parameters->splitPos) {
 		wxFileDialog saveTARDialog(wid->frame, wxEmptyString, wxString::FromUTF8(Exports::CIA.substr(0, Exports::CIA.find_last_of("\\/") == std::string::npos ? 0 : Exports::CIA.find_last_of("\\/"))), wxString::FromUTF8(std::string(wid->longnameBox->GetValue().ToUTF8()) + " [000400000" + std::string(wid->titleIDBox->GetValue().ToUTF8()) + "00].tar"), wxString::FromUTF8(tarFiles), wxFD_SAVE);
 		if (saveTARDialog.ShowModal() == wxID_OK) {
 			Exports::TAR = addMissingFileExtension(std::string(saveTARDialog.GetPath().ToUTF8()), ".tar");

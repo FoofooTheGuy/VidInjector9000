@@ -184,7 +184,8 @@ int progmain(int argc, char* argv[]) {
 		setCursors(&wid);
 		setToolTips(&wid);
 		
-		wid.rowText->SetLabel(wxString::FromUTF8(std::to_string(parameters.rows) + "/" + std::to_string(MAX_ROWS)));
+		setRowIndex(&wid, &parameters);
+		
 		wid.multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string(wid.MenuBanners.size())));
 	};
 	
@@ -328,14 +329,48 @@ int progmain(int argc, char* argv[]) {
 		
 		applyAddRows();
 		
-		if(parameters.mode) {
+		if(parameters.mode == 0) {
+			wid.splitPatchButton->Enable(false);
+			wid.rowText->Show(false);
+			wid.appendRow->Enable(false);
+		}
+		else if(parameters.mode == 1) {
 			wid.splitPatchButton->Enable((parameters.rows > 1));
 			EnableBannerLeftRight(&wid);
+			
+			wid.rowText->Show(true);
+			if(parameters.rows > 1 && parameters.rows < MAX_ROWS_MULTI) {
+				wid.appendRow->Enable(true);
+				wid.removeRow->Enable(true);
+			}
+			else if(parameters.rows <= 1) {
+				wid.appendRow->Enable(true);
+				wid.removeRow->Enable(false);
+			}
+			else if(parameters.rows >= MAX_ROWS_MULTI) {
+				wid.appendRow->Enable(false);
+				wid.removeRow->Enable(true);
+			}
+			if(parameters.rows > MAX_ROWS_MULTI) { // is there a better place for this?
+				for(size_t i = MAX_ROWS_MULTI; i < parameters.rows; i++) {
+					wid.PlayerTitles.at(i)->Enable(false);
+					wid.MoflexFiles.at(i)->Enable(false);
+					wid.MenuBanners.at(i)->Enable(false);
+				}
+				setCursors(&wid);
+			}
+		}
+		else if(parameters.mode == 2) {
+			wid.splitPatchButton->Enable(false);
 			
 			wid.rowText->Show(true);
 			if(parameters.rows > 1 && parameters.rows < MAX_ROWS) {
 				wid.appendRow->Enable(true);
 				wid.removeRow->Enable(true);
+				for(size_t i = 1; i < parameters.rows; i++) {
+					wid.MenuBanners.at(i)->Enable(false);
+				}
+				setCursors(&wid);
 			}
 			else if(parameters.rows <= 1) {
 				wid.appendRow->Enable(true);
@@ -345,11 +380,6 @@ int progmain(int argc, char* argv[]) {
 				wid.appendRow->Enable(false);
 				wid.removeRow->Enable(true);
 			}
-		}
-		else {
-			wid.splitPatchButton->Enable(false);
-			wid.rowText->Show(false);
-			wid.appendRow->Enable(false);
 		}
 		wid.removeRow->Enable(true);
 	});
@@ -781,11 +811,11 @@ int progmain(int argc, char* argv[]) {
 		}
 	}
 	
-	//plz call this last
+	// plz call this last
 	{
 		std::string VI9Pnow = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/parameters.vi9p";
 		
-		//get the project path from args
+		// get the project path from args
 		for (int i = 0; i < argc; i++) {
 			std::string v = argv[i];
 			size_t find = 0;
@@ -800,16 +830,17 @@ int progmain(int argc, char* argv[]) {
 		MenuBanners_wxEVT_TEXT(&wid, &parameters, wid.MenuBanners.at(VI9P::MultiBannerIndex));
 	}
 	
-	//nvm this stuff really has to be after that
-	//correct sizes
+	// nvm this stuff really has to be after that
+	// correct sizes
 	wid.iconPreview->Fit();
 	wid.multiBannerPreview->Fit();
 	
 	// make sure the window looks good
 	positionWidgets(&wid, &parameters);
 	
-	if(Settings::UpdateCheck)
+	if(Settings::UpdateCheck) {
 		wid.updateCheck->Start();
+	}
 	
 	wid.frame->Show();
 	wxTheApp->OnRun();

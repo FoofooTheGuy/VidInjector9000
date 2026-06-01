@@ -407,4 +407,7 @@ void removeRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count = 1)
 //output is stored in Borders::width and Borders::height.
 void getBorders(InitWidgets* wid);
 
+// sets the rowText and multiBannerPreviewIndex if mode 1
+void setRowIndex(InitWidgets* wid, VI9Pparameters* parameters);
+
 #include "events.hpp"
