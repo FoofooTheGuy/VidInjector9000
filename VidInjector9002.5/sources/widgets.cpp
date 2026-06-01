@@ -589,7 +589,7 @@ void EnableBannerLeftRight(InitWidgets* wid) {
 			wid->multiBannerPreviewLeft->Enable(false);
 			wid->multiBannerPreviewRight->Enable(true);
 		}
-		if(VI9P::MultiBannerIndex >= wid->MenuBanners.size() - 1 && VI9P::MultiBannerIndex >= MAX_ROWS_MULTI - 1) {
+		if(VI9P::MultiBannerIndex >= MAX_ROWS_MULTI - 1 || VI9P::MultiBannerIndex >= wid->MenuBanners.size() - 1) {
 			wid->multiBannerPreviewLeft->Enable(true);
 			wid->multiBannerPreviewRight->Enable(false);
 		}

@@ -591,9 +591,6 @@ void multiBannerPreviewRight_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* para
 	if(VI9P::MultiBannerIndex >= MAX_ROWS_MULTI - 1) {
 		VI9P::MultiBannerIndex = MAX_ROWS_MULTI - 1;
 	}
-	if(VI9P::MultiBannerIndex >= wid->MenuBanners.size() - 1) {
-		wid->multiBannerPreviewRight->Enable(false);
-	}
 	{ // -gp
 		std::string bannerImagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/bannerpreview" + std::to_string(VI9P::MultiBannerIndex) + ".png";
 		wxArrayString output;
@@ -610,9 +607,7 @@ void multiBannerPreviewRight_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* para
 		wid->multiBannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(bannerImagePath), wxBITMAP_TYPE_ANY));
 	}
 	setRowIndex(wid, parameters);
-	wid->multiBannerPreviewLeft->Enable(true);
-	
-	setCursors(wid);
+	EnableBannerLeftRight(wid);
 }
 
 void PlayerTitles_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxTextCtrl* row) {
