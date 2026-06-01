@@ -98,8 +98,11 @@ void modeChoiceBox_wxEVT_CHOICE(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 	}
 	
-	// extended doesn't work with patch
+	// extended doesn't have patch or multiple top images
+	// (do it here because stuff in widgets.cpp can't access event functions)
 	if(parameters->mode == 2) {
+		VI9P::MultiBannerIndex = 0;
+		MenuBanners_wxEVT_TEXT(wid, parameters, wid->MenuBanners.at(VI9P::MultiBannerIndex));
 		wid->splitPatchButton->SetValue(false);
 		splitPatchButton_wxEVT_TOGGLEBUTTON(wid, parameters);
 	}
@@ -555,9 +558,6 @@ void multiBannerPreviewLeft_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* param
 	if(VI9P::MultiBannerIndex > 0) {
 		--VI9P::MultiBannerIndex;
 	}
-	if(VI9P::MultiBannerIndex <= 0) {
-		wid->multiBannerPreviewLeft->Enable(false);
-	}
 
 	{ // -gp
 		std::string bannerImagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/bannerpreview" + std::to_string(VI9P::MultiBannerIndex) + ".png";
@@ -574,11 +574,9 @@ void multiBannerPreviewLeft_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* param
 		
 		wid->multiBannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(bannerImagePath), wxBITMAP_TYPE_ANY));
 	}
+	
 	setRowIndex(wid, parameters);
-	wid->multiBannerPreviewRight->Enable(true);
-
-	wid->multiBannerPreviewLeft->SetCursor(wid->multiBannerPreviewLeft->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
-	wid->multiBannerPreviewRight->SetCursor(wid->multiBannerPreviewRight->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_ARROW);
+	EnableBannerLeftRight(wid);
 }
 
 void multiBannerPreviewRight_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
@@ -682,7 +680,7 @@ void MenuBanners_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxText
 				std::string bannerImagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/bannerpreview" + std::to_string(VI9P::MultiBannerIndex) + ".png";
 				wxArrayString output;
 				wxArrayString errors;
-				wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters->rows * 2) + rowReal) + " \"" + bannerImagePath + '\"');
+				wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters->rows * 2) + VI9P::MultiBannerIndex) + " \"" + bannerImagePath + '\"');
 				int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 				
 				wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");

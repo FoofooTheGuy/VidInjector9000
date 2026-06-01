@@ -583,14 +583,19 @@ void EnableBannerLeftRight(InitWidgets* wid) {
 	if(wid->MenuBanners.size() != 1) {
 		if(VI9P::MultiBannerIndex > 0 && VI9P::MultiBannerIndex < wid->MenuBanners.size() - 1) {
 			wid->multiBannerPreviewLeft->Enable(true);
-			wid->multiBannerPreviewRight->Enable(true);
 		}
 		if(VI9P::MultiBannerIndex <= 0) {
 			wid->multiBannerPreviewLeft->Enable(false);
 			wid->multiBannerPreviewRight->Enable(true);
 		}
-		if(VI9P::MultiBannerIndex >= MAX_ROWS_MULTI - 1 || VI9P::MultiBannerIndex >= wid->MenuBanners.size() - 1) {
-			wid->multiBannerPreviewLeft->Enable(true);
+		size_t row;
+		for(row = 0; row < wid->MenuBanners.size() - 1; row++) {
+			if(!wid->MenuBanners.at(row)->IsEnabled()) {
+				break;
+			}
+		}
+		// stop at last enabled row or last row
+		if(VI9P::MultiBannerIndex >= row - 1 || VI9P::MultiBannerIndex >= wid->MenuBanners.size() - 1) {
 			wid->multiBannerPreviewRight->Enable(false);
 		}
 	}
@@ -2525,6 +2530,7 @@ void applyMode(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->multiBannerBrowse->Enable(true);
 	}
 	
+	EnableBannerLeftRight(wid);
 	setCursors(wid);
 }
 
