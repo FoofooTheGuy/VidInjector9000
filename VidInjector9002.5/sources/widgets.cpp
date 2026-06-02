@@ -1014,46 +1014,13 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		wid->iconBox->SetSize(browsex - myx - 2, myheight);
 	}
-	{ // shortnameBox width
-		int myx, x, bannerPreviewTextx, width, bannerPreviewTextW, myheight;
-		wid->bannerPreview->GetPosition(&x, NULL);
-		wid->bannerPreview->GetSize(&width, NULL);
-		wid->bannerPreviewText->GetPosition(&bannerPreviewTextx, NULL);
-		wid->bannerPreviewText->GetSize(&bannerPreviewTextW, NULL);
-		wid->shortnameBox->GetPosition(&myx, NULL);
-		wid->shortnameBox->GetSize(NULL, &myheight);
-		
-		wid->shortnameBox->SetSize(((x < bannerPreviewTextx ? x : bannerPreviewTextx) + (width > bannerPreviewTextW ? width : bannerPreviewTextW)) - myx, myheight);
-	}
-	{ // longnameBox width
-		int myx, x, bannerPreviewTextx, width, bannerPreviewTextW, myheight;
-		wid->bannerPreview->GetPosition(&x, NULL);
-		wid->bannerPreview->GetSize(&width, NULL);
-		wid->bannerPreviewText->GetPosition(&bannerPreviewTextx, NULL);
-		wid->bannerPreviewText->GetSize(&bannerPreviewTextW, NULL);
-		wid->longnameBox->GetPosition(&myx, NULL);
-		wid->longnameBox->GetSize(NULL, &myheight);
-		
-		wid->longnameBox->SetSize(((x < bannerPreviewTextx ? x : bannerPreviewTextx) + (width > bannerPreviewTextW ? width : bannerPreviewTextW)) - myx, myheight);
-	}
-	{ // publisherBox width
-		int myx, x, bannerPreviewTextx, width, bannerPreviewTextW, myheight;
-		wid->bannerPreview->GetPosition(&x, NULL);
-		wid->bannerPreview->GetSize(&width, NULL);
-		wid->bannerPreviewText->GetPosition(&bannerPreviewTextx, NULL);
-		wid->bannerPreviewText->GetSize(&bannerPreviewTextW, NULL);
-		wid->publisherBox->GetPosition(&myx, NULL);
-		wid->publisherBox->GetSize(NULL, &myheight);
-		
-		wid->publisherBox->SetSize(((x < bannerPreviewTextx ? x : bannerPreviewTextx) + (width > bannerPreviewTextW ? width : bannerPreviewTextW)) - myx, myheight);
-	}
 	{ // multiBannerPreview
 		int x, y, width, mywidth, height;
 		wid->copyBox->GetPosition(&x, &y);
 		wid->copyBox->GetSize(&width, &height);
 		wid->multiBannerPreview->GetSize(&mywidth, NULL);
 		
-		wid->multiBannerPreview->Move(x + ((width - mywidth) / 2), y + height + 10);
+		wid->multiBannerPreview->Move(x - (mywidth - width), y + height + 5);
 	}
 	{ // multiBannerPreviewIndex
 		int x, y, width, mywidth, height;
@@ -1078,6 +1045,30 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->multiBannerPreviewRight->GetSize(&mywidth, NULL);
 		
 		wid->multiBannerPreviewRight->Move((x + width) - mywidth, y + height);
+	}
+	{ // shortnameBox width
+		int myx, myheight, x;
+		wid->multiBannerPreview->GetPosition(&x, NULL);
+		wid->shortnameBox->GetPosition(&myx, NULL);
+		wid->shortnameBox->GetSize(NULL, &myheight);
+		
+		wid->shortnameBox->SetSize(x - myx - 15, myheight);
+	}
+	{ // longnameBox width
+		int myx, myheight, x;
+		wid->multiBannerPreview->GetPosition(&x, NULL);
+		wid->longnameBox->GetPosition(&myx, NULL);
+		wid->longnameBox->GetSize(NULL, &myheight);
+		
+		wid->longnameBox->SetSize(x - myx - 15, myheight);
+	}
+	{ // publisherBox width
+		int myx, myheight, x;
+		wid->multiBannerPreview->GetPosition(&x, NULL);
+		wid->publisherBox->GetPosition(&myx, NULL);
+		wid->publisherBox->GetSize(NULL, &myheight);
+		
+		wid->publisherBox->SetSize(x - myx - 15, myheight);
 	}
 	{ // playerTitleText y
 		int x, y, checky, height, checkheight;
