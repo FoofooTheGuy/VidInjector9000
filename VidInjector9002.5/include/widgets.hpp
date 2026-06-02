@@ -155,7 +155,6 @@ struct InitWidgets {
 	wxBitmapButton* iconPreview = new wxBitmapButton(panel, wxID_ANY, wxNullBitmap, wxDefaultPosition, {48, 48});
 	
 	wxCheckBox* ffRewindCheck = new wxCheckBox(panel, wxID_ANY, wxString::FromUTF8(FFrewindCheckText));
-	
 	wxCheckBox* dimCheck = new wxCheckBox(panel, wxID_ANY, wxString::FromUTF8(DimCheckText));
 	
 	wxBitmapButton* multiBannerPreview = new wxBitmapButton(panel, wxID_ANY, wxNullBitmap, wxDefaultPosition, {264, 154});

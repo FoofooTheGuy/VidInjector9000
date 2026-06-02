@@ -656,7 +656,13 @@ void MenuBanners_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxText
 	size_t rowReal;
 	for(rowReal = 0; rowReal < wid->MenuBanners.size(); rowReal++) { // get row
 		if(reinterpret_cast<intptr_t>(wid->MenuBanners.at(rowReal)) == reinterpret_cast<intptr_t>(row)) { // compare pointers
-			if(static_cast<int>(rowReal & 0xFF) < MAX_ROWS_MULTI) {
+			size_t disabled_row;
+			for(disabled_row = 0; disabled_row < wid->MenuBanners.size(); disabled_row++) {
+				if(!wid->MenuBanners.at(disabled_row)->IsEnabled()) {
+					break;
+				}
+			}
+			if(static_cast<int>(rowReal & 0xFF) < disabled_row) {
 				VI9P::MultiBannerIndex = rowReal;
 			}
 			
@@ -692,6 +698,7 @@ void MenuBanners_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxText
 				wid->multiBannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(bannerImagePath), wxBITMAP_TYPE_ANY));
 			}
 			setRowIndex(wid, parameters);
+			EnableBannerLeftRight(wid);
 		}
 	}
 }
@@ -803,6 +810,10 @@ void multiBannerBrowse_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters
 	}
 	size_t row;
 	for(row = 0; row < wid->MenuBanners.size() - 1; row++) {
+		if(!wid->MenuBanners.at(row)->IsEnabled() && row > 0) {
+			row--;
+			break;
+		}
 		if(std::string(wid->MenuBanners.at(row)->GetValue().ToUTF8()).empty()) {
 			break;
 		}
