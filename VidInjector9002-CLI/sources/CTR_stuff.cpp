@@ -84,7 +84,12 @@ int generate_preview(std::string inpath, uint8_t number, std::string outpath) {
 	rowcase = 12 + (parameters.rows * 2);
 	for(auto &row : parameters.MBannerVec) {
 		if(number == rowcase) {
-			res = generateBannerPreview(row, outpath, true);
+			if(parameters.mode == 2) {
+				res = generateClimPreview(row, outpath);
+			}
+			else {
+				res = generateBannerPreview(row, outpath, true);
+			}
 			//std::cout << row << std::endl;
 			return res;
 		}

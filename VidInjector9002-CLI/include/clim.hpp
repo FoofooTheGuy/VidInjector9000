@@ -1,8 +1,10 @@
 #pragma once
 
+#include <filesystem>
+#include <iostream>
 #include <cstdint>
-#include <vector>
 #include <fstream>
+#include <vector>
 
 // TODO: put all this stuff in a class to better organize things
 // https://problemkaputt.de/gbatek-3ds-files-video-layout-images-clim-flim.htm
@@ -47,9 +49,30 @@ struct footer {
 
 void write_footer(std::ofstream *out, const footer *clim);
 
-/* this will mess with the seek position
+/*
+this will mess with the seek position
 return:
 (file size - footer size): read footer offset
 0: bad, file is too small
 */
 size_t read_footer(std::ifstream *file, footer *clim);
+
+/*
+read image data from clim file
+this will only work with 512x256 rgb565 images because that's all I need lol
+just make sure rgb565_pixels is allocated to that size (512*256*2)
+return:
+0: good
+1: infile does not exist
+2: std::filesystem error
+3: extension is not .bclim
+4: failed to read footer
+5: footer magic is not CLIM
+6: imag magic is not imag
+8: image is not RGB565
+9: footer offset does not match assumed offset
+10: image size does not match assumed size
+11: width is not 512 or height is not 256
+*/
+int read_clim_image(const std::string &inpath, uint8_t* rgb565_pixels);
+

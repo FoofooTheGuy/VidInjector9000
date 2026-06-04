@@ -18,6 +18,9 @@ std::string to_UTF8(const nnc_u16* UTF16, const size_t UTF16size);
 std::string tolowerstr(std::string str);
 std::string toupperstr(std::string str);
 
+// add extension to str if str doesn't have extension
+void addMissingFileExtension(std::string *str, const std::string &extension);
+
 bool stol_s(long& output, std::string input, bool isHex = false);
 bool stoul_s(uint8_t& output, std::string input, bool isHex = false);
 bool stoul_s(uint32_t& output, std::string input, bool isHex = false);

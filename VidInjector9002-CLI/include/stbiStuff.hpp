@@ -18,6 +18,8 @@
 #include <icon_border48_bin.hpp>
 #include <film_overlay_bin.hpp>
 #include <bimgheader_bin.hpp>
+#include <top_image_png.hpp>
+
 
 /*
 basically the same as crop_pixels
@@ -33,11 +35,14 @@ force: This means don't return if the input is unreadable, just push forward wit
 */
 uint8_t stbiToRGB565(const std::string &infile, uint8_t* rgb565_pixels, int inset_w, int inset_h, const int &new_w, const int &new_h, const bool &force);
 
-int generateBlankBanner(std::string &outfile);
+int generateBlankBanner(const std::string &outfile);
 
 // use multibanner true if you are doing multibanner
 int generateBannerPreview(std::string infile, std::string outfile, bool multibanner = false);
 int generateIconPreview(std::string infile, int borderMode, std::string outfile);
+
+int generateBlankClim(const std::string &outfile);
+int generateClimPreview(const std::string &infile, std::string outfile);
 
 // return 0 if it completed otherwise return some greater number
 uint8_t convertToBimg(const std::string input, uint8_t* outBuffer, bool writeHeader);
