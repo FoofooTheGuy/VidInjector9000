@@ -100,7 +100,10 @@ void modeChoiceBox_wxEVT_CHOICE(InitWidgets* wid, VI9Pparameters* parameters) {
 	
 	// extended doesn't have patch or multiple top images
 	// (do it here because stuff in widgets.cpp can't access event functions)
-	if(parameters->mode == 2) {
+	if(parameters->mode == 1) {
+		MenuBanners_wxEVT_TEXT(wid, parameters, wid->MenuBanners.at(VI9P::MultiBannerIndex));
+	}
+	else if(parameters->mode == 2) {
 		VI9P::MultiBannerIndex = 0;
 		MenuBanners_wxEVT_TEXT(wid, parameters, wid->MenuBanners.at(VI9P::MultiBannerIndex));
 		wid->splitPatchButton->SetValue(false);
