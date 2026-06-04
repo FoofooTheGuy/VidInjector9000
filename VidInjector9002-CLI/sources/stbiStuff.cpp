@@ -40,6 +40,77 @@ void resize_crop(const uint8_t* input_pixels, int input_w, int input_h, uint8_t*
 	crop_pixels(scaled.data(), width, height, num_channels, output_pixels, (width - output_w) / 2, (height - output_h) / 2, output_w, output_h);
 }
 
+uint8_t stbiToRGB565(const std::string &infile, uint8_t* rgb565_pixels, int inset_w, int inset_h, const int &new_w, const int &new_h, bool const &force) {
+	uint8_t* input_pixels;
+	int w, h, ch, comp;
+	bool inset = false;
+	
+	if(inset_w && inset_h) {
+		inset = true;
+	}
+	else {
+		// this makes things kind of confusing but you get the idea
+		inset_w = new_w;
+		inset_h = new_h;
+	}
+	
+	if (!stbi_info(infile.c_str(), &w, &h, &comp)) {
+		if(!force) {
+			return 1;
+		}
+		w = inset_w;
+		h = inset_h;
+		ch = 4;
+		input_pixels = (uint8_t*)malloc(inset_w * inset_h * ch);
+		if (input_pixels == NULL) {
+			return 2;
+		}
+		memset(input_pixels, 0xFF, inset_w * inset_h * ch);
+	}
+	else {
+		input_pixels = stbi_load(infile.c_str(), &w, &h, &ch, 0);
+	}
+	if (input_pixels == NULL) {
+		return 3;
+	}
+	std::vector<uint8_t> output_pixels(inset_w * inset_h * ch);
+	if (w == inset_w && h == inset_h) {
+		memcpy(output_pixels.data(), input_pixels, w * h * ch);
+	}
+	else {
+		resize_crop(input_pixels, w, h, output_pixels.data(), inset_w, inset_h, ch);
+	}
+	free(input_pixels);
+	
+	// convert to rgb565
+	std::vector<uint8_t> white_background(inset_w * inset_h * 4, 0xFF);
+	std::vector<uint8_t> backgrounded (inset_w * inset_h * 4, 0xFF);
+	layer_pixels(backgrounded.data(), output_pixels.data(), white_background.data(), inset_w, inset_h, ch, inset_w, inset_h, 4, 0, 0);
+	
+	// layer the inset onto new
+	if(inset) {
+		std::vector<uint8_t> output_fin(new_w * new_h * 4, 0);
+		
+		for (int i = 3; i < new_w * new_h * 4; i += 4) {
+			output_fin[i] = 0xFF; // make alpha 0xFF
+		}
+		
+		for (int y = 0; y < inset_h; y++) {
+			for (int x = 0; x < inset_w; x++) {
+				for (int c = 0; c < 4; c++) {
+					output_fin[(y * (new_w) + x) * 4 + c] = backgrounded[(y * (inset_w) + x) * 4 + c];
+				}
+			}
+		}
+		
+		nnc_swizzle_zorder_be_rgba8_to_le_rgb565(reinterpret_cast<nnc_u32*>(output_fin.data()), reinterpret_cast<nnc_u16*>(rgb565_pixels), new_w, new_h);
+	}
+	else {
+		nnc_swizzle_zorder_be_rgba8_to_le_rgb565(reinterpret_cast<nnc_u32*>(backgrounded.data()), reinterpret_cast<nnc_u16*>(rgb565_pixels), new_w, new_h);
+	}
+	return 0;
+}
+
 int generateBlankBanner(std::string &outfile) {
 	int ch = 4;
 	int out_w = 200;
@@ -172,8 +243,9 @@ int generateBannerPreview(std::string infile, std::string outfile, bool multiban
 		return 0;
 	}
 	std::string extension = infile;
-	if(extension.find_last_of(".") != std::string::npos)
+	if(extension.find_last_of(".") != std::string::npos) {
 		extension.erase(extension.begin(), extension.begin() + extension.find_last_of("."));
+	}
 	if (extension == ".bimg") {
 		if (std::filesystem::file_size(std::filesystem::path((const char8_t*)&*infile.c_str()), error) == 0x10020) {
 			w = 256;
@@ -375,12 +447,11 @@ int generateIconPreview(std::string infile, int borderMode, std::string outfile)
 }
 
 uint8_t convertToBimg(const std::string input, uint8_t* outBuffer, bool writeHeader) { // true for write header, false for dont write header
-	uint8_t* input_pixels;
 	std::vector<uint8_t> output_pixels;
 	std::vector<uint8_t> output_4c;
 	std::vector<uint8_t> white_background;
 	std::vector<uint8_t> output_fin;
-	int w, h, ch, comp;
+	int w, h;
 	const int new_w = 256;
 	const int new_h = 128;
 	const int out_w = 200;
@@ -419,56 +490,8 @@ uint8_t convertToBimg(const std::string input, uint8_t* outBuffer, bool writeHea
 	if(error) {
 		return 3;
 	}
-	if (!stbi_info(input.c_str(), &w, &h, &comp)) {
-		w = out_w;
-		h = out_h;
-		ch = 4;
-		input_pixels = (uint8_t*)malloc(out_w * out_h * ch);
-		if (input_pixels == NULL) {
-			return 4;
-		}
-		memset(input_pixels, 0xFF, out_w * out_h * ch);
-	}
-	else {
-		input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
-	}
-	if (input_pixels == NULL) {
-		return 5;
-	}
-	output_pixels = std::vector<uint8_t>(out_w * out_h * ch);
-	if (w == out_w && h == out_h) {
-		memcpy(output_pixels.data(), input_pixels, w * h * ch);
-	}
-	else {
-		resize_crop(input_pixels, w, h, output_pixels.data(), out_w, out_h, ch); // scale to 200x120 if needed
-	}
-	free(input_pixels);
-
-	output_4c = std::vector<uint8_t>(out_w * out_h * 4);
-	ToRGBA(output_pixels.data(), output_4c.data(), out_w, out_h, ch);
-	white_background = std::vector<uint8_t>(out_w * out_h * 4, 0xFF);
-	//stbi_write_png("output_pixels.png", out_w, out_h, ch, output_pixels, 0);
-	layer_pixels(output_4c.data(), output_pixels.data(), white_background.data(), out_w, out_h, ch, out_w, out_h, 4, 0, 0);
-	//stbi_write_png("output_4c.png", out_w, out_h, 4, output_pixels, 0);
-
-	// layer 200x120 image on a 256x128 image
-	output_fin = std::vector<uint8_t>(new_w * new_h * 4, 0);
-
-	for (int i = 3; i < new_w * new_h * 4; i += 4) {
-		output_fin[i] = 0xFF; // make alpha 0xFF
-	}
-	//layer_pixels(output_fin, output_4c, black, out_w, out_h, 4, new_w, new_h, 3, 0, 0); // why doesnt this work for this????
-	for (int y = 0; y < out_h; y++) {
-		for (int x = 0; x < out_w; x++) {
-			for (int c = 0; c < 4; c++) {
-				output_fin[(y * (new_w) + x) * 4 + c] = output_4c[(y * (out_w) + x) * 4 + c];
-			}
-		}
-	}
-	//stbi_write_png("output_fin.png", new_w, new_h, 4, output_fin, 0);
-
 	uint8_t tiledbanner[new_w * new_h * sizeof(nnc_u16)];
-	nnc_swizzle_zorder_be_rgba8_to_le_rgb565(reinterpret_cast<nnc_u32*>(output_fin.data()), reinterpret_cast<nnc_u16*>(tiledbanner), new_w, new_h);
+	stbiToRGB565(input, tiledbanner, out_w, out_h, new_w, new_h, true);
 	if (writeHeader) {
 		memcpy(outBuffer, bimgheader_bin_data, sizeof(bimgheader_bin_data));
 		memcpy(outBuffer + sizeof(bimgheader_bin_data), tiledbanner, sizeof(tiledbanner));
@@ -529,7 +552,7 @@ uint8_t convertToIcon(const std::string input, std::string output, std::string s
 		}
 		output_pixels = std::vector<uint8_t>(largeWH * largeWH * ch);
 		if (w == largeWH && h == largeWH) memcpy(output_pixels.data(), input_pixels, w * h * ch);
-		else resize_crop(input_pixels, w, h, output_pixels.data(), largeWH, largeWH, ch);// scale to 48x48 if needed
+		else resize_crop(input_pixels, w, h, output_pixels.data(), largeWH, largeWH, ch); // scale to 48x48 if needed
 		free(input_pixels);
 	}
 
@@ -538,7 +561,7 @@ uint8_t convertToIcon(const std::string input, std::string output, std::string s
 	layer_pixels(large_4c.data(), output_pixels.data(), white_background.data(), largeWH, largeWH, ch, largeWH, largeWH, 4, 0, 0);
 
 	small_4c = std::vector<uint8_t>(smallWH * smallWH * 4);
-	stbir_resize_uint8_linear(large_4c.data(), largeWH, largeWH, 0, small_4c.data(), smallWH, smallWH, 0, STBIR_RGBA);// make the small icon
+	stbir_resize_uint8_linear(large_4c.data(), largeWH, largeWH, 0, small_4c.data(), smallWH, smallWH, 0, STBIR_RGBA); // make the small icon
 
 	if (borderMode == 1) {
 		layer_pixels(small_4c.data(), icon_border24_bin_data, small_4c.data(), smallWH, smallWH, 4, smallWH, smallWH, 4, 0, 0);
@@ -547,12 +570,12 @@ uint8_t convertToIcon(const std::string input, std::string output, std::string s
 	}
 	else if (borderMode == 2) {
 		std::vector<uint8_t> scaled((smallWH - 6) * (smallWH - 6) * 4);
-		stbir_resize_uint8_linear(small_4c.data(), smallWH, smallWH, 0, scaled.data(), smallWH - 6, smallWH - 6, 0, STBIR_RGBA);// scale it down
+		stbir_resize_uint8_linear(small_4c.data(), smallWH, smallWH, 0, scaled.data(), smallWH - 6, smallWH - 6, 0, STBIR_RGBA); // scale it down
 		layer_pixels(small_4c.data(), icon_border24_bin_data, scaled.data(), smallWH, smallWH, 4, smallWH - 6, smallWH - 6, 4, 3, 3);
 
 		scaled.clear();
 		scaled = std::vector<uint8_t>((largeWH - 10) * (largeWH - 10) * 4);
-		stbir_resize_uint8_linear(large_4c.data(), largeWH, largeWH, 0, scaled.data(), largeWH - 10, largeWH - 10, 0, STBIR_RGBA);// scale it down
+		stbir_resize_uint8_linear(large_4c.data(), largeWH, largeWH, 0, scaled.data(), largeWH - 10, largeWH - 10, 0, STBIR_RGBA); // scale it down
 		layer_pixels(large_4c.data(), icon_border48_bin_data, scaled.data(), largeWH, largeWH, 4, largeWH - 10, largeWH - 10, 4, 5, 5);
 	}
 
@@ -571,28 +594,35 @@ uint8_t convertToIcon(const std::string input, std::string output, std::string s
 		return 3;
 	}
 	std::ofstream smdhOut(std::filesystem::path((const char8_t*)&*output.c_str()), std::ios_base::out | std::ios_base::binary);
-	smdhOut << "SMDH";// make smdh!
-	for (int i = 0; i < 4; i++)
+	smdhOut << "SMDH"; // make smdh!
+	for (int i = 0; i < 4; i++) {
 		smdhOut << '\0';
+	}
 	for (int i = 0; i < 16; i++) {
 		smdhOut << shortname;
-		for (size_t j = 0; j < 0x80 - shortname.size(); j++)
+		for (size_t j = 0; j < 0x80 - shortname.size(); j++) {
 			smdhOut << '\0';
+		}
 		smdhOut << longname;
-		for (size_t j = 0; j < 0x100 - longname.size(); j++)
+		for (size_t j = 0; j < 0x100 - longname.size(); j++) {
 			smdhOut << '\0';
+		}
 		smdhOut << publisher;
-		for (size_t j = 0; j < 0x80 - publisher.size(); j++)
+		for (size_t j = 0; j < 0x80 - publisher.size(); j++) {
 			smdhOut << '\0';
+		}
 	}
-	for (int i = 0; i < 0x10; i++)
+	for (int i = 0; i < 0x10; i++) {
 		smdhOut << '\0';
-	smdhOut << "\xFF\xFF\xFF\x7F";//region free
-	for (int i = 0; i < 0xC; i++)
+	}
+	smdhOut << "\xFF\xFF\xFF\x7F"; // region free
+	for (int i = 0; i < 0xC; i++) {
 		smdhOut << '\0';
-	smdhOut << "\x01\x04";//visible, no save backups
-	for (int i = 0; i < 0x16; i++)
+	}
+	smdhOut << "\x01\x04"; // visible, no save backups
+	for (int i = 0; i < 0x16; i++) {
 		smdhOut << '\0';
+	}
 	smdhOut.write(reinterpret_cast<const char*>(tiledsmall), sizeof(tiledsmall));
 	smdhOut.write(reinterpret_cast<const char*>(tiledlarge), sizeof(tiledlarge));
 	smdhOut.close();
@@ -603,7 +633,6 @@ uint8_t convertToIcon(const std::string input, std::string output, std::string s
 
 uint8_t convertToClim(const std::string input, const std::string output) {
 	std::vector<uint8_t> output_pixels;
-	int w, h, ch, comp;
 	const int out_w = 400;
 	const int out_h = 240;
 	const int new_w = 512;
@@ -654,7 +683,7 @@ uint8_t convertToClim(const std::string input, const std::string output) {
 					climInput = false;
 					break;
 				}
-				if(r_footer.imag.footeroffset != read_footeroffset) {
+				if (r_footer.imag.footeroffset != read_footeroffset) {
 					std::cout << r_footer.imag.footeroffset << std::endl;
 					climInput = false;
 					break;
@@ -686,50 +715,11 @@ uint8_t convertToClim(const std::string input, const std::string output) {
 		break;
 	}
 	
-	if(!climInput) {
-		uint8_t* input_pixels;
-		
-		if (!stbi_info(input.c_str(), &w, &h, &comp)) {
-			return 4;// if everything goes wrong, we'll end up here
+	if (!climInput) {
+		uint8_t ret = stbiToRGB565(input, rgb565_pixels.data(), out_w, out_h, new_w, new_h, false);
+		if (ret) {
+			return ret;
 		}
-		else {
-			input_pixels = stbi_load(input.c_str(), &w, &h, &ch, 0);
-		}
-		if (input_pixels == NULL) {
-			return 5;
-		}
-		output_pixels = std::vector<uint8_t>(out_w * out_h * ch);
-		if (w == out_w && h == out_h) {
-			memcpy(output_pixels.data(), input_pixels, w * h * ch);
-		}
-		else {
-			resize_crop(input_pixels, w, h, output_pixels.data(), out_w, out_h, ch);
-		}
-		free(input_pixels);
-		
-		// convert to rgb565
-		std::vector<uint8_t> white_background(out_w * out_h * 4, 0xFF);
-		std::vector<uint8_t> backgrounded (out_w * out_h * 4, 0xFF);
-		layer_pixels(backgrounded.data(), output_pixels.data(), white_background.data(), out_w, out_h, ch, out_w, out_h, 4, 0, 0);
-		
-		// layer 400x240 image on a 512x256 image
-		std::vector<uint8_t> output_fin(new_w * new_h * 4, 0);
-
-		for (int i = 3; i < new_w * new_h * 4; i += 4) {
-			output_fin[i] = 0xFF; // make alpha 0xFF
-		}
-		
-		for (int y = 0; y < out_h; y++) {
-			for (int x = 0; x < out_w; x++) {
-				for (int c = 0; c < 4; c++) {
-					output_fin[(y * (new_w) + x) * 4 + c] = backgrounded[(y * (out_w) + x) * 4 + c];
-				}
-			}
-		}
-		
-		//stbi_write_png("output_fin.png", new_w, new_h, 4, output_fin.data(), 0);
-		
-		nnc_swizzle_zorder_be_rgba8_to_le_rgb565(reinterpret_cast<nnc_u32*>(output_fin.data()), reinterpret_cast<nnc_u16*>(rgb565_pixels.data()), new_w, new_h);
 	}
 	
 	std::ofstream bclimOut(std::filesystem::path((const char8_t*)&*output.c_str()), std::ios_base::out | std::ios_base::binary);

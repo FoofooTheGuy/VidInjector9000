@@ -25,6 +25,14 @@ just make sure every image has the same amount of channels (num_channels)
 */
 void resize_crop(const uint8_t* input_pixels, int input_w, int input_h, uint8_t* output_pixels, int output_w, int output_h, int num_channels);
 
+/*
+read any supported image with stb and convert to rgb565
+inset_w and inset_h are the sizes of smaller image inside of the actual image (for alignment). set these to 0 if you dont need it aligned i.e. for smdh
+new_w and new_h can be whatever, just make sure the size of rgb565_pixels is width * height * sizeof(uint16_t)
+force: This means don't return if the input is unreadable, just push forward with a blank white image as input
+*/
+uint8_t stbiToRGB565(const std::string &infile, uint8_t* rgb565_pixels, int inset_w, int inset_h, const int &new_w, const int &new_h, const bool &force);
+
 int generateBlankBanner(std::string &outfile);
 
 // use multibanner true if you are doing multibanner
