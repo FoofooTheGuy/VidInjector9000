@@ -15,7 +15,26 @@ int make_movie_title(const VI9Pparameters& parameters, const std::string& romfsP
 	std::ofstream movie_title(std::string(romfsPath + "/movie/movie_title.csv").c_str(), std::ios_base::out | std::ios_base::binary);
 	
 	movie_title << "\xFF\xFE" + UTF8toUTF16("#JP,#EN,#FR,#GE,#IT,#SP,#CH,#KO,#DU,#PO,#RU,#TW\x0D\x0A");
-	for (int i = 0; i < (parameters.mode ? ((parameters.splitPos && !dopatch) ? parameters.splitPos : parameters.rows) : 1); i++) { // this should be fine since we don't need this in extended anyway
+	
+	int real_rows = 0;
+	if (parameters.mode == 0) {
+		real_rows = 1;
+	}
+	else if (parameters.mode == 1) {
+		if (parameters.splitPos && !dopatch) {
+			real_rows = parameters.splitPos;
+		}
+		else {
+			if (parameters.rows < MAX_ROWS_MULTI) {
+				real_rows = parameters.rows;
+			}
+			else {
+				real_rows = MAX_ROWS_MULTI;
+			}
+		}
+	}
+	
+	for (int i = 0; i < real_rows; i++) { // this should be fine since we don't need this in extended anyway
 		std::string outstr = parameters.PTitleVec.at(i);
 		
 		if (outstr[0] == '#') { // sneakily fix the string huhuhu
@@ -103,6 +122,24 @@ int make_settingsTL(const VI9Pparameters& parameters, const std::string& romfsPa
 		if (outpublisher[j] == '\n') {
 			outpublisher[j] = '\\';
 			outpublisher.insert(j + 1, "n");
+		}
+	}
+	
+	int real_rows = 0;
+	if (parameters.mode == 0) {
+		real_rows = 1;
+	}
+	else if (parameters.mode == 1) {
+		if (parameters.splitPos && !dopatch) {
+			real_rows = parameters.splitPos;
+		}
+		else {
+			if (parameters.rows < MAX_ROWS_MULTI) {
+				real_rows = parameters.rows;
+			}
+			else {
+				real_rows = MAX_ROWS_MULTI;
+			}
 		}
 	}
 	
@@ -205,7 +242,7 @@ int make_settingsTL(const VI9Pparameters& parameters, const std::string& romfsPa
 	if (parameters.mode) {
 		settingsTL << UTF8toUTF16("\x0D\x0A"
 			"# 動画の数\x0D\x0A" // amount of videos
-			+ std::to_string((parameters.splitPos && !dopatch) ? parameters.splitPos : parameters.rows) + "\x0D\x0A"
+			+ std::to_string(real_rows) + "\x0D\x0A"
 			"\x0D\x0A"
 			"# 動画パブリッシャー名\x0D\x0A" // publisher name
 			"# JP:\x0D\x0A"
@@ -336,7 +373,34 @@ int make_Moflex(const VI9Pparameters& parameters, const std::string& romfsPath, 
 	std::error_code error;
 	
 	uint8_t Checker[4];
-	for (int i = dopatch ? parameters.splitPos : 0; i < (parameters.mode ? ((parameters.splitPos && !dopatch) ? parameters.splitPos : parameters.rows) : 1); i++) {
+	
+	int real_rows = 0;
+	if (parameters.mode == 0) {
+		real_rows = 1;
+	}
+	else if (parameters.mode == 1) {
+		if (parameters.splitPos && !dopatch) {
+			real_rows = parameters.splitPos;
+		}
+		else {
+			if (parameters.rows < MAX_ROWS_MULTI) {
+				real_rows = parameters.rows;
+			}
+			else {
+				real_rows = MAX_ROWS_MULTI;
+			}
+		}
+	}
+	else if (parameters.mode == 2) {
+		if (parameters.rows < MAX_ROWS) {
+			real_rows = parameters.rows;
+		}
+		else {
+			real_rows = MAX_ROWS;
+		}
+	}
+	
+	for (int i = dopatch ? parameters.splitPos : 0; i < real_rows; i++) {
 		if (!std::filesystem::exists(std::filesystem::path((const char8_t*)&*parameters.MoflexVec.at(i).c_str()), error)) {
 			std::cout << ErrorText << ' ' << FailedToFindPath << " \"" << parameters.MoflexVec.at(i) << "\"\n" << StrMoflexParam << '(' << i << ')' << std::endl;
 			return 19;
@@ -384,7 +448,7 @@ int make_Moflex(const VI9Pparameters& parameters, const std::string& romfsPath, 
 			}
 			break;
 			case 1: {
-				std::cout << CopyingMoflex << ' ' << std::to_string(i + 1) << '/' << std::to_string(parameters.rows) << std::endl;
+				std::cout << CopyingMoflex << ' ' << std::to_string(i + 1) << '/' << std::to_string(real_rows) << std::endl;
 				//std::error_code error;
 				error = copyfile(parameters.MoflexVec.at(i).c_str(), std::string(romfsPath + "/movie/movie_" + std::to_string(i) + ".moflex").c_str());
 				if (error) {
@@ -444,8 +508,21 @@ int make_Moflex(const VI9Pparameters& parameters, const std::string& romfsPath, 
 
 int make_Bimgs(const VI9Pparameters& parameters, const std::string& romfsPath, const std::string& outCIA, const std::string& outTAR, const bool& dopatch) {
 	std::error_code error;
-	
-	for (int i = dopatch ? parameters.splitPos : 0; i < ((parameters.splitPos && !dopatch) ? parameters.splitPos : parameters.rows); i++) {
+
+	int real_rows = 0;
+	if (parameters.splitPos && !dopatch) {
+		real_rows = parameters.splitPos;
+	}
+	else {
+		if (parameters.rows < MAX_ROWS_MULTI) {
+			real_rows = parameters.rows;
+		}
+		else {
+			real_rows = MAX_ROWS_MULTI;
+		}
+	}
+
+	for (int i = dopatch ? parameters.splitPos : 0; i < real_rows; i++) {
 		std::vector<uint8_t> bimg(256 * 128 * sizeof(nnc_u16) + 0x20);
 		
 		std::cout << CreatingFile << " romfs/movie/movie_" << std::to_string(i) << ".bimg" << std::endl;
@@ -465,6 +542,14 @@ int make_Bimgs(const VI9Pparameters& parameters, const std::string& romfsPath, c
 		bimgfile.write(reinterpret_cast<const char*>(bimg.data()), bimg.size());
 		bimgfile.close();
 	}
+	
+	if (parameters.rows < MAX_ROWS_MULTI) {
+		real_rows = parameters.rows;
+	}
+	else {
+		real_rows = MAX_ROWS_MULTI;
+	}
+	
 	// make movie_bnrname.csv
 	std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(romfsPath + "/settings").c_str()), error);
 	if (error) {
@@ -473,8 +558,8 @@ int make_Bimgs(const VI9Pparameters& parameters, const std::string& romfsPath, c
 		return 31;
 	}
 	std::ofstream movie_bnrname(std::string(romfsPath + "/settings/movie_bnrname.csv").c_str(), std::ios_base::out | std::ios_base::binary);
-	movie_bnrname << "\xFF\xFE" + UTF8toUTF16(std::to_string(parameters.rows) + "\x0D\x0A");
-	for (int i = 0; i < parameters.rows; i++) {
+	movie_bnrname << "\xFF\xFE" + UTF8toUTF16(std::to_string(real_rows) + "\x0D\x0A");
+	for (int i = 0; i < real_rows; i++) {
 		movie_bnrname << UTF8toUTF16("movie_" + std::to_string(i) + ".bimg\x0D\x0A");
 	}
 	movie_bnrname.close();
