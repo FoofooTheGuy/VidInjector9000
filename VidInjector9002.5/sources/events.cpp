@@ -545,6 +545,7 @@ void MultiUp_wxEVT_BUTTON(InitWidgets* wid, wxButton* row) {
 				}
 			}
 			row->Enable(true);
+			setCursors(wid);
 		}
 	}
 }
@@ -579,6 +580,7 @@ void MultiDown_wxEVT_BUTTON(InitWidgets* wid, wxButton* row) {
 				}
 			}
 			row->Enable(true);
+			setCursors(wid);
 		}
 	}
 }
@@ -745,8 +747,9 @@ void splitPatchUp_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 }
 
 void splitPatchDown_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
-	if(!wid->splitPatchButton->GetValue() || !wid->splitPatchDown->IsEnabled() || !wid->splitPatchDown->IsShown())
+	if(!wid->splitPatchButton->GetValue() || !wid->splitPatchDown->IsEnabled() || !wid->splitPatchDown->IsShown()) {
 		return;
+	}
 	++parameters->splitPos;
 	
 	{ // -sp

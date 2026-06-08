@@ -651,6 +651,10 @@ void ShowPatchUpDown(InitWidgets* wid, VI9Pparameters* parameters) {
 	wid->splitPatchUp->Show(parameters->splitPos > 1);
 	wid->splitPatchDown->Enable(parameters->splitPos < parameters->rows - 1);
 	wid->splitPatchDown->Show(parameters->splitPos < parameters->rows - 1);
+	if(parameters->rows > MAX_ROWS_MULTI) {
+		wid->splitPatchDown->Enable(parameters->splitPos < MAX_ROWS_MULTI - 1);
+		wid->splitPatchDown->Show(parameters->splitPos < MAX_ROWS_MULTI - 1);
+	}
 }
 
 void setToolTips(InitWidgets* wid) {

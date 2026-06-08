@@ -174,8 +174,8 @@ int progmain(int argc, char* argv[]) {
 		wid.splitPatchLine->Show(parameters.splitPos);
 		ShowPatchUpDown(&wid, &parameters);
 		ShowMultiUpDown(&wid);
-		setCursors(&wid);
 		setToolTips(&wid);
+		setCursors(&wid);
 		
 		setRowIndex(&wid, &parameters);
 		
@@ -350,7 +350,6 @@ int progmain(int argc, char* argv[]) {
 					wid.MoflexFiles.at(i)->Enable(false);
 					wid.MenuBanners.at(i)->Enable(false);
 				}
-				setCursors(&wid);
 			}
 		}
 		else if(parameters.mode == 2) {
@@ -375,6 +374,7 @@ int progmain(int argc, char* argv[]) {
 			}
 		}
 		wid.removeRow->Enable(true);
+		setCursors(&wid);
 	});
 	
 	wid.splitPatchButton->Bind(wxEVT_TOGGLEBUTTON, [&](wxCommandEvent& event) {
