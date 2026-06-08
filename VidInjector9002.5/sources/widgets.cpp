@@ -7,25 +7,24 @@ int Borders::width = 0;
 int Borders::height = 0;
 
 int executeCommand(InitWidgets* wid, const wxString &command, wxArrayString* output, wxArrayString* errors) {
+	wxArrayString my_output;
+	wxArrayString my_errors;
 	int ret = 0;
 	
-	if(output == nullptr && errors == nullptr) {
-		ret = wxExecute(command, wxEXEC_SYNC | wxEXEC_NODISABLE);
-	}
-	else if(output != nullptr && errors == nullptr) {
-		ret = wxExecute(command, *output, wxEXEC_SYNC | wxEXEC_NODISABLE);
-	}
-	else if(output != nullptr && errors != nullptr) {
-		ret = wxExecute(command, *output, *errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-	}
+	ret = wxExecute(command, my_output, my_errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 	
 	wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-	if(output != nullptr) {
-		for (auto &s : *output) {
-			wid->consoleLog->LogTextAtLevel(0, s);
-		}
+	for (auto &s : my_output) {
+		wid->consoleLog->LogTextAtLevel(0, s);
 	}
 	wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+	
+	if(output != nullptr) {
+		*output = wxArrayString(my_output);
+	}
+	if(errors != nullptr) {
+		*errors = wxArrayString(my_errors);
+	}
 	
 	return ret;
 }
