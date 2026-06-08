@@ -1,4 +1,4 @@
-//Pretty much all of this is taken from https://github.com/gammasoft71/Examples_wxWidgets
+// Pretty much all of this is taken from https://github.com/gammasoft71/Examples_wxWidgets
 
 #pragma once
 
@@ -230,6 +230,9 @@ struct InitWidgets {
 	//you need curl for this if you're linux
 	wxWebRequest* updateCheck = new wxWebRequest(wxWebSession::GetDefault().CreateRequest(frame, "https://api.github.com/repos/" + githubRepo + "/tags"));
 };
+
+// wxExecute synchronously
+int executeCommand(InitWidgets* wid, const wxString &command, wxArrayString* output = nullptr, wxArrayString* errors = nullptr);
 
 void doAddRows(InitWidgets* wid, int rows);
 

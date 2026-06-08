@@ -13,29 +13,34 @@ void frame_wxEVT_WEBREQUEST_STATE(InitWidgets* wid, wxWebRequestEvent* event) {
 			std::string namestr = "\"name\":";
 			
 			size_t find = tag.find(namestr);
-			if (find == std::string::npos)
+			if (find == std::string::npos) {
 				return;
+			}
 			tag = tag.substr(find + namestr.size());
 			
 			find = tag.find("\"");
-			if (find == std::string::npos)
+			if (find == std::string::npos) {
 				return;
+			}
 			tag = tag.substr(find + 1);
 
 			find = tag.find("\"");
-			if (find == std::string::npos)
+			if (find == std::string::npos) {
 				return;
+			}
 			tag = tag.substr(0, find);
 			
 			//wxMessageBox(tag);
 			
-			if(tag == internalTag)
+			if(tag == internalTag) {
 				return;
+			}
 			
 			wxMessageDialog Updating = wxMessageDialog(wid->frame, wxString::FromUTF8(downloadVersion), wxString::FromUTF8(updateAvailable + " " + tag), wxOK|wxCANCEL|wxCENTRE);
 			int choice = Updating.ShowModal();
-			if(choice == wxID_OK)
+			if(choice == wxID_OK) {
 				wxLaunchDefaultBrowser("https://github.com/" + githubRepo + "/releases/tag/" + tag);
+			}
 			
 			break;
 		}
@@ -55,12 +60,14 @@ void frame_wxEVT_CLOSE_WINDOW(wxCloseEvent* event) {
 			std::error_code error;
 			
 			std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath).c_str()), error);
-			if (error)
+			if (error) {
 				wxMessageBox(wxString::FromUTF8(std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '\n' + error.message())), wxString::FromUTF8(ErrorText));
-
+			}
+			
 			std::filesystem::remove_all(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLItempPath).c_str()), error);
-			if (error)
+			if (error) {
 				wxMessageBox(wxString::FromUTF8(std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLItempPath + '\n' + error.message())), wxString::FromUTF8(ErrorText));
+			}
 		}
 	}
 	
@@ -82,20 +89,11 @@ void modeChoiceBox_wxEVT_CHOICE(InitWidgets* wid, VI9Pparameters* parameters) {
 		return;
 	}
 	int selection = wid->modeChoiceBox->GetSelection();
-	if(selection != wxNOT_FOUND) {
+	if (selection != wxNOT_FOUND) {
 		parameters->mode = selection;
 	}
 	{ // -sp
-		wxArrayString output;
-		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 0 \"" + std::to_string(parameters->mode) + "\" \"" + VI9P::WorkingFile + '\"');
-		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-		
-		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-		for (auto &s : output) {
-			wid->consoleLog->LogTextAtLevel(0, s);
-		}
-		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 0 \"" + std::to_string(parameters->mode) + "\" \"" + VI9P::WorkingFile + '\"'));
 	}
 	
 	// extended doesn't have patch or multiple top images
@@ -120,29 +118,12 @@ void bannerBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 	int ret = 0;
 	
 	{ // -sp
-		wxArrayString output;
-		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 1 \"" + parameters->banner + "\" \"" + VI9P::WorkingFile + '\"');
-		ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-		
-		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-		for (auto &s : output) {
-			wid->consoleLog->LogTextAtLevel(0, s);
-		}
-		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 1 \"" + parameters->banner + "\" \"" + VI9P::WorkingFile + '\"'));
 	}
 	{ // -gp
 		std::string bannerImagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/bannerpreview.png";
-		wxArrayString output;
-		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 1 \"" + bannerImagePath + '\"');
-		ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 		
-		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-		for (auto &s : output) {
-			wid->consoleLog->LogTextAtLevel(0, s);
-		}
-		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 1 \"" + bannerImagePath + '\"'));
 		
 		wid->bannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(bannerImagePath), wxBITMAP_TYPE_ANY));
 	}
@@ -181,19 +162,11 @@ void iconBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 	parameters->icon = std::string(wid->iconBox->GetValue().ToUTF8());
 	int ret = 0;
 	
-	if(VI9P::Loading) { // so it doesnt mess up everything
+	if (VI9P::Loading) { // so it doesnt mess up everything
 		{ // -gp
 			std::string iconImagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "iconpreview.png";
-			wxArrayString output;
-			wxArrayString errors;
-			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 2 \"" + iconImagePath + '\"');
-			ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 			
-			wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-			for (auto &s : output) {
-				wid->consoleLog->LogTextAtLevel(0, s);
-			}
-			wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+			ret = executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 2 \"" + iconImagePath + '\"'));
 			
 			wid->iconPreview->SetBitmap(wxBitmap(wxString::FromUTF8(iconImagePath), wxBITMAP_TYPE_ANY));
 		}
@@ -208,53 +181,31 @@ void iconBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 	// we can just use ss since if you give that a normal image it will work like normal
 	{ // -ss
 		{
-			wxArrayString output;
-			wxArrayString errors;
-			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -ss \"" + VI9P::WorkingFile + "\" \"" + parameters->icon + "\" \"" + VI9P::WorkingFile + '\"');
-			ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-			
-			wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-			for (auto &s : output) {
-				wid->consoleLog->LogTextAtLevel(0, s);
-			}
-			wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+			ret = executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -ss \"" + VI9P::WorkingFile + "\" \"" + parameters->icon + "\" \"" + VI9P::WorkingFile + '\"'));
 		}
 		
-		// if smdh (we dont want to keep that border)
-		if(ret == 0) {
+		// if smdh (we don't want to keep that border)
+		if (ret == 0) {
 			parameters->iconBorder = 0;
 			{ // -sp
-				wxArrayString output;
-				wxArrayString errors;
-				wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 3 " + std::to_string(parameters->iconBorder) + " \"" + VI9P::WorkingFile + '\"');
-				ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE); // overshadow?
-				
-				wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-				for (auto &s : output) {
-					wid->consoleLog->LogTextAtLevel(0, s);
-				}
-				wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+				executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 3 " + std::to_string(parameters->iconBorder) + " \"" + VI9P::WorkingFile + '\"'));
 			}
 		}
 	}
 	// this causes an infinite loop for some reason, probably because it changes the text of this box
-	//loadParameters(&wid, &parameters);
+	//loadParameters(wid, parameters);
 	
 	// do this in case of smdh
 	{ // -pp
 		std::string pp;
 		{
 			wxArrayString output;
-			wxArrayString errors;
-			wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -pp \"" + VI9P::WorkingFile + '\"');
-			ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 			
-			wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+			executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -pp \"" + VI9P::WorkingFile + '\"'), &output);
+			
 			for (auto &s : output) {
-				wid->consoleLog->LogTextAtLevel(0, s);
 				pp += std::string(s.ToUTF8()) + '\n';
 			}
-			wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 		}
 		
 		{ // iconBorder
@@ -289,34 +240,19 @@ void iconBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 		wid->longnameBox->SetValue(wxString::FromUTF8(parameters->Lname));
 		wid->publisherBox->SetValue(wxString::FromUTF8(parameters->publisher));
 		{ // iconBorder
-			if(parameters->iconBorder > 2) parameters->iconBorder = 0; // why?
+			if(parameters->iconBorder > 2) {
+				parameters->iconBorder = 0; // yea
+			}
 	
 			{ // -sp
-				wxArrayString output;
-				wxArrayString errors;
-				wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 3 " + std::to_string(parameters->iconBorder) + " \"" + VI9P::WorkingFile + '\"');
-				ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-				
-				wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-				for (auto &s : output) {
-					wid->consoleLog->LogTextAtLevel(0, s);
-				}
-				wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+				executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 3 " + std::to_string(parameters->iconBorder) + " \"" + VI9P::WorkingFile + '\"'));
 			}
 		}
 	}
 	{ // -gp
 		std::string iconImagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "iconpreview.png";
-		wxArrayString output;
-		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 2 \"" + iconImagePath + '\"');
-		ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 		
-		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-		for (auto &s : output) {
-			wid->consoleLog->LogTextAtLevel(0, s);
-		}
-		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		ret = executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 2 \"" + iconImagePath + '\"'));
 		
 		wid->iconPreview->SetBitmap(wxBitmap(wxString::FromUTF8(iconImagePath), wxBITMAP_TYPE_ANY));
 	}
@@ -339,29 +275,12 @@ void iconPreview_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 	}
 	
 	{ // -sp
-		wxArrayString output;
-		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 3 " + std::to_string(parameters->iconBorder) + " \"" + VI9P::WorkingFile + '\"');
-		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-		
-		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-		for (auto &s : output) {
-			wid->consoleLog->LogTextAtLevel(0, s);
-		}
-		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 3 " + std::to_string(parameters->iconBorder) + " \"" + VI9P::WorkingFile + '\"'));
 	}
 	{ // -gp
 		std::string iconImagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "iconpreview.png";
-		wxArrayString output;
-		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 2 \"" + iconImagePath + '\"');
-		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 		
-		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-		for (auto &s : output) {
-			wid->consoleLog->LogTextAtLevel(0, s);
-		}
-		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 2 \"" + iconImagePath + '\"'));
 		
 		wid->iconPreview->SetBitmap(wxBitmap(wxString::FromUTF8(iconImagePath), wxBITMAP_TYPE_ANY));
 	}
@@ -373,7 +292,7 @@ void iconBrowse_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 	}
 	wxFileDialog openFileDialog(wid->frame, wxEmptyString, wxString::FromUTF8(parameters->icon.empty() ? Settings::ImagesPath : parameters->icon.substr(0, parameters->icon.find_last_of("/\\"))), wxEmptyString, wxString::FromUTF8(allFiles), wxFD_OPEN|wxFD_FILE_MUST_EXIST);
 	openFileDialog.SetFilterIndex(0);
-	if (openFileDialog.ShowModal() == wxID_OK) {
+	if(openFileDialog.ShowModal() == wxID_OK) {
 		wid->iconBox->SetValue(openFileDialog.GetPath());
 	}
 }
@@ -385,16 +304,7 @@ void shortnameBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 	parameters->Sname = std::string(wid->shortnameBox->GetValue().ToUTF8());
 	
 	{ // -sp
-		wxArrayString output;
-		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 4 \"" + fixDoubleQuote(parameters->Sname) + "\" \"" + VI9P::WorkingFile + '\"');
-		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-		
-		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-		for (auto &s : output) {
-			wid->consoleLog->LogTextAtLevel(0, s);
-		}
-		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 4 \"" + fixDoubleQuote(parameters->Sname) + "\" \"" + VI9P::WorkingFile + '\"'));
 	}
 	size_t UTF16Len = chrcount(parameters->Sname); // should this have null terminator?
 	if(UTF16Len > 64) { // 0x80 / 2 = 0x40 = 64
@@ -413,16 +323,7 @@ void longnameBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 	parameters->Lname = std::string(wid->longnameBox->GetValue().ToUTF8());
 	
 	{ // -sp
-		wxArrayString output;
-		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 5 \"" + fixDoubleQuote(parameters->Lname) + "\" \"" + VI9P::WorkingFile + '\"');
-		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-		
-		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-		for (auto &s : output) {
-			wid->consoleLog->LogTextAtLevel(0, s);
-		}
-		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 5 \"" + fixDoubleQuote(parameters->Lname) + "\" \"" + VI9P::WorkingFile + '\"'));
 	}
 	size_t UTF16Len = chrcount(parameters->Lname);
 	if(UTF16Len > 128) { // 0x100 / 2 = 0x80 = 128
@@ -441,16 +342,7 @@ void publisherBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 	parameters->publisher = std::string(wid->publisherBox->GetValue().ToUTF8());
 	
 	{ // -sp
-		wxArrayString output;
-		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 6 \"" + fixDoubleQuote(parameters->publisher) + "\" \"" + VI9P::WorkingFile + '\"');
-		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-		
-		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-		for (auto &s : output) {
-			wid->consoleLog->LogTextAtLevel(0, s);
-		}
-		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 6 \"" + fixDoubleQuote(parameters->publisher) + "\" \"" + VI9P::WorkingFile + '\"'));
 	}
 	size_t UTF16Len = chrcount(parameters->publisher);
 	if(UTF16Len > 64) { // 0x80 / 2 = 0x40 = 64
@@ -469,16 +361,7 @@ void copyBox_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters) {
 	parameters->copyrightInfo = std::string(wid->copyBox->GetValue().ToUTF8());
 	
 	{ // -sp
-		wxArrayString output;
-		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 8 \"" + fixDoubleQuote(parameters->copyrightInfo) + "\" \"" + VI9P::WorkingFile + '\"');
-		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-		
-		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-		for (auto &s : output) {
-			wid->consoleLog->LogTextAtLevel(0, s);
-		}
-		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 8 \"" + fixDoubleQuote(parameters->copyrightInfo) + "\" \"" + VI9P::WorkingFile + '\"'));
 	}
 }
 
@@ -489,16 +372,7 @@ void copyCheck_wxEVT_CHECKBOX(InitWidgets* wid, VI9Pparameters* parameters) {
 	parameters->copycheck = wid->copyCheck->GetValue();
 	
 	{//-sp
-		wxArrayString output;
-		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 7 \"" + std::to_string(parameters->copycheck) + "\" \"" + VI9P::WorkingFile + '\"');
-		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-		
-		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-		for (auto &s : output) {
-			wid->consoleLog->LogTextAtLevel(0, s);
-		}
-		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 7 \"" + std::to_string(parameters->copycheck) + "\" \"" + VI9P::WorkingFile + '\"'));
 	}
 	wid->copyBox->Enable(parameters->copycheck);
 }
@@ -510,16 +384,7 @@ void ffRewindCheck_wxEVT_CHECKBOX(InitWidgets* wid, VI9Pparameters* parameters) 
 	parameters->FFrewind = wid->ffRewindCheck->GetValue();
 	
 	{//-sp
-		wxArrayString output;
-		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 9 \"" + std::to_string(parameters->FFrewind) + "\" \"" + VI9P::WorkingFile + '\"');
-		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-		
-		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-		for (auto &s : output) {
-			wid->consoleLog->LogTextAtLevel(0, s);
-		}
-		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 9 \"" + std::to_string(parameters->FFrewind) + "\" \"" + VI9P::WorkingFile + '\"'));
 	}
 }
 
@@ -530,16 +395,7 @@ void dimCheck_wxEVT_CHECKBOX(InitWidgets* wid, VI9Pparameters* parameters) {
 	parameters->FadeOpt = wid->dimCheck->GetValue();
 	
 	{//-sp
-		wxArrayString output;
-		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 10 \"" + std::to_string(parameters->FadeOpt) + "\" \"" + VI9P::WorkingFile + '\"');
-		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-		
-		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-		for (auto &s : output) {
-			wid->consoleLog->LogTextAtLevel(0, s);
-		}
-		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 10 \"" + std::to_string(parameters->FadeOpt) + "\" \"" + VI9P::WorkingFile + '\"'));
 	}
 }
 
@@ -564,16 +420,8 @@ void multiBannerPreviewLeft_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* param
 
 	{ // -gp
 		std::string bannerImagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/bannerpreview" + std::to_string(VI9P::MultiBannerIndex) + ".png";
-		wxArrayString output;
-		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters->rows * 2) + VI9P::MultiBannerIndex) + " \"" + bannerImagePath + '\"');
-		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 		
-		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-		for (auto &s : output) {
-			wid->consoleLog->LogTextAtLevel(0, s);
-		}
-		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters->rows * 2) + VI9P::MultiBannerIndex) + " \"" + bannerImagePath + '\"'));
 		
 		wid->multiBannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(bannerImagePath), wxBITMAP_TYPE_ANY));
 	}
@@ -594,16 +442,8 @@ void multiBannerPreviewRight_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* para
 	}
 	{ // -gp
 		std::string bannerImagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/bannerpreview" + std::to_string(VI9P::MultiBannerIndex) + ".png";
-		wxArrayString output;
-		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters->rows * 2) + VI9P::MultiBannerIndex) + " \"" + bannerImagePath + '\"');
-		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 		
-		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-		for (auto &s : output) {
-			wid->consoleLog->LogTextAtLevel(0, s);
-		}
-		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters->rows * 2) + VI9P::MultiBannerIndex) + " \"" + bannerImagePath + '\"'));
 		
 		wid->multiBannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(bannerImagePath), wxBITMAP_TYPE_ANY));
 	}
@@ -618,16 +458,7 @@ void PlayerTitles_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxTex
 			parameters->PTitleVec.at(rowReal) = std::string(row->GetValue().ToUTF8());
 			
 			{ // -sp
-				wxArrayString output;
-				wxArrayString errors;
-				wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + rowReal) + " \"" + fixDoubleQuote(parameters->PTitleVec.at(rowReal)) + "\" \"" + VI9P::WorkingFile + '\"');
-				int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-				
-				wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-				for (auto &s : output) {
-					wid->consoleLog->LogTextAtLevel(0, s);
-				}
-				wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+				executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + rowReal) + " \"" + fixDoubleQuote(parameters->PTitleVec.at(rowReal)) + "\" \"" + VI9P::WorkingFile + '\"'));
 			}
 		}
 	}
@@ -640,16 +471,7 @@ void MoflexFiles_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxText
 			parameters->MoflexVec.at(rowReal) = std::string(row->GetValue().ToUTF8());
 			
 			{ // -sp
-				wxArrayString output;
-				wxArrayString errors;
-				wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + parameters->rows + rowReal) + " \"" + parameters->MoflexVec.at(rowReal) + "\" \"" + VI9P::WorkingFile + '\"');
-				int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-				
-				wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-				for (auto &s : output) {
-					wid->consoleLog->LogTextAtLevel(0, s);
-				}
-				wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+				executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + parameters->rows + rowReal) + " \"" + parameters->MoflexVec.at(rowReal) + "\" \"" + VI9P::WorkingFile + '\"'));
 			}
 		}
 	}
@@ -674,29 +496,12 @@ void MenuBanners_wxEVT_TEXT(InitWidgets* wid, VI9Pparameters* parameters, wxText
 			parameters->MBannerVec.at(rowReal) = std::string(row->GetValue().ToUTF8());
 			
 			{ // -sp
-				wxArrayString output;
-				wxArrayString errors;
-				wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters->rows * 2) + rowReal) + " \"" + parameters->MBannerVec.at(rowReal) + "\" \"" + VI9P::WorkingFile + '\"');
-				int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-				
-				wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-				for (auto &s : output) {
-					wid->consoleLog->LogTextAtLevel(0, s);
-				}
-				wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+				executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters->rows * 2) + rowReal) + " \"" + parameters->MBannerVec.at(rowReal) + "\" \"" + VI9P::WorkingFile + '\"'));
 			}
 			{ // -gp
 				std::string bannerImagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/bannerpreview" + std::to_string(VI9P::MultiBannerIndex) + ".png";
-				wxArrayString output;
-				wxArrayString errors;
-				wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters->rows * 2) + VI9P::MultiBannerIndex) + " \"" + bannerImagePath + '\"');
-				int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
 				
-				wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-				for (auto &s : output) {
-					wid->consoleLog->LogTextAtLevel(0, s);
-				}
-				wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+				executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters->rows * 2) + VI9P::MultiBannerIndex) + " \"" + bannerImagePath + '\"'));
 				
 				wid->multiBannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(bannerImagePath), wxBITMAP_TYPE_ANY));
 			}
@@ -722,7 +527,7 @@ void MultiUp_wxEVT_BUTTON(InitWidgets* wid, wxButton* row) {
 			}
 			row->Enable(false); // disable so you can't press it too much
 			if(rowReal > 0) {
-				// the stuff will get saved if the text in the boxes changes so dont save here
+				// the stuff will get saved if the text in the boxes changes so don't save here
 				{ // PlayerTitles
 					wxString tempStr(wid->PlayerTitles.at(rowReal)->GetValue());
 					wid->PlayerTitles.at(rowReal)->SetValue(wid->PlayerTitles.at(rowReal - 1)->GetValue());
@@ -756,7 +561,7 @@ void MultiDown_wxEVT_BUTTON(InitWidgets* wid, wxButton* row) {
 			}
 			row->Enable(false); // disable so you can't press it too much
 			if(rowReal < wid->MultiDown.size()) {
-				//the stuff will get saved if the text in the boxes changes so dont save here
+				// the stuff will get saved if the text in the boxes changes so don't save here
 				{ // PlayerTitles
 					wxString tempStr(wid->PlayerTitles.at(rowReal)->GetValue());
 					wid->PlayerTitles.at(rowReal)->SetValue(wid->PlayerTitles.at(rowReal + 1)->GetValue());
@@ -895,17 +700,14 @@ void removeRow_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 		if(parameters->rows > 1 && parameters->rows < MAX_ROWS) {
 			wid->appendRow->Enable(true);
 			wid->removeRow->Enable(true);
-			wid->splitPatchButton->Enable(true);
 		}
 		if(parameters->rows <= 1) {
 			wid->appendRow->Enable(true);
 			wid->removeRow->Enable(false);
-			wid->splitPatchButton->Enable(false);
 		}
 		else if(parameters->rows >= MAX_ROWS) {
 			wid->appendRow->Enable(false);
 			wid->removeRow->Enable(true);
-			wid->splitPatchButton->Enable(true);
 		}
 	}
 	ShowPatchUpDown(wid, parameters);
@@ -921,16 +723,7 @@ void splitPatchButton_wxEVT_TOGGLEBUTTON(InitWidgets* wid, VI9Pparameters* param
 	parameters->splitPos = wid->splitPatchButton->GetValue();
 	
 	{ // -sp
-		wxArrayString output;
-		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 11 \"" + std::to_string(parameters->splitPos) + "\" \"" + VI9P::WorkingFile + '\"');
-		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-		
-		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-		for (auto &s : output) {
-			wid->consoleLog->LogTextAtLevel(0, s);
-		}
-		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 11 \"" + std::to_string(parameters->splitPos) + "\" \"" + VI9P::WorkingFile + '\"'));
 	}
 	wid->splitPatchLine->Show(parameters->splitPos);
 	ShowPatchUpDown(wid, parameters);
@@ -938,21 +731,13 @@ void splitPatchButton_wxEVT_TOGGLEBUTTON(InitWidgets* wid, VI9Pparameters* param
 }
 
 void splitPatchUp_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
-	if(!wid->splitPatchButton->GetValue() || !wid->splitPatchUp->IsEnabled() || !wid->splitPatchUp->IsShown())
+	if(!wid->splitPatchButton->GetValue() || !wid->splitPatchUp->IsEnabled() || !wid->splitPatchUp->IsShown()) {
 		return;
+	}
 	--parameters->splitPos;
 	
 	{ // -sp
-		wxArrayString output;
-		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 11 \"" + std::to_string(parameters->splitPos) + "\" \"" + VI9P::WorkingFile + '\"');
-		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-		
-		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-		for (auto &s : output) {
-			wid->consoleLog->LogTextAtLevel(0, s);
-		}
-		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 11 \"" + std::to_string(parameters->splitPos) + "\" \"" + VI9P::WorkingFile + '\"'));
 	}
 	
 	ShowPatchUpDown(wid, parameters);
@@ -965,16 +750,7 @@ void splitPatchDown_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 	++parameters->splitPos;
 	
 	{ // -sp
-		wxArrayString output;
-		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 11 \"" + std::to_string(parameters->splitPos) + "\" \"" + VI9P::WorkingFile + '\"');
-		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-		
-		wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-		for (auto &s : output) {
-			wid->consoleLog->LogTextAtLevel(0, s);
-		}
-		wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 11 \"" + std::to_string(parameters->splitPos) + "\" \"" + VI9P::WorkingFile + '\"'));
 	}
 	
 	ShowPatchUpDown(wid, parameters);
@@ -1087,10 +863,12 @@ void buildButton_wxEVT_BUTTON(InitWidgets* wid, VI9Pparameters* parameters) {
 	
 	// execute async process
 	wxString command = "";
-	if(Exports::TAR.empty())
+	if(Exports::TAR.empty()) {
 		command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -bc \"" + VI9P::WorkingFile + "\" \"" + uniqueID + "\" \"" + appName + "\" \"" + prodCode + "\" \"" + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/out.cia\"");
-	else
+	}
+	else {
 		command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -bc \"" + VI9P::WorkingFile + "\" \"" + uniqueID + "\" \"" + appName + "\" \"" + prodCode + "\" \"" + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/out.cia\" \"" + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/out.tar\"");
+	}
 	
 	wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
 	

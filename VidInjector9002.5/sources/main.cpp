@@ -111,9 +111,11 @@ int progmain(int argc, char* argv[]) {
 	
 	getBorders(&wid);
 	initLanguage(&wid);
-	if(Settings::DefaultLanguage < Languages::LanguageFiles.size())
-		if(loadLanguage(Languages::LanguageFiles.at(Settings::DefaultLanguage).File))
+	if(Settings::DefaultLanguage < Languages::LanguageFiles.size()) {
+		if(loadLanguage(Languages::LanguageFiles.at(Settings::DefaultLanguage).File)) {
 			applyLanguage(&wid, &parameters);
+		}
+	}
 	initAllWidgets(&wid);
 	setFonts(&wid);
 	//positionWidgets(&wid, &parameters);
@@ -123,18 +125,9 @@ int progmain(int argc, char* argv[]) {
 	setCursors(&wid);
 	
 	{ // test CLI
-		wxArrayString output;
-		wxArrayString errors;
-		wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + '\"');
-		int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-
-		wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-		for (auto &s : output) {
-			wid.consoleLog->LogTextAtLevel(0, s);
-		}
-		wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+		int ret = executeCommand(&wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + '\"'));
 		
-		if(ret != 1) { // 1 is the expected return value of that command
+		if (ret != 1) { // 1 is the expected return value of that command
 			wxMessageBox(wxString::FromUTF8(CLIError), wxString::FromUTF8(ErrorText), wxICON_ERROR);
 		}
 	}
@@ -425,17 +418,8 @@ int progmain(int argc, char* argv[]) {
 					VI9P::WorkingFile = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "parameters.vi9p";
 					VI9P::OutFile = VI9P::WorkingFile;
 					
-					{//-n
-						wxArrayString output;
-						wxArrayString errors;
-						wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -n \"" + VI9P::WorkingFile + '\"');
-						int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-
-						wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-						for (auto &s : output) {
-							wid.consoleLog->LogTextAtLevel(0, s);
-						}
-						wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+					{ // -n
+						executeCommand(&wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -n \"" + VI9P::WorkingFile + '\"'));
 					}
 					
 					loadVI9P(VI9P::WorkingFile);
@@ -507,7 +491,7 @@ int progmain(int argc, char* argv[]) {
 				break;
 			case ID_EXPORT:
 				{
-					titleIDButton_wxEVT_BUTTON(&wid);//randomize TID
+					titleIDButton_wxEVT_BUTTON(&wid); // randomize TID
 					wid.applicationTitleBox->SetValue(wxString::FromUTF8("video"));
 					wid.productCodeBox->SetValue(wxString::FromUTF8("VDIJ"));
 					wid.buildframe->SetSize(600, 500);
@@ -526,16 +510,18 @@ int progmain(int argc, char* argv[]) {
 							if(strcmp(tolowerstr(std::string(openFileDialog.GetPath().ToUTF8())).substr(find).c_str(), ".cia") == 0) {								
 								Extracted::Archive = std::string(openFileDialog.GetPath().ToUTF8()).substr(0, find);
 								size_t start = Extracted::Archive.find_last_of("\\/");
-								if(start == std::string::npos)
-									return;//yeah ok
+								if(start == std::string::npos) {
+									return; // yeah ok
+								}
 								
-								//choose what dir to extract it to
+								// choose what dir to extract it to
 								wxDirDialog openDirectoryDialog(wid.frame, wxString::FromUTF8(chooseDirSave), wxString::FromUTF8(Extracted::Archive.substr(0, start)), wxDD_DIR_MUST_EXIST);
-								if (openDirectoryDialog.ShowModal() != wxID_OK)
+								if (openDirectoryDialog.ShowModal() != wxID_OK) {
 									return;
+								}
 								Extracted::Archive = std::string(openDirectoryDialog.GetPath().ToUTF8()) + '/' + Extracted::Archive.substr(start + 1);
-								//async execution
-								{//-ec
+								// async execution
+								{ // -ec
 									wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -ec \"" + std::string(openFileDialog.GetPath().ToUTF8()) + "\" \"" + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + seedFile + "\" \"" + Extracted::Archive + '\"');
 									wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
 									
@@ -551,20 +537,22 @@ int progmain(int argc, char* argv[]) {
 							}
 						}
 						
-						find = tolowerstr(std::string(openFileDialog.GetPath().ToUTF8())).rfind(".tar");//chosen .tar file
+						find = tolowerstr(std::string(openFileDialog.GetPath().ToUTF8())).rfind(".tar"); // chosen .tar file
 						if(find != std::string::npos) {
 							if(strcmp(tolowerstr(std::string(openFileDialog.GetPath().ToUTF8())).substr(find).c_str(), ".tar") == 0) {
 								Extracted::Archive = std::string(openFileDialog.GetPath().ToUTF8()).substr(0, find);
 								size_t start = Extracted::Archive.find_last_of("\\/");
-								if(start == std::string::npos)
-									return;//yeah ok
-								//choose what dir to extract it to
+								if(start == std::string::npos) {
+									return; // yeah ok
+								}
+								// choose what dir to extract it to
 								wxDirDialog openDirectoryDialog(wid.frame, wxString::FromUTF8(chooseDirSave), wxString::FromUTF8(Extracted::Archive.substr(0, start)), wxDD_DIR_MUST_EXIST);
-								if (openDirectoryDialog.ShowModal() != wxID_OK)
+								if (openDirectoryDialog.ShowModal() != wxID_OK) {
 									return;
+								}
 								Extracted::Archive = std::string(openDirectoryDialog.GetPath().ToUTF8()) + '/' + Extracted::Archive.substr(start + 1);
-								//async execution
-								{//-ec
+								// async execution
+								{ // -ec
 									wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -et \"" + std::string(openFileDialog.GetPath().ToUTF8()) + "\" \"" + Extracted::Archive + '\"');
 									wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
 									
@@ -605,7 +593,7 @@ int progmain(int argc, char* argv[]) {
 					}
 				}
 				break;
-			//settings
+			// settings
 			case ID_LOGBOOL:
 				{
 					Settings::ShowLog = wid.menuItemOptionsLog->IsChecked();
@@ -615,7 +603,7 @@ int progmain(int argc, char* argv[]) {
 				break;
 			case ID_SYSTEM:
 				{
-					//2
+					// 2
 					Settings::ColorMode = 2;
 					setAppearance(&wid, Settings::ColorMode);
 					saveSettings();
@@ -623,7 +611,7 @@ int progmain(int argc, char* argv[]) {
 				break;
 			case ID_LIGHT:
 				{
-					//0
+					// 0
 					Settings::ColorMode = 0;
 					setAppearance(&wid, Settings::ColorMode);
 					saveSettings();
@@ -631,7 +619,7 @@ int progmain(int argc, char* argv[]) {
 				break;
 			case ID_DARK:
 				{
-					//1
+					// 1
 					Settings::ColorMode = 1;
 					setAppearance(&wid, Settings::ColorMode);
 					saveSettings();
@@ -649,7 +637,7 @@ int progmain(int argc, char* argv[]) {
 					saveSettings();
 				}
 				break;
-			//About
+			// About
 			case ID_ABOUT:
 				{
 					wid.aboutframe->SetSize(650, 350);
@@ -657,8 +645,8 @@ int progmain(int argc, char* argv[]) {
 				}
 				break;
 		}
-		//boo hoo no more switch statement
-		{//language
+		// boo hoo no more switch statement
+		{ // language
 			std::vector<int> LANG_IDs {
 				ID_LANG1,
 				ID_LANG2,
@@ -674,8 +662,9 @@ int progmain(int argc, char* argv[]) {
 			if(event.GetId() >= ID_LANG1 && event.GetId() <= ID_LANG10) {
 				for(size_t i = 0; i < LANG_IDs.size(); i++) {
 					if(event.GetId() == LANG_IDs.at(i)) {
-						if(loadLanguage(Languages::LanguageFiles.at(i).File))
+						if(loadLanguage(Languages::LanguageFiles.at(i).File)) {
 							applyLanguage(&wid, &parameters);
+						}
 						setFonts(&wid);
 						positionWidgets(&wid, &parameters);
 						setToolTips(&wid);
@@ -773,40 +762,23 @@ int progmain(int argc, char* argv[]) {
 	//staticText1->SetFont({PointsToNativeFontGraphicsUntit(32), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_BOLD});
 	//staticText1->SetForegroundColour({0, 139, 0});
 	
-	{//deal temp
+	{ // deal temp
 		std::error_code error;
 		
 		if(!std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath).c_str()), error)) {
 			std::filesystem::create_directories(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath).c_str()), error);
-			if (error)
+			if (error) {
 				wxMessageBox(wxString::FromUTF8(std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '\n' + error.message())), wxString::FromUTF8(ErrorText));
+			}
 			
-			{//-n (for temp dir)
-				wxArrayString output;
-				wxArrayString errors;
-				wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -n \"" + VI9P::WorkingFile + '\"');
-				int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-
-				wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-				for (auto &s : output) {
-					wid.consoleLog->LogTextAtLevel(0, s);
-				}
-				wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+			{ // -n (for temp dir)
+				executeCommand(&wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -n \"" + VI9P::WorkingFile + '\"'));
 			}
 		}
 		if(error) {
-			//this probably wont work either
-			{//-n (for temp dir)
-				wxArrayString output;
-				wxArrayString errors;
-				wxString command = wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -n \"" + VI9P::WorkingFile + '\"');
-				int ret = wxExecute(command, output, errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
-
-				wid.consoleLog->LogTextAtLevel(0, command + "\n==========\n");
-				for (auto &s : output) {
-					wid.consoleLog->LogTextAtLevel(0, s);
-				}
-				wid.consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+			// this probably wont work either
+			{ // -n (for temp dir)
+				executeCommand(&wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -n \"" + VI9P::WorkingFile + '\"'));
 			}
 		}
 	}
@@ -820,7 +792,7 @@ int progmain(int argc, char* argv[]) {
 			std::string v = argv[i];
 			size_t find = 0;
 			find = v.find_last_of(".");
-			if (find > v.size()) find = 0;//if find_first_of fails, this flings in the first numeral
+			if (find > v.size()) find = 0; // if find_first_of fails, this flings in the first numeral
 			if (v.substr(find) == ".vi9p") {
 				VI9Pnow = v;
 			}
@@ -855,19 +827,15 @@ int main(int argc, char** argv) {
 #else
 
 // https://stackoverflow.com/a/41665246
-std::string WstrToUtf8Str(const std::wstring& wstr)
-{
+std::string WstrToUtf8Str(const std::wstring& wstr) {
 	std::string retStr = "";
-	if (!wstr.empty())
-	{
+	if (!wstr.empty()) {
 		int sizeRequired = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, NULL, 0, NULL, NULL);
 		
-		if (sizeRequired > 0)
-		{
+		if (sizeRequired > 0) {
 			retStr.resize(sizeRequired);
 			int bytesConverted = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &retStr[0], sizeRequired, NULL, NULL);
-			if (!bytesConverted)
-			{
+			if (!bytesConverted) {
 				std::wcout << L"WstrToUtf8Str failed to convert wstring '" << wstr.c_str() << L"'";
 				return "";
 			}
