@@ -804,8 +804,16 @@ int progmain(int argc, char* argv[]) {
 	
 	// nvm this stuff really has to be after that
 	// correct sizes
-	wid.iconPreview->Fit();
-	wid.multiBannerPreview->Fit();
+	{
+		int w, h;
+		wid.iconPreview->GetSize(&w, &h);
+		wid.iconPreview->SetSize(w + Borders::width, h + Borders::height);
+	}
+	{
+		int w, h;
+		wid.multiBannerPreview->GetSize(&w, &h);
+		wid.multiBannerPreview->SetSize(w + Borders::width, h + Borders::height);
+	}
 	
 	// make sure the window looks good
 	positionWidgets(&wid, &parameters);
