@@ -1,49 +1,91 @@
 #pragma once
 
-#include <cstdint>
+#include <filesystem>
+#include <iostream>
+#include <fstream>
 #include <vector>
-#include "programStrings.hpp"
+#include "fileReading.hpp"
+#include "formatting.hpp"
+#include "strings.hpp"
 
 extern uint8_t MAX_ROWS;
 extern uint8_t MAX_ROWS_MULTI;
 
 struct VI9Pparameters {
-	int mode = 0;//0
-	std::string banner = "";//1
-	std::string icon = "";//2
-	int iconBorder = 2;//3
-	std::string Sname = "";//4
-	std::string Lname = "";//5
-	std::string publisher = "";//6
-	int copycheck = 0;//7
-	std::string copyrightInfo = "";//8
-	int FFrewind = 1;//9
-	int FadeOpt = 1;//10
+	std::string ver = VI9PVER;
+	int mode = 0;
+	std::string banner = "";
+	std::string icon = "";
+	int iconBorder = 2;
+	std::string Sname = "";
+	std::string Lname = "";
+	std::string publisher = "";
+	int copycheck = 0;
+	std::string copyrightInfo = "";
+	int FFrewind = 1;
+	int FadeOpt = 1;
 	uint8_t rows = 1;
-	std::vector<std::string> PTitleVec = std::vector<std::string>(1, "");//12
-	std::vector<std::string> MoflexVec = std::vector<std::string>(1, "");//12 + rows
-	std::vector<std::string> MBannerVec = std::vector<std::string>(1, "");//12 + rows * 2
-	uint8_t splitPos = 0;//11
+	std::vector<std::string> PTitleVec = std::vector<std::string>(1, "");
+	std::vector<std::string> MoflexVec = std::vector<std::string>(1, "");
+	std::vector<std::string> MBannerVec = std::vector<std::string>(1, "");
+	uint8_t splitPos = 0;
 };
+
+int saveParameters(std::string parampath, VI9Pparameters parameters);
+int loadParameters(std::string parampath, VI9Pparameters* parameters);
+/*
+return:
+0 good
+1 failed to save
+2 failed to load (loadParameters)
+3 failed to read param (loadParameters)
+4 Bad version (loadParameters)
+5 failed to find StrVerParam (loadParameters)
+6 failed to load something from parameters (loadParameters)
+7 IntMultiParam bad value
+8 IntIconBorderParam bad value
+9 IntCopycheckParam bad value
+10 IntFFrewindParam bad value
+11 IntFadeOptParam bad value
+12 IntSplitPatchParam bad value
+*/
+int setParameter(std::string inpath, int number, std::string newValue, std::string outpath);
+/*
+return:
+0 good
+2 failed to load (loadParameters)
+3 failed to read param (loadParameters)
+4 Bad version (loadParameters)
+5 failed to find StrVerParam (loadParameters)
+6 failed to load something from parameters (loadParameters)
+*/
+int printParameter(std::string inpath);
+/*
+return:
+0 good
+2 failed to load (loadParameters)
+3 failed to read param (loadParameters)
+4 Bad version (loadParameters)
+5 failed to find StrVerParam (loadParameters)
+6 failed to load something from parameters (loadParameters)
+7 no more rows to add
+*/
+int add_row(std::string inpath, std::string outpath);
+/*
+return:
+0 good
+2 failed to load (loadParameters)
+3 failed to read param (loadParameters)
+4 Bad version (loadParameters)
+5 failed to find StrVerParam (loadParameters)
+6 failed to load something from parameters (loadParameters)
+7 no more rows to remove
+*/
+int sub_row(std::string inpath, std::string outpath);
 
 /*
-Loading: bool to set while you are applying the parameters so it doesnt overwrite what we are loading, specifically when dealing with smdh
-WorkingFile: the vi9p to actually write to
-OutFile: the vi9p to copy the working file to when you choose to save it
-MultiBannerIndex: the number for which row of multi banner to preview 
+returns:
+the value of the vi9p INT ROWS param
+-2, -3, -4, -5, -6: fail (negated output of loadParameters)
 */
-class VI9P
-{
-	public:
-	static bool Loading;
-	static std::string WorkingFile;
-	static std::string OutFile;
-	static uint8_t MultiBannerIndex;
-};
-
-/*parse output of -pp from CLI
-input: raw output of -pp
-query: parameter to get the value from (like INT:MULTI)
-value: value of the parameter
-*/
-void parsePP(const std::string input, const std::string query, std::string* value);
+int return_rows(std::string inpath);
