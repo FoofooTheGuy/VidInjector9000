@@ -1,75 +1,69 @@
 #pragma once
 
-#include <string>
-#include <vector>
+#include <filesystem>
 #include <cstring>
 #include <fstream>
-#include <filesystem>
-#include <nnc/utf.h>
+#include <chrono>
+#include <random>
+#include <string>
+#include <vector>
 
-#include "microtar.hpp"
-
+//return: number of code points in a utf8 string as opposed to number of bytes the string takes up
 size_t chrcount(const std::string& str);
-
-std::string UTF8toUTF16(const std::string input);
-std::string UTF16toUTF8(const std::string& input);
-std::string to_UTF8(const nnc_u16* UTF16, const size_t UTF16size);
 
 std::string tolowerstr(std::string str);
 std::string toupperstr(std::string str);
 
-// add extension to str if str doesn't have extension
-void addMissingFileExtension(std::string *str, const std::string &extension);
+/*
+instr: string with or without the file extension
+extension: file extension (eg. ".txt")
+return: instr + extension
+*/
+std::string addMissingFileExtension(std::string instr, std::string extension);
 
-bool stol_s(long& output, std::string input, bool isHex = false);
-bool stoul_s(uint8_t& output, std::string input, bool isHex = false);
-bool stoul_s(uint32_t& output, std::string input, bool isHex = false);
-bool stoul_s(unsigned long& output, std::string input, bool isHex = false);
-
-uint32_t CRC32(void* pData, size_t iLen);
+//replace " with \"
+std::string fixDoubleQuote(std::string str);
 
 std::error_code copyfile(std::string inpath, std::string outpath);
 
-void encode_bigend_u64(uint64_t value, void* dest);
+bool TIDisValid(uint32_t TID);
+uint32_t RandomTID();
 
-std::string fixSlashes(std::string instr);
+template<class T>
+bool ASCII2number(T* outnum, const std::string& str, bool isHex = false) {
+	if(isHex) {
+		if (str.find_first_of("-abcdefABCDEF1234567890") == std::string::npos) {
+			return false;
+		}
+	}
 
-/*
-memory efficient tar file adding
-tar: mtar tar thing. be sure to call mtar_open before doing this
-filename: input file path to add
-arcname: filename to write to the tar archive. must only be a file name.
-buffersize: size of chunk to read from the file at a time.
-return value: std::error_code probably from std::filesystem
-*/
-std::error_code add_file(mtar_t* tar, std::string filename, std::string arcname, size_t buffersize);
+	if(!isHex) {
+		if (str.find_first_of("-1234567890") == std::string::npos) {
+			return false;
+		}
+	}
 
-/*
-add all of a directory to a tar using
-tar: mtar tar thing. be sure to call mtar_open before doing this
-dirname: directory to put in the tar, must be an absolute path.
-buffersize: size of chunk to read from the file at a time.
-return value: std::error_code probably from std::filesystem
-*/
-std::error_code add_directory(mtar_t* tar, std::string dirname, size_t buffersize);
+	std::size_t size = 0;
+	int base = isHex ? 16 : 10;
 
-/*
-extract all records from a tar
-tar: mtar tar thing. be sure to call mtar_open before doing this
-h: mtar tar header. so it knows which file to get
-inputfile: file path of the tar
-outputdir: directory to extract to
-buffersize: size of chunk to read from the file at a time.
-return value: int from mtar, use mtar_strerror to see what it means
-*/
-int read_record_data(mtar_t* tar, mtar_header_t* h, std::string inputfile, std::string outputdir, size_t buffersize);
+	if constexpr (std::is_same<T, int>::value) {
+		*(outnum) = std::stoi(str, &size, base);
+	}
+	else if constexpr (std::is_same<T, long>::value) {
+		*(outnum) = std::stol(str, &size, base);
+	}
+	else if constexpr (std::is_same<T, unsigned long>::value) {
+		*(outnum) = std::stoul(str, &size, base);
+	}
+	else if constexpr (std::is_same<T, long long>::value) {
+		*(outnum) = std::stoll(str, &size, base);
+	}
+	else if constexpr (std::is_same<T, unsigned long long>::value) {
+		*(outnum) = std::stoull(str, &size, base);
+	}
+	else {
+		static_assert(false, "Invalid use of ASCII2number. This function only supports std::string or std::vector<std::string>");
+	}
 
-/*
-extract all records from a tar
-tar: mtar tar thing. be sure to call mtar_open before doing this
-inputfile: file path of the tar
-outputdir: directory to extract to
-buffersize: size of chunk to read from the file at a time.
-return value: int from mtar, use mtar_strerror to see what it means
-*/
-int extract_content(mtar_t* tar, std::string inputfile, std::string outputdir, size_t buffersize);
+	return true;
+}
