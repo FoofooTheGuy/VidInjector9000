@@ -183,6 +183,13 @@ int progmain(int argc, char* argv[]) {
 	};
 	
 	auto loadVI9P = [&](std::string VI9Pfile) {
+		if(VI9P::Loading) {
+			return;
+		}
+		VI9P::Loading = true;
+		int flags = Execution::flags; // save flags
+		Execution::flags = wxEXEC_BLOCK; // set flags
+
 		VI9P::WorkingFile = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "parameters.vi9p";
 		VI9P::OutFile = VI9Pfile;
 		
@@ -197,6 +204,10 @@ int progmain(int argc, char* argv[]) {
 		positionWidgets(&wid, &parameters);
 		
 		applyAddRows();
+		VI9P::Loading = false;
+		
+		MenuBanners_wxEVT_TEXT(&wid, &parameters, wid.MenuBanners.at(VI9P::MultiBannerIndex));
+		Execution::flags = flags; // restore flags
 	};
 	
 	wid.frame->Bind(wxEVT_WEBREQUEST_STATE, [&](wxWebRequestEvent& event) {
@@ -422,9 +433,7 @@ int progmain(int argc, char* argv[]) {
 						executeCommand(&wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -n \"" + VI9P::WorkingFile + '\"'));
 					}
 					
-					loadVI9P(VI9P::WorkingFile);
-					
-					//MenuBanners_wxEVT_TEXT(&wid, &parameters, wid.MenuBanners.at(VI9P::MultiBannerIndex));
+					loadVI9P(VI9P::WorkingFile);					
 				}
 				break;
 			case wxID_OPEN:
@@ -433,7 +442,6 @@ int progmain(int argc, char* argv[]) {
 					openFileDialog.SetFilterIndex(0);
 					if (openFileDialog.ShowModal() == wxID_OK) {
 						loadVI9P(std::string(openFileDialog.GetPath().ToUTF8()));
-						MenuBanners_wxEVT_TEXT(&wid, &parameters, wid.MenuBanners.at(VI9P::MultiBannerIndex));
 					}
 				}
 				break;
@@ -722,9 +730,19 @@ int progmain(int argc, char* argv[]) {
 	wid.extractArchive->Bind(wxEVT_END_PROCESS, [&](wxProcessEvent& event) {
 		extractArchive_wxEVT_END_PROCESS(&wid, &event);
 		wid.extractDialog->Destroy();
-		//cant load here because it's still in async or something idk but it doesnt work if you try
-		//loadVI9P(Extracted::Archive + "/parameters.vi9p");
-		//MenuBanners_wxEVT_TEXT(&wid, &parameters, wid.MenuBanners.at(VI9P::MultiBannerIndex));
+		
+		/*std::error_code error;
+		if(std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(Extracted::Archive).c_str()), error)) {
+			wxMessageBox(wxString::FromUTF8(Extracted::Archive), wxString::FromUTF8(SuccessfullyExtracted));
+		}
+		else {
+			wxMessageBox(wxString::FromUTF8(BuildError + " (" + Extracted::Archive + ')'), wxString::FromUTF8(ErrorText), wxICON_ERROR);
+		}
+		if(error) {
+			wxMessageBox(wxString::FromUTF8(BuildError + " (" + Extracted::Archive + ")\n" + error.message()), wxString::FromUTF8(ErrorText), wxICON_ERROR);
+		}*/
+		// cant load here because it's still in async or something idk but it freezes if you try
+		loadVI9P(Extracted::Archive + "/parameters.vi9p");
 	});
 
 	wid.extractPulser->Bind(wxEVT_TIMER, [&](wxTimerEvent& event) {
@@ -799,7 +817,6 @@ int progmain(int argc, char* argv[]) {
 		}
 		
 		loadVI9P(VI9Pnow);
-		MenuBanners_wxEVT_TEXT(&wid, &parameters, wid.MenuBanners.at(VI9P::MultiBannerIndex));
 	}
 	
 	// nvm this stuff really has to be after that

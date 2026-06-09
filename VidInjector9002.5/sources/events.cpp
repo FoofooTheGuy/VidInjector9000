@@ -963,8 +963,6 @@ void extractArchive_wxEVT_END_PROCESS(InitWidgets* wid, wxProcessEvent* event) {
 			wxMessageBox(wxString::FromUTF8(ErrorText + ' ' + BuildError + " (" + std::to_string(event->GetExitCode()) + ')'), wxString::FromUTF8(ErrorText), wxICON_ERROR);
 		}
 		else {
-			//VI9P::OutFile = Extracted::Archive + "/parameters.vi9p"; // generated vi9p from extraction parameters.vi9p
-			
 			std::error_code error;
 			if(std::filesystem::exists(std::filesystem::path((const char8_t*)&*std::string(Extracted::Archive).c_str()), error)) {
 				wxMessageBox(wxString::FromUTF8(Extracted::Archive), wxString::FromUTF8(SuccessfullyExtracted));

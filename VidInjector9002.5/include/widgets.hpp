@@ -50,6 +50,12 @@ class Borders
 	static int height;
 };
 
+class Execution
+{
+	public:
+	static int flags;
+};
+
 enum wxOwnedID {
 	ID_EXPORT,
 	ID_EXTRACT,
@@ -231,7 +237,7 @@ struct InitWidgets {
 	wxWebRequest* updateCheck = new wxWebRequest(wxWebSession::GetDefault().CreateRequest(frame, "https://api.github.com/repos/" + githubRepo + "/tags"));
 };
 
-// wxExecute synchronously
+// wxExecute
 int executeCommand(InitWidgets* wid, const wxString &command, wxArrayString* output = nullptr, wxArrayString* errors = nullptr);
 
 void doAddRows(InitWidgets* wid, int rows);

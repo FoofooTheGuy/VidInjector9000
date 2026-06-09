@@ -6,12 +6,14 @@ std::string Extracted::Archive = "";
 int Borders::width = 0;
 int Borders::height = 0;
 
+int Execution::flags = wxEXEC_SYNC | wxEXEC_NODISABLE;
+
 int executeCommand(InitWidgets* wid, const wxString &command, wxArrayString* output, wxArrayString* errors) {
 	wxArrayString my_output;
 	wxArrayString my_errors;
 	int ret = 0;
 	
-	ret = wxExecute(command, my_output, my_errors, wxEXEC_SYNC | wxEXEC_NODISABLE);
+	ret = wxExecute(command, my_output, my_errors, Execution::flags);
 	
 	wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
 	for (auto &s : my_output) {
@@ -2306,6 +2308,7 @@ int loadParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 	VI9P::Loading = true;
 	int ret = 0;
 	{ // -rr
+		//wxMessageBox("holup");
 		ret = executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -rr \"" + VI9P::WorkingFile + '\"'));
 		
 		if(ret >= 0) {
