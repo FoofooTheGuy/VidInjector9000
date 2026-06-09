@@ -601,6 +601,11 @@ int progmain(int argc, char* argv[]) {
 					}
 				}
 				break;
+			case ID_QUIT:
+				{
+					wid.frame->Destroy();
+				}
+				break;
 			// settings
 			case ID_LOGBOOL:
 				{

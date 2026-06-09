@@ -60,6 +60,7 @@ enum wxOwnedID {
 	ID_EXPORT,
 	ID_EXTRACT,
 	ID_IMPORTSEED,
+	ID_QUIT,
 	ID_SYSTEM,
 	ID_LIGHT,
 	ID_DARK,
@@ -110,6 +111,7 @@ struct InitWidgets {
 	wxMenuItem* menuItemFileExport = menuFile->Append(ID_EXPORT, wxString::FromUTF8(fileExport + "\tCtrl+E"));
 	wxMenuItem* menuItemFileExtract = menuFile->Append(ID_EXTRACT, wxString::FromUTF8(fileExtract + "\tCtrl+Alt+E"));
 	wxMenuItem* menuItemFileImportSeed = menuFile->Append(ID_IMPORTSEED, wxString::FromUTF8(fileImportSeed));
+	wxMenuItem* menuItemFileQuit = menuFile->Append(ID_QUIT, wxString::FromUTF8(fileQuit));
 	wxMenu* menuOptions = new wxMenu();
 	wxMenuItem* menuItemOptionsSystem = menuOptions->Append(ID_SYSTEM, wxString::FromUTF8(optionsSystemMode), "", wxITEM_RADIO);
 	wxMenuItem* menuItemOptionsLight = menuOptions->Append(ID_LIGHT, wxString::FromUTF8(optionsLightMode), "", wxITEM_RADIO);
@@ -237,7 +239,8 @@ struct InitWidgets {
 	wxWebRequest* updateCheck = new wxWebRequest(wxWebSession::GetDefault().CreateRequest(frame, "https://api.github.com/repos/" + githubRepo + "/tags"));
 };
 
-// wxExecute
+// wxExecute and write output to log
+// set Execution::flags to change what flags this uses
 int executeCommand(InitWidgets* wid, const wxString &command, wxArrayString* output = nullptr, wxArrayString* errors = nullptr);
 
 void doAddRows(InitWidgets* wid, int rows);

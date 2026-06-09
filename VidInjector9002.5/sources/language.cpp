@@ -36,6 +36,7 @@ void applyLanguage(InitWidgets* wid, VI9Pparameters* parameters) {
 	wid->menuItemFileExport->SetItemLabel(wxString::FromUTF8(fileExport + "\tCtrl+E"));
 	wid->menuItemFileExtract->SetItemLabel(wxString::FromUTF8(fileExtract + "\tCtrl+Alt+E"));
 	wid->menuItemFileImportSeed->SetItemLabel(wxString::FromUTF8(fileImportSeed));
+	wid->menuItemFileQuit->SetItemLabel(wxString::FromUTF8(fileQuit  + "\tCtrl+Q"));
 	wid->mainMenu->SetMenuLabel(1, wxString::FromUTF8(options));
 	wid->menuItemOptionsLog->SetItemLabel(wxString::FromUTF8(optionsShowLog));
 	wid->menuItemOptionsSystem->SetItemLabel(wxString::FromUTF8(optionsSystemMode));

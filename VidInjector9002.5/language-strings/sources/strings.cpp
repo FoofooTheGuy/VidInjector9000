@@ -23,6 +23,7 @@ std::string fileSaveAs = "Save &as...";
 std::string fileExport = "Ex&port...";
 std::string fileExtract = "Ex&tract...";
 std::string fileImportSeed = "&Import Seed";
+std::string fileQuit = "&Quit";
 std::string options = "&Options";
 std::string optionsShowLog = "&Show Log";
 std::string optionsSystemMode = "S&ystem";

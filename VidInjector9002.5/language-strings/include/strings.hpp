@@ -33,6 +33,8 @@ extern std::string fileSaveAs;
 extern std::string fileExport;
 extern std::string fileExtract;
 extern std::string fileImportSeed;
+extern std::string fileQuit;
+
 extern std::string options;
 extern std::string optionsShowLog;
 extern std::string optionsSystemMode;
@@ -40,7 +42,9 @@ extern std::string optionsLightMode;
 extern std::string optionsDarkMode;
 extern std::string optionsDeleteTemp;
 extern std::string optionsUpdateCheck;
+
 extern std::string language;
+
 extern std::string help;
 extern std::string helpAbout;
 

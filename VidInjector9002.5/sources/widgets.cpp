@@ -668,18 +668,18 @@ void setToolTips(InitWidgets* wid) {
 	wid->longnameBox->SetToolTip(wxString::FromUTF8(longnameBoxTip));
 	wid->publisherBox->SetToolTip(wxString::FromUTF8(publisherBoxTip));
 	
-	if(wid->modeChoiceBox->GetSelection() == 0) {
-		wid->copyBox->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
-	}
-	else {
+	if(wid->modeChoiceBox->GetSelection() == 1) {
 		wid->copyBox->SetToolTip(wxString::FromUTF8(copyBoxTip));
 	}
+	else {
+		wid->copyBox->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
+	}
 	
-	if(wid->modeChoiceBox->GetSelection() == 0) {
-		wid->copyCheck->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
+	if(wid->modeChoiceBox->GetSelection() == 1) {
+		wid->copyCheck->SetToolTip(wxString::FromUTF8(copyCheckTip));
 	}
 	else {
-		wid->copyCheck->SetToolTip(wxString::FromUTF8(copyCheckTip));
+		wid->copyCheck->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
 	}
 	
 	wid->iconPreview->SetToolTip(wxString::FromUTF8(iconPreviewTip));
@@ -2333,7 +2333,7 @@ int loadParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 			int outnum = 0;
 			parsePP(pp.c_str(), IntMultiParam, &value);
 			if(!ASCII2number<int>(&outnum, value)) {
-				//tbh this should never ever happen
+				// tbh this should never ever happen
 				parameters->mode = 0;
 			}
 			else {
