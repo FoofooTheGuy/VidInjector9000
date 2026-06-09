@@ -25,7 +25,7 @@ bool loadLanguage(std::string LangPath) {
 }
 
 void applyLanguage(InitWidgets* wid, VI9Pparameters* parameters) {
-	//wid->consoleLog->SetLabel(wxString::FromUTF8(logFrameText));//wxLogWindow is so weird idk how to change anything about it
+	//wid->consoleLog->SetLabel(wxString::FromUTF8(logFrameText)); // wxLogWindow is so weird idk how to change anything about it
 	
 	wid->frame->SetLabel(wxString::FromUTF8(frameText));
 	wid->mainMenu->SetMenuLabel(0, wxString::FromUTF8(file));
@@ -49,9 +49,10 @@ void applyLanguage(InitWidgets* wid, VI9Pparameters* parameters) {
 	wid->modeText->SetLabel(wxString::FromUTF8(ModeText));
 	wid->modeChoiceBox->SetString(0, wxString::FromUTF8(SingleVideo));
 	wid->modeChoiceBox->SetString(1, wxString::FromUTF8(MultiVideo));
+	wid->modeChoiceBox->SetString(2, wxString::FromUTF8(ExtendedMulti));
 	wid->bannerText->SetLabel(wxString::FromUTF8(BannerText));
 	wid->bannerBrowse->SetLabel(wxString::FromUTF8(Browse));
-	//wid->bannerError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + ImageInfoError + " (0) " + SeeLog));//wait no we dont want 0. see below for fix
+	//wid->bannerError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + ImageInfoError + " (0) " + SeeLog)); // wait no we dont want 0. see below for fix
 	wid->iconText->SetLabel(wxString::FromUTF8(IconText));
 	wid->iconBrowse->SetLabel(wxString::FromUTF8(Browse));
 	//wid->iconError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + ImageInfoError + " (0) " + SeeLog));
@@ -84,16 +85,21 @@ void applyLanguage(InitWidgets* wid, VI9Pparameters* parameters) {
 	wid->byMeText->SetLabel(wxString::FromUTF8(ByMeText));
 	wid->gitHubLinker->SetLabel(wxString::FromUTF8(GitHubLinker));
 	
-	if(!parameters->banner.empty())//so it doesn't overwrite the actual information
-		bannerBox_wxEVT_TEXT(wid, parameters);//it actually should do this because the other thing was removing the error code
-	if(!parameters->icon.empty())
+	if(!parameters->banner.empty()) { // so it doesn't overwrite the actual information
+		bannerBox_wxEVT_TEXT(wid, parameters); // it actually should do this because the other thing was removing the error code
+	}
+	if(!parameters->icon.empty()) {
 		iconBox_wxEVT_TEXT(wid, parameters);
-	if(!parameters->Sname.empty())
+	}
+	if(!parameters->Sname.empty()) {
 		shortnameBox_wxEVT_TEXT(wid, parameters);
-	if(!parameters->Lname.empty())
+	}
+	if(!parameters->Lname.empty()) {
 		longnameBox_wxEVT_TEXT(wid, parameters);
-	if(!parameters->publisher.empty())
-	publisherBox_wxEVT_TEXT(wid, parameters);
+	}
+	if(!parameters->publisher.empty()) {
+		publisherBox_wxEVT_TEXT(wid, parameters);
+	}
 }
 
 void initLanguage(InitWidgets* wid) {
@@ -112,10 +118,10 @@ void initLanguage(InitWidgets* wid) {
 		};
 		size_t slot = 0;
 		std::error_code error;
-		//https://stackoverflow.com/a/612176
+		// https://stackoverflow.com/a/612176
 		for (const auto& entry : std::filesystem::directory_iterator(std::filesystem::path((const char8_t*)&*std::string(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + languagePath).c_str()), error)) {
 			if (std::filesystem::exists(entry, error)) {
-				std::string entrystr = entry.path().string();//https://stackoverflow.com/q/45401822
+				std::string entrystr = entry.path().string(); // https://stackoverflow.com/q/45401822
 				std::string outstr = "";
 				if (std::filesystem::is_directory(entry, error)) {
 					std::vector<std::string> filelines = fileRead(entrystr + "/Language.txt");
@@ -125,12 +131,9 @@ void initLanguage(InitWidgets* wid) {
 						Languages::LanguageFiles.push_back({outstr, std::filesystem::absolute(entry.path()).string() + "/Language.txt"});
 						++slot;
 					}
-					//else xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}\n{}.", FailedToFindVar, inLangLanguage, ValueNoChange), xtd::ustring::format("{} {}", ErrorText, MissingVariableError), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
 				}
 			}
-			//else xtd::forms::message_box::show(*this, xtd::ustring::format("{} {}", FailedToFindPath, entry), xtd::ustring::format("{} {}", ErrorText, BadValue), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
 			if (error) {
-				//xtd::forms::message_box::show(*this, xtd::ustring::format("{}/{}/language\n{}", ProgramDir, resourcesPath, error.message()), xtd::ustring::format("{}", ErrorText), xtd::forms::message_box_buttons::ok, xtd::forms::message_box_icon::error);
 				break;
 			}
 		}

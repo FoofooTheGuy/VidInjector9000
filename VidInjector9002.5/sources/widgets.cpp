@@ -665,12 +665,32 @@ void setToolTips(InitWidgets* wid) {
 	wid->shortnameBox->SetToolTip(wxString::FromUTF8(shortnameBoxTip));
 	wid->longnameBox->SetToolTip(wxString::FromUTF8(longnameBoxTip));
 	wid->publisherBox->SetToolTip(wxString::FromUTF8(publisherBoxTip));
-	wid->copyBox->SetToolTip(wxString::FromUTF8(copyBoxTip));
-	wid->copyCheck->SetToolTip(wxString::FromUTF8(copyCheckTip + '\n' + onlyMultiVideo));
+	
+	if(wid->modeChoiceBox->GetSelection() == 0) {
+		wid->copyBox->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
+	}
+	else {
+		wid->copyBox->SetToolTip(wxString::FromUTF8(copyBoxTip));
+	}
+	
+	if(wid->modeChoiceBox->GetSelection() == 0) {
+		wid->copyCheck->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
+	}
+	else {
+		wid->copyCheck->SetToolTip(wxString::FromUTF8(copyCheckTip));
+	}
+	
 	wid->iconPreview->SetToolTip(wxString::FromUTF8(iconPreviewTip));
 	wid->ffRewindCheck->SetToolTip(wxString::FromUTF8(ffRewindCheckTip));
 	wid->dimCheck->SetToolTip(wxString::FromUTF8(dimCheckTip));
-	wid->multiBannerPreview->SetToolTip(wxString::FromUTF8(multiBannerPreviewTip + '\n' + onlyMultiVideo));
+	
+	if(wid->modeChoiceBox->GetSelection() == 0) {
+		wid->multiBannerPreview->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
+	}
+	else {
+		wid->multiBannerPreview->SetToolTip(wxString::FromUTF8(multiBannerPreviewTip));
+	}
+	
 	wid->multiBannerPreviewLeft->SetToolTip(wxString::FromUTF8(multiBannerPreviewLeftTip));
 	wid->multiBannerPreviewRight->SetToolTip(wxString::FromUTF8(multiBannerPreviewRightTip));
 	wid->moflexFileText->SetToolTip(wxString::FromUTF8(moflexFileTip));
@@ -681,7 +701,20 @@ void setToolTips(InitWidgets* wid) {
 		wid->MoflexFiles.at(row)->SetToolTip(wxString::FromUTF8(moflexFilesTip + " (" + std::to_string(row + 1) + ')'));
 	}
 	for(size_t row = 0; row < wid->MenuBanners.size(); row++) {
-		wid->MenuBanners.at(row)->SetToolTip(wxString::FromUTF8(menuBannersTip + " (" + std::to_string(row + 1) + ")\n" + onlyMultiVideo));
+		if(wid->modeChoiceBox->GetSelection() == 0) {
+			wid->MenuBanners.at(row)->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
+		}
+		else if(wid->modeChoiceBox->GetSelection() == 1) {
+			wid->MenuBanners.at(row)->SetToolTip(wxString::FromUTF8(menuBannersTip + " (" + std::to_string(row + 1) + ')'));
+		}
+		else if(wid->modeChoiceBox->GetSelection() == 2) {
+			if(row == 0) {
+				wid->MenuBanners.at(row)->SetToolTip(wxString::FromUTF8(topImageTip));
+			}
+			else {
+				wid->MenuBanners.at(row)->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
+			}
+		}
 	}
 	for(size_t row = 0; row < wid->MultiUp.size(); row++) {
 		wid->MultiUp.at(row)->SetToolTip(wxString::FromUTF8(multiUpTip));
@@ -689,11 +722,38 @@ void setToolTips(InitWidgets* wid) {
 	for(size_t row = 0; row < wid->MultiDown.size(); row++) {
 		wid->MultiDown.at(row)->SetToolTip(wxString::FromUTF8(multiDownTip));
 	}
+	
 	wid->moflexBrowse->SetToolTip(wxString::FromUTF8(moflexBrowseTip));
-	wid->multiBannerBrowse->SetToolTip(wxString::FromUTF8(multiBannerBrowseTip));
+	
+	if(wid->modeChoiceBox->GetSelection() == 0) {
+		wid->multiBannerBrowse->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
+	}
+	else if(wid->modeChoiceBox->GetSelection() == 1) {
+		wid->multiBannerBrowse->SetToolTip(wxString::FromUTF8(multiBannerBrowseTip));
+	}
+	else if(wid->modeChoiceBox->GetSelection() == 2) {
+		wid->multiBannerBrowse->SetToolTip(wxString::FromUTF8(extendedTopImageBrowseTip));
+	}
+	
 	wid->removeRow->SetToolTip(wxString::FromUTF8(removeRowTip));
-	wid->appendRow->SetToolTip(wxString::FromUTF8(appendRowTip + '\n' + onlyMultiVideo));
-	wid->splitPatchButton->SetToolTip(wxString::FromUTF8(splitPatchTip));
+	
+	if(wid->modeChoiceBox->GetSelection() == 0) {
+		wid->appendRow->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
+	}
+	else {
+		wid->appendRow->SetToolTip(wxString::FromUTF8(appendRowTip));
+	}
+	
+	if(wid->modeChoiceBox->GetSelection() == 0) {
+		wid->splitPatchButton->SetToolTip(wxString::FromUTF8(splitPatchTip + '\n' + onlyMultiVideo));
+	}
+	else if(wid->modeChoiceBox->GetSelection() == 1) {
+		wid->splitPatchButton->SetToolTip(wxString::FromUTF8(splitPatchTip));
+	}
+	else if(wid->modeChoiceBox->GetSelection() == 2) {
+		wid->splitPatchButton->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
+	}
+	
 	wid->splitPatchUp->SetToolTip(wxString::FromUTF8(splitPatchUpTip));
 	wid->splitPatchDown->SetToolTip(wxString::FromUTF8(splitPatchDownTip));
 	
@@ -2551,6 +2611,7 @@ void applyMode(InitWidgets* wid, VI9Pparameters* parameters) {
 	}
 	
 	EnableBannerLeftRight(wid);
+	setToolTips(wid);
 	setCursors(wid);
 }
 
