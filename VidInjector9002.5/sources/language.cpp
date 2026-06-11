@@ -1,4 +1,5 @@
 #include "language.hpp"
+#include "widgets.hpp"
 
 std::vector<Languages::Language> Languages::LanguageFiles;
 
@@ -24,86 +25,86 @@ bool loadLanguage(std::string LangPath) {
 	return true;
 }
 
-void applyLanguage(InitWidgets* wid, VI9Pparameters* parameters) {
-	//wid->consoleLog->SetLabel(wxString::FromUTF8(logFrameText)); // wxLogWindow is so weird idk how to change anything about it
+void theWidgets::applyLanguage(VI9Pparameters* parameters) {
+	//consoleLog->SetLabel(wxString::FromUTF8(logFrameText)); // wxLogWindow is so weird idk how to change anything about it
 	
-	wid->frame->SetLabel(wxString::FromUTF8(frameText));
-	wid->mainMenu->SetMenuLabel(0, wxString::FromUTF8(file));
-	wid->menuItemFileNew->SetItemLabel(wxString::FromUTF8(fileNew + "\tCtrl+N"));
-	wid->menuItemFileOpen->SetItemLabel(wxString::FromUTF8(fileOpen + "\tCtrl+O"));
-	wid->menuItemFileSave->SetItemLabel(wxString::FromUTF8(fileSave + "\tCtrl+S"));
-	wid->menuItemFileSaveAs->SetItemLabel(wxString::FromUTF8(fileSaveAs + "\tCtrl+Shift+S"));
-	wid->menuItemFileExport->SetItemLabel(wxString::FromUTF8(fileExport + "\tCtrl+E"));
-	wid->menuItemFileExtract->SetItemLabel(wxString::FromUTF8(fileExtract + "\tCtrl+Alt+E"));
-	wid->menuItemFileImportSeed->SetItemLabel(wxString::FromUTF8(fileImportSeed));
-	wid->menuItemFileQuit->SetItemLabel(wxString::FromUTF8(fileQuit  + "\tCtrl+Q"));
-	wid->mainMenu->SetMenuLabel(1, wxString::FromUTF8(options));
-	wid->menuItemOptionsLog->SetItemLabel(wxString::FromUTF8(optionsShowLog));
-	wid->menuItemOptionsSystem->SetItemLabel(wxString::FromUTF8(optionsSystemMode));
-	wid->menuItemOptionsLight->SetItemLabel(wxString::FromUTF8(optionsLightMode));
-	wid->menuItemOptionsDark->SetItemLabel(wxString::FromUTF8(optionsDarkMode));
-	wid->menuItemOptionsDeleteTemp->SetItemLabel(wxString::FromUTF8(optionsDeleteTemp));
-	wid->menuItemOptionsUpdateCheck->SetItemLabel(wxString::FromUTF8(optionsUpdateCheck));
-	wid->mainMenu->SetMenuLabel(2, wxString::FromUTF8(language));
-	wid->mainMenu->SetMenuLabel(3, wxString::FromUTF8(help));
-	wid->menuItemHelpAbout->SetItemLabel(wxString::FromUTF8(helpAbout + "\tF1"));
-	wid->modeText->SetLabel(wxString::FromUTF8(ModeText));
-	wid->modeChoiceBox->SetString(0, wxString::FromUTF8(SingleVideo));
-	wid->modeChoiceBox->SetString(1, wxString::FromUTF8(MultiVideo));
-	wid->modeChoiceBox->SetString(2, wxString::FromUTF8(ExtendedMulti));
-	wid->bannerText->SetLabel(wxString::FromUTF8(BannerText));
-	wid->bannerBrowse->SetLabel(wxString::FromUTF8(Browse));
-	//wid->bannerError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + ImageInfoError + " (0) " + SeeLog)); // wait no we dont want 0. see below for fix
-	wid->iconText->SetLabel(wxString::FromUTF8(IconText));
-	wid->iconBrowse->SetLabel(wxString::FromUTF8(Browse));
-	//wid->iconError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + ImageInfoError + " (0) " + SeeLog));
-	wid->shortnameText->SetLabel(wxString::FromUTF8(ShortNameText));
-	//wid->shortnameError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + TextTooLongError + " (0/64)"));
-	wid->longnameText->SetLabel(wxString::FromUTF8(LongNameText));
-	//wid->longnameError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + TextTooLongError + " (0/128)"));
-	wid->publisherText->SetLabel(wxString::FromUTF8(PublisherText));
-	//wid->publisherError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + TextTooLongError + " (0/64)"));
-	wid->copyCheck->SetLabel(wxString::FromUTF8(CopyrightCheckText));
-	wid->bannerCustomText->SetLabel(wxString::FromUTF8(BannerCustomText));
-	wid->bannerPreviewText->SetLabel(wxString::FromUTF8(BannerPreviewText));
-	wid->ffRewindCheck->SetLabel(wxString::FromUTF8(FFrewindCheckText));
-	wid->dimCheck->SetLabel(wxString::FromUTF8(DimCheckText));
-	wid->playerTitleText->SetLabel(wxString::FromUTF8(PlayerTitleText));
-	wid->moflexFileText->SetLabel(wxString::FromUTF8(MoflexFileText));
-	wid->menuBannerText->SetLabel(wxString::FromUTF8(MenuBannerText));
-	wid->moflexBrowse->SetLabel(wxString::FromUTF8(Browse));
-	wid->multiBannerBrowse->SetLabel(wxString::FromUTF8(Browse));
-	wid->splitPatchButton->SetLabel(wxString::FromUTF8(SplitIntoAPatch));
+	frame->SetLabel(wxString::FromUTF8(frameText));
+	mainMenu->SetMenuLabel(0, wxString::FromUTF8(file));
+	menuItemFileNew->SetItemLabel(wxString::FromUTF8(fileNew + "\tCtrl+N"));
+	menuItemFileOpen->SetItemLabel(wxString::FromUTF8(fileOpen + "\tCtrl+O"));
+	menuItemFileSave->SetItemLabel(wxString::FromUTF8(fileSave + "\tCtrl+S"));
+	menuItemFileSaveAs->SetItemLabel(wxString::FromUTF8(fileSaveAs + "\tCtrl+Shift+S"));
+	menuItemFileExport->SetItemLabel(wxString::FromUTF8(fileExport + "\tCtrl+E"));
+	menuItemFileExtract->SetItemLabel(wxString::FromUTF8(fileExtract + "\tCtrl+Alt+E"));
+	menuItemFileImportSeed->SetItemLabel(wxString::FromUTF8(fileImportSeed));
+	menuItemFileQuit->SetItemLabel(wxString::FromUTF8(fileQuit  + "\tCtrl+Q"));
+	mainMenu->SetMenuLabel(1, wxString::FromUTF8(options));
+	menuItemOptionsLog->SetItemLabel(wxString::FromUTF8(optionsShowLog));
+	menuItemOptionsSystem->SetItemLabel(wxString::FromUTF8(optionsSystemMode));
+	menuItemOptionsLight->SetItemLabel(wxString::FromUTF8(optionsLightMode));
+	menuItemOptionsDark->SetItemLabel(wxString::FromUTF8(optionsDarkMode));
+	menuItemOptionsDeleteTemp->SetItemLabel(wxString::FromUTF8(optionsDeleteTemp));
+	menuItemOptionsUpdateCheck->SetItemLabel(wxString::FromUTF8(optionsUpdateCheck));
+	mainMenu->SetMenuLabel(2, wxString::FromUTF8(language));
+	mainMenu->SetMenuLabel(3, wxString::FromUTF8(help));
+	menuItemHelpAbout->SetItemLabel(wxString::FromUTF8(helpAbout + "\tF1"));
+	modeText->SetLabel(wxString::FromUTF8(ModeText));
+	modeChoiceBox->SetString(0, wxString::FromUTF8(SingleVideo));
+	modeChoiceBox->SetString(1, wxString::FromUTF8(MultiVideo));
+	modeChoiceBox->SetString(2, wxString::FromUTF8(ExtendedMulti));
+	bannerText->SetLabel(wxString::FromUTF8(BannerText));
+	bannerBrowse->SetLabel(wxString::FromUTF8(Browse));
+	//bannerError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + ImageInfoError + " (0) " + SeeLog)); // wait no we dont want 0. see below for fix
+	iconText->SetLabel(wxString::FromUTF8(IconText));
+	iconBrowse->SetLabel(wxString::FromUTF8(Browse));
+	//iconError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + ImageInfoError + " (0) " + SeeLog));
+	shortnameText->SetLabel(wxString::FromUTF8(ShortNameText));
+	//shortnameError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + TextTooLongError + " (0/64)"));
+	longnameText->SetLabel(wxString::FromUTF8(LongNameText));
+	//longnameError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + TextTooLongError + " (0/128)"));
+	publisherText->SetLabel(wxString::FromUTF8(PublisherText));
+	//publisherError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + TextTooLongError + " (0/64)"));
+	copyCheck->SetLabel(wxString::FromUTF8(CopyrightCheckText));
+	bannerCustomText->SetLabel(wxString::FromUTF8(BannerCustomText));
+	bannerPreviewText->SetLabel(wxString::FromUTF8(BannerPreviewText));
+	ffRewindCheck->SetLabel(wxString::FromUTF8(FFrewindCheckText));
+	dimCheck->SetLabel(wxString::FromUTF8(DimCheckText));
+	playerTitleText->SetLabel(wxString::FromUTF8(PlayerTitleText));
+	moflexFileText->SetLabel(wxString::FromUTF8(MoflexFileText));
+	menuBannerText->SetLabel(wxString::FromUTF8(MenuBannerText));
+	moflexBrowse->SetLabel(wxString::FromUTF8(Browse));
+	multiBannerBrowse->SetLabel(wxString::FromUTF8(Browse));
+	splitPatchButton->SetLabel(wxString::FromUTF8(SplitIntoAPatch));
 	
-	wid->buildframe->SetLabel(wxString::FromUTF8(buildFrameText));
-	wid->titleIDText->SetLabel(wxString::FromUTF8(TitleIDText));
-	wid->applicationTitleText->SetLabel(wxString::FromUTF8(ApplicationTitleText));
-	wid->productCodeText->SetLabel(wxString::FromUTF8(ProductCodeText));
-	wid->buildButton->SetLabel(wxString::FromUTF8(Build));
-	wid->cancelButton->SetLabel(wxString::FromUTF8(Cancel));
+	buildframe->SetLabel(wxString::FromUTF8(buildFrameText));
+	titleIDText->SetLabel(wxString::FromUTF8(TitleIDText));
+	applicationTitleText->SetLabel(wxString::FromUTF8(ApplicationTitleText));
+	productCodeText->SetLabel(wxString::FromUTF8(ProductCodeText));
+	buildButton->SetLabel(wxString::FromUTF8(Build));
+	cancelButton->SetLabel(wxString::FromUTF8(Cancel));
 	
-	wid->aboutframe->SetLabel(wxString::FromUTF8(aboutFrameText));
-	wid->byMeText->SetLabel(wxString::FromUTF8(ByMeText));
-	wid->gitHubLinker->SetLabel(wxString::FromUTF8(GitHubLinker));
+	aboutframe->SetLabel(wxString::FromUTF8(aboutFrameText));
+	byMeText->SetLabel(wxString::FromUTF8(ByMeText));
+	gitHubLinker->SetLabel(wxString::FromUTF8(GitHubLinker));
 	
 	if(!parameters->banner.empty()) { // so it doesn't overwrite the actual information
-		bannerBox_wxEVT_TEXT(wid, parameters); // it actually should do this because the other thing was removing the error code
+		bannerBox_wxEVT_TEXT(parameters); // it actually should do this because the other thing was removing the error code
 	}
 	if(!parameters->icon.empty()) {
-		iconBox_wxEVT_TEXT(wid, parameters);
+		iconBox_wxEVT_TEXT(parameters);
 	}
 	if(!parameters->Sname.empty()) {
-		shortnameBox_wxEVT_TEXT(wid, parameters);
+		shortnameBox_wxEVT_TEXT(parameters);
 	}
 	if(!parameters->Lname.empty()) {
-		longnameBox_wxEVT_TEXT(wid, parameters);
+		longnameBox_wxEVT_TEXT(parameters);
 	}
 	if(!parameters->publisher.empty()) {
-		publisherBox_wxEVT_TEXT(wid, parameters);
+		publisherBox_wxEVT_TEXT(parameters);
 	}
 }
 
-void initLanguage(InitWidgets* wid) {
+void theWidgets::initLanguage() {
 	{//menuLanguage
 		std::vector<int> LANG_IDs {
 			ID_LANG1,
@@ -127,7 +128,7 @@ void initLanguage(InitWidgets* wid) {
 				if (std::filesystem::is_directory(entry, error)) {
 					std::vector<std::string> filelines = fileRead(entrystr + "/Language.txt");
 					if (parseLines(outstr, filelines, inLangLanguage)) {
-						wxMenuItem* menuItemLanguage = wid->menuLanguage->Append(LANG_IDs.at(slot), wxString::FromUTF8(outstr), "");
+						wxMenuItem* menuItemLanguage = menuLanguage->Append(LANG_IDs.at(slot), wxString::FromUTF8(outstr), "");
 						(void)menuItemLanguage;
 						Languages::LanguageFiles.push_back({outstr, std::filesystem::absolute(entry.path()).string() + "/Language.txt"});
 						++slot;

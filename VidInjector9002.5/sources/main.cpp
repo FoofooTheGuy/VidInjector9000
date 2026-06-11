@@ -78,7 +78,8 @@ int progmain(int argc, char* argv[]) {
 	}
 	
 	// init widgets
-	InitWidgets wid;
+	theWidgets wid;
+	wid.initialize();
 	
 	if(VI9P::WorkingFile.empty()) {
 		VI9P::WorkingFile = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "parameters.vi9p";
@@ -109,23 +110,23 @@ int progmain(int argc, char* argv[]) {
 	
 	wid.consoleLog->Show(Settings::ShowLog);
 	
-	getBorders(&wid);
-	initLanguage(&wid);
+	wid.getBorders();
+	wid.initLanguage();
 	if(Settings::DefaultLanguage < Languages::LanguageFiles.size()) {
 		if(loadLanguage(Languages::LanguageFiles.at(Settings::DefaultLanguage).File)) {
-			applyLanguage(&wid, &parameters);
+			wid.applyLanguage(&parameters);
 		}
 	}
-	initAllWidgets(&wid);
-	setFonts(&wid);
-	//positionWidgets(&wid, &parameters);
-	setToolTips(&wid);
-	getAppearance(&wid);
-	setAppearance(&wid, Settings::ColorMode);
-	setCursors(&wid);
+	//wid.initAllWidgets();
+	wid.setFonts();
+	//wid.positionWidgets(&parameters);
+	wid.setToolTips();
+	wid.getAppearance();
+	wid.setAppearance(Settings::ColorMode);
+	wid.setCursors();
 	
 	{ // test CLI
-		int ret = executeCommand(&wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + '\"'));
+		int ret = wid.executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + '\"'));
 		
 		if (ret != 1) { // 1 is the expected return value of that command
 			wxMessageBox(wxString::FromUTF8(CLIError), wxString::FromUTF8(ErrorText), wxICON_ERROR);
@@ -138,46 +139,46 @@ int progmain(int argc, char* argv[]) {
 		for(const auto &row : wid.PlayerTitles) {
 			row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) { // memory leak city???
 				(void)event; // do as I say not as I do
-				PlayerTitles_wxEVT_TEXT(&wid, &parameters, row);
+				wid.PlayerTitles_wxEVT_TEXT(&parameters, row);
 			});
 		}
 		for(const auto &row : wid.MoflexFiles) {
 			row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
 				(void)event;
-				MoflexFiles_wxEVT_TEXT(&wid, &parameters, row);
+				wid.MoflexFiles_wxEVT_TEXT(&parameters, row);
 			});
 		}
 		for(const auto &row : wid.MenuBanners) {
 			row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
 				(void)event;
-				MenuBanners_wxEVT_TEXT(&wid, &parameters, row);
+				wid.MenuBanners_wxEVT_TEXT(&parameters, row);
 			});
 			row->Bind(wxEVT_TEXT_ENTER, [&](wxCommandEvent& event) {
 				(void)event;
-				MenuBanners_EVT_TEXT_ENTER(&wid, &parameters, row);
+				wid.MenuBanners_EVT_TEXT_ENTER(&parameters, row);
 			});
 		}
 		for(const auto &row : wid.MultiUp) {
 			row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 				(void)event;
-				MultiUp_wxEVT_BUTTON(&wid, row);
+				wid.MultiUp_wxEVT_BUTTON(row);
 			});
 		}
 		for(const auto &row : wid.MultiDown) {
 			row->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 				(void)event;
-				MultiDown_wxEVT_BUTTON(&wid, row);
+				wid.MultiDown_wxEVT_BUTTON(row);
 			});
 		}
 		
-		setAppearance(&wid, Settings::ColorMode);
+		wid.setAppearance(Settings::ColorMode);
 		wid.splitPatchLine->Show(parameters.splitPos);
-		ShowPatchUpDown(&wid, &parameters);
-		ShowMultiUpDown(&wid);
-		setToolTips(&wid);
-		setCursors(&wid);
+		wid.ShowPatchUpDown(&parameters);
+		wid.ShowMultiUpDown();
+		wid.setToolTips();
+		wid.setCursors();
 		
-		setRowIndex(&wid, &parameters);
+		wid.setRowIndex(&parameters);
 		
 		wid.multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string(wid.MenuBanners.size())));
 	};
@@ -200,124 +201,124 @@ int progmain(int argc, char* argv[]) {
 		}
 		
 		VI9P::MultiBannerIndex = 0;
-		loadParameters(&wid, &parameters);
-		positionWidgets(&wid, &parameters);
+		wid.loadParameters(&parameters);
+		wid.positionWidgets(&parameters);
 		
 		applyAddRows();
 		VI9P::Loading = false;
 		
-		MenuBanners_wxEVT_TEXT(&wid, &parameters, wid.MenuBanners.at(VI9P::MultiBannerIndex));
+		wid.MenuBanners_wxEVT_TEXT(&parameters, wid.MenuBanners.at(VI9P::MultiBannerIndex));
 		Execution::flags = flags; // restore flags
 	};
 	
 	wid.frame->Bind(wxEVT_WEBREQUEST_STATE, [&](wxWebRequestEvent& event) {
-		frame_wxEVT_WEBREQUEST_STATE(&wid, &event);
+		wid.frame_wxEVT_WEBREQUEST_STATE(&event);
 	});
 	
 	wid.frame->Bind(wxEVT_CLOSE_WINDOW, [&](wxCloseEvent& event) {
-		frame_wxEVT_CLOSE_WINDOW(&event);
+		wid.frame_wxEVT_CLOSE_WINDOW(&event);
 	});
 	
 	wid.panel->Bind(wxEVT_SIZE, [&](wxSizeEvent& event) {
 		(void)event;
-		panel_wxEVT_SIZE(&wid, &parameters);
+		wid.panel_wxEVT_SIZE(&parameters);
 	});
 	
 	wid.modeChoiceBox->Bind(wxEVT_CHOICE, [&](wxCommandEvent& event) {
 		(void)event;
-		modeChoiceBox_wxEVT_CHOICE(&wid, &parameters);
+		wid.modeChoiceBox_wxEVT_CHOICE(&parameters);
 	});
 	
 	wid.bannerBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
 		(void)event;
-		bannerBox_wxEVT_TEXT(&wid, &parameters);
+		wid.bannerBox_wxEVT_TEXT(&parameters);
 	});
 	
 	wid.bannerBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		bannerBrowse_wxEVT_BUTTON(&wid, &parameters);
+		wid.bannerBrowse_wxEVT_BUTTON(&parameters);
 	});
 	
 	wid.iconBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
 		(void)event;
-		iconBox_wxEVT_TEXT(&wid, &parameters);
+		wid.iconBox_wxEVT_TEXT(&parameters);
 	});
 	
 	wid.iconPreview->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		iconPreview_wxEVT_BUTTON(&wid, &parameters);
+		wid.iconPreview_wxEVT_BUTTON(&parameters);
 	});
 	
 	wid.iconBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		iconBrowse_wxEVT_BUTTON(&wid, &parameters);
+		wid.iconBrowse_wxEVT_BUTTON(&parameters);
 	});
 	
 	wid.shortnameBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
 		(void)event;
-		shortnameBox_wxEVT_TEXT(&wid, &parameters);
+		wid.shortnameBox_wxEVT_TEXT(&parameters);
 	});
 	
 	wid.longnameBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
 		(void)event;
-		longnameBox_wxEVT_TEXT(&wid, &parameters);
+		wid.longnameBox_wxEVT_TEXT(&parameters);
 	});
 	
 	wid.publisherBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
 		(void)event;
-		publisherBox_wxEVT_TEXT(&wid, &parameters);
+		wid.publisherBox_wxEVT_TEXT(&parameters);
 	});
 	
 	wid.copyBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
 		(void)event;
-		copyBox_wxEVT_TEXT(&wid, &parameters);
+		wid.copyBox_wxEVT_TEXT(&parameters);
 	});
 	
 	wid.copyCheck->Bind(wxEVT_CHECKBOX, [&](wxCommandEvent& event) {
 		(void)event;
-		copyCheck_wxEVT_CHECKBOX(&wid, &parameters);
+		wid.copyCheck_wxEVT_CHECKBOX(&parameters);
 	});
 	
 	wid.ffRewindCheck->Bind(wxEVT_CHECKBOX, [&](wxCommandEvent& event) {
 		(void)event;
-		ffRewindCheck_wxEVT_CHECKBOX(&wid, &parameters);
+		wid.ffRewindCheck_wxEVT_CHECKBOX(&parameters);
 	});
 	
 	wid.dimCheck->Bind(wxEVT_CHECKBOX, [&](wxCommandEvent& event) {
 		(void)event;
-		dimCheck_wxEVT_CHECKBOX(&wid, &parameters);
+		wid.dimCheck_wxEVT_CHECKBOX(&parameters);
 	});
 	
 	wid.multiBannerPreview->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		multiBannerPreview_wxEVT_BUTTON(&wid, &parameters);
+		wid.multiBannerPreview_wxEVT_BUTTON(&parameters);
 	});
 	
 	wid.multiBannerPreviewLeft->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		multiBannerPreviewLeft_wxEVT_BUTTON(&wid, &parameters);
+		wid.multiBannerPreviewLeft_wxEVT_BUTTON(&parameters);
 	});
 	
 	wid.multiBannerPreviewRight->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		multiBannerPreviewRight_wxEVT_BUTTON(&wid, &parameters);
+		wid.multiBannerPreviewRight_wxEVT_BUTTON(&parameters);
 	});
 	
 	applyAddRows(); // make sure the row info is ok before we add events to it
 	
 	wid.moflexBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		moflexBrowse_wxEVT_BUTTON(&wid, &parameters);
+		wid.moflexBrowse_wxEVT_BUTTON(&parameters);
 	});
 	
 	wid.multiBannerBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		multiBannerBrowse_wxEVT_BUTTON(&wid, &parameters);
+		wid.multiBannerBrowse_wxEVT_BUTTON(&parameters);
 	});
 	
 	wid.removeRow->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		removeRow_wxEVT_BUTTON(&wid, &parameters);
+		wid.removeRow_wxEVT_BUTTON(&parameters);
 	});
 	
 	// add row
@@ -329,7 +330,7 @@ int progmain(int argc, char* argv[]) {
 		wid.removeRow->Enable(false); // disable so you cant press it too much
 		wid.appendRow->Enable(false);
 		
-		addRows(&wid, &parameters);
+		wid.addRows(&parameters);
 		
 		applyAddRows();
 		
@@ -340,7 +341,7 @@ int progmain(int argc, char* argv[]) {
 		}
 		else if(parameters.mode == 1) {
 			wid.splitPatchButton->Enable((parameters.rows > 1));
-			EnableBannerLeftRight(&wid);
+			wid.EnableBannerLeftRight();
 			
 			wid.rowText->Show(true);
 			if(parameters.rows > 1 && parameters.rows < MAX_ROWS_MULTI) {
@@ -373,7 +374,7 @@ int progmain(int argc, char* argv[]) {
 				for(size_t i = 1; i < parameters.rows; i++) {
 					wid.MenuBanners.at(i)->Enable(false);
 				}
-				setCursors(&wid);
+				//wid.setCursors();
 			}
 			else if(parameters.rows <= 1) {
 				wid.appendRow->Enable(true);
@@ -385,22 +386,22 @@ int progmain(int argc, char* argv[]) {
 			}
 		}
 		wid.removeRow->Enable(true);
-		setCursors(&wid);
+		wid.setCursors();
 	});
 	
 	wid.splitPatchButton->Bind(wxEVT_TOGGLEBUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		splitPatchButton_wxEVT_TOGGLEBUTTON(&wid, &parameters);
+		wid.splitPatchButton_wxEVT_TOGGLEBUTTON(&parameters);
 	});
 	
 	wid.splitPatchUp->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		splitPatchUp_wxEVT_BUTTON(&wid, &parameters);
+		wid.splitPatchUp_wxEVT_BUTTON(&parameters);
 	});
 	
 	wid.splitPatchDown->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		splitPatchDown_wxEVT_BUTTON(&wid, &parameters);
+		wid.splitPatchDown_wxEVT_BUTTON(&parameters);
 	});
 	
 	wid.mainMenu->Bind(wxEVT_MENU, [&](wxCommandEvent& event) {
@@ -430,7 +431,7 @@ int progmain(int argc, char* argv[]) {
 					VI9P::OutFile = VI9P::WorkingFile;
 					
 					{ // -n
-						executeCommand(&wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -n \"" + VI9P::WorkingFile + '\"'));
+						wid.executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -n \"" + VI9P::WorkingFile + '\"'));
 					}
 					
 					loadVI9P(VI9P::WorkingFile);					
@@ -499,7 +500,7 @@ int progmain(int argc, char* argv[]) {
 				break;
 			case ID_EXPORT:
 				{
-					titleIDButton_wxEVT_BUTTON(&wid); // randomize TID
+					wid.titleIDButton_wxEVT_BUTTON(); // randomize TID
 					wid.applicationTitleBox->SetValue(wxString::FromUTF8("video"));
 					wid.productCodeBox->SetValue(wxString::FromUTF8("VDIJ"));
 					wid.buildframe->SetSize(600, 500);
@@ -577,10 +578,10 @@ int progmain(int argc, char* argv[]) {
 						}
 						
 						wid.frame->Enable(false);
-						setCursors(&wid);
+						wid.setCursors();
 						wid.extractDialog = new wxProgressDialog(wxString::FromUTF8(extractingArchive), wxString::FromUTF8(clickToCancel), 1, wid.frame, wxPD_APP_MODAL|wxPD_CAN_ABORT);//dialog main source
 						wid.extractDialog->Bind(wxEVT_CLOSE_WINDOW, [&](wxCloseEvent& event) {
-							extractDialog_wxEVT_CLOSE_WINDOW(&wid, &event);
+							wid.extractDialog_wxEVT_CLOSE_WINDOW(&event);
 							//wid.extractDialog->Destroy();
 						});
 						wid.extractPulser->Start(100);
@@ -618,7 +619,7 @@ int progmain(int argc, char* argv[]) {
 				{
 					// 2
 					Settings::ColorMode = 2;
-					setAppearance(&wid, Settings::ColorMode);
+					wid.setAppearance(Settings::ColorMode);
 					saveSettings();
 				}
 				break;
@@ -626,7 +627,7 @@ int progmain(int argc, char* argv[]) {
 				{
 					// 0
 					Settings::ColorMode = 0;
-					setAppearance(&wid, Settings::ColorMode);
+					wid.setAppearance(Settings::ColorMode);
 					saveSettings();
 				}
 				break;
@@ -634,7 +635,7 @@ int progmain(int argc, char* argv[]) {
 				{
 					// 1
 					Settings::ColorMode = 1;
-					setAppearance(&wid, Settings::ColorMode);
+					wid.setAppearance(Settings::ColorMode);
 					saveSettings();
 				}
 				break;
@@ -676,11 +677,11 @@ int progmain(int argc, char* argv[]) {
 				for(size_t i = 0; i < LANG_IDs.size(); i++) {
 					if(event.GetId() == LANG_IDs.at(i)) {
 						if(loadLanguage(Languages::LanguageFiles.at(i).File)) {
-							applyLanguage(&wid, &parameters);
+							wid.applyLanguage(&parameters);
 						}
-						setFonts(&wid);
-						positionWidgets(&wid, &parameters);
-						setToolTips(&wid);
+						wid.setFonts();
+						wid.positionWidgets(&parameters);
+						wid.setToolTips();
 						Settings::DefaultLanguage = i;
 						saveSettings();
 					}
@@ -690,50 +691,50 @@ int progmain(int argc, char* argv[]) {
 	});
 	
 	wid.buildframe->Bind(wxEVT_CLOSE_WINDOW, [&](wxCloseEvent& event) {
-		buildframe_wxEVT_CLOSE_WINDOW(&wid, &event);
+		wid.buildframe_wxEVT_CLOSE_WINDOW(&event);
 	});
 	
 	wid.buildpanel->Bind(wxEVT_SIZE, [&](wxSizeEvent& event) {
 		(void)event;
-		buildpanel_wxEVT_SIZE(&wid, &parameters);
+		wid.buildpanel_wxEVT_SIZE(&parameters);
 	});
 
 	wid.titleIDBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
 		(void)event;
-		titleIDBox_wxEVT_TEXT(&wid);
+		wid.titleIDBox_wxEVT_TEXT();
 	});
 
 	wid.titleIDButton->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		titleIDButton_wxEVT_BUTTON(&wid);
+		wid.titleIDButton_wxEVT_BUTTON();
 	});
 	
 	wid.exportArchive->Bind(wxEVT_END_PROCESS, [&](wxProcessEvent& event) {
-		exportArchive_wxEVT_END_PROCESS(&wid, &event);
+		wid.exportArchive_wxEVT_END_PROCESS(&event);
 	});
 
 	wid.buildButton->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		buildButton_wxEVT_BUTTON(&wid, &parameters);
+		wid.buildButton_wxEVT_BUTTON(&parameters);
 	});
 
 	wid.cancelButton->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		cancelButton_wxEVT_BUTTON(&wid);
+		wid.cancelButton_wxEVT_BUTTON();
 	});
 	
 	wid.barPulser->Bind(wxEVT_TIMER, [&](wxTimerEvent& event) {
 		(void)event;
-		barPulser_wxEVT_TIMER(&wid);
+		wid.barPulser_wxEVT_TIMER();
 	});
 
 	wid.exportLogger->Bind(wxEVT_TIMER, [&](wxTimerEvent& event) {
 		(void)event;
-		exportLogger_wxEVT_TIMER(&wid);
+		wid.exportLogger_wxEVT_TIMER();
 	});
 	
 	wid.extractArchive->Bind(wxEVT_END_PROCESS, [&](wxProcessEvent& event) {
-		extractArchive_wxEVT_END_PROCESS(&wid, &event);
+		wid.extractArchive_wxEVT_END_PROCESS(&event);
 		wid.extractDialog->Destroy();
 		
 		/*std::error_code error;
@@ -752,21 +753,21 @@ int progmain(int argc, char* argv[]) {
 
 	wid.extractPulser->Bind(wxEVT_TIMER, [&](wxTimerEvent& event) {
 		(void)event;
-		extractPulser_wxEVT_TIMER(&wid);
+		wid.extractPulser_wxEVT_TIMER();
 	});
 
 	wid.extractLogger->Bind(wxEVT_TIMER, [&](wxTimerEvent& event) {
 		(void)event;
-		extractLogger_wxEVT_TIMER(&wid);
+		wid.extractLogger_wxEVT_TIMER();
 	});
 	
 	wid.aboutframe->Bind(wxEVT_CLOSE_WINDOW, [&](wxCloseEvent& event) {
-		aboutframe_wxEVT_CLOSE_WINDOW(&wid, &event);
+		wid.aboutframe_wxEVT_CLOSE_WINDOW(&event);
 	});
 	
 	wid.aboutpanel->Bind(wxEVT_SIZE, [&](wxSizeEvent& event) {
 		(void)event;
-		aboutpanel_wxEVT_SIZE(&wid, &parameters);
+		wid.aboutpanel_wxEVT_SIZE(&parameters);
 	});
 	
 	//consoleLog->LogTextAtLevel(0, wxString::Format("OUTPUT: %s", s));
@@ -795,13 +796,13 @@ int progmain(int argc, char* argv[]) {
 			}
 			
 			{ // -n (for temp dir)
-				executeCommand(&wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -n \"" + VI9P::WorkingFile + '\"'));
+				wid.executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -n \"" + VI9P::WorkingFile + '\"'));
 			}
 		}
 		if(error) {
 			// this probably wont work either
 			{ // -n (for temp dir)
-				executeCommand(&wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -n \"" + VI9P::WorkingFile + '\"'));
+				wid.executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -n \"" + VI9P::WorkingFile + '\"'));
 			}
 		}
 	}
@@ -838,7 +839,7 @@ int progmain(int argc, char* argv[]) {
 	}
 	
 	// make sure the window looks good
-	positionWidgets(&wid, &parameters);
+	wid.positionWidgets(&parameters);
 	
 	if(Settings::UpdateCheck) {
 		wid.updateCheck->Start();

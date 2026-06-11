@@ -8,18 +8,216 @@ int Borders::height = 0;
 
 int Execution::flags = wxEXEC_SYNC | wxEXEC_NODISABLE;
 
-int executeCommand(InitWidgets* wid, const wxString &command, wxArrayString* output, wxArrayString* errors) {
+void theWidgets::initialize() {
+	frame = new wxFrame(nullptr, wxID_ANY, wxString::FromUTF8(frameText), wxDefaultPosition, {Settings::FrameWidth, Settings::FrameHeight});
+	frame->SetIcon(wxString::FromUTF8(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + imagePath + "/icon.png"));
+	
+	panel = new wxPanel(frame);
+	
+	mainMenu = new wxMenuBar();
+	
+	menuFile = new wxMenu();
+	menuItemFileNew = menuFile->Append(wxID_NEW, wxString::FromUTF8(fileNew + "\tCtrl+N"));
+	menuItemFileOpen = menuFile->Append(wxID_OPEN, wxString::FromUTF8(fileOpen + "\tCtrl+O"));
+	menuItemFileSave = menuFile->Append(wxID_SAVE, wxString::FromUTF8(fileSave + "\tCtrl+S"));
+	menuItemFileSaveAs = menuFile->Append(wxID_SAVEAS, wxString::FromUTF8(fileSaveAs + "\tCtrl+Shift+S"));
+	menuItemFileExport = menuFile->Append(ID_EXPORT, wxString::FromUTF8(fileExport + "\tCtrl+E"));
+	menuItemFileExtract = menuFile->Append(ID_EXTRACT, wxString::FromUTF8(fileExtract + "\tCtrl+Alt+E"));
+	menuItemFileImportSeed = menuFile->Append(ID_IMPORTSEED, wxString::FromUTF8(fileImportSeed));
+	menuItemFileQuit = menuFile->Append(ID_QUIT, wxString::FromUTF8(fileQuit));
+	
+	menuItemFileNew->SetBitmap(wxArtProvider::GetBitmap(wxART_NEW, wxART_MENU));
+	menuItemFileOpen->SetBitmap(wxArtProvider::GetBitmap(wxART_FILE_OPEN, wxART_MENU));
+	menuItemFileSave->SetBitmap(wxArtProvider::GetBitmap(wxART_FILE_SAVE, wxART_MENU));
+	menuItemFileSaveAs->SetBitmap(wxArtProvider::GetBitmap(wxART_FILE_SAVE_AS, wxART_MENU));
+	menuItemFileExport->SetBitmap(wxArtProvider::GetBitmap(wxART_FILE_SAVE, wxART_MENU));
+	menuItemFileExtract->SetBitmap(wxArtProvider::GetBitmap(wxART_FILE_OPEN, wxART_MENU));
+	
+	menuOptions = new wxMenu();
+	menuItemOptionsSystem = menuOptions->Append(ID_SYSTEM, wxString::FromUTF8(optionsSystemMode), "", wxITEM_RADIO);
+	menuItemOptionsLight = menuOptions->Append(ID_LIGHT, wxString::FromUTF8(optionsLightMode), "", wxITEM_RADIO);
+	menuItemOptionsDark = menuOptions->Append(ID_DARK, wxString::FromUTF8(optionsDarkMode), "", wxITEM_RADIO);
+	menuItemOptionsLog = menuOptions->Append(ID_LOGBOOL, wxString::FromUTF8(optionsShowLog), "", wxITEM_CHECK);
+	menuItemOptionsDeleteTemp = menuOptions->Append(ID_DELETETEMP, wxString::FromUTF8(optionsDeleteTemp), "", wxITEM_CHECK);
+	menuItemOptionsUpdateCheck = menuOptions->Append(ID_UPDATECHECK, wxString::FromUTF8(optionsUpdateCheck), "", wxITEM_CHECK);
+	
+	menuLanguage = new wxMenu();
+	
+	menuHelp = new wxMenu();
+	menuItemHelpAbout = menuHelp->Append(ID_ABOUT, wxString::FromUTF8(helpAbout + "\tF1"));
+	
+	menuItemHelpAbout->SetBitmap(wxArtProvider::GetBitmap(wxART_HELP_BOOK, wxART_MENU));
+	
+	mainMenu->Append(menuFile, wxString::FromUTF8(file));
+	mainMenu->Append(menuOptions, wxString::FromUTF8(options));
+	mainMenu->Append(menuLanguage, wxString::FromUTF8(language));
+	mainMenu->Append(menuHelp, wxString::FromUTF8(help));
+	
+	frame->SetMenuBar(mainMenu);
+	
+	consoleLog = new wxLogWindow(frame, wxString::FromUTF8(logFrameText), false);
+	
+	modeText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(ModeText), {10, 10});
+	modeChoiceBox = new wxChoice(panel, wxID_ANY);
+	for (const auto &s : {wxString::FromUTF8(SingleVideo), wxString::FromUTF8(MultiVideo), wxString::FromUTF8(ExtendedMulti)}) { // https://github.com/gammasoft71/Examples_wxWidgets/blob/adbd395081bf25c9034f2b64eee62608a943441f/src/CommonControls/Choice/Choice.cpp#L10
+        modeChoiceBox->Append(s);
+	}
+	
+	bannerText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(BannerText));
+	bannerBox = new wxTextCtrl(panel, wxID_ANY, wxEmptyString);
+	bannerBrowse = new wxButton(panel, wxID_ANY, wxString::FromUTF8(Browse));
+	bannerError = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(ErrorText + ' ' + ImageInfoError + " (0) " + SeeLog));
+	
+	iconText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(IconText));
+	iconBox = new wxTextCtrl(panel, wxID_ANY, wxEmptyString);
+	iconBrowse = new wxButton(panel, wxID_ANY, wxString::FromUTF8(Browse));
+	iconError = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(ErrorText + ' ' + ImageInfoError + " (0) " + SeeLog));
+	
+	shortnameText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(ShortNameText));
+	shortnameBox = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+	shortnameError = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(ErrorText + ' ' + TextTooLongError + " (0/64)"));
+	
+	longnameText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(LongNameText));
+	longnameBox = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+	longnameError = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(ErrorText + ' ' + TextTooLongError + " (0/128)"));
+	
+	publisherText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(PublisherText));
+	publisherBox = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+	publisherError = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(ErrorText + ' ' + TextTooLongError + " (0/64)"));
+	
+	copyBox = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, {300, 200}, wxTE_MULTILINE | wxTE_CENTRE);
+	copyCheck = new wxCheckBox(panel, wxID_ANY, wxString::FromUTF8(CopyrightCheckText));
+	
+	bannerPreview = new wxStaticBitmap(panel, wxID_ANY, wxNullBitmap, wxDefaultPosition, {264, 154}, wxBORDER_NONE);
+	bannerCustomText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(BannerCustomText));
+	bannerPreviewText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(BannerPreviewText));
+	
+	iconPreview = new wxBitmapButton(panel, wxID_ANY, wxNullBitmap, wxDefaultPosition, {48, 48});
+	
+	ffRewindCheck = new wxCheckBox(panel, wxID_ANY, wxString::FromUTF8(FFrewindCheckText));
+	dimCheck = new wxCheckBox(panel, wxID_ANY, wxString::FromUTF8(DimCheckText));
+	
+	multiBannerPreview = new wxBitmapButton(panel, wxID_ANY, wxNullBitmap, wxDefaultPosition, {400, 240});
+	
+	multiBannerPreviewIndex = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8("/"));
+	multiBannerPreviewLeft = new wxButton(panel, wxID_ANY, wxString::FromUTF8("←"));
+	multiBannerPreviewRight = new wxButton(panel, wxID_ANY, wxString::FromUTF8("→"));
+	
+	playerTitleText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(PlayerTitleText));
+	moflexFileText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(MoflexFileText));
+	menuBannerText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(MenuBannerText));
+	
+	mediaPanel = new wxPanel(panel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL | wxBORDER_THEME);
+	scrolledPanel = new wxScrolled<wxPanel>(mediaPanel);
+	scrolledPanel->SetScrollRate(10, 10);
+	
+	//std::vector<wxTextCtrl*> PlayerTitles;
+	//std::vector<wxTextCtrl*> MoflexFiles;
+	//std::vector<wxTextCtrl*> MenuBanners;
+	
+	//std::vector<wxButton*> MultiUp;
+	//std::vector<wxButton*> MultiDown;
+	
+	{ // row stuff
+		doAddRows(1);
+		ShowMultiUpDown();
+	}
+	
+	moflexBrowse = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8(Browse));
+	multiBannerBrowse = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8(Browse));
+	
+	removeRow = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8("-"));
+	appendRow = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8("+"));
+	
+	splitPatchButton = new wxToggleButton(scrolledPanel, wxID_ANY, wxString::FromUTF8(SplitIntoAPatch));
+	splitPatchLine = new wxColouredLine(scrolledPanel, {0, 0, 0});
+	
+	splitPatchUp = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8("↑"), wxDefaultPosition, wxDefaultSize);
+	splitPatchDown = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8("↓"), wxDefaultPosition, wxDefaultSize);
+	{ // splitPatchUp
+		int width, height;
+		wxFont f = splitPatchUp->GetFont();
+		
+		splitPatchUp->GetTextExtent(splitPatchUp->GetLabel(), &width, &height, nullptr, nullptr, &f);
+		splitPatchUp->SetSize(width + Borders::width + 5, height + Borders::height);
+	}
+	{ // splitPatchDown
+		int width, height;
+		wxFont f = splitPatchDown->GetFont();
+		
+		splitPatchDown->GetTextExtent(splitPatchDown->GetLabel(), &width, &height, nullptr, nullptr, &f);
+		splitPatchDown->SetSize(width + Borders::width + 5, height + Borders::height);
+	}
+	
+	rowText = new wxStaticText(scrolledPanel, wxID_ANY, wxString::FromUTF8("1/" + std::to_string(MAX_ROWS)));
+	
+	buildframe = new wxFrame(frame, wxID_ANY, wxString::FromUTF8(buildFrameText), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxCLOSE_BOX|wxRESIZE_BORDER|wxFRAME_FLOAT_ON_PARENT|wxCLIP_CHILDREN);
+	buildpanel = new wxPanel(buildframe);
+	
+	titleIDText = new wxStaticText(buildpanel, wxID_ANY, wxString::FromUTF8(TitleIDText));
+	titleIDBox = new wxTextCtrl(buildpanel, wxID_ANY, wxEmptyString);
+	zerozero = new wxStaticText(buildpanel, wxID_ANY, wxString::FromUTF8("00"));
+	titleIDButton = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8("⚄"));
+	
+	applicationTitleText = new wxStaticText(buildpanel, wxID_ANY, wxString::FromUTF8(ApplicationTitleText));
+	applicationTitleBox = new wxTextCtrl(buildpanel, wxID_ANY, wxString::FromUTF8("video"));
+	
+	productCodeText = new wxStaticText(buildpanel, wxID_ANY, wxString::FromUTF8(ProductCodeText));
+	productCodeBox = new wxTextCtrl(buildpanel, wxID_ANY, wxString::FromUTF8("VDIJ"));
+	
+	statusText = new wxStaticText(buildpanel, wxID_ANY, "   ");
+	
+	buildBar = new wxGauge(buildpanel, wxID_ANY, 1, wxDefaultPosition, {-1, 25});
+	exportArchive = new wxProcess(frame);
+	barPulser = new wxTimer();
+	exportLogger = new wxTimer();
+	
+	buildButton = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8(Build));
+	{ // buildButton
+		int w, buttwidth, h, buttheight;
+		wxFont f;
+		
+		wxButton button(panel, wxID_ANY, buildButton->GetLabel());
+		button.Show(false);
+		button.GetSize(&buttwidth, &buttheight);
+		f = buildButton->GetFont();
+		buildButton->GetTextExtent(buildButton->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		buttwidth = buttwidth - w;
+		buttheight = buttheight - h;
+
+		buildButton->SetSize(w + (buttwidth * 2), h + (buttheight * 2));
+	}
+	
+	cancelButton = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8(Cancel));
+	
+	//extractDialog = new wxProgressDialog(wxEmptyString, wxEmptyString);
+	//extractDialog->Destroy();
+	extractArchive = new wxProcess(frame);
+	extractPulser = new wxTimer();
+	extractLogger = new wxTimer();
+	
+	aboutframe = new wxFrame(frame, wxID_ANY, wxString::FromUTF8(aboutFrameText), wxDefaultPosition, wxDefaultSize, wxRESIZE_BORDER|wxCAPTION|wxCLOSE_BOX|wxFRAME_FLOAT_ON_PARENT|wxCLIP_CHILDREN);
+	aboutpanel = new wxPanel(aboutframe);
+	titleLogo = new wxStaticBitmap(aboutpanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+	byMeText = new wxStaticText(aboutpanel, wxID_ANY, wxString::FromUTF8(ByMeText));
+	gitHubLinker = new wxHyperlinkCtrl(aboutpanel, wxID_ANY, wxString::FromUTF8(GitHubLinker), wxString::FromUTF8(githubRepoLink));
+	versionText = new wxStaticText(aboutpanel, wxID_ANY, wxString::FromUTF8(version));
+	
+	updateCheck = new wxWebRequest(wxWebSession::GetDefault().CreateRequest(frame, "https://api.github.com/repos/" + githubRepo + "/tags"));
+}
+
+int theWidgets::executeCommand(const wxString &command, wxArrayString* output, wxArrayString* errors) {
 	wxArrayString my_output;
 	wxArrayString my_errors;
 	int ret = 0;
 	
 	ret = wxExecute(command, my_output, my_errors, Execution::flags);
 	
-	wid->consoleLog->LogTextAtLevel(0, command + "\n==========\n");
+	consoleLog->LogTextAtLevel(0, command + "\n==========\n");
 	for (auto &s : my_output) {
-		wid->consoleLog->LogTextAtLevel(0, s);
+		consoleLog->LogTextAtLevel(0, s);
 	}
-	wid->consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
+	consoleLog->LogTextAtLevel(0, wxString::FromUTF8("\n==========\n" + Return + " : " + std::to_string(ret) + '\n'));
 	
 	if(output != nullptr) {
 		*output = wxArrayString(my_output);
@@ -31,22 +229,22 @@ int executeCommand(InitWidgets* wid, const wxString &command, wxArrayString* out
 	return ret;
 }
 
-void doAddRows(InitWidgets* wid, int rows) {
+void theWidgets::doAddRows(int rows) {
 	for(int i = 0; i < rows; i++) {
-		wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString);
-		wid->PlayerTitles.push_back(box);
+		wxTextCtrl* box = new wxTextCtrl(scrolledPanel, wxID_ANY, wxEmptyString);
+		PlayerTitles.push_back(box);
 	}
 	for(int i = 0; i < rows; i++) {
-		wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString);
-		wid->MoflexFiles.push_back(box);
+		wxTextCtrl* box = new wxTextCtrl(scrolledPanel, wxID_ANY, wxEmptyString);
+		MoflexFiles.push_back(box);
 	}
 	for(int i = 0; i < rows; i++) {
-		wxTextCtrl* box = new wxTextCtrl(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER);
-		wid->MenuBanners.push_back(box);
+		wxTextCtrl* box = new wxTextCtrl(scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER);
+		MenuBanners.push_back(box);
 	}
 	
 	for(int i = 0; i < rows; i++) {
-		wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize);
+		wxButton* button = new wxButton(scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize);
 		int width, height;
 		wxFont f = button->GetFont();
 		
@@ -55,10 +253,10 @@ void doAddRows(InitWidgets* wid, int rows) {
 		button->GetTextExtent(button->GetLabel(), &width, &height, nullptr, nullptr, &f);
 		button->SetSize(width + Borders::width + 5, height + Borders::height);
 		
-		wid->MultiUp.push_back(button);
+		MultiUp.push_back(button);
 	}
 	for(int i = 0; i < rows; i++) {
-		wxButton* button = new wxButton(wid->scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize);
+		wxButton* button = new wxButton(scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize);
 		int width, height;
 		wxFont f = button->GetFont();
 		
@@ -67,857 +265,856 @@ void doAddRows(InitWidgets* wid, int rows) {
 		button->GetTextExtent(button->GetLabel(), &width, &height, nullptr, nullptr, &f);
 		button->SetSize(width + Borders::width + 5, height + Borders::height);
 		
-		wid->MultiDown.push_back(button);
+		MultiDown.push_back(button);
 	}
 }
 
-void initAllWidgets(InitWidgets* wid) {
+/*
+void theWidgets::initAllWidgets() {
 	// main menu
-	wid->menuItemFileNew->SetBitmap(wxArtProvider::GetBitmap(wxART_NEW, wxART_MENU));
-	wid->menuItemFileOpen->SetBitmap(wxArtProvider::GetBitmap(wxART_FILE_OPEN, wxART_MENU));
-	wid->menuItemFileSave->SetBitmap(wxArtProvider::GetBitmap(wxART_FILE_SAVE, wxART_MENU));
-	wid->menuItemFileSaveAs->SetBitmap(wxArtProvider::GetBitmap(wxART_FILE_SAVE_AS, wxART_MENU));
-	wid->menuItemFileExport->SetBitmap(wxArtProvider::GetBitmap(wxART_FILE_SAVE, wxART_MENU));
-	wid->menuItemFileExtract->SetBitmap(wxArtProvider::GetBitmap(wxART_FILE_OPEN, wxART_MENU));
+	menuItemFileNew->SetBitmap(wxArtProvider::GetBitmap(wxART_NEW, wxART_MENU));
+	menuItemFileOpen->SetBitmap(wxArtProvider::GetBitmap(wxART_FILE_OPEN, wxART_MENU));
+	menuItemFileSave->SetBitmap(wxArtProvider::GetBitmap(wxART_FILE_SAVE, wxART_MENU));
+	menuItemFileSaveAs->SetBitmap(wxArtProvider::GetBitmap(wxART_FILE_SAVE_AS, wxART_MENU));
+	menuItemFileExport->SetBitmap(wxArtProvider::GetBitmap(wxART_FILE_SAVE, wxART_MENU));
+	menuItemFileExtract->SetBitmap(wxArtProvider::GetBitmap(wxART_FILE_OPEN, wxART_MENU));
 	
-	wid->menuItemHelpAbout->SetBitmap(wxArtProvider::GetBitmap(wxART_HELP_BOOK, wxART_MENU));
+	menuItemHelpAbout->SetBitmap(wxArtProvider::GetBitmap(wxART_HELP_BOOK, wxART_MENU));
 	
-	wid->mainMenu->Append(wid->menuFile, wxString::FromUTF8(file));
-	wid->mainMenu->Append(wid->menuOptions, wxString::FromUTF8(options));
-	wid->mainMenu->Append(wid->menuLanguage, wxString::FromUTF8(language));
-	wid->mainMenu->Append(wid->menuHelp, wxString::FromUTF8(help));
+	mainMenu->Append(menuFile, wxString::FromUTF8(file));
+	mainMenu->Append(menuOptions, wxString::FromUTF8(options));
+	mainMenu->Append(menuLanguage, wxString::FromUTF8(language));
+	mainMenu->Append(menuHelp, wxString::FromUTF8(help));
 	
-	wid->frame->SetMenuBar(wid->mainMenu);
-	wid->frame->SetIcon(wxString::FromUTF8(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + imagePath + "/icon.png"));
+	frame->SetMenuBar(mainMenu);
+	frame->SetIcon(wxString::FromUTF8(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + imagePath + "/icon.png"));
 	
 	// panel
 	for (const auto &s : {wxString::FromUTF8(SingleVideo), wxString::FromUTF8(MultiVideo), wxString::FromUTF8(ExtendedMulti)}) { // https://github.com/gammasoft71/Examples_wxWidgets/blob/adbd395081bf25c9034f2b64eee62608a943441f/src/CommonControls/Choice/Choice.cpp#L10
-        wid->modeChoiceBox->Append(s);
+        modeChoiceBox->Append(s);
 	}
-	//wid->modeChoiceBox->SetSelection(0);
+	//modeChoiceBox->SetSelection(0);
 	
-	wid->scrolledPanel->SetScrollRate(10, 10);
+	scrolledPanel->SetScrollRate(10, 10);
 	
 	{ // row stuff
 		int rows = 1; // yes this is loop executes once. the plan is to reuse this code when adding many rows at once. yes, yes, I know...
 		
-		doAddRows(wid, rows);
-		ShowMultiUpDown(wid);
+		doAddRows(rows);
+		ShowMultiUpDown();
 	}
 	
-	/*{ // splitPatchLine
-	
-	}*/
 	{ // splitPatchUp
 		int width, height;
-		wxFont f = wid->splitPatchUp->GetFont();
+		wxFont f = splitPatchUp->GetFont();
 		
-		wid->splitPatchUp->GetTextExtent(wid->splitPatchUp->GetLabel(), &width, &height, nullptr, nullptr, &f);
-		wid->splitPatchUp->SetSize(width + Borders::width + 5, height + Borders::height);
+		splitPatchUp->GetTextExtent(splitPatchUp->GetLabel(), &width, &height, nullptr, nullptr, &f);
+		splitPatchUp->SetSize(width + Borders::width + 5, height + Borders::height);
 	}
 	{ // splitPatchDown
 		int width, height;
-		wxFont f = wid->splitPatchDown->GetFont();
+		wxFont f = splitPatchDown->GetFont();
 		
-		wid->splitPatchDown->GetTextExtent(wid->splitPatchDown->GetLabel(), &width, &height, nullptr, nullptr, &f);
-		wid->splitPatchDown->SetSize(width + Borders::width + 5, height + Borders::height);
+		splitPatchDown->GetTextExtent(splitPatchDown->GetLabel(), &width, &height, nullptr, nullptr, &f);
+		splitPatchDown->SetSize(width + Borders::width + 5, height + Borders::height);
 	}
 
 	{ // buildButton
 		int w, buttwidth, h, buttheight;
 		wxFont f;
 		
-		wxButton button(wid->panel, wxID_ANY, wid->buildButton->GetLabel());
+		wxButton button(panel, wxID_ANY, buildButton->GetLabel());
 		button.Show(false);
 		button.GetSize(&buttwidth, &buttheight);
-		f = wid->buildButton->GetFont();
-		wid->buildButton->GetTextExtent(wid->buildButton->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		f = buildButton->GetFont();
+		buildButton->GetTextExtent(buildButton->GetLabel(), &w, &h, nullptr, nullptr, &f);
 		buttwidth = buttwidth - w;
 		buttheight = buttheight - h;
 
-		wid->buildButton->SetSize(w + (buttwidth * 2), h + (buttheight * 2));
+		buildButton->SetSize(w + (buttwidth * 2), h + (buttheight * 2));
 	}
 	{ // extractDialog
-		wid->extractDialog->Destroy();
+		extractDialog->Destroy();
 	}
 }
+*/
 
-void setFonts(InitWidgets* wid) {
+void theWidgets::setFonts() {
 	{ // modeText
 		int w, h;
 		wxFont f(15, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
 		
-		wid->modeText->SetFont(f);
-		wid->modeText->GetTextExtent(wid->modeText->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->modeText->SetSize(w, h);
+		modeText->SetFont(f);
+		modeText->GetTextExtent(modeText->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		modeText->SetSize(w, h);
 	}
 	
 	{ // bannerText
 		int w, h;
 		wxFont f;
 		
-		f = wid->modeText->GetFont();
+		f = modeText->GetFont();
 		
-		wid->bannerText->SetFont(f);
-		wid->bannerText->GetTextExtent(wid->bannerText->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->bannerText->SetSize(w, h);
+		bannerText->SetFont(f);
+		bannerText->GetTextExtent(bannerText->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		bannerText->SetSize(w, h);
 	}
 	{ // bannerBrowse
 		int w, h;
 		wxFont f;
 		
-		f = wid->bannerBrowse->GetFont();
-		wid->bannerBrowse->GetTextExtent(wid->bannerBrowse->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		f = bannerBrowse->GetFont();
+		bannerBrowse->GetTextExtent(bannerBrowse->GetLabel(), &w, &h, nullptr, nullptr, &f);
 
-		wid->bannerBrowse->SetSize((w / 2) + (w * 2), (h / 2) + (h * 2));
+		bannerBrowse->SetSize((w / 2) + (w * 2), (h / 2) + (h * 2));
 	}
 	{ // bannerError
 		int w, h;
 		wxFont f;
 		
-		f = wid->modeText->GetFont().Scale(0.666F).Bold();
+		f = modeText->GetFont().Scale(0.666F).Bold();
 		
-		wid->bannerError->SetFont(f);
-		wid->bannerError->GetTextExtent(wid->bannerError->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->bannerError->SetSize(w, h);
+		bannerError->SetFont(f);
+		bannerError->GetTextExtent(bannerError->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		bannerError->SetSize(w, h);
 		
-		//wid->bannerError->Show(false);
+		//bannerError->Show(false);
 	}
 	
 	{ // iconText
 		int w, h;
 		wxFont f;
 		
-		f = wid->modeText->GetFont();
+		f = modeText->GetFont();
 		
-		wid->iconText->SetFont(f);
-		wid->iconText->GetTextExtent(wid->iconText->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->iconText->SetSize(w, h);
+		iconText->SetFont(f);
+		iconText->GetTextExtent(iconText->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		iconText->SetSize(w, h);
 	}
 	{ // iconBrowse
 		int w, h;
 		wxFont f;
 
-		f = wid->iconBrowse->GetFont();
-		wid->iconBrowse->GetTextExtent(wid->iconBrowse->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		f = iconBrowse->GetFont();
+		iconBrowse->GetTextExtent(iconBrowse->GetLabel(), &w, &h, nullptr, nullptr, &f);
 
-		wid->iconBrowse->SetSize((w / 2) + (w * 2), (h / 2) + (h * 2));
+		iconBrowse->SetSize((w / 2) + (w * 2), (h / 2) + (h * 2));
 	}
 	{ // iconError
 		int w, h;
 		wxFont f;
 		
-		f = wid->bannerError->GetFont().Bold();
+		f = bannerError->GetFont().Bold();
 		
-		wid->iconError->SetFont(f);
-		wid->iconError->GetTextExtent(wid->iconError->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->iconError->SetSize(w, h);
+		iconError->SetFont(f);
+		iconError->GetTextExtent(iconError->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		iconError->SetSize(w, h);
 		
-		//wid->iconError->Show(false);
+		//iconError->Show(false);
 	}
 
 	{ // shortnameText
 		int w, h;
 		wxFont f;
 		
-		f = wid->modeText->GetFont();
+		f = modeText->GetFont();
 		
-		wid->shortnameText->SetFont(f);
-		wid->shortnameText->GetTextExtent(wid->shortnameText->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->shortnameText->SetSize(w, h);
+		shortnameText->SetFont(f);
+		shortnameText->GetTextExtent(shortnameText->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		shortnameText->SetSize(w, h);
 	}
 	{ // shortnameBox
 		int w, h;
 		wxFont f;
 		
-		f = wid->shortnameBox->GetFont();
+		f = shortnameBox->GetFont();
 		
-		wid->shortnameBox->SetFont(f);
-		wid->shortnameBox->GetTextExtent("A", &w, &h, nullptr, nullptr, &f);
-		wid->shortnameBox->GetSize(&w, NULL);
-		wid->shortnameBox->SetSize(w, (h * 2) + 10);//uhhhhhh
+		shortnameBox->SetFont(f);
+		shortnameBox->GetTextExtent("A", &w, &h, nullptr, nullptr, &f);
+		shortnameBox->GetSize(&w, NULL);
+		shortnameBox->SetSize(w, (h * 2) + 10);//uhhhhhh
 	}
 	{ // shortnameError
 		int w, h;
 		wxFont f;
 		
-		f = wid->bannerError->GetFont();
+		f = bannerError->GetFont();
 		f = f.Bold();
 		
-		wid->shortnameError->SetFont(f);
-		wid->shortnameError->GetTextExtent(wid->shortnameError->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->shortnameError->SetSize(w, h);
+		shortnameError->SetFont(f);
+		shortnameError->GetTextExtent(shortnameError->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		shortnameError->SetSize(w, h);
 	}
 	
 	{ // longnameText
 		int w, h;
 		wxFont f;
 		
-		f = wid->modeText->GetFont();
+		f = modeText->GetFont();
 		
-		wid->longnameText->SetFont(f);
-		wid->longnameText->GetTextExtent(wid->longnameText->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->longnameText->SetSize(w, h);
+		longnameText->SetFont(f);
+		longnameText->GetTextExtent(longnameText->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		longnameText->SetSize(w, h);
 	}
 	{ // longnameBox
 		int w, h;
 		wxFont f;
 		
-		f = wid->longnameBox->GetFont();
+		f = longnameBox->GetFont();
 		
-		wid->longnameBox->SetFont(f);
-		wid->longnameBox->GetTextExtent("A", &w, &h, nullptr, nullptr, &f);
-		wid->longnameBox->GetSize(&w, NULL);
-		wid->longnameBox->SetSize(w, (h * 2) + 10); // uhhhhhh
+		longnameBox->SetFont(f);
+		longnameBox->GetTextExtent("A", &w, &h, nullptr, nullptr, &f);
+		longnameBox->GetSize(&w, NULL);
+		longnameBox->SetSize(w, (h * 2) + 10); // uhhhhhh
 	}
 	{ // longnameError
 		int w, h;
 		wxFont f;
 		
-		f = wid->bannerError->GetFont().Bold();
+		f = bannerError->GetFont().Bold();
 		
-		wid->longnameError->SetFont(f);
-		wid->longnameError->GetTextExtent(wid->longnameError->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->longnameError->SetSize(w, h);
+		longnameError->SetFont(f);
+		longnameError->GetTextExtent(longnameError->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		longnameError->SetSize(w, h);
 	}
 	
 	{ // publisherText
 		int w, h;
 		wxFont f;
 		
-		f = wid->modeText->GetFont();
+		f = modeText->GetFont();
 		
-		wid->publisherText->SetFont(f);
-		wid->publisherText->GetTextExtent(wid->publisherText->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->publisherText->SetSize(w, h);
+		publisherText->SetFont(f);
+		publisherText->GetTextExtent(publisherText->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		publisherText->SetSize(w, h);
 	}
 	{ // publisherBox
 		int w, h;
 		wxFont f;
 		
-		f = wid->publisherBox->GetFont();
+		f = publisherBox->GetFont();
 		
-		wid->publisherBox->SetFont(f);
-		wid->publisherBox->GetTextExtent("A", &w, &h, nullptr, nullptr, &f);
-		wid->publisherBox->GetSize(&w, NULL);
-		wid->publisherBox->SetSize(w, (h * 2) + 10);//uhhhhhh
+		publisherBox->SetFont(f);
+		publisherBox->GetTextExtent("A", &w, &h, nullptr, nullptr, &f);
+		publisherBox->GetSize(&w, NULL);
+		publisherBox->SetSize(w, (h * 2) + 10);//uhhhhhh
 	}
 	{ // publisherError
 		int w, h;
 		wxFont f;
 		
-		f = wid->bannerError->GetFont().Bold();
+		f = bannerError->GetFont().Bold();
 		
-		wid->publisherError->SetFont(f);
-		wid->publisherError->GetTextExtent(wid->publisherError->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->publisherError->SetSize(w, h);
+		publisherError->SetFont(f);
+		publisherError->GetTextExtent(publisherError->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		publisherError->SetSize(w, h);
 	}
 	
 	{ // bannerCustomText
 		int w, h;
 		wxFont f;
 		
-		f = wid->bannerError->GetFont().GetBaseFont();
+		f = bannerError->GetFont().GetBaseFont();
 		
-		wid->bannerCustomText->SetFont(f);
-		wid->bannerCustomText->GetTextExtent(wid->bannerCustomText->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->bannerCustomText->SetSize(w, h);
+		bannerCustomText->SetFont(f);
+		bannerCustomText->GetTextExtent(bannerCustomText->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		bannerCustomText->SetSize(w, h);
 	}
 	{ // bannerPreviewText
 		int w, h;
 		wxFont f;
 		
-		f = wid->bannerError->GetFont().GetBaseFont();
+		f = bannerError->GetFont().GetBaseFont();
 		
-		wid->bannerPreviewText->SetFont(f);
-		wid->bannerPreviewText->GetTextExtent(wid->bannerPreviewText->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->bannerPreviewText->SetSize(w, h);
+		bannerPreviewText->SetFont(f);
+		bannerPreviewText->GetTextExtent(bannerPreviewText->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		bannerPreviewText->SetSize(w, h);
 	}
 
 	{ // copyCheck
 		int w, width, mywidth, boxwidth, h;
 		wxFont f;
 		
-		wxCheckBox Check(wid->panel, wxID_ANY, wid->copyCheck->GetLabel());
+		wxCheckBox Check(panel, wxID_ANY, copyCheck->GetLabel());
 		f = Check.GetFont();
-		Check.GetTextExtent(wid->copyCheck->GetLabel(), &width, NULL, nullptr, nullptr, &f);
+		Check.GetTextExtent(copyCheck->GetLabel(), &width, NULL, nullptr, nullptr, &f);
 		Check.GetSize(&mywidth, NULL);
 		Check.Show(false);
 		
 		boxwidth = mywidth - width;
 		
-		f = wid->modeText->GetFont();
+		f = modeText->GetFont();
 		
-		wid->copyCheck->SetFont(f);
-		wid->copyCheck->GetTextExtent(wid->copyCheck->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->copyCheck->SetSize(w + boxwidth, h);
+		copyCheck->SetFont(f);
+		copyCheck->GetTextExtent(copyCheck->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		copyCheck->SetSize(w + boxwidth, h);
 	}
 	
 	{ // ffRewindCheck
 		int w, width, mywidth, boxwidth, h;
 		wxFont f;
 		
-		wxCheckBox Check(wid->panel, wxID_ANY, wid->ffRewindCheck->GetLabel());
+		wxCheckBox Check(panel, wxID_ANY, ffRewindCheck->GetLabel());
 		f = Check.GetFont();
-		Check.GetTextExtent(wid->ffRewindCheck->GetLabel(), &width, NULL, nullptr, nullptr, &f);
+		Check.GetTextExtent(ffRewindCheck->GetLabel(), &width, NULL, nullptr, nullptr, &f);
 		Check.GetSize(&mywidth, NULL);
 		Check.Show(false);
 		
 		boxwidth = mywidth - width;
 		
-		f = wid->modeText->GetFont().Scale(0.9F);
+		f = modeText->GetFont().Scale(0.9F);
 		
-		wid->ffRewindCheck->SetFont(f);
-		wid->ffRewindCheck->GetTextExtent(wid->ffRewindCheck->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->ffRewindCheck->SetSize(w + boxwidth, h);
+		ffRewindCheck->SetFont(f);
+		ffRewindCheck->GetTextExtent(ffRewindCheck->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		ffRewindCheck->SetSize(w + boxwidth, h);
 	}
 	{ // dimCheck
 		int w, width, mywidth, boxwidth, h;
 		wxFont f;
 		
-		wxCheckBox Check(wid->panel, wxID_ANY, wid->ffRewindCheck->GetLabel());
+		wxCheckBox Check(panel, wxID_ANY, ffRewindCheck->GetLabel());
 		f = Check.GetFont();
-		Check.GetTextExtent(wid->dimCheck->GetLabel(), &width, NULL, nullptr, nullptr, &f);
+		Check.GetTextExtent(dimCheck->GetLabel(), &width, NULL, nullptr, nullptr, &f);
 		Check.GetSize(&mywidth, NULL);
 		Check.Show(false);
 		
 		boxwidth = mywidth - width;
 		
-		f = wid->ffRewindCheck->GetFont();
+		f = ffRewindCheck->GetFont();
 		
-		wid->dimCheck->SetFont(f);
-		wid->dimCheck->GetTextExtent(wid->dimCheck->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->dimCheck->SetSize(w + boxwidth, h);
+		dimCheck->SetFont(f);
+		dimCheck->GetTextExtent(dimCheck->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		dimCheck->SetSize(w + boxwidth, h);
 	}
 
 	{ // multiBannerPreviewIndex
 		int w, h;
 		wxFont f;
 		
-		f = wid->bannerPreviewText->GetFont();
+		f = bannerPreviewText->GetFont();
 		
-		wid->multiBannerPreviewIndex->SetFont(f);
-		wid->multiBannerPreviewIndex->GetTextExtent(wid->multiBannerPreviewIndex->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->multiBannerPreviewIndex->SetSize(w, h);
+		multiBannerPreviewIndex->SetFont(f);
+		multiBannerPreviewIndex->GetTextExtent(multiBannerPreviewIndex->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		multiBannerPreviewIndex->SetSize(w, h);
 	}
 	
 	{ // playerTitleText
 		int w, h;
 		wxFont f;
 		
-		f = wid->modeText->GetFont();
+		f = modeText->GetFont();
 		
-		wid->playerTitleText->SetFont(f);
-		wid->playerTitleText->GetTextExtent(wid->playerTitleText->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->playerTitleText->SetSize(w, h);
+		playerTitleText->SetFont(f);
+		playerTitleText->GetTextExtent(playerTitleText->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		playerTitleText->SetSize(w, h);
 	}
 	{ // moflexFileText
 		int w, h;
 		wxFont f;
 		
-		f = wid->modeText->GetFont();
+		f = modeText->GetFont();
 		
-		wid->moflexFileText->SetFont(f);
-		wid->moflexFileText->GetTextExtent(wid->moflexFileText->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->moflexFileText->SetSize(w, h);
+		moflexFileText->SetFont(f);
+		moflexFileText->GetTextExtent(moflexFileText->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		moflexFileText->SetSize(w, h);
 	}
 	{ // menuBannerText
 		int w, h;
 		wxFont f;
 		
-		f = wid->modeText->GetFont();
+		f = modeText->GetFont();
 		
-		wid->menuBannerText->SetFont(f);
-		wid->menuBannerText->GetTextExtent(wid->menuBannerText->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->menuBannerText->SetSize(w, h);
+		menuBannerText->SetFont(f);
+		menuBannerText->GetTextExtent(menuBannerText->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		menuBannerText->SetSize(w, h);
 	}
 	
 	{ // moflexBrowse
 		int w, h;
 		wxFont f;
 		
-		f = wid->moflexBrowse->GetFont();
-		wid->moflexBrowse->GetTextExtent(wid->moflexBrowse->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		f = moflexBrowse->GetFont();
+		moflexBrowse->GetTextExtent(moflexBrowse->GetLabel(), &w, &h, nullptr, nullptr, &f);
 
-		wid->moflexBrowse->SetSize((w / 2) + (w * 2), (h / 2) + (h * 2));
+		moflexBrowse->SetSize((w / 2) + (w * 2), (h / 2) + (h * 2));
 	}
 	{ // multiBannerBrowse
 		int w, h;
 		wxFont f;
 		
-		f = wid->multiBannerBrowse->GetFont();
-		wid->multiBannerBrowse->GetTextExtent(wid->multiBannerBrowse->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		f = multiBannerBrowse->GetFont();
+		multiBannerBrowse->GetTextExtent(multiBannerBrowse->GetLabel(), &w, &h, nullptr, nullptr, &f);
 
-		wid->multiBannerBrowse->SetSize((w / 2) + (w * 2), (h / 2) + (h * 2));
+		multiBannerBrowse->SetSize((w / 2) + (w * 2), (h / 2) + (h * 2));
 	}
 	
 	{ // removeRow
 		int w, h;
 		wxFont f;
 		
-		f = wid->modeText->GetFont().Scale(1.1F);
+		f = modeText->GetFont().Scale(1.1F);
 		
-		wid->removeRow->SetFont(f);
-		wid->removeRow->GetTextExtent(wid->removeRow->GetLabel(), NULL, &h, nullptr, nullptr, &f);
-		wid->removeRow->GetSize(&w, NULL);
-		wid->removeRow->SetSize(w, h + (h / 2));
+		removeRow->SetFont(f);
+		removeRow->GetTextExtent(removeRow->GetLabel(), NULL, &h, nullptr, nullptr, &f);
+		removeRow->GetSize(&w, NULL);
+		removeRow->SetSize(w, h + (h / 2));
 	}
 	{ // appendRow
 		int w, h;
 		wxFont f;
 		
-		f = wid->removeRow->GetFont();
+		f = removeRow->GetFont();
 		
-		wid->appendRow->SetFont(f);
-		wid->appendRow->GetTextExtent(wid->appendRow->GetLabel(), NULL, &h, nullptr, nullptr, &f);
-		wid->appendRow->GetSize(&w, NULL);
-		wid->appendRow->SetSize(w, h + (h / 2));
+		appendRow->SetFont(f);
+		appendRow->GetTextExtent(appendRow->GetLabel(), NULL, &h, nullptr, nullptr, &f);
+		appendRow->GetSize(&w, NULL);
+		appendRow->SetSize(w, h + (h / 2));
 	}
 
 	{ // splitPatchButton
 		int w, h;
 		wxFont f;
 		
-		f = wid->ffRewindCheck->GetFont();
+		f = ffRewindCheck->GetFont();
 		
-		wid->splitPatchButton->SetFont(f);
-		wid->splitPatchButton->GetTextExtent(wid->splitPatchButton->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->splitPatchButton->SetSize(w + (w / 4), h + (h / 2));
+		splitPatchButton->SetFont(f);
+		splitPatchButton->GetTextExtent(splitPatchButton->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		splitPatchButton->SetSize(w + (w / 4), h + (h / 2));
 	}
 	
 	{ // rowText
 		int w, h;
 		wxFont f;
 		
-		f = wid->bannerPreviewText->GetFont();
+		f = bannerPreviewText->GetFont();
 		
-		wid->rowText->SetFont(f);
-		wid->rowText->GetTextExtent(wid->rowText->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->rowText->SetSize(w, h);
+		rowText->SetFont(f);
+		rowText->GetTextExtent(rowText->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		rowText->SetSize(w, h);
 	}
 	// buildpanel
 	{ // titleIDText
 		int w, h;
 		wxFont f;
 		
-		f = wid->modeText->GetFont();
+		f = modeText->GetFont();
 		
-		wid->titleIDText->SetFont(f);
-		wid->titleIDText->GetTextExtent(wid->titleIDText->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->titleIDText->SetSize(w, h);
+		titleIDText->SetFont(f);
+		titleIDText->GetTextExtent(titleIDText->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		titleIDText->SetSize(w, h);
 	}
 	{ // titleIDBox
 		int w, h;
 		wxFont f;
 		
-		f = wid->titleIDBox->GetFont();
+		f = titleIDBox->GetFont();
 		f.SetFamily(wxFONTFAMILY_TELETYPE);
 		
-		wid->titleIDBox->SetFont(f);
-		wid->titleIDBox->GetTextExtent(wxString::FromUTF8("12345"), &w, &h, nullptr, nullptr, &f);
-		wid->titleIDBox->SetSize(w + 20, h + 10);
+		titleIDBox->SetFont(f);
+		titleIDBox->GetTextExtent(wxString::FromUTF8("12345"), &w, &h, nullptr, nullptr, &f);
+		titleIDBox->SetSize(w + 20, h + 10);
 	}
 	{ // zerozero
 		int w, h;
 		wxFont f;
 		
-		f = wid->modeText->GetFont();
+		f = modeText->GetFont();
 		
-		wid->zerozero->SetFont(f);
-		wid->zerozero->GetTextExtent(wid->zerozero->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->zerozero->SetSize(w, h);
+		zerozero->SetFont(f);
+		zerozero->GetTextExtent(zerozero->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		zerozero->SetSize(w, h);
 	}
 	{ // titleIDButton
 		int w, h;
 		wxFont f;
 		
-		f = wid->modeText->GetFont().Scale(2);
+		f = modeText->GetFont().Scale(2);
 		
-		wid->titleIDButton->SetFont(f);
-		wid->titleIDButton->GetTextExtent(wid->titleIDButton->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->titleIDButton->SetSize(w > h ? w : h, w > h ? w : h);
+		titleIDButton->SetFont(f);
+		titleIDButton->GetTextExtent(titleIDButton->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		titleIDButton->SetSize(w > h ? w : h, w > h ? w : h);
 	}
 	
 	{ // applicationTitleText
 		int w, h;
 		wxFont f;
 		
-		f = wid->modeText->GetFont();
+		f = modeText->GetFont();
 		
-		wid->applicationTitleText->SetFont(f);
-		wid->applicationTitleText->GetTextExtent(wid->applicationTitleText->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->applicationTitleText->SetSize(w, h);
+		applicationTitleText->SetFont(f);
+		applicationTitleText->GetTextExtent(applicationTitleText->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		applicationTitleText->SetSize(w, h);
 	}
 	{ // applicationTitleBox
 		wxFont f;
 		
-		f = wid->productCodeBox->GetFont();
+		f = productCodeBox->GetFont();
 		f.SetFamily(wxFONTFAMILY_TELETYPE);
 		
-		wid->applicationTitleBox->SetFont(f);
+		applicationTitleBox->SetFont(f);
 	}
 	
 	{ // productCodeText
 		int w, h;
 		wxFont f;
 		
-		f = wid->modeText->GetFont();
+		f = modeText->GetFont();
 		
-		wid->productCodeText->SetFont(f);
-		wid->productCodeText->GetTextExtent(wid->productCodeText->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->productCodeText->SetSize(w, h);
+		productCodeText->SetFont(f);
+		productCodeText->GetTextExtent(productCodeText->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		productCodeText->SetSize(w, h);
 	}
 	{ // productCodeBox
 		int w, h;
 		wxFont f;
 		
-		f = wid->productCodeBox->GetFont();
+		f = productCodeBox->GetFont();
 		f.SetFamily(wxFONTFAMILY_TELETYPE);
 		
-		wid->productCodeBox->SetFont(f);
-		wid->productCodeBox->GetTextExtent(wxString::FromUTF8("1234"), &w, &h, nullptr, nullptr, &f);
-		wid->productCodeBox->SetSize(w + 20, h + 10);
+		productCodeBox->SetFont(f);
+		productCodeBox->GetTextExtent(wxString::FromUTF8("1234"), &w, &h, nullptr, nullptr, &f);
+		productCodeBox->SetSize(w + 20, h + 10);
 	}
 	
 	{ // statusText
 		int w, h;
 		wxFont f;
 		
-		f = wid->modeText->GetFont();
+		f = modeText->GetFont();
 		
-		wid->statusText->SetFont(f);
-		wid->statusText->GetTextExtent(wid->statusText->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->statusText->SetSize(w, h);
+		statusText->SetFont(f);
+		statusText->GetTextExtent(statusText->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		statusText->SetSize(w, h);
 		
-		wid->statusText->Show(false);
+		statusText->Show(false);
 	}
 	
 	{ // gitHubLinker
 		int w, h;
 		wxFont f;
 		
-		f = wid->modeText->GetFont();
+		f = modeText->GetFont();
 		
-		wid->gitHubLinker->SetFont(f);
-		wid->gitHubLinker->GetTextExtent(wid->gitHubLinker->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		wid->gitHubLinker->SetSize(w, h);
+		gitHubLinker->SetFont(f);
+		gitHubLinker->GetTextExtent(gitHubLinker->GetLabel(), &w, &h, nullptr, nullptr, &f);
+		gitHubLinker->SetSize(w, h);
 	}
 }
 
-void EnableBannerLeftRight(InitWidgets* wid) {
-	if(wid->MenuBanners.size() != 1) {
-		if(VI9P::MultiBannerIndex > 0 && VI9P::MultiBannerIndex < wid->MenuBanners.size() - 1) {
-			wid->multiBannerPreviewLeft->Enable(true);
-			wid->multiBannerPreviewRight->Enable(true);
+void theWidgets::EnableBannerLeftRight() {
+	if(MenuBanners.size() != 1) {
+		if(VI9P::MultiBannerIndex > 0 && VI9P::MultiBannerIndex < MenuBanners.size() - 1) {
+			multiBannerPreviewLeft->Enable(true);
+			multiBannerPreviewRight->Enable(true);
 		}
 		if(VI9P::MultiBannerIndex <= 0) {
-			wid->multiBannerPreviewLeft->Enable(false);
-			wid->multiBannerPreviewRight->Enable(true);
+			multiBannerPreviewLeft->Enable(false);
+			multiBannerPreviewRight->Enable(true);
 		}
 		size_t disabled_row;
-		for(disabled_row = 0; disabled_row < wid->MenuBanners.size(); disabled_row++) {
-			if(!wid->MenuBanners.at(disabled_row)->IsEnabled()) {
+		for(disabled_row = 0; disabled_row < MenuBanners.size(); disabled_row++) {
+			if(!MenuBanners.at(disabled_row)->IsEnabled()) {
 				break;
 			}
 		}
 		// stop at last enabled row or last row
-		if(VI9P::MultiBannerIndex >= disabled_row - 1 || VI9P::MultiBannerIndex >= wid->MenuBanners.size() - 1) {
-			wid->multiBannerPreviewRight->Enable(false);
+		if(VI9P::MultiBannerIndex >= disabled_row - 1 || VI9P::MultiBannerIndex >= MenuBanners.size() - 1) {
+			multiBannerPreviewRight->Enable(false);
 		}
 	}
 	else {
-		wid->multiBannerPreviewLeft->Enable(false);
-		wid->multiBannerPreviewRight->Enable(false);
+		multiBannerPreviewLeft->Enable(false);
+		multiBannerPreviewRight->Enable(false);
 	}
-	setCursors(wid);
+	setCursors();
 }
 
-void ShowMultiUpDown(InitWidgets* wid) {
-	for(const auto &row : wid->MultiUp) {
+void theWidgets::ShowMultiUpDown() {
+	for(const auto &row : MultiUp) {
 		row->Enable(true);
 		row->Show(true);
 	}
-	wid->MultiUp.front()->Enable(false);
-	wid->MultiUp.front()->Show(false);
-	for(const auto &row : wid->MultiDown) {
+	MultiUp.front()->Enable(false);
+	MultiUp.front()->Show(false);
+	for(const auto &row : MultiDown) {
 		row->Enable(true);
 		row->Show(true);
 	}
-	wid->MultiDown.back()->Enable(false);
-	wid->MultiDown.back()->Show(false);
+	MultiDown.back()->Enable(false);
+	MultiDown.back()->Show(false);
 }
 
-void ShowPatchUpDown(InitWidgets* wid, VI9Pparameters* parameters) {
-	wid->splitPatchUp->Enable(parameters->splitPos > 1);
-	wid->splitPatchUp->Show(parameters->splitPos > 1);
-	wid->splitPatchDown->Enable(parameters->splitPos < parameters->rows - 1);
-	wid->splitPatchDown->Show(parameters->splitPos < parameters->rows - 1);
+void theWidgets::ShowPatchUpDown(VI9Pparameters* parameters) {
+	splitPatchUp->Enable(parameters->splitPos > 1);
+	splitPatchUp->Show(parameters->splitPos > 1);
+	splitPatchDown->Enable(parameters->splitPos < parameters->rows - 1);
+	splitPatchDown->Show(parameters->splitPos < parameters->rows - 1);
 	if(parameters->rows > MAX_ROWS_MULTI) {
-		wid->splitPatchDown->Enable(parameters->splitPos < MAX_ROWS_MULTI - 1);
-		wid->splitPatchDown->Show(parameters->splitPos < MAX_ROWS_MULTI - 1);
+		splitPatchDown->Enable(parameters->splitPos < MAX_ROWS_MULTI - 1);
+		splitPatchDown->Show(parameters->splitPos < MAX_ROWS_MULTI - 1);
 	}
 }
 
-void setToolTips(InitWidgets* wid) {
-	wid->modeChoiceBox->SetToolTip(wxString::FromUTF8(modeChoiceBoxTip));
-	wid->bannerBox->SetToolTip(wxString::FromUTF8(bannerBoxTip));
-	wid->bannerBrowse->SetToolTip(wxString::FromUTF8(bannerBrowseTip));
-	wid->iconBox->SetToolTip(wxString::FromUTF8(iconBoxTip));
-	wid->iconBrowse->SetToolTip(wxString::FromUTF8(iconBrowseTip));
-	wid->shortnameBox->SetToolTip(wxString::FromUTF8(shortnameBoxTip));
-	wid->longnameBox->SetToolTip(wxString::FromUTF8(longnameBoxTip));
-	wid->publisherBox->SetToolTip(wxString::FromUTF8(publisherBoxTip));
+void theWidgets::setToolTips() {
+	modeChoiceBox->SetToolTip(wxString::FromUTF8(modeChoiceBoxTip));
+	bannerBox->SetToolTip(wxString::FromUTF8(bannerBoxTip));
+	bannerBrowse->SetToolTip(wxString::FromUTF8(bannerBrowseTip));
+	iconBox->SetToolTip(wxString::FromUTF8(iconBoxTip));
+	iconBrowse->SetToolTip(wxString::FromUTF8(iconBrowseTip));
+	shortnameBox->SetToolTip(wxString::FromUTF8(shortnameBoxTip));
+	longnameBox->SetToolTip(wxString::FromUTF8(longnameBoxTip));
+	publisherBox->SetToolTip(wxString::FromUTF8(publisherBoxTip));
 	
-	if(wid->modeChoiceBox->GetSelection() == 1) {
-		wid->copyBox->SetToolTip(wxString::FromUTF8(copyBoxTip));
+	if(modeChoiceBox->GetSelection() == 1) {
+		copyBox->SetToolTip(wxString::FromUTF8(copyBoxTip));
 	}
 	else {
-		wid->copyBox->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
+		copyBox->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
 	}
 	
-	if(wid->modeChoiceBox->GetSelection() == 1) {
-		wid->copyCheck->SetToolTip(wxString::FromUTF8(copyCheckTip));
+	if(modeChoiceBox->GetSelection() == 1) {
+		copyCheck->SetToolTip(wxString::FromUTF8(copyCheckTip));
 	}
 	else {
-		wid->copyCheck->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
+		copyCheck->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
 	}
 	
-	wid->iconPreview->SetToolTip(wxString::FromUTF8(iconPreviewTip));
-	wid->ffRewindCheck->SetToolTip(wxString::FromUTF8(ffRewindCheckTip));
-	wid->dimCheck->SetToolTip(wxString::FromUTF8(dimCheckTip));
+	iconPreview->SetToolTip(wxString::FromUTF8(iconPreviewTip));
+	ffRewindCheck->SetToolTip(wxString::FromUTF8(ffRewindCheckTip));
+	dimCheck->SetToolTip(wxString::FromUTF8(dimCheckTip));
 	
-	if(wid->modeChoiceBox->GetSelection() == 0) {
-		wid->multiBannerPreview->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
+	if(modeChoiceBox->GetSelection() == 0) {
+		multiBannerPreview->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
 	}
 	else {
-		wid->multiBannerPreview->SetToolTip(wxString::FromUTF8(multiBannerPreviewTip));
+		multiBannerPreview->SetToolTip(wxString::FromUTF8(multiBannerPreviewTip));
 	}
 	
-	wid->multiBannerPreviewLeft->SetToolTip(wxString::FromUTF8(multiBannerPreviewLeftTip));
-	wid->multiBannerPreviewRight->SetToolTip(wxString::FromUTF8(multiBannerPreviewRightTip));
-	wid->moflexFileText->SetToolTip(wxString::FromUTF8(moflexFileTip));
-	for(size_t row = 0; row < wid->PlayerTitles.size(); row++) {
-		wid->PlayerTitles.at(row)->SetToolTip(wxString::FromUTF8(playerTitlesTip + " (" + std::to_string(row + 1) + ')'));
+	multiBannerPreviewLeft->SetToolTip(wxString::FromUTF8(multiBannerPreviewLeftTip));
+	multiBannerPreviewRight->SetToolTip(wxString::FromUTF8(multiBannerPreviewRightTip));
+	moflexFileText->SetToolTip(wxString::FromUTF8(moflexFileTip));
+	for(size_t row = 0; row < PlayerTitles.size(); row++) {
+		PlayerTitles.at(row)->SetToolTip(wxString::FromUTF8(playerTitlesTip + " (" + std::to_string(row + 1) + ')'));
 	}
-	for(size_t row = 0; row < wid->MoflexFiles.size(); row++) {
-		wid->MoflexFiles.at(row)->SetToolTip(wxString::FromUTF8(moflexFilesTip + " (" + std::to_string(row + 1) + ')'));
+	for(size_t row = 0; row < MoflexFiles.size(); row++) {
+		MoflexFiles.at(row)->SetToolTip(wxString::FromUTF8(moflexFilesTip + " (" + std::to_string(row + 1) + ')'));
 	}
-	for(size_t row = 0; row < wid->MenuBanners.size(); row++) {
-		if(wid->modeChoiceBox->GetSelection() == 0) {
-			wid->MenuBanners.at(row)->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
+	for(size_t row = 0; row < MenuBanners.size(); row++) {
+		if(modeChoiceBox->GetSelection() == 0) {
+			MenuBanners.at(row)->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
 		}
-		else if(wid->modeChoiceBox->GetSelection() == 1) {
-			wid->MenuBanners.at(row)->SetToolTip(wxString::FromUTF8(menuBannersTip + " (" + std::to_string(row + 1) + ')'));
+		else if(modeChoiceBox->GetSelection() == 1) {
+			MenuBanners.at(row)->SetToolTip(wxString::FromUTF8(menuBannersTip + " (" + std::to_string(row + 1) + ')'));
 		}
-		else if(wid->modeChoiceBox->GetSelection() == 2) {
+		else if(modeChoiceBox->GetSelection() == 2) {
 			if(row == 0) {
-				wid->MenuBanners.at(row)->SetToolTip(wxString::FromUTF8(topImageTip));
+				MenuBanners.at(row)->SetToolTip(wxString::FromUTF8(topImageTip));
 			}
 			else {
-				wid->MenuBanners.at(row)->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
+				MenuBanners.at(row)->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
 			}
 		}
 	}
-	for(size_t row = 0; row < wid->MultiUp.size(); row++) {
-		wid->MultiUp.at(row)->SetToolTip(wxString::FromUTF8(multiUpTip));
+	for(size_t row = 0; row < MultiUp.size(); row++) {
+		MultiUp.at(row)->SetToolTip(wxString::FromUTF8(multiUpTip));
 	}
-	for(size_t row = 0; row < wid->MultiDown.size(); row++) {
-		wid->MultiDown.at(row)->SetToolTip(wxString::FromUTF8(multiDownTip));
-	}
-	
-	wid->moflexBrowse->SetToolTip(wxString::FromUTF8(moflexBrowseTip));
-	
-	if(wid->modeChoiceBox->GetSelection() == 0) {
-		wid->multiBannerBrowse->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
-	}
-	else if(wid->modeChoiceBox->GetSelection() == 1) {
-		wid->multiBannerBrowse->SetToolTip(wxString::FromUTF8(multiBannerBrowseTip));
-	}
-	else if(wid->modeChoiceBox->GetSelection() == 2) {
-		wid->multiBannerBrowse->SetToolTip(wxString::FromUTF8(extendedTopImageBrowseTip));
+	for(size_t row = 0; row < MultiDown.size(); row++) {
+		MultiDown.at(row)->SetToolTip(wxString::FromUTF8(multiDownTip));
 	}
 	
-	wid->removeRow->SetToolTip(wxString::FromUTF8(removeRowTip));
+	moflexBrowse->SetToolTip(wxString::FromUTF8(moflexBrowseTip));
 	
-	if(wid->modeChoiceBox->GetSelection() == 0) {
-		wid->appendRow->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
+	if(modeChoiceBox->GetSelection() == 0) {
+		multiBannerBrowse->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
+	}
+	else if(modeChoiceBox->GetSelection() == 1) {
+		multiBannerBrowse->SetToolTip(wxString::FromUTF8(multiBannerBrowseTip));
+	}
+	else if(modeChoiceBox->GetSelection() == 2) {
+		multiBannerBrowse->SetToolTip(wxString::FromUTF8(extendedTopImageBrowseTip));
+	}
+	
+	removeRow->SetToolTip(wxString::FromUTF8(removeRowTip));
+	
+	if(modeChoiceBox->GetSelection() == 0) {
+		appendRow->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
 	}
 	else {
-		wid->appendRow->SetToolTip(wxString::FromUTF8(appendRowTip));
+		appendRow->SetToolTip(wxString::FromUTF8(appendRowTip));
 	}
 	
-	if(wid->modeChoiceBox->GetSelection() == 0) {
-		wid->splitPatchButton->SetToolTip(wxString::FromUTF8(splitPatchTip + '\n' + onlyMultiVideo));
+	if(modeChoiceBox->GetSelection() == 0) {
+		splitPatchButton->SetToolTip(wxString::FromUTF8(splitPatchTip + '\n' + onlyMultiVideo));
 	}
-	else if(wid->modeChoiceBox->GetSelection() == 1) {
-		wid->splitPatchButton->SetToolTip(wxString::FromUTF8(splitPatchTip));
+	else if(modeChoiceBox->GetSelection() == 1) {
+		splitPatchButton->SetToolTip(wxString::FromUTF8(splitPatchTip));
 	}
-	else if(wid->modeChoiceBox->GetSelection() == 2) {
-		wid->splitPatchButton->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
+	else if(modeChoiceBox->GetSelection() == 2) {
+		splitPatchButton->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
 	}
 	
-	wid->splitPatchUp->SetToolTip(wxString::FromUTF8(splitPatchUpTip));
-	wid->splitPatchDown->SetToolTip(wxString::FromUTF8(splitPatchDownTip));
+	splitPatchUp->SetToolTip(wxString::FromUTF8(splitPatchUpTip));
+	splitPatchDown->SetToolTip(wxString::FromUTF8(splitPatchDownTip));
 	
-	wid->titleIDBox->SetToolTip(wxString::FromUTF8(titleIDBoxTip));
-	wid->titleIDButton->SetToolTip(wxString::FromUTF8(titleIDButtonTip));
-	wid->applicationTitleBox->SetToolTip(wxString::FromUTF8(applicationTitleBoxTip));
-	wid->productCodeBox->SetToolTip(wxString::FromUTF8(productCodeBoxTip));
-	wid->buildButton->SetToolTip(wxString::FromUTF8(buildButtonTip));
-	wid->cancelButton->SetToolTip(wxString::FromUTF8(cancelButtonTip));
+	titleIDBox->SetToolTip(wxString::FromUTF8(titleIDBoxTip));
+	titleIDButton->SetToolTip(wxString::FromUTF8(titleIDButtonTip));
+	applicationTitleBox->SetToolTip(wxString::FromUTF8(applicationTitleBoxTip));
+	productCodeBox->SetToolTip(wxString::FromUTF8(productCodeBoxTip));
+	buildButton->SetToolTip(wxString::FromUTF8(buildButtonTip));
+	cancelButton->SetToolTip(wxString::FromUTF8(cancelButtonTip));
 	
-	wid->titleLogo->SetToolTip(wxString::FromUTF8(frameText));
-	wid->gitHubLinker->SetToolTip(wxString::FromUTF8(githubRepoLink));
+	titleLogo->SetToolTip(wxString::FromUTF8(frameText));
+	gitHubLinker->SetToolTip(wxString::FromUTF8(githubRepoLink));
 }
 
-void setCursors(InitWidgets* wid) {
-	wid->modeChoiceBox->SetCursor(wid->modeChoiceBox->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
-	wid->bannerBox->SetCursor(wid->bannerBox->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_NO_ENTRY);
-	wid->bannerBrowse->SetCursor(wid->bannerBrowse->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
-	wid->iconBox->SetCursor(wid->iconBox->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_NO_ENTRY);
-	wid->iconBrowse->SetCursor(wid->iconBrowse->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
-	wid->iconPreview->SetCursor(wid->iconPreview->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_NO_ENTRY);
-	wid->shortnameBox->SetCursor(wid->shortnameBox->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_NO_ENTRY);
-	wid->longnameBox->SetCursor(wid->longnameBox->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_NO_ENTRY);
-	wid->publisherBox->SetCursor(wid->publisherBox->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_NO_ENTRY);
-	wid->copyBox->SetCursor(wid->copyBox->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_NO_ENTRY);
-	wid->copyCheck->SetCursor(wid->copyCheck->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
-	wid->iconPreview->SetCursor(wid->iconPreview->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
-	wid->ffRewindCheck->SetCursor(wid->ffRewindCheck->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
-	wid->dimCheck->SetCursor(wid->dimCheck->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
-	wid->multiBannerPreview->SetCursor(wid->multiBannerPreview->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
-	wid->multiBannerPreviewLeft->SetCursor(wid->multiBannerPreviewLeft->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
-	wid->multiBannerPreviewRight->SetCursor(wid->multiBannerPreviewRight->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
-	for(const auto& row : wid->PlayerTitles) {
+void theWidgets::setCursors() {
+	modeChoiceBox->SetCursor(modeChoiceBox->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
+	bannerBox->SetCursor(bannerBox->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_NO_ENTRY);
+	bannerBrowse->SetCursor(bannerBrowse->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
+	iconBox->SetCursor(iconBox->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_NO_ENTRY);
+	iconBrowse->SetCursor(iconBrowse->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
+	iconPreview->SetCursor(iconPreview->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_NO_ENTRY);
+	shortnameBox->SetCursor(shortnameBox->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_NO_ENTRY);
+	longnameBox->SetCursor(longnameBox->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_NO_ENTRY);
+	publisherBox->SetCursor(publisherBox->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_NO_ENTRY);
+	copyBox->SetCursor(copyBox->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_NO_ENTRY);
+	copyCheck->SetCursor(copyCheck->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
+	iconPreview->SetCursor(iconPreview->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
+	ffRewindCheck->SetCursor(ffRewindCheck->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
+	dimCheck->SetCursor(dimCheck->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
+	multiBannerPreview->SetCursor(multiBannerPreview->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
+	multiBannerPreviewLeft->SetCursor(multiBannerPreviewLeft->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
+	multiBannerPreviewRight->SetCursor(multiBannerPreviewRight->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
+	for(const auto& row : PlayerTitles) {
 		row->SetCursor(row->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_NO_ENTRY);
 	}
-	for(const auto& row : wid->MoflexFiles) {
+	for(const auto& row : MoflexFiles) {
 		row->SetCursor(row->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_NO_ENTRY);
 	}
-	for(const auto& row : wid->MenuBanners) {
+	for(const auto& row : MenuBanners) {
 		row->SetCursor(row->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_NO_ENTRY);
 	}
-	for(const auto& row : wid->MultiUp) {
+	for(const auto& row : MultiUp) {
 		row->SetCursor(row->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
 	}
-	for(const auto& row : wid->MultiDown) {
+	for(const auto& row : MultiDown) {
 		row->SetCursor(row->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
 	}
-	wid->moflexBrowse->SetCursor(wid->moflexBrowse->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
-	wid->multiBannerBrowse->SetCursor(wid->multiBannerBrowse->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
-	wid->removeRow->SetCursor(wid->removeRow->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
-	wid->appendRow->SetCursor(wid->appendRow->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
-	wid->splitPatchButton->SetCursor(wid->splitPatchButton->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
-	wid->splitPatchUp->SetCursor(wid->splitPatchButton->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
-	wid->splitPatchDown->SetCursor(wid->splitPatchButton->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
-	wid->frame->SetCursor(wxCURSOR_ARROW);
-	wid->panel->SetCursor(wxCURSOR_ARROW);
-	wid->mediaPanel->SetCursor(wxCURSOR_ARROW);
+	moflexBrowse->SetCursor(moflexBrowse->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
+	multiBannerBrowse->SetCursor(multiBannerBrowse->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
+	removeRow->SetCursor(removeRow->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
+	appendRow->SetCursor(appendRow->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
+	splitPatchButton->SetCursor(splitPatchButton->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
+	splitPatchUp->SetCursor(splitPatchButton->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
+	splitPatchDown->SetCursor(splitPatchButton->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
+	frame->SetCursor(wxCURSOR_ARROW);
+	panel->SetCursor(wxCURSOR_ARROW);
+	mediaPanel->SetCursor(wxCURSOR_ARROW);
 	
-	wid->titleIDBox->SetCursor(wid->titleIDButton->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_NO_ENTRY);
-	wid->titleIDButton->SetCursor(wid->titleIDButton->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
-	wid->applicationTitleBox->SetCursor(wid->titleIDButton->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_NO_ENTRY);
-	wid->buildButton->SetCursor(wid->titleIDButton->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
-	wid->cancelButton->SetCursor(wid->titleIDButton->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
+	titleIDBox->SetCursor(titleIDButton->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_NO_ENTRY);
+	titleIDButton->SetCursor(titleIDButton->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
+	applicationTitleBox->SetCursor(titleIDButton->IsEnabled() ? wxCURSOR_IBEAM : wxCURSOR_NO_ENTRY);
+	buildButton->SetCursor(titleIDButton->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
+	cancelButton->SetCursor(titleIDButton->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
 }
 
-void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
+void theWidgets::positionWidgets(VI9Pparameters* parameters) {
 	{ // modeChoiceBox
 		int x, y, height;
-		wid->modeText->GetPosition(&x, &y);
-		wid->modeText->GetSize(NULL, &height);
+		modeText->GetPosition(&x, &y);
+		modeText->GetSize(NULL, &height);
 		
-		wid->modeChoiceBox->Move(x, y + height);
+		modeChoiceBox->Move(x, y + height);
 	}
 	
 	{ // bannerText
 		int x, y, height;
-		wid->modeChoiceBox->GetPosition(&x, &y);
-		wid->modeChoiceBox->GetSize(NULL, &height);
+		modeChoiceBox->GetPosition(&x, &y);
+		modeChoiceBox->GetSize(NULL, &height);
 		
-		wid->bannerText->Move(x, y + (height * 2));
+		bannerText->Move(x, y + (height * 2));
 	}
 	{ // bannerBox
 		int x, y, width, height, myheight;
-		wid->bannerText->GetPosition(&x, &y);
-		wid->bannerText->GetSize(&width, &height);
-		wid->bannerBox->GetSize(NULL, &myheight);
+		bannerText->GetPosition(&x, &y);
+		bannerText->GetSize(&width, &height);
+		bannerBox->GetSize(NULL, &myheight);
 		
-		wid->bannerBox->Move(x + width + 5, y + ((height - myheight) / 2));
+		bannerBox->Move(x + width + 5, y + ((height - myheight) / 2));
 	}
 	{ // bannerBrowse y
 		int myx, y, height, myheight;
-		wid->bannerBox->GetPosition(NULL, &y);
-		wid->bannerBox->GetSize(NULL, &height);
-		wid->bannerBrowse->GetPosition(&myx, NULL);
-		wid->bannerBrowse->GetSize(NULL, &myheight);
+		bannerBox->GetPosition(NULL, &y);
+		bannerBox->GetSize(NULL, &height);
+		bannerBrowse->GetPosition(&myx, NULL);
+		bannerBrowse->GetSize(NULL, &myheight);
 		
-		wid->bannerBrowse->Move(myx, y + ((height - myheight) / 2));
+		bannerBrowse->Move(myx, y + ((height - myheight) / 2));
 	}
 	{ // bannerError
 		int x, y, height;
-		wid->bannerBox->GetPosition(&x, NULL);
-		wid->bannerBrowse->GetPosition(NULL, &y);
-		wid->bannerBrowse->GetSize(NULL, &height);
+		bannerBox->GetPosition(&x, NULL);
+		bannerBrowse->GetPosition(NULL, &y);
+		bannerBrowse->GetSize(NULL, &height);
 		
-		wid->bannerError->Move(x, y + height);
+		bannerError->Move(x, y + height);
 	}
 	
 	{ // iconText
 		int x, y, height, myheight, browseheight;
-		wid->modeText->GetPosition(&x, NULL);
-		wid->bannerError->GetPosition(NULL, &y);
-		wid->bannerError->GetSize(NULL, &height);
-		wid->iconText->GetSize(NULL, &myheight);
-		wid->iconBrowse->GetSize(NULL, &browseheight);
+		modeText->GetPosition(&x, NULL);
+		bannerError->GetPosition(NULL, &y);
+		bannerError->GetSize(NULL, &height);
+		iconText->GetSize(NULL, &myheight);
+		iconBrowse->GetSize(NULL, &browseheight);
 		
-		wid->iconText->Move(x, y + height + ((browseheight - myheight) / 2));
+		iconText->Move(x, y + height + ((browseheight - myheight) / 2));
 	}
 	{ // iconBox
 		int x, y, width, height, myheight;
-		wid->iconText->GetPosition(&x, &y);
-		wid->iconText->GetSize(&width, &height);
-		wid->iconBox->GetSize(NULL, &myheight);
+		iconText->GetPosition(&x, &y);
+		iconText->GetSize(&width, &height);
+		iconBox->GetSize(NULL, &myheight);
 		
-		wid->iconBox->Move(x + width + 5, y + ((height - myheight) / 2));
-		//wid->iconBox->SetSize(, &myheight);
+		iconBox->Move(x + width + 5, y + ((height - myheight) / 2));
+		//iconBox->SetSize(, &myheight);
 	}
 	{ // iconBrowse y
 		int myx, y, height;
-		wid->iconBrowse->GetPosition(&myx, NULL);
-		wid->bannerError->GetPosition(NULL, &y);
-		wid->bannerError->GetSize(NULL, &height);
+		iconBrowse->GetPosition(&myx, NULL);
+		bannerError->GetPosition(NULL, &y);
+		bannerError->GetSize(NULL, &height);
 		
-		wid->iconBrowse->Move(myx, y + height);
+		iconBrowse->Move(myx, y + height);
 	}
 	{ // iconError
 		int x, y, height;
-		wid->iconBox->GetPosition(&x, NULL);
-		wid->iconBrowse->GetPosition(NULL, &y);
-		wid->iconBrowse->GetSize(NULL, &height);
+		iconBox->GetPosition(&x, NULL);
+		iconBrowse->GetPosition(NULL, &y);
+		iconBrowse->GetSize(NULL, &height);
 		
-		wid->iconError->Move(x, y + height);
+		iconError->Move(x, y + height);
 	}
 	
 	{ // bannerPreview y
 		int x, y;
-		wid->modeText->GetPosition(NULL, &y);
-		wid->bannerPreview->GetPosition(&x, NULL);
+		modeText->GetPosition(NULL, &y);
+		bannerPreview->GetPosition(&x, NULL);
 		
-		wid->bannerPreview->Move(x, y);
+		bannerPreview->Move(x, y);
 	}
 	
 	{ // shortnameText
 		int x, y, bannerPreviewY, iconBrowseY, height, bannerPreviewHeight, bannerPreviewTextHeight, iconPreviewHeight;
-		wid->modeText->GetPosition(&x, NULL);
-		wid->iconError->GetPosition(NULL, &y);
-		wid->iconError->GetSize(NULL, &height);
+		modeText->GetPosition(&x, NULL);
+		iconError->GetPosition(NULL, &y);
+		iconError->GetSize(NULL, &height);
 		
-		wid->bannerPreview->GetPosition(NULL, &bannerPreviewY);
-		wid->bannerPreview->GetSize(NULL, &bannerPreviewHeight);
-		wid->bannerPreviewText->GetSize(NULL, &bannerPreviewTextHeight);
-		wid->iconBrowse->GetPosition(NULL, &iconBrowseY);
-		wid->iconPreview->GetSize(NULL, &iconPreviewHeight);
+		bannerPreview->GetPosition(NULL, &bannerPreviewY);
+		bannerPreview->GetSize(NULL, &bannerPreviewHeight);
+		bannerPreviewText->GetSize(NULL, &bannerPreviewTextHeight);
+		iconBrowse->GetPosition(NULL, &iconBrowseY);
+		iconPreview->GetSize(NULL, &iconPreviewHeight);
 		
 		std::vector<int> sizes(3, 0);
 		sizes.at(0) = (bannerPreviewY + bannerPreviewHeight + bannerPreviewTextHeight); // banner preview
@@ -926,736 +1123,736 @@ void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters) {
 		
 		std::vector<int>::iterator Heightest = std::max_element(sizes.begin(), sizes.end()); // dont even worry
 		
-		wid->shortnameText->Move(x, (*Heightest) + 6);
+		shortnameText->Move(x, (*Heightest) + 6);
 	}
 	{ // shortnameBox
 		int x, y, width;
-		wid->shortnameText->GetPosition(&x, &y);
-		wid->shortnameText->GetSize(&width, NULL);
+		shortnameText->GetPosition(&x, &y);
+		shortnameText->GetSize(&width, NULL);
 		
-		wid->shortnameBox->Move(x + width + 5, y);
+		shortnameBox->Move(x + width + 5, y);
 	}
 	{ // shortnameError
 		int x, y, height;
-		wid->shortnameBox->GetPosition(&x, &y);
-		wid->shortnameBox->GetSize(NULL, &height);
+		shortnameBox->GetPosition(&x, &y);
+		shortnameBox->GetSize(NULL, &height);
 		
-		wid->shortnameError->Move(x, y + height);
+		shortnameError->Move(x, y + height);
 	}
 	
 	{ // longnameText
 		int x, y, height;
-		wid->modeText->GetPosition(&x, NULL);
-		wid->shortnameError->GetPosition(NULL, &y);
-		wid->shortnameError->GetSize(NULL, &height);
+		modeText->GetPosition(&x, NULL);
+		shortnameError->GetPosition(NULL, &y);
+		shortnameError->GetSize(NULL, &height);
 		
-		wid->longnameText->Move(x, y + height);
+		longnameText->Move(x, y + height);
 	}
 	{ // longnameBox
 		int x, y, width;
-		wid->longnameText->GetPosition(&x, &y);
-		wid->longnameText->GetSize(&width, NULL);
+		longnameText->GetPosition(&x, &y);
+		longnameText->GetSize(&width, NULL);
 		
-		wid->longnameBox->Move(x + width + 5, y);
+		longnameBox->Move(x + width + 5, y);
 	}
 	{ // longnameError
 		int x, y, height;
-		wid->longnameBox->GetPosition(&x, &y);
-		wid->longnameBox->GetSize(NULL, &height);
+		longnameBox->GetPosition(&x, &y);
+		longnameBox->GetSize(NULL, &height);
 		
-		wid->longnameError->Move(x, y + height);
+		longnameError->Move(x, y + height);
 	}
 	
 	{ // publisherText
 		int x, y, height;
-		wid->modeText->GetPosition(&x, NULL);
-		wid->longnameError->GetPosition(NULL, &y);
-		wid->longnameError->GetSize(NULL, &height);
+		modeText->GetPosition(&x, NULL);
+		longnameError->GetPosition(NULL, &y);
+		longnameError->GetSize(NULL, &height);
 		
-		wid->publisherText->Move(x, y + height);
+		publisherText->Move(x, y + height);
 	}
 	{ // publisherBox
 		int x, y, width;
-		wid->publisherText->GetPosition(&x, &y);
-		wid->publisherText->GetSize(&width, NULL);
+		publisherText->GetPosition(&x, &y);
+		publisherText->GetSize(&width, NULL);
 		
-		wid->publisherBox->Move(x + width + 5, y);
+		publisherBox->Move(x + width + 5, y);
 	}
 	{ // publisherError
 		int x, y, height;
-		wid->publisherBox->GetPosition(&x, &y);
-		wid->publisherBox->GetSize(NULL, &height);
+		publisherBox->GetPosition(&x, &y);
+		publisherBox->GetSize(NULL, &height);
 		
-		wid->publisherError->Move(x, y + height);
+		publisherError->Move(x, y + height);
 	}
 	
 	{ // ffRewindCheck
 		int x, y, height;
-		wid->publisherError->GetPosition(&x, &y);
-		wid->publisherError->GetSize(NULL, &height);
+		publisherError->GetPosition(&x, &y);
+		publisherError->GetSize(NULL, &height);
 		
-		wid->ffRewindCheck->Move(x, y + height);
+		ffRewindCheck->Move(x, y + height);
 	}
 	{ // dimCheck
 		int x, y, height;
-		wid->ffRewindCheck->GetPosition(&x, &y);
-		wid->ffRewindCheck->GetSize(NULL, &height);
+		ffRewindCheck->GetPosition(&x, &y);
+		ffRewindCheck->GetSize(NULL, &height);
 		
-		wid->dimCheck->Move(x, y + height);
+		dimCheck->Move(x, y + height);
 	}
 	
 	// stuff that moves or changes size
 	{ // copyBox
 		int x, y, width, mywidth, checkwidth, checkheight;
-		wid->modeText->GetPosition(&x, &y);
-		wid->panel->GetSize(&width, NULL);
-		wid->copyBox->GetSize(&mywidth, NULL);
-		wid->copyCheck->GetSize(&checkwidth, NULL);
-		wid->copyCheck->GetSize(NULL, &checkheight);
+		modeText->GetPosition(&x, &y);
+		panel->GetSize(&width, NULL);
+		copyBox->GetSize(&mywidth, NULL);
+		copyCheck->GetSize(&checkwidth, NULL);
+		copyCheck->GetSize(NULL, &checkheight);
 		
 		int iconErrorX, iconErrorW, iconPreviewW, bannerPreviewW, bannerPreviewTextW;
-		wid->iconError->GetPosition(&iconErrorX, NULL);
-		wid->iconError->GetSize(&iconErrorW, NULL);
-		wid->iconPreview->GetSize(&iconPreviewW, NULL);
-		wid->bannerPreview->GetSize(&bannerPreviewW, NULL);
-		wid->bannerPreviewText->GetSize(&bannerPreviewTextW, NULL);
+		iconError->GetPosition(&iconErrorX, NULL);
+		iconError->GetSize(&iconErrorW, NULL);
+		iconPreview->GetSize(&iconPreviewW, NULL);
+		bannerPreview->GetSize(&bannerPreviewW, NULL);
+		bannerPreviewText->GetSize(&bannerPreviewTextW, NULL);
 		
 		if(width >= iconErrorX + iconErrorW + iconPreviewW + 5 + (bannerPreviewW > bannerPreviewTextW ? bannerPreviewW : bannerPreviewTextW) + 15 + (mywidth > checkwidth ? mywidth : checkwidth) + x) {
-			wid->copyBox->Move(width - (mywidth > checkwidth ? mywidth : checkwidth) - x, y + checkheight);
+			copyBox->Move(width - (mywidth > checkwidth ? mywidth : checkwidth) - x, y + checkheight);
 		}
 		else {
-			wid->copyBox->Move(iconErrorX + iconErrorW + iconPreviewW + 5 + (bannerPreviewW > bannerPreviewTextW ? bannerPreviewW : bannerPreviewTextW) + 15, y + checkheight);
+			copyBox->Move(iconErrorX + iconErrorW + iconPreviewW + 5 + (bannerPreviewW > bannerPreviewTextW ? bannerPreviewW : bannerPreviewTextW) + 15, y + checkheight);
 		}
 	}
 	{ // copyCheck
 		int x, y, myheight;
-		wid->copyBox->GetPosition(&x, &y);
-		wid->copyCheck->GetSize(NULL, &myheight);
+		copyBox->GetPosition(&x, &y);
+		copyCheck->GetSize(NULL, &myheight);
 		
-		wid->copyCheck->Move(x, y - myheight); // why not just put this in before the box?
+		copyCheck->Move(x, y - myheight); // why not just put this in before the box?
 	}
 	
 	{ // bannerPreview x
 		int x, y, mywidth, bannerPreviewTextW;
-		wid->copyCheck->GetPosition(&x, NULL);
-		wid->bannerPreview->GetPosition(NULL, &y);
-		wid->bannerPreview->GetSize(&mywidth, NULL);
-		wid->bannerPreviewText->GetSize(&bannerPreviewTextW, NULL);
+		copyCheck->GetPosition(&x, NULL);
+		bannerPreview->GetPosition(NULL, &y);
+		bannerPreview->GetSize(&mywidth, NULL);
+		bannerPreviewText->GetSize(&bannerPreviewTextW, NULL);
 		
-		wid->bannerPreview->Move(x - (mywidth > bannerPreviewTextW ? mywidth : ((bannerPreviewTextW - mywidth) * 2)) - (mywidth > bannerPreviewTextW ? 15 : 15 * 2), y);
+		bannerPreview->Move(x - (mywidth > bannerPreviewTextW ? mywidth : ((bannerPreviewTextW - mywidth) * 2)) - (mywidth > bannerPreviewTextW ? 15 : 15 * 2), y);
 	}
 	{ // bannerCustomText
 		int x, y, width, mywidth, height, myheight;
-		wid->bannerPreview->GetPosition(&x, &y);
-		wid->bannerPreview->GetSize(&width, &height);
-		wid->bannerCustomText->GetSize(&mywidth, &myheight);
+		bannerPreview->GetPosition(&x, &y);
+		bannerPreview->GetSize(&width, &height);
+		bannerCustomText->GetSize(&mywidth, &myheight);
 		
-		wid->bannerCustomText->Move(x + ((width - mywidth) / 2), y + ((height - myheight) / 2));
+		bannerCustomText->Move(x + ((width - mywidth) / 2), y + ((height - myheight) / 2));
 	}
 	{ // bannerPreviewText
 		int x, y, width, mywidth, height;
-		wid->bannerPreview->GetPosition(&x, &y);
-		wid->bannerPreview->GetSize(&width, &height);
-		wid->bannerPreviewText->GetSize(&mywidth, NULL);
+		bannerPreview->GetPosition(&x, &y);
+		bannerPreview->GetSize(&width, &height);
+		bannerPreviewText->GetSize(&mywidth, NULL);
 		
-		wid->bannerPreviewText->Move(x + ((width - mywidth) / 2), y + height);
+		bannerPreviewText->Move(x + ((width - mywidth) / 2), y + height);
 	}
 	
 	{ // iconPreview
 		int x, bannerPreviewTextx, y, mywidth;
-		wid->iconBrowse->GetPosition(NULL, &y);
-		wid->bannerPreview->GetPosition(&x, NULL);
-		wid->iconPreview->GetSize(&mywidth, NULL);
-		wid->bannerPreviewText->GetPosition(&bannerPreviewTextx, NULL);
+		iconBrowse->GetPosition(NULL, &y);
+		bannerPreview->GetPosition(&x, NULL);
+		iconPreview->GetSize(&mywidth, NULL);
+		bannerPreviewText->GetPosition(&bannerPreviewTextx, NULL);
 		
-		wid->iconPreview->Move((x < bannerPreviewTextx ? x : bannerPreviewTextx) - mywidth - 5, y);
+		iconPreview->Move((x < bannerPreviewTextx ? x : bannerPreviewTextx) - mywidth - 5, y);
 	}
 	{ // bannerBrowse x
 		int x, bannerPreviewTextx, myy, mywidth;
-		wid->bannerPreview->GetPosition(&x, NULL);
-		wid->bannerBrowse->GetPosition(NULL, &myy);
-		wid->bannerBrowse->GetSize(&mywidth, NULL);
-		wid->bannerPreviewText->GetPosition(&bannerPreviewTextx, NULL);
+		bannerPreview->GetPosition(&x, NULL);
+		bannerBrowse->GetPosition(NULL, &myy);
+		bannerBrowse->GetSize(&mywidth, NULL);
+		bannerPreviewText->GetPosition(&bannerPreviewTextx, NULL);
 		
-		wid->bannerBrowse->Move((x < bannerPreviewTextx ? x : bannerPreviewTextx) - mywidth - 5, myy);
+		bannerBrowse->Move((x < bannerPreviewTextx ? x : bannerPreviewTextx) - mywidth - 5, myy);
 	}
 	{ // iconBrowse x
 		int x, myy, mywidth;
-		wid->iconPreview->GetPosition(&x, NULL);
-		wid->iconBrowse->GetPosition(NULL, &myy);
-		wid->iconBrowse->GetSize(&mywidth, NULL);
+		iconPreview->GetPosition(&x, NULL);
+		iconBrowse->GetPosition(NULL, &myy);
+		iconBrowse->GetSize(&mywidth, NULL);
 		
-		wid->iconBrowse->Move(x - mywidth - 2, myy);
+		iconBrowse->Move(x - mywidth - 2, myy);
 	}
 	{ // bannerBox width
 		int myx, browsex, myheight;
-		wid->bannerBrowse->GetPosition(&browsex, NULL);
-		wid->bannerBox->GetPosition(&myx, NULL);
-		wid->bannerBox->GetSize(NULL, &myheight);
+		bannerBrowse->GetPosition(&browsex, NULL);
+		bannerBox->GetPosition(&myx, NULL);
+		bannerBox->GetSize(NULL, &myheight);
 		
-		wid->bannerBox->SetSize(browsex - myx - 2, myheight);
+		bannerBox->SetSize(browsex - myx - 2, myheight);
 	}
 	{ // iconBox width
 		int myx, browsex, myheight;
-		wid->iconBrowse->GetPosition(&browsex, NULL);
-		wid->iconBox->GetPosition(&myx, NULL);
-		wid->iconBox->GetSize(NULL, &myheight);
+		iconBrowse->GetPosition(&browsex, NULL);
+		iconBox->GetPosition(&myx, NULL);
+		iconBox->GetSize(NULL, &myheight);
 		
-		wid->iconBox->SetSize(browsex - myx - 2, myheight);
+		iconBox->SetSize(browsex - myx - 2, myheight);
 	}
 	{ // multiBannerPreview
 		int x, y, width, mywidth, height;
-		wid->copyBox->GetPosition(&x, &y);
-		wid->copyBox->GetSize(&width, &height);
-		wid->multiBannerPreview->GetSize(&mywidth, NULL);
+		copyBox->GetPosition(&x, &y);
+		copyBox->GetSize(&width, &height);
+		multiBannerPreview->GetSize(&mywidth, NULL);
 		
-		wid->multiBannerPreview->Move(x - (mywidth - width), y + height + 5);
+		multiBannerPreview->Move(x - (mywidth - width), y + height + 5);
 	}
 	{ // multiBannerPreviewIndex
 		int x, y, width, mywidth, height;
-		wid->multiBannerPreview->GetPosition(&x, &y);
-		wid->multiBannerPreview->GetSize(&width, &height);
-		wid->multiBannerPreviewIndex->GetSize(&mywidth, NULL);
+		multiBannerPreview->GetPosition(&x, &y);
+		multiBannerPreview->GetSize(&width, &height);
+		multiBannerPreviewIndex->GetSize(&mywidth, NULL);
 		
-		wid->multiBannerPreviewIndex->Move(x + ((width - mywidth) / 2), y + height);
+		multiBannerPreviewIndex->Move(x + ((width - mywidth) / 2), y + height);
 	}
 	{ // multiBannerPreviewLeft
 		int x, y, height;
-		wid->multiBannerPreview->GetPosition(&x, &y);
-		wid->multiBannerPreview->GetSize(NULL, &height);
-		//wid->multiBannerIndex->GetSize(&mywidth, NULL);
+		multiBannerPreview->GetPosition(&x, &y);
+		multiBannerPreview->GetSize(NULL, &height);
+		//multiBannerIndex->GetSize(&mywidth, NULL);
 		
-		wid->multiBannerPreviewLeft->Move(x, y + height);
+		multiBannerPreviewLeft->Move(x, y + height);
 	}
 	{ // multiBannerPreviewRight
 		int x, y, width, mywidth, height;
-		wid->multiBannerPreview->GetPosition(&x, &y);
-		wid->multiBannerPreview->GetSize(&width, &height);
-		wid->multiBannerPreviewRight->GetSize(&mywidth, NULL);
+		multiBannerPreview->GetPosition(&x, &y);
+		multiBannerPreview->GetSize(&width, &height);
+		multiBannerPreviewRight->GetSize(&mywidth, NULL);
 		
-		wid->multiBannerPreviewRight->Move((x + width) - mywidth, y + height);
+		multiBannerPreviewRight->Move((x + width) - mywidth, y + height);
 	}
 	{ // shortnameBox width
 		int myx, myheight, x;
-		wid->multiBannerPreview->GetPosition(&x, NULL);
-		wid->shortnameBox->GetPosition(&myx, NULL);
-		wid->shortnameBox->GetSize(NULL, &myheight);
+		multiBannerPreview->GetPosition(&x, NULL);
+		shortnameBox->GetPosition(&myx, NULL);
+		shortnameBox->GetSize(NULL, &myheight);
 		
-		wid->shortnameBox->SetSize(x - myx - 15, myheight);
+		shortnameBox->SetSize(x - myx - 15, myheight);
 	}
 	{ // longnameBox width
 		int myx, myheight, x;
-		wid->multiBannerPreview->GetPosition(&x, NULL);
-		wid->longnameBox->GetPosition(&myx, NULL);
-		wid->longnameBox->GetSize(NULL, &myheight);
+		multiBannerPreview->GetPosition(&x, NULL);
+		longnameBox->GetPosition(&myx, NULL);
+		longnameBox->GetSize(NULL, &myheight);
 		
-		wid->longnameBox->SetSize(x - myx - 15, myheight);
+		longnameBox->SetSize(x - myx - 15, myheight);
 	}
 	{ // publisherBox width
 		int myx, myheight, x;
-		wid->multiBannerPreview->GetPosition(&x, NULL);
-		wid->publisherBox->GetPosition(&myx, NULL);
-		wid->publisherBox->GetSize(NULL, &myheight);
+		multiBannerPreview->GetPosition(&x, NULL);
+		publisherBox->GetPosition(&myx, NULL);
+		publisherBox->GetSize(NULL, &myheight);
 		
-		wid->publisherBox->SetSize(x - myx - 15, myheight);
+		publisherBox->SetSize(x - myx - 15, myheight);
 	}
 	{ // playerTitleText y
 		int x, y, checky, height, checkheight;
-		wid->multiBannerPreviewLeft->GetPosition(NULL, &y);
-		wid->dimCheck->GetPosition(NULL, &checky);
-		wid->dimCheck->GetSize(NULL, &checkheight);
-		wid->multiBannerPreviewLeft->GetSize(NULL, &height);
-		wid->playerTitleText->GetPosition(&x, NULL);
+		multiBannerPreviewLeft->GetPosition(NULL, &y);
+		dimCheck->GetPosition(NULL, &checky);
+		dimCheck->GetSize(NULL, &checkheight);
+		multiBannerPreviewLeft->GetSize(NULL, &height);
+		playerTitleText->GetPosition(&x, NULL);
 		
-		wid->playerTitleText->Move(x, (y > checky ? (y + height + 5) : (checky + checkheight + 5)));
+		playerTitleText->Move(x, (y > checky ? (y + height + 5) : (checky + checkheight + 5)));
 	}
 	{ // moflexFileText y
 		int x, y, checky, height, checkheight;
-		wid->multiBannerPreviewLeft->GetPosition(NULL, &y);
-		wid->dimCheck->GetPosition(NULL, &checky);
-		wid->dimCheck->GetSize(NULL, &checkheight);
-		wid->multiBannerPreviewLeft->GetSize(NULL, &height);
-		wid->moflexFileText->GetPosition(&x, NULL);
+		multiBannerPreviewLeft->GetPosition(NULL, &y);
+		dimCheck->GetPosition(NULL, &checky);
+		dimCheck->GetSize(NULL, &checkheight);
+		multiBannerPreviewLeft->GetSize(NULL, &height);
+		moflexFileText->GetPosition(&x, NULL);
 		
-		wid->moflexFileText->Move(x, (y > checky ? (y + height + 5) : (checky + checkheight + 5)));
+		moflexFileText->Move(x, (y > checky ? (y + height + 5) : (checky + checkheight + 5)));
 	}
 	{ // menuBannerText y
 		int x, y, checky, height, checkheight;
-		wid->multiBannerPreviewLeft->GetPosition(NULL, &y);
-		wid->multiBannerPreviewLeft->GetSize(NULL, &height);
-		wid->dimCheck->GetPosition(NULL, &checky);
-		wid->dimCheck->GetSize(NULL, &checkheight);
-		wid->menuBannerText->GetPosition(&x, NULL);
+		multiBannerPreviewLeft->GetPosition(NULL, &y);
+		multiBannerPreviewLeft->GetSize(NULL, &height);
+		dimCheck->GetPosition(NULL, &checky);
+		dimCheck->GetSize(NULL, &checkheight);
+		menuBannerText->GetPosition(&x, NULL);
 		
-		wid->menuBannerText->Move(x, (y > checky ? (y + height + 5) : (checky + checkheight + 5)));
+		menuBannerText->Move(x, (y > checky ? (y + height + 5) : (checky + checkheight + 5)));
 	}
 	{ // mediaPanel
 		int x, myx, y, myy, width, height;
-		wid->modeText->GetPosition(&x, NULL);
-		wid->playerTitleText->GetPosition(NULL, &y);
-		wid->playerTitleText->GetSize(NULL, &height);
+		modeText->GetPosition(&x, NULL);
+		playerTitleText->GetPosition(NULL, &y);
+		playerTitleText->GetSize(NULL, &height);
 		
-		wid->mediaPanel->Move(x, y + height + 1);
+		mediaPanel->Move(x, y + height + 1);
 		
-		wid->panel->GetSize(&width, &height);
-		wid->mediaPanel->GetPosition(&myx, &myy);
+		panel->GetSize(&width, &height);
+		mediaPanel->GetPosition(&myx, &myy);
 		
-		wid->mediaPanel->SetSize(width - (myx * 2), height - myy - myx);
+		mediaPanel->SetSize(width - (myx * 2), height - myy - myx);
 	}
 	{
 		std::vector<int> sizes(5, 0);
-		wid->playerTitleText->GetSize(&sizes[0], NULL);
-		wid->moflexFileText->GetSize(&sizes[1], NULL);
-		wid->menuBannerText->GetSize(&sizes[2], NULL);
-		wid->moflexBrowse->GetSize(&sizes[3], NULL);
-		wid->multiBannerBrowse->GetSize(&sizes[4], NULL);
+		playerTitleText->GetSize(&sizes[0], NULL);
+		moflexFileText->GetSize(&sizes[1], NULL);
+		menuBannerText->GetSize(&sizes[2], NULL);
+		moflexBrowse->GetSize(&sizes[3], NULL);
+		multiBannerBrowse->GetSize(&sizes[4], NULL);
 		std::vector<int>::iterator widestText = std::max_element(sizes.begin(), sizes.end());
 		
 		{ // PlayerTitles
-			for(size_t row = 0; row < wid->PlayerTitles.size(); row++) {
+			for(size_t row = 0; row < PlayerTitles.size(); row++) {
 				int scrolledx, scrolledy, ppux, ppuy, previousy, width, upwidth, downwidth, upheight, height;
-				wid->mediaPanel->GetSize(&width, NULL);
-				wid->scrolledPanel->GetViewStart(&scrolledx, &scrolledy);
-				wid->scrolledPanel->GetScrollPixelsPerUnit(&ppux, &ppuy);
-				wid->MultiUp.at(0)->GetSize(&upwidth, NULL);
-				wid->MultiDown.at(0)->GetSize(&downwidth, NULL);
-				wid->PlayerTitles.at(row)->GetSize(NULL, &height);
+				mediaPanel->GetSize(&width, NULL);
+				scrolledPanel->GetViewStart(&scrolledx, &scrolledy);
+				scrolledPanel->GetScrollPixelsPerUnit(&ppux, &ppuy);
+				MultiUp.at(0)->GetSize(&upwidth, NULL);
+				MultiDown.at(0)->GetSize(&downwidth, NULL);
+				PlayerTitles.at(row)->GetSize(NULL, &height);
 				
-				if(wid->PlayerTitles.size() == 1) {
+				if(PlayerTitles.size() == 1) {
 					if((width - (ppux * 2)) / 3 >= *widestText) {
-						wid->PlayerTitles.at(row)->SetSize((width - (ppux * 2)) / 3, height);
+						PlayerTitles.at(row)->SetSize((width - (ppux * 2)) / 3, height);
 					}
 					else {
-						wid->PlayerTitles.at(row)->SetSize(*widestText, height);
+						PlayerTitles.at(row)->SetSize(*widestText, height);
 					}
 				}
 				else {
 					if((width - (upwidth + 3 + downwidth + (ppux * 2))) / 3 >= *widestText) {
-						wid->PlayerTitles.at(row)->SetSize((width - (upwidth + 3 + downwidth + (ppux * 2))) / 3, height);
+						PlayerTitles.at(row)->SetSize((width - (upwidth + 3 + downwidth + (ppux * 2))) / 3, height);
 					}
 					else {
-						wid->PlayerTitles.at(row)->SetSize(*widestText, height);
+						PlayerTitles.at(row)->SetSize(*widestText, height);
 					}
 				}
 				
 				if(row > 0) {
-					wid->PlayerTitles.at(row - 1)->GetPosition(NULL, &previousy);
+					PlayerTitles.at(row - 1)->GetPosition(NULL, &previousy);
 					if(row == parameters->splitPos) {
-						wid->splitPatchUp->GetSize(NULL, &upheight);
-						wid->PlayerTitles.at(row)->Move(0 - (scrolledx * ppux), (previousy + height + upheight));
+						splitPatchUp->GetSize(NULL, &upheight);
+						PlayerTitles.at(row)->Move(0 - (scrolledx * ppux), (previousy + height + upheight));
 					}
 					else {
-						wid->PlayerTitles.at(row)->Move(0 - (scrolledx * ppux), (previousy + height));
+						PlayerTitles.at(row)->Move(0 - (scrolledx * ppux), (previousy + height));
 					}
 				}
 				else {
-					wid->PlayerTitles.at(row)->Move(0 - (scrolledx * ppux), (height * row) - (scrolledy * ppuy));
+					PlayerTitles.at(row)->Move(0 - (scrolledx * ppux), (height * row) - (scrolledy * ppuy));
 				}
 			}
 		}
 		{ // MoflexFiles
-			for(size_t row = 0; row < wid->MoflexFiles.size(); row++) {
+			for(size_t row = 0; row < MoflexFiles.size(); row++) {
 				int scrolledx, scrolledy, ppux, ppuy, previousy, width, upwidth, downwidth, upheight, height;
-				wid->mediaPanel->GetSize(&width, NULL);
-				wid->scrolledPanel->GetViewStart(&scrolledx, &scrolledy);
-				wid->scrolledPanel->GetScrollPixelsPerUnit(&ppux, &ppuy);
-				wid->MultiUp.at(0)->GetSize(&upwidth, NULL);
-				wid->MultiDown.at(0)->GetSize(&downwidth, NULL);
-				wid->MoflexFiles.at(row)->GetSize(NULL, &height);
+				mediaPanel->GetSize(&width, NULL);
+				scrolledPanel->GetViewStart(&scrolledx, &scrolledy);
+				scrolledPanel->GetScrollPixelsPerUnit(&ppux, &ppuy);
+				MultiUp.at(0)->GetSize(&upwidth, NULL);
+				MultiDown.at(0)->GetSize(&downwidth, NULL);
+				MoflexFiles.at(row)->GetSize(NULL, &height);
 				
-				if(wid->MoflexFiles.size() == 1) {
+				if(MoflexFiles.size() == 1) {
 					if((width - (ppux * 2)) / 3 >= *widestText) {
-						wid->MoflexFiles.at(row)->SetSize((width - (ppux * 2)) / 3, height);
+						MoflexFiles.at(row)->SetSize((width - (ppux * 2)) / 3, height);
 					}
 					else {
-						wid->MoflexFiles.at(row)->SetSize(*widestText, height);
+						MoflexFiles.at(row)->SetSize(*widestText, height);
 					}
 				}
 				else {
 					if((width - (upwidth + 3 + downwidth + (ppux * 2))) / 3 >= *widestText) {
-						wid->MoflexFiles.at(row)->SetSize((width - (upwidth + 3 + downwidth + (ppux * 2))) / 3, height);
+						MoflexFiles.at(row)->SetSize((width - (upwidth + 3 + downwidth + (ppux * 2))) / 3, height);
 					}
 					else {
-						wid->MoflexFiles.at(row)->SetSize(*widestText, height);
+						MoflexFiles.at(row)->SetSize(*widestText, height);
 					}
 				}
 				
-				wid->MoflexFiles.at(row)->GetSize(&width, NULL);
+				MoflexFiles.at(row)->GetSize(&width, NULL);
 				
 				//row->Move((width) - (scrolledx * ppux), (height * currentrow) - (scrolledy * ppuy));
 				if(row > 0) {
-					wid->MoflexFiles.at(row - 1)->GetPosition(NULL, &previousy);
+					MoflexFiles.at(row - 1)->GetPosition(NULL, &previousy);
 					if(row == parameters->splitPos) {
-						wid->splitPatchUp->GetSize(NULL, &upheight);
-						wid->MoflexFiles.at(row)->Move((width) - (scrolledx * ppux), (previousy + height + upheight));
+						splitPatchUp->GetSize(NULL, &upheight);
+						MoflexFiles.at(row)->Move((width) - (scrolledx * ppux), (previousy + height + upheight));
 					}
 					else {
-						wid->MoflexFiles.at(row)->Move((width) - (scrolledx * ppux), (previousy + height));
+						MoflexFiles.at(row)->Move((width) - (scrolledx * ppux), (previousy + height));
 					}
 				}
 				else {
-					wid->MoflexFiles.at(row)->Move((width) - (scrolledx * ppux), (height * row) - (scrolledy * ppuy));
+					MoflexFiles.at(row)->Move((width) - (scrolledx * ppux), (height * row) - (scrolledy * ppuy));
 				}
 			}
 		}
 		{ // MenuBanners
-			for(size_t row = 0; row < wid->MenuBanners.size(); row++) {
+			for(size_t row = 0; row < MenuBanners.size(); row++) {
 				int scrolledx, scrolledy, ppux, ppuy, previousy, width, upwidth, downwidth, upheight, height;
-				wid->mediaPanel->GetSize(&width, NULL);
-				wid->scrolledPanel->GetViewStart(&scrolledx, &scrolledy);
-				wid->scrolledPanel->GetScrollPixelsPerUnit(&ppux, &ppuy);
-				wid->MultiUp.at(0)->GetSize(&upwidth, NULL);
-				wid->MultiDown.at(0)->GetSize(&downwidth, NULL);
-				wid->MenuBanners.at(row)->GetSize(NULL, &height);
+				mediaPanel->GetSize(&width, NULL);
+				scrolledPanel->GetViewStart(&scrolledx, &scrolledy);
+				scrolledPanel->GetScrollPixelsPerUnit(&ppux, &ppuy);
+				MultiUp.at(0)->GetSize(&upwidth, NULL);
+				MultiDown.at(0)->GetSize(&downwidth, NULL);
+				MenuBanners.at(row)->GetSize(NULL, &height);
 				
-				if(wid->MenuBanners.size() == 1) {
+				if(MenuBanners.size() == 1) {
 					if((width - (ppux * 2)) / 3 >= *widestText) {
-						wid->MenuBanners.at(row)->SetSize((width - (ppux * 2)) / 3, height);
+						MenuBanners.at(row)->SetSize((width - (ppux * 2)) / 3, height);
 					}
 					else {
-						wid->MenuBanners.at(row)->SetSize(*widestText, height);
+						MenuBanners.at(row)->SetSize(*widestText, height);
 					}
 				}
 				else {
 					if((width - (upwidth + 3 + downwidth + (ppux * 2))) / 3 >= *widestText) {
-						wid->MenuBanners.at(row)->SetSize((width - (upwidth + 3 + downwidth + (ppux * 2))) / 3, height);
+						MenuBanners.at(row)->SetSize((width - (upwidth + 3 + downwidth + (ppux * 2))) / 3, height);
 					}
 					else {
-						wid->MenuBanners.at(row)->SetSize(*widestText, height);
+						MenuBanners.at(row)->SetSize(*widestText, height);
 					}
 				}
 				
-				wid->MenuBanners.at(row)->GetSize(&width, NULL);
+				MenuBanners.at(row)->GetSize(&width, NULL);
 				
 				if(row > 0) {
-					wid->MenuBanners.at(row - 1)->GetPosition(NULL, &previousy);
+					MenuBanners.at(row - 1)->GetPosition(NULL, &previousy);
 					if(row == parameters->splitPos) {
-						wid->splitPatchUp->GetSize(NULL, &upheight);
-						wid->MenuBanners.at(row)->Move((width * 2) - (scrolledx * ppux), (previousy + height + upheight));
+						splitPatchUp->GetSize(NULL, &upheight);
+						MenuBanners.at(row)->Move((width * 2) - (scrolledx * ppux), (previousy + height + upheight));
 					}
 					else {
-						wid->MenuBanners.at(row)->Move((width * 2) - (scrolledx * ppux), (previousy + height));
+						MenuBanners.at(row)->Move((width * 2) - (scrolledx * ppux), (previousy + height));
 					}
 				}
 				else {
-					wid->MenuBanners.at(row)->Move((width * 2) - (scrolledx * ppux), (height * row) - (scrolledy * ppuy));
+					MenuBanners.at(row)->Move((width * 2) - (scrolledx * ppux), (height * row) - (scrolledy * ppuy));
 				}
 			}
 		}
 	}
 	{ // playerTitleText x
 		int x, boxx, y, width, mywidth;
-		wid->mediaPanel->GetPosition(&x, NULL);
-		wid->PlayerTitles.at(0)->GetSize(&width, NULL);
-		wid->PlayerTitles.at(0)->GetPosition(&boxx, NULL);
-		wid->playerTitleText->GetSize(&mywidth, NULL);
-		wid->playerTitleText->GetPosition(NULL, &y);
+		mediaPanel->GetPosition(&x, NULL);
+		PlayerTitles.at(0)->GetSize(&width, NULL);
+		PlayerTitles.at(0)->GetPosition(&boxx, NULL);
+		playerTitleText->GetSize(&mywidth, NULL);
+		playerTitleText->GetPosition(NULL, &y);
 		
-		wid->playerTitleText->Move(x + boxx + ((width - mywidth) / 2), y);
+		playerTitleText->Move(x + boxx + ((width - mywidth) / 2), y);
 	}
 	{ // moflexFileText x
 		int x, boxx, y, width, mywidth;
-		wid->mediaPanel->GetPosition(&x, NULL);
-		wid->MoflexFiles.at(0)->GetSize(&width, NULL);
-		wid->MoflexFiles.at(0)->GetPosition(&boxx, NULL);
-		wid->moflexFileText->GetSize(&mywidth, NULL);
-		wid->moflexFileText->GetPosition(NULL, &y);
+		mediaPanel->GetPosition(&x, NULL);
+		MoflexFiles.at(0)->GetSize(&width, NULL);
+		MoflexFiles.at(0)->GetPosition(&boxx, NULL);
+		moflexFileText->GetSize(&mywidth, NULL);
+		moflexFileText->GetPosition(NULL, &y);
 		
-		wid->moflexFileText->Move(x + boxx + ((width - mywidth) / 2), y);
+		moflexFileText->Move(x + boxx + ((width - mywidth) / 2), y);
 	}
 	{ // menuBannerText x
 		int x, boxx, y, width, mywidth;
-		wid->mediaPanel->GetPosition(&x, NULL);
-		wid->MenuBanners.at(0)->GetSize(&width, NULL);
-		wid->MenuBanners.at(0)->GetPosition(&boxx, NULL);
-		wid->menuBannerText->GetSize(&mywidth, NULL);
-		wid->menuBannerText->GetPosition(NULL, &y);
+		mediaPanel->GetPosition(&x, NULL);
+		MenuBanners.at(0)->GetSize(&width, NULL);
+		MenuBanners.at(0)->GetPosition(&boxx, NULL);
+		menuBannerText->GetSize(&mywidth, NULL);
+		menuBannerText->GetPosition(NULL, &y);
 		
-		wid->menuBannerText->Move(x + boxx + ((width - mywidth) / 2), y);
+		menuBannerText->Move(x + boxx + ((width - mywidth) / 2), y);
 	}
 	{ // MultiUp
 		int x, y, width, height, myheight;
-		for(size_t i = 0; i < wid->MenuBanners.size(); i++) {
-			wid->MenuBanners.at(i)->GetSize(&width, &height);
-			wid->MenuBanners.at(i)->GetPosition(&x, &y);
-			wid->MultiUp.at(i)->GetSize(NULL, &myheight);
+		for(size_t i = 0; i < MenuBanners.size(); i++) {
+			MenuBanners.at(i)->GetSize(&width, &height);
+			MenuBanners.at(i)->GetPosition(&x, &y);
+			MultiUp.at(i)->GetSize(NULL, &myheight);
 			
-			wid->MultiUp.at(i)->Move(x + width, y + ((height - myheight) / 2));
+			MultiUp.at(i)->Move(x + width, y + ((height - myheight) / 2));
 		}
 	}
 	{ // MultiDown
 		int x, y, width;
-		for(size_t i = 0; i < wid->MultiUp.size(); i++) {
-			wid->MultiUp.at(i)->GetSize(&width, NULL);
-			wid->MultiUp.at(i)->GetPosition(&x, &y);
+		for(size_t i = 0; i < MultiUp.size(); i++) {
+			MultiUp.at(i)->GetSize(&width, NULL);
+			MultiUp.at(i)->GetPosition(&x, &y);
 			
-			wid->MultiDown.at(i)->Move(x + width + 3, y);
+			MultiDown.at(i)->Move(x + width + 3, y);
 		}
 	}
 	{ // moflexBrowse
 		int x, y, width, mywidth, height;
-		wid->MoflexFiles.back()->GetSize(&width, &height);
-		wid->MoflexFiles.back()->GetPosition(&x, &y);
-		wid->moflexBrowse->GetSize(&mywidth, NULL);
+		MoflexFiles.back()->GetSize(&width, &height);
+		MoflexFiles.back()->GetPosition(&x, &y);
+		moflexBrowse->GetSize(&mywidth, NULL);
 		
-		wid->moflexBrowse->Move(x + ((width - mywidth) / 2), y + height);
+		moflexBrowse->Move(x + ((width - mywidth) / 2), y + height);
 	}
 	{ // multiBannerBrowse
 		int x, y, width, mywidth, height;
-		wid->MenuBanners.back()->GetSize(&width, &height);
-		wid->MenuBanners.back()->GetPosition(&x, &y);
-		wid->multiBannerBrowse->GetSize(&mywidth, NULL);
+		MenuBanners.back()->GetSize(&width, &height);
+		MenuBanners.back()->GetPosition(&x, &y);
+		multiBannerBrowse->GetSize(&mywidth, NULL);
 		
-		wid->multiBannerBrowse->Move(x + ((width - mywidth) / 2), y + height);
+		multiBannerBrowse->Move(x + ((width - mywidth) / 2), y + height);
 	}
 	{ // removeRow
 		int y, width, mywidth, appendrowwidth, height;
-		wid->multiBannerBrowse->GetSize(NULL, &height);
-		wid->multiBannerBrowse->GetPosition(NULL, &y);
-		wid->mediaPanel->GetSize(&width, NULL);
-		wid->removeRow->GetSize(&mywidth, NULL);
-		wid->appendRow->GetSize(&appendrowwidth, NULL);
+		multiBannerBrowse->GetSize(NULL, &height);
+		multiBannerBrowse->GetPosition(NULL, &y);
+		mediaPanel->GetSize(&width, NULL);
+		removeRow->GetSize(&mywidth, NULL);
+		appendRow->GetSize(&appendrowwidth, NULL);
 		
-		wid->removeRow->Move(((width - (mywidth + 2 + appendrowwidth)) / 2), y + height + 2);
+		removeRow->Move(((width - (mywidth + 2 + appendrowwidth)) / 2), y + height + 2);
 	}
 	{ // appendRow
 		int x, y, width;
-		wid->removeRow->GetSize(&width, NULL);
-		wid->removeRow->GetPosition(&x, &y);
+		removeRow->GetSize(&width, NULL);
+		removeRow->GetPosition(&x, &y);
 		
-		wid->appendRow->Move(x + width + 2, y);
+		appendRow->Move(x + width + 2, y);
 	}
 	{ // splitPatchButton
 		int x, y, width, mywidth, appendrowwidth, height;
-		wid->removeRow->GetSize(&width, &height);
-		wid->removeRow->GetPosition(&x, &y);
-		wid->appendRow->GetSize(&appendrowwidth, NULL);
-		wid->splitPatchButton->GetSize(&mywidth, NULL);
+		removeRow->GetSize(&width, &height);
+		removeRow->GetPosition(&x, &y);
+		appendRow->GetSize(&appendrowwidth, NULL);
+		splitPatchButton->GetSize(&mywidth, NULL);
 		
-		wid->splitPatchButton->Move(x + (((width + 2 + appendrowwidth) - mywidth) / 2), y + height + 2);
+		splitPatchButton->Move(x + (((width + 2 + appendrowwidth) - mywidth) / 2), y + height + 2);
 	}
 	{ // splitPatchDown
 		int x, y, width, mywidth, myheight;
-		wid->MenuBanners.at(parameters->splitPos)->GetSize(&width, NULL);
-		wid->MenuBanners.at(parameters->splitPos)->GetPosition(&x, &y);
-		wid->splitPatchDown->GetSize(&mywidth, &myheight);
+		MenuBanners.at(parameters->splitPos)->GetSize(&width, NULL);
+		MenuBanners.at(parameters->splitPos)->GetPosition(&x, &y);
+		splitPatchDown->GetSize(&mywidth, &myheight);
 		
-		wid->splitPatchDown->Move((x + width) - mywidth, y - myheight);
+		splitPatchDown->Move((x + width) - mywidth, y - myheight);
 	}
 	{ // splitPatchUp
 		int x, y, mywidth;
-		wid->splitPatchDown->GetPosition(&x, &y);
-		wid->splitPatchUp->GetSize(&mywidth, NULL);
+		splitPatchDown->GetPosition(&x, &y);
+		splitPatchUp->GetSize(&mywidth, NULL);
 		
-		wid->splitPatchUp->Move(x - 3 - mywidth, y);
+		splitPatchUp->Move(x - 3 - mywidth, y);
 	}
 	{ // splitPatchLine
 		int x, upx, upy, downwidth, upwidth, upheight;
-		wid->PlayerTitles.at(parameters->splitPos)->GetPosition(&x, NULL);
-		wid->splitPatchUp->GetPosition(&upx, &upy);
-		wid->splitPatchUp->GetSize(&upwidth, &upheight);
-		wid->splitPatchDown->GetSize(&downwidth, NULL);
+		PlayerTitles.at(parameters->splitPos)->GetPosition(&x, NULL);
+		splitPatchUp->GetPosition(&upx, &upy);
+		splitPatchUp->GetSize(&upwidth, &upheight);
+		splitPatchDown->GetSize(&downwidth, NULL);
 		
-		wid->splitPatchLine->Move(x + upwidth + 3 + downwidth + 3, upy + ((upheight - 3) / 2));
-		wid->splitPatchLine->SetSize(upx - 3 - x - upwidth - 3 - downwidth - 3, 3);
+		splitPatchLine->Move(x + upwidth + 3 + downwidth + 3, upy + ((upheight - 3) / 2));
+		splitPatchLine->SetSize(upx - 3 - x - upwidth - 3 - downwidth - 3, 3);
 	}
 	{ // rowText
 		int x, y, width, mywidth, height;
-		wid->splitPatchButton->GetSize(&width, &height);
-		wid->splitPatchButton->GetPosition(&x, &y);
-		wid->rowText->GetSize(&mywidth, NULL);
+		splitPatchButton->GetSize(&width, &height);
+		splitPatchButton->GetPosition(&x, &y);
+		rowText->GetSize(&mywidth, NULL);
 		
-		wid->rowText->Move(x + ((width - mywidth) / 2), y + height + 2);
+		rowText->Move(x + ((width - mywidth) / 2), y + height + 2);
 	}
 	{ // scrolledPanel
 		int width, boxwidth, upwidth, height, boxheight, browseheight, removeheight, splitpatchheight, splitupheight, rowtextheight; // todo: splitpatch line
-		wid->mediaPanel->GetSize(&width, &height);
-		wid->PlayerTitles.at(0)->GetSize(&boxwidth, &boxheight);
-		wid->MultiUp.at(0)->GetSize(&upwidth, NULL); // up and down are the same size so just use this (or are they...?)
-		wid->moflexBrowse->GetSize(NULL, &browseheight);
-		wid->removeRow->GetSize(NULL, &removeheight); // - and + are the same size
-		wid->splitPatchButton->GetSize(NULL, &splitpatchheight);
-		wid->splitPatchUp->GetSize(NULL, &splitupheight);
-		wid->rowText->GetSize(NULL, &rowtextheight);
-		//wid->splitPatchButton->GetSize(NULL, &virtheight);
+		mediaPanel->GetSize(&width, &height);
+		PlayerTitles.at(0)->GetSize(&boxwidth, &boxheight);
+		MultiUp.at(0)->GetSize(&upwidth, NULL); // up and down are the same size so just use this (or are they...?)
+		moflexBrowse->GetSize(NULL, &browseheight);
+		removeRow->GetSize(NULL, &removeheight); // - and + are the same size
+		splitPatchButton->GetSize(NULL, &splitpatchheight);
+		splitPatchUp->GetSize(NULL, &splitupheight);
+		rowText->GetSize(NULL, &rowtextheight);
+		//splitPatchButton->GetSize(NULL, &virtheight);
 
-		wid->scrolledPanel->SetSize(width, height);
-		if(wid->PlayerTitles.size() == 1) {
+		scrolledPanel->SetSize(width, height);
+		if(PlayerTitles.size() == 1) {
 			// size to contain all widgets (dont use coordinates)
-			wid->scrolledPanel->SetVirtualSize(boxwidth * 3, boxheight * wid->PlayerTitles.size() + splitupheight + browseheight + 2 + removeheight + 2 + splitpatchheight + 2 + rowtextheight);
+			scrolledPanel->SetVirtualSize(boxwidth * 3, boxheight * PlayerTitles.size() + splitupheight + browseheight + 2 + removeheight + 2 + splitpatchheight + 2 + rowtextheight);
 		}
 		else {
 			// size to contain all widgets (dont use coordinates)
-			wid->scrolledPanel->SetVirtualSize((boxwidth * 3) + upwidth + 3 + upwidth, boxheight * wid->PlayerTitles.size() + splitupheight + browseheight + 2 + removeheight + 2 + splitpatchheight + 2 + rowtextheight);
+			scrolledPanel->SetVirtualSize((boxwidth * 3) + upwidth + 3 + upwidth, boxheight * PlayerTitles.size() + splitupheight + browseheight + 2 + removeheight + 2 + splitpatchheight + 2 + rowtextheight);
 		}
 	}
 	// buildpanel stuff
 	{ // titleIDText
 		int panelwidth, mywidth, boxwidth, zzwidth, buttwidth;
-		wid->buildpanel->GetSize(&panelwidth, NULL);
-		wid->titleIDText->GetSize(&mywidth, NULL);
-		wid->titleIDBox->GetSize(&boxwidth, NULL);
-		wid->zerozero->GetSize(&zzwidth, NULL);
-		wid->titleIDButton->GetSize(&buttwidth, NULL);
+		buildpanel->GetSize(&panelwidth, NULL);
+		titleIDText->GetSize(&mywidth, NULL);
+		titleIDBox->GetSize(&boxwidth, NULL);
+		zerozero->GetSize(&zzwidth, NULL);
+		titleIDButton->GetSize(&buttwidth, NULL);
 		
-		wid->titleIDText->Move((panelwidth - (mywidth + boxwidth + zzwidth + 3 + buttwidth)) / 2, 15);
+		titleIDText->Move((panelwidth - (mywidth + boxwidth + zzwidth + 3 + buttwidth)) / 2, 15);
 	}
 	{ // titleIDBox
 		int x, y, width, height, myheight;
-		wid->titleIDText->GetPosition(&x, &y);
-		wid->titleIDText->GetSize(&width, &height);
-		wid->titleIDBox->GetSize(NULL, &myheight);
+		titleIDText->GetPosition(&x, &y);
+		titleIDText->GetSize(&width, &height);
+		titleIDBox->GetSize(NULL, &myheight);
 		
-		wid->titleIDBox->Move(x + width, ((myheight > height) ? y - ((myheight - height) / 2) : y + ((height - myheight) / 2)));
+		titleIDBox->Move(x + width, ((myheight > height) ? y - ((myheight - height) / 2) : y + ((height - myheight) / 2)));
 	}
 	{ // zerozero
 		int x, y, width;
-		wid->titleIDText->GetPosition(NULL, &y);
-		wid->titleIDBox->GetPosition(&x, NULL);
-		wid->titleIDBox->GetSize(&width, NULL);
+		titleIDText->GetPosition(NULL, &y);
+		titleIDBox->GetPosition(&x, NULL);
+		titleIDBox->GetSize(&width, NULL);
 		
-		wid->zerozero->Move(x + width, y);
+		zerozero->Move(x + width, y);
 	}
 	{ // titleIDButton
 		int x, y, width, height, myheight;
-		wid->zerozero->GetPosition(&x, &y);
-		wid->zerozero->GetSize(&width, &height);
-		wid->titleIDButton->GetSize(NULL, &myheight);
+		zerozero->GetPosition(&x, &y);
+		zerozero->GetSize(&width, &height);
+		titleIDButton->GetSize(NULL, &myheight);
 		
-		wid->titleIDButton->Move(x + width + 3, ((myheight > height) ? y - ((myheight - height) / 2) : y + ((height - myheight) / 2)));
+		titleIDButton->Move(x + width + 3, ((myheight > height) ? y - ((myheight - height) / 2) : y + ((height - myheight) / 2)));
 	}
 	
 	{ // applicationTitleText
 		int x, y, height;
-		wid->titleIDButton->GetSize(NULL, &height); // this is probably the largest thing
-		wid->titleIDText->GetPosition(&x, NULL);
-		wid->titleIDButton->GetPosition(NULL, &y);
+		titleIDButton->GetSize(NULL, &height); // this is probably the largest thing
+		titleIDText->GetPosition(&x, NULL);
+		titleIDButton->GetPosition(NULL, &y);
 		
-		wid->applicationTitleText->Move(x, y + height + 10);
+		applicationTitleText->Move(x, y + height + 10);
 	}
 	{ // applicationTitleBox
 		int x, y, width, height, myheight;
-		wid->applicationTitleText->GetPosition(&x, &y);
-		wid->applicationTitleText->GetSize(&width, &height);
-		wid->applicationTitleBox->GetSize(NULL, &myheight);
+		applicationTitleText->GetPosition(&x, &y);
+		applicationTitleText->GetSize(&width, &height);
+		applicationTitleBox->GetSize(NULL, &myheight);
 		
-		wid->applicationTitleBox->Move(x + width + 5, ((myheight > height) ? y - ((myheight - height) / 2) : y + ((height - myheight) / 2)));
+		applicationTitleBox->Move(x + width + 5, ((myheight > height) ? y - ((myheight - height) / 2) : y + ((height - myheight) / 2)));
 	}
 	{ // applicationTitleBox width
 		int tidwidth, boxwidth, zzwidth, buttwidth, textwidth, myheight;
-		wid->titleIDText->GetSize(&tidwidth, NULL);
-		wid->titleIDBox->GetSize(&boxwidth, NULL);
-		wid->zerozero->GetSize(&zzwidth, NULL);
-		wid->titleIDButton->GetSize(&buttwidth, NULL);
-		wid->applicationTitleText->GetSize(&textwidth, NULL);
-		wid->applicationTitleBox->GetSize(NULL, &myheight);
+		titleIDText->GetSize(&tidwidth, NULL);
+		titleIDBox->GetSize(&boxwidth, NULL);
+		zerozero->GetSize(&zzwidth, NULL);
+		titleIDButton->GetSize(&buttwidth, NULL);
+		applicationTitleText->GetSize(&textwidth, NULL);
+		applicationTitleBox->GetSize(NULL, &myheight);
 		
-		wid->applicationTitleBox->SetSize((tidwidth + boxwidth + zzwidth + 3 + buttwidth) - (textwidth + 5), myheight);
+		applicationTitleBox->SetSize((tidwidth + boxwidth + zzwidth + 3 + buttwidth) - (textwidth + 5), myheight);
 	}
 	
 	{ // productCodeText
 		int texty, boxy, panelwidth, mywidth, boxwidth, boxheight, textheight;
-		wid->buildpanel->GetSize(&panelwidth, NULL);
-		wid->productCodeText->GetSize(&mywidth, NULL);
-		wid->productCodeBox->GetSize(&boxwidth, NULL);
-		wid->applicationTitleText->GetSize(NULL, &textheight);
-		wid->applicationTitleBox->GetSize(NULL, &boxheight);
-		wid->applicationTitleText->GetPosition(NULL, &texty);
-		wid->applicationTitleBox->GetPosition(NULL, &boxy);
+		buildpanel->GetSize(&panelwidth, NULL);
+		productCodeText->GetSize(&mywidth, NULL);
+		productCodeBox->GetSize(&boxwidth, NULL);
+		applicationTitleText->GetSize(NULL, &textheight);
+		applicationTitleBox->GetSize(NULL, &boxheight);
+		applicationTitleText->GetPosition(NULL, &texty);
+		applicationTitleBox->GetPosition(NULL, &boxy);
 		
-		wid->productCodeText->Move((panelwidth - (mywidth + boxwidth)) / 2, (texty + textheight) > (boxy + boxheight) ? texty + textheight + 10 : boxy + boxheight + 10);
+		productCodeText->Move((panelwidth - (mywidth + boxwidth)) / 2, (texty + textheight) > (boxy + boxheight) ? texty + textheight + 10 : boxy + boxheight + 10);
 	}
 	{ // productCodeBox
 		int x, y, width, height, myheight;
-		wid->productCodeText->GetPosition(&x, &y);
-		wid->productCodeText->GetSize(&width, &height);
-		wid->productCodeBox->GetSize(NULL, &myheight);
+		productCodeText->GetPosition(&x, &y);
+		productCodeText->GetSize(&width, &height);
+		productCodeBox->GetSize(NULL, &myheight);
 		
-		wid->productCodeBox->Move(x + width, ((myheight > height) ? y - ((myheight - height) / 2) : y + ((height - myheight) / 2)));
+		productCodeBox->Move(x + width, ((myheight > height) ? y - ((myheight - height) / 2) : y + ((height - myheight) / 2)));
 	}
 	
 	{ // statusText
 		int prodcodey, panelwidth, mywidth, myheight, panelheight, barheight, buildheight, cancelheight, prodcodeheight;
-		wid->buildpanel->GetSize(&panelwidth, &panelheight);
-		wid->buildBar->GetSize(NULL, &barheight);
-		wid->buildButton->GetSize(NULL, &buildheight);
-		wid->cancelButton->GetSize(NULL, &cancelheight);
-		wid->productCodeText->GetPosition(NULL, &prodcodey);
-		wid->productCodeText->GetSize(NULL, &prodcodeheight);
-		wid->statusText->GetSize(&mywidth, &myheight);
+		buildpanel->GetSize(&panelwidth, &panelheight);
+		buildBar->GetSize(NULL, &barheight);
+		buildButton->GetSize(NULL, &buildheight);
+		cancelButton->GetSize(NULL, &cancelheight);
+		productCodeText->GetPosition(NULL, &prodcodey);
+		productCodeText->GetSize(NULL, &prodcodeheight);
+		statusText->GetSize(&mywidth, &myheight);
 		if(panelheight > prodcodey + prodcodeheight + 15 + (myheight + 5 + barheight + 10 + buildheight + 2 + cancelheight + 15))
-			wid->statusText->Move((panelwidth - mywidth) / 2, panelheight - (myheight + 5 + barheight + 10 + buildheight + 2 + cancelheight + 15));
+			statusText->Move((panelwidth - mywidth) / 2, panelheight - (myheight + 5 + barheight + 10 + buildheight + 2 + cancelheight + 15));
 		else
-			wid->statusText->Move((panelwidth - mywidth) / 2, prodcodey + prodcodeheight + 15);
+			statusText->Move((panelwidth - mywidth) / 2, prodcodey + prodcodeheight + 15);
 	}
 	{ // buildBar
 		int y, panelwidth, statusheight;
-		wid->statusText->GetPosition(NULL, &y);
-		wid->statusText->GetSize(NULL, &statusheight);
-		wid->buildpanel->GetSize(&panelwidth, NULL);
+		statusText->GetPosition(NULL, &y);
+		statusText->GetSize(NULL, &statusheight);
+		buildpanel->GetSize(&panelwidth, NULL);
 		
-		wid->buildBar->SetSize(panelwidth, 25);
-		wid->buildBar->Move(0, y + statusheight + 5);
+		buildBar->SetSize(panelwidth, 25);
+		buildBar->Move(0, y + statusheight + 5);
 	}
 	{ // buildButton
 		int y, mywidth, panelwidth, barheight;
-		wid->buildpanel->GetSize(&panelwidth, NULL);
-		wid->buildBar->GetPosition(NULL, &y);
-		wid->buildBar->GetSize(NULL, &barheight);
-		wid->buildButton->GetSize(&mywidth, NULL);
+		buildpanel->GetSize(&panelwidth, NULL);
+		buildBar->GetPosition(NULL, &y);
+		buildBar->GetSize(NULL, &barheight);
+		buildButton->GetSize(&mywidth, NULL);
 		
-		wid->buildButton->Move((panelwidth - mywidth) / 2, y + barheight + 10);
+		buildButton->Move((panelwidth - mywidth) / 2, y + barheight + 10);
 	}
 	{ // cancelButt
 		int y, mywidth, panelwidth, buildheight;
-		wid->buildpanel->GetSize(&panelwidth, NULL);
-		wid->buildButton->GetPosition(NULL, &y);
-		wid->buildButton->GetSize(NULL, &buildheight);
-		wid->cancelButton->GetSize(&mywidth, NULL);
+		buildpanel->GetSize(&panelwidth, NULL);
+		buildButton->GetPosition(NULL, &y);
+		buildButton->GetSize(NULL, &buildheight);
+		cancelButton->GetSize(&mywidth, NULL);
 		
-		wid->cancelButton->Move((panelwidth - mywidth) / 2, y + buildheight + 2);
+		cancelButton->Move((panelwidth - mywidth) / 2, y + buildheight + 2);
 	}
 	{ // titleLogo
 		int width, panelwidth;
-		wid->aboutpanel->GetSize(&panelwidth, NULL);
-		wid->titleLogo->GetSize(&width, NULL);
+		aboutpanel->GetSize(&panelwidth, NULL);
+		titleLogo->GetSize(&width, NULL);
 		
-		wid->titleLogo->Move((panelwidth - width) / 2, 20);
+		titleLogo->Move((panelwidth - width) / 2, 20);
 	}
 	{ // byMeText
 		int x, y, mywidth, titlewidth, titleheight;
-		wid->titleLogo->GetSize(&titlewidth, &titleheight);
-		wid->titleLogo->GetPosition(&x, &y);
-		wid->byMeText->GetSize(&mywidth, NULL);
+		titleLogo->GetSize(&titlewidth, &titleheight);
+		titleLogo->GetPosition(&x, &y);
+		byMeText->GetSize(&mywidth, NULL);
 		
-		wid->byMeText->Move(x + ((titlewidth - mywidth) / 2), y + titleheight);
+		byMeText->Move(x + ((titlewidth - mywidth) / 2), y + titleheight);
 	}
 	{ // gitHubLinker
 		int y, mywidth, myheight, bymeheight, panelwidth, panelheight, versionheight;
-		wid->aboutpanel->GetSize(&panelwidth, &panelheight);
-		wid->byMeText->GetPosition(NULL, &y);
-		wid->byMeText->GetSize(NULL, &bymeheight);
-		wid->versionText->GetSize(NULL, &versionheight);
-		wid->gitHubLinker->GetSize(&mywidth, &myheight);
+		aboutpanel->GetSize(&panelwidth, &panelheight);
+		byMeText->GetPosition(NULL, &y);
+		byMeText->GetSize(NULL, &bymeheight);
+		versionText->GetSize(NULL, &versionheight);
+		gitHubLinker->GetSize(&mywidth, &myheight);
 		
 		if(panelheight > y + bymeheight + myheight + versionheight)
-			wid->gitHubLinker->Move((panelwidth - mywidth) / 2, y + bymeheight + (((panelheight - (y + bymeheight)) - myheight - versionheight) / 2));
+			gitHubLinker->Move((panelwidth - mywidth) / 2, y + bymeheight + (((panelheight - (y + bymeheight)) - myheight - versionheight) / 2));
 		else
-			wid->gitHubLinker->Move((panelwidth - mywidth) / 2, y + bymeheight);
+			gitHubLinker->Move((panelwidth - mywidth) / 2, y + bymeheight);
 	}
 	{ // versionText
 		int y, mywidth, myheight, bymeheight, panelwidth, panelheight, linkheight;
-		wid->aboutpanel->GetSize(&panelwidth, &panelheight);
-		wid->byMeText->GetPosition(NULL, &y);
-		wid->byMeText->GetSize(NULL, &bymeheight);
-		wid->gitHubLinker->GetSize(NULL, &linkheight);
-		wid->aboutpanel->GetSize(&panelwidth, &panelheight);
-		wid->versionText->GetSize(&mywidth, &myheight);
+		aboutpanel->GetSize(&panelwidth, &panelheight);
+		byMeText->GetPosition(NULL, &y);
+		byMeText->GetSize(NULL, &bymeheight);
+		gitHubLinker->GetSize(NULL, &linkheight);
+		aboutpanel->GetSize(&panelwidth, &panelheight);
+		versionText->GetSize(&mywidth, &myheight);
 		
 		if(panelheight > y + bymeheight + linkheight + myheight)
-			wid->versionText->Move((panelwidth - mywidth) / 2, panelheight - myheight);
+			versionText->Move((panelwidth - mywidth) / 2, panelheight - myheight);
 		else
-			wid->versionText->Move((panelwidth - mywidth) / 2, y + bymeheight + linkheight);
+			versionText->Move((panelwidth - mywidth) / 2, y + bymeheight + linkheight);
 	}
 }
 
@@ -1781,261 +1978,261 @@ wxColour ForeColor::aboutpanel;
 wxColour ForeColor::byMeText;
 wxColour ForeColor::versionText;
 
-void getAppearance(InitWidgets* wid) {
-	BackColor::panel = wid->panel->GetBackgroundColour();
-	BackColor::mainMenu = wid->mainMenu->GetBackgroundColour();
-	BackColor::modeText = wid->modeText->GetBackgroundColour();
-	BackColor::modeChoiceBox = wid->modeChoiceBox->GetBackgroundColour();
-	BackColor::bannerText = wid->bannerText->GetBackgroundColour();
-	BackColor::bannerBox = wid->bannerBox->GetBackgroundColour();
-	BackColor::bannerBrowse = wid->bannerBrowse->GetBackgroundColour();
-	BackColor::bannerError = wid->bannerError->GetBackgroundColour();
-	BackColor::iconText = wid->iconText->GetBackgroundColour();
-	BackColor::iconBox = wid->iconBox->GetBackgroundColour();
-	BackColor::iconBrowse = wid->iconBrowse->GetBackgroundColour();
-	BackColor::iconError = wid->iconError->GetBackgroundColour();
-	BackColor::shortnameText = wid->shortnameText->GetBackgroundColour();
-	BackColor::shortnameBox = wid->shortnameBox->GetBackgroundColour();
-	BackColor::shortnameError = wid->shortnameError->GetBackgroundColour();
-	BackColor::longnameText = wid->longnameText->GetBackgroundColour();
-	BackColor::longnameBox = wid->longnameBox->GetBackgroundColour();
-	BackColor::longnameError = wid->longnameError->GetBackgroundColour();
-	BackColor::publisherText = wid->publisherText->GetBackgroundColour();
-	BackColor::publisherBox = wid->publisherBox->GetBackgroundColour();
-	BackColor::publisherError = wid->publisherError->GetBackgroundColour();
-	BackColor::copyBox = wid->copyBox->GetBackgroundColour();
-	BackColor::copyCheck = wid->copyCheck->GetBackgroundColour();
-	BackColor::bannerCustomText = wid->bannerCustomText->GetBackgroundColour();
-	BackColor::bannerPreviewText = wid->bannerPreviewText->GetBackgroundColour();
-	BackColor::iconPreview = wid->iconPreview->GetBackgroundColour();
-	BackColor::ffRewindCheck = wid->ffRewindCheck->GetBackgroundColour();
-	BackColor::dimCheck = wid->dimCheck->GetBackgroundColour();
-	BackColor::multiBannerPreview = wid->multiBannerPreview->GetBackgroundColour();
-	BackColor::multiBannerPreviewIndex = wid->multiBannerPreviewIndex->GetBackgroundColour();
-	BackColor::multiBannerPreviewLeft = wid->multiBannerPreviewLeft->GetBackgroundColour();
-	BackColor::multiBannerPreviewRight = wid->multiBannerPreviewRight->GetBackgroundColour();
-	BackColor::playerTitleText = wid->playerTitleText->GetBackgroundColour();
-	BackColor::moflexFileText = wid->moflexFileText->GetBackgroundColour();
-	BackColor::menuBannerText = wid->menuBannerText->GetBackgroundColour();
-	BackColor::mediaPanel = wid->mediaPanel->GetBackgroundColour();
-	BackColor::moflexBrowse = wid->moflexBrowse->GetBackgroundColour();
-	BackColor::multiBannerBrowse = wid->multiBannerBrowse->GetBackgroundColour();
-	BackColor::removeRow = wid->removeRow->GetBackgroundColour();
-	BackColor::appendRow = wid->appendRow->GetBackgroundColour();
-	BackColor::splitPatchButton = wid->splitPatchButton->GetBackgroundColour();
-	BackColor::rowText = wid->rowText->GetBackgroundColour();
-	BackColor::splitPatchUp = wid->splitPatchUp->GetBackgroundColour();
-	BackColor::splitPatchDown = wid->splitPatchDown->GetBackgroundColour();
-	BackColor::buildpanel = wid->buildpanel->GetBackgroundColour();
-	BackColor::titleIDText = wid->titleIDText->GetBackgroundColour();
-	BackColor::titleIDBox = wid->titleIDBox->GetBackgroundColour();
-	BackColor::zerozero = wid->zerozero->GetBackgroundColour();
-	BackColor::titleIDButton = wid->titleIDButton->GetBackgroundColour();
-	BackColor::applicationTitleText = wid->applicationTitleText->GetBackgroundColour();
-	BackColor::applicationTitleBox = wid->applicationTitleBox->GetBackgroundColour();
-	BackColor::productCodeText = wid->productCodeText->GetBackgroundColour();
-	BackColor::productCodeBox = wid->productCodeBox->GetBackgroundColour();
-	BackColor::statusText = wid->statusText->GetBackgroundColour();
-	//BackColor::buildBar = wid->buildBar->GetBackgroundColour();
-	BackColor::buildButton = wid->buildButton->GetBackgroundColour();
-	BackColor::cancelButton = wid->cancelButton->GetBackgroundColour();
-	BackColor::aboutpanel = wid->aboutpanel->GetBackgroundColour();
-	BackColor::byMeText = wid->byMeText->GetBackgroundColour();
-	BackColor::versionText = wid->versionText->GetBackgroundColour();
+void theWidgets::getAppearance() {
+	BackColor::panel = panel->GetBackgroundColour();
+	BackColor::mainMenu = mainMenu->GetBackgroundColour();
+	BackColor::modeText = modeText->GetBackgroundColour();
+	BackColor::modeChoiceBox = modeChoiceBox->GetBackgroundColour();
+	BackColor::bannerText = bannerText->GetBackgroundColour();
+	BackColor::bannerBox = bannerBox->GetBackgroundColour();
+	BackColor::bannerBrowse = bannerBrowse->GetBackgroundColour();
+	BackColor::bannerError = bannerError->GetBackgroundColour();
+	BackColor::iconText = iconText->GetBackgroundColour();
+	BackColor::iconBox = iconBox->GetBackgroundColour();
+	BackColor::iconBrowse = iconBrowse->GetBackgroundColour();
+	BackColor::iconError = iconError->GetBackgroundColour();
+	BackColor::shortnameText = shortnameText->GetBackgroundColour();
+	BackColor::shortnameBox = shortnameBox->GetBackgroundColour();
+	BackColor::shortnameError = shortnameError->GetBackgroundColour();
+	BackColor::longnameText = longnameText->GetBackgroundColour();
+	BackColor::longnameBox = longnameBox->GetBackgroundColour();
+	BackColor::longnameError = longnameError->GetBackgroundColour();
+	BackColor::publisherText = publisherText->GetBackgroundColour();
+	BackColor::publisherBox = publisherBox->GetBackgroundColour();
+	BackColor::publisherError = publisherError->GetBackgroundColour();
+	BackColor::copyBox = copyBox->GetBackgroundColour();
+	BackColor::copyCheck = copyCheck->GetBackgroundColour();
+	BackColor::bannerCustomText = bannerCustomText->GetBackgroundColour();
+	BackColor::bannerPreviewText = bannerPreviewText->GetBackgroundColour();
+	BackColor::iconPreview = iconPreview->GetBackgroundColour();
+	BackColor::ffRewindCheck = ffRewindCheck->GetBackgroundColour();
+	BackColor::dimCheck = dimCheck->GetBackgroundColour();
+	BackColor::multiBannerPreview = multiBannerPreview->GetBackgroundColour();
+	BackColor::multiBannerPreviewIndex = multiBannerPreviewIndex->GetBackgroundColour();
+	BackColor::multiBannerPreviewLeft = multiBannerPreviewLeft->GetBackgroundColour();
+	BackColor::multiBannerPreviewRight = multiBannerPreviewRight->GetBackgroundColour();
+	BackColor::playerTitleText = playerTitleText->GetBackgroundColour();
+	BackColor::moflexFileText = moflexFileText->GetBackgroundColour();
+	BackColor::menuBannerText = menuBannerText->GetBackgroundColour();
+	BackColor::mediaPanel = mediaPanel->GetBackgroundColour();
+	BackColor::moflexBrowse = moflexBrowse->GetBackgroundColour();
+	BackColor::multiBannerBrowse = multiBannerBrowse->GetBackgroundColour();
+	BackColor::removeRow = removeRow->GetBackgroundColour();
+	BackColor::appendRow = appendRow->GetBackgroundColour();
+	BackColor::splitPatchButton = splitPatchButton->GetBackgroundColour();
+	BackColor::rowText = rowText->GetBackgroundColour();
+	BackColor::splitPatchUp = splitPatchUp->GetBackgroundColour();
+	BackColor::splitPatchDown = splitPatchDown->GetBackgroundColour();
+	BackColor::buildpanel = buildpanel->GetBackgroundColour();
+	BackColor::titleIDText = titleIDText->GetBackgroundColour();
+	BackColor::titleIDBox = titleIDBox->GetBackgroundColour();
+	BackColor::zerozero = zerozero->GetBackgroundColour();
+	BackColor::titleIDButton = titleIDButton->GetBackgroundColour();
+	BackColor::applicationTitleText = applicationTitleText->GetBackgroundColour();
+	BackColor::applicationTitleBox = applicationTitleBox->GetBackgroundColour();
+	BackColor::productCodeText = productCodeText->GetBackgroundColour();
+	BackColor::productCodeBox = productCodeBox->GetBackgroundColour();
+	BackColor::statusText = statusText->GetBackgroundColour();
+	//BackColor::buildBar = buildBar->GetBackgroundColour();
+	BackColor::buildButton = buildButton->GetBackgroundColour();
+	BackColor::cancelButton = cancelButton->GetBackgroundColour();
+	BackColor::aboutpanel = aboutpanel->GetBackgroundColour();
+	BackColor::byMeText = byMeText->GetBackgroundColour();
+	BackColor::versionText = versionText->GetBackgroundColour();
 	
-	ForeColor::panel = wid->panel->GetForegroundColour();
-	ForeColor::mainMenu = wid->mainMenu->GetForegroundColour();
-	ForeColor::modeText = wid->modeText->GetForegroundColour();
-	ForeColor::modeChoiceBox = wid->modeChoiceBox->GetForegroundColour();
-	ForeColor::bannerText = wid->bannerText->GetForegroundColour();
-	ForeColor::bannerBox = wid->bannerBox->GetForegroundColour();
-	ForeColor::bannerBrowse = wid->bannerBrowse->GetForegroundColour();
-	ForeColor::bannerError = wid->bannerError->GetForegroundColour();
-	ForeColor::iconText = wid->iconText->GetForegroundColour();
-	ForeColor::iconBox = wid->iconBox->GetForegroundColour();
-	ForeColor::iconBrowse = wid->iconBrowse->GetForegroundColour();
-	ForeColor::iconError = wid->iconError->GetForegroundColour();
-	ForeColor::shortnameText = wid->shortnameText->GetForegroundColour();
-	ForeColor::shortnameBox = wid->shortnameBox->GetForegroundColour();
-	ForeColor::shortnameError = wid->shortnameError->GetForegroundColour();
-	ForeColor::longnameText = wid->longnameText->GetForegroundColour();
-	ForeColor::longnameBox = wid->longnameBox->GetForegroundColour();
-	ForeColor::longnameError = wid->longnameError->GetForegroundColour();
-	ForeColor::publisherText = wid->publisherText->GetForegroundColour();
-	ForeColor::publisherBox = wid->publisherBox->GetForegroundColour();
-	ForeColor::publisherError = wid->publisherError->GetForegroundColour();
-	ForeColor::copyBox = wid->copyBox->GetForegroundColour();
-	ForeColor::copyCheck = wid->copyCheck->GetForegroundColour();
-	ForeColor::bannerCustomText = wid->bannerCustomText->GetForegroundColour();
-	ForeColor::bannerPreviewText = wid->bannerPreviewText->GetForegroundColour();
-	ForeColor::iconPreview = wid->iconPreview->GetForegroundColour();
-	ForeColor::ffRewindCheck = wid->ffRewindCheck->GetForegroundColour();
-	ForeColor::dimCheck = wid->dimCheck->GetForegroundColour();
-	ForeColor::multiBannerPreview = wid->multiBannerPreview->GetForegroundColour();
-	ForeColor::multiBannerPreviewIndex = wid->multiBannerPreviewIndex->GetForegroundColour();
-	ForeColor::multiBannerPreviewLeft = wid->multiBannerPreviewLeft->GetForegroundColour();
-	ForeColor::multiBannerPreviewRight = wid->multiBannerPreviewRight->GetForegroundColour();
-	ForeColor::playerTitleText = wid->playerTitleText->GetForegroundColour();
-	ForeColor::moflexFileText = wid->moflexFileText->GetForegroundColour();
-	ForeColor::menuBannerText = wid->menuBannerText->GetForegroundColour();
-	ForeColor::mediaPanel = wid->mediaPanel->GetForegroundColour();
-	ForeColor::moflexBrowse = wid->moflexBrowse->GetForegroundColour();
-	ForeColor::multiBannerBrowse = wid->multiBannerBrowse->GetForegroundColour();
-	ForeColor::removeRow = wid->removeRow->GetForegroundColour();
-	ForeColor::appendRow = wid->appendRow->GetForegroundColour();
-	ForeColor::splitPatchButton = wid->splitPatchButton->GetForegroundColour();
-	ForeColor::rowText = wid->rowText->GetForegroundColour();
-	ForeColor::splitPatchUp = wid->splitPatchUp->GetForegroundColour();
-	ForeColor::splitPatchDown = wid->splitPatchDown->GetForegroundColour();
-	ForeColor::buildpanel = wid->buildpanel->GetForegroundColour();
-	ForeColor::titleIDText = wid->titleIDText->GetForegroundColour();
-	ForeColor::titleIDBox = wid->titleIDBox->GetForegroundColour();
-	ForeColor::zerozero = wid->zerozero->GetForegroundColour();
-	ForeColor::titleIDButton = wid->titleIDButton->GetForegroundColour();
-	ForeColor::applicationTitleText = wid->applicationTitleText->GetForegroundColour();
-	ForeColor::applicationTitleBox = wid->applicationTitleBox->GetForegroundColour();
-	ForeColor::productCodeText = wid->productCodeText->GetForegroundColour();
-	ForeColor::productCodeBox = wid->productCodeBox->GetForegroundColour();
-	ForeColor::statusText = wid->statusText->GetForegroundColour();
-	//ForeColor::buildBar = wid->buildBar->GetForegroundColour();
-	ForeColor::buildButton = wid->buildButton->GetForegroundColour();
-	ForeColor::cancelButton = wid->cancelButton->GetForegroundColour();
-	ForeColor::aboutpanel = wid->aboutpanel->GetForegroundColour();
-	ForeColor::byMeText = wid->byMeText->GetForegroundColour();
-	ForeColor::versionText = wid->versionText->GetForegroundColour();
+	ForeColor::panel = panel->GetForegroundColour();
+	ForeColor::mainMenu = mainMenu->GetForegroundColour();
+	ForeColor::modeText = modeText->GetForegroundColour();
+	ForeColor::modeChoiceBox = modeChoiceBox->GetForegroundColour();
+	ForeColor::bannerText = bannerText->GetForegroundColour();
+	ForeColor::bannerBox = bannerBox->GetForegroundColour();
+	ForeColor::bannerBrowse = bannerBrowse->GetForegroundColour();
+	ForeColor::bannerError = bannerError->GetForegroundColour();
+	ForeColor::iconText = iconText->GetForegroundColour();
+	ForeColor::iconBox = iconBox->GetForegroundColour();
+	ForeColor::iconBrowse = iconBrowse->GetForegroundColour();
+	ForeColor::iconError = iconError->GetForegroundColour();
+	ForeColor::shortnameText = shortnameText->GetForegroundColour();
+	ForeColor::shortnameBox = shortnameBox->GetForegroundColour();
+	ForeColor::shortnameError = shortnameError->GetForegroundColour();
+	ForeColor::longnameText = longnameText->GetForegroundColour();
+	ForeColor::longnameBox = longnameBox->GetForegroundColour();
+	ForeColor::longnameError = longnameError->GetForegroundColour();
+	ForeColor::publisherText = publisherText->GetForegroundColour();
+	ForeColor::publisherBox = publisherBox->GetForegroundColour();
+	ForeColor::publisherError = publisherError->GetForegroundColour();
+	ForeColor::copyBox = copyBox->GetForegroundColour();
+	ForeColor::copyCheck = copyCheck->GetForegroundColour();
+	ForeColor::bannerCustomText = bannerCustomText->GetForegroundColour();
+	ForeColor::bannerPreviewText = bannerPreviewText->GetForegroundColour();
+	ForeColor::iconPreview = iconPreview->GetForegroundColour();
+	ForeColor::ffRewindCheck = ffRewindCheck->GetForegroundColour();
+	ForeColor::dimCheck = dimCheck->GetForegroundColour();
+	ForeColor::multiBannerPreview = multiBannerPreview->GetForegroundColour();
+	ForeColor::multiBannerPreviewIndex = multiBannerPreviewIndex->GetForegroundColour();
+	ForeColor::multiBannerPreviewLeft = multiBannerPreviewLeft->GetForegroundColour();
+	ForeColor::multiBannerPreviewRight = multiBannerPreviewRight->GetForegroundColour();
+	ForeColor::playerTitleText = playerTitleText->GetForegroundColour();
+	ForeColor::moflexFileText = moflexFileText->GetForegroundColour();
+	ForeColor::menuBannerText = menuBannerText->GetForegroundColour();
+	ForeColor::mediaPanel = mediaPanel->GetForegroundColour();
+	ForeColor::moflexBrowse = moflexBrowse->GetForegroundColour();
+	ForeColor::multiBannerBrowse = multiBannerBrowse->GetForegroundColour();
+	ForeColor::removeRow = removeRow->GetForegroundColour();
+	ForeColor::appendRow = appendRow->GetForegroundColour();
+	ForeColor::splitPatchButton = splitPatchButton->GetForegroundColour();
+	ForeColor::rowText = rowText->GetForegroundColour();
+	ForeColor::splitPatchUp = splitPatchUp->GetForegroundColour();
+	ForeColor::splitPatchDown = splitPatchDown->GetForegroundColour();
+	ForeColor::buildpanel = buildpanel->GetForegroundColour();
+	ForeColor::titleIDText = titleIDText->GetForegroundColour();
+	ForeColor::titleIDBox = titleIDBox->GetForegroundColour();
+	ForeColor::zerozero = zerozero->GetForegroundColour();
+	ForeColor::titleIDButton = titleIDButton->GetForegroundColour();
+	ForeColor::applicationTitleText = applicationTitleText->GetForegroundColour();
+	ForeColor::applicationTitleBox = applicationTitleBox->GetForegroundColour();
+	ForeColor::productCodeText = productCodeText->GetForegroundColour();
+	ForeColor::productCodeBox = productCodeBox->GetForegroundColour();
+	ForeColor::statusText = statusText->GetForegroundColour();
+	//ForeColor::buildBar = buildBar->GetForegroundColour();
+	ForeColor::buildButton = buildButton->GetForegroundColour();
+	ForeColor::cancelButton = cancelButton->GetForegroundColour();
+	ForeColor::aboutpanel = aboutpanel->GetForegroundColour();
+	ForeColor::byMeText = byMeText->GetForegroundColour();
+	ForeColor::versionText = versionText->GetForegroundColour();
 }
 
-void setAppearance(InitWidgets* wid, unsigned int Mode) {
+void theWidgets::setAppearance(unsigned int Mode) {
 	if(Mode < 2) { // 0 light 1 black
-		wid->panel->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->mainMenu->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->modeText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->modeChoiceBox->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->bannerText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->bannerBox->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->bannerBrowse->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->bannerError->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->iconText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->iconBox->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->iconBrowse->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->iconError->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->shortnameText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->shortnameBox->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->shortnameError->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->longnameText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->longnameBox->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->longnameError->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->publisherText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->publisherBox->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->publisherError->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->copyBox->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->copyCheck->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->bannerCustomText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->bannerPreviewText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->iconPreview->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->ffRewindCheck->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->dimCheck->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->multiBannerPreview->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->multiBannerPreviewIndex->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->multiBannerPreviewLeft->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->multiBannerPreviewRight->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->playerTitleText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->moflexFileText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->menuBannerText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->mediaPanel->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->moflexBrowse->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->multiBannerBrowse->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->removeRow->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->appendRow->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->splitPatchButton->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->rowText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->splitPatchUp->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->splitPatchDown->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->buildpanel->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->titleIDText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->titleIDBox->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->zerozero->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->titleIDButton->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->applicationTitleText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->applicationTitleBox->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->productCodeText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->productCodeBox->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->statusText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		//wid->buildBar->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->buildButton->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->cancelButton->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->aboutpanel->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->byMeText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
-		wid->versionText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		panel->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		mainMenu->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		modeText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		modeChoiceBox->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		bannerText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		bannerBox->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		bannerBrowse->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		bannerError->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		iconText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		iconBox->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		iconBrowse->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		iconError->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		shortnameText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		shortnameBox->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		shortnameError->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		longnameText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		longnameBox->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		longnameError->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		publisherText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		publisherBox->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		publisherError->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		copyBox->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		copyCheck->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		bannerCustomText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		bannerPreviewText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		iconPreview->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		ffRewindCheck->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		dimCheck->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		multiBannerPreview->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		multiBannerPreviewIndex->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		multiBannerPreviewLeft->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		multiBannerPreviewRight->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		playerTitleText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		moflexFileText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		menuBannerText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		mediaPanel->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		moflexBrowse->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		multiBannerBrowse->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		removeRow->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		appendRow->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		splitPatchButton->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		rowText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		splitPatchUp->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		splitPatchDown->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		buildpanel->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		titleIDText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		titleIDBox->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		zerozero->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		titleIDButton->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		applicationTitleText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		applicationTitleBox->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		productCodeText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		productCodeBox->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		statusText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		//buildBar->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		buildButton->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		cancelButton->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		aboutpanel->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		byMeText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
+		versionText->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 		
-		wid->splitPatchLine->SetColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->panel->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->mainMenu->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->modeText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->modeChoiceBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->bannerText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->bannerBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->bannerBrowse->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->bannerError->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->iconText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->iconBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->iconBrowse->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->iconError->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->shortnameText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->shortnameBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->shortnameError->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->longnameText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->longnameBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->longnameError->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->publisherText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->publisherBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->publisherError->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->copyBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->copyCheck->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->bannerCustomText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->bannerPreviewText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->iconPreview->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->ffRewindCheck->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->dimCheck->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->multiBannerPreview->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->multiBannerPreviewIndex->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->multiBannerPreviewLeft->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->multiBannerPreviewRight->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->playerTitleText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->moflexFileText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->menuBannerText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->mediaPanel->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->moflexBrowse->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->multiBannerBrowse->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->removeRow->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->appendRow->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->splitPatchButton->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->rowText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->splitPatchUp->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->splitPatchDown->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->buildpanel->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->titleIDText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->titleIDBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->zerozero->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->titleIDButton->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->applicationTitleText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->applicationTitleBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->productCodeText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->productCodeBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->statusText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		//wid->buildBar->SetForegroundColour(*(Mode ? wxBLACK : wxWHITE)); // uhhhhhhh
-		wid->buildButton->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->cancelButton->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->aboutpanel->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->byMeText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
-		wid->versionText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		splitPatchLine->SetColour(*(Mode ? wxWHITE : wxBLACK));
+		panel->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		mainMenu->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		modeText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		modeChoiceBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		bannerText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		bannerBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		bannerBrowse->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		bannerError->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		iconText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		iconBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		iconBrowse->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		iconError->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		shortnameText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		shortnameBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		shortnameError->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		longnameText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		longnameBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		longnameError->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		publisherText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		publisherBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		publisherError->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		copyBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		copyCheck->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		bannerCustomText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		bannerPreviewText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		iconPreview->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		ffRewindCheck->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		dimCheck->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		multiBannerPreview->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		multiBannerPreviewIndex->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		multiBannerPreviewLeft->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		multiBannerPreviewRight->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		playerTitleText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		moflexFileText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		menuBannerText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		mediaPanel->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		moflexBrowse->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		multiBannerBrowse->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		removeRow->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		appendRow->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		splitPatchButton->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		rowText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		splitPatchUp->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		splitPatchDown->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		buildpanel->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		titleIDText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		titleIDBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		zerozero->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		titleIDButton->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		applicationTitleText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		applicationTitleBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		productCodeText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		productCodeBox->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		statusText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		//buildBar->SetForegroundColour(*(Mode ? wxBLACK : wxWHITE)); // uhhhhhhh
+		buildButton->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		cancelButton->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		aboutpanel->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		byMeText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
+		versionText->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		
 		{
 			wxColor LightBlack = wxBLACK->GetRGB() + 0x141414;
 			wxColor DarkWhite = wxWHITE->GetRGB() - 0x141414;
 			
 			int rows = 0;
-			for(auto &row : wid->PlayerTitles) {
+			for(auto &row : PlayerTitles) {
 				if(rows % 2) {
 					row->SetBackgroundColour(Mode ? LightBlack : DarkWhite);
 				}
@@ -2046,7 +2243,7 @@ void setAppearance(InitWidgets* wid, unsigned int Mode) {
 				++rows;
 			}
 			rows = 0;
-			for(auto &row : wid->MoflexFiles) {
+			for(auto &row : MoflexFiles) {
 				if(rows % 2) {
 					row->SetBackgroundColour(Mode ? LightBlack : DarkWhite);
 				}
@@ -2057,7 +2254,7 @@ void setAppearance(InitWidgets* wid, unsigned int Mode) {
 				++rows;
 			}
 			rows = 0;
-			for(auto &row : wid->MenuBanners) {
+			for(auto &row : MenuBanners) {
 				if(rows % 2) {
 					row->SetBackgroundColour(Mode ? LightBlack : DarkWhite);
 				}
@@ -2069,145 +2266,145 @@ void setAppearance(InitWidgets* wid, unsigned int Mode) {
 			}
 		}
 		
-		for(auto &row : wid->MultiUp) {
+		for(auto &row : MultiUp) {
 			row->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 			row->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		}
-		for(auto &row : wid->MultiDown) {
+		for(auto &row : MultiDown) {
 			row->SetBackgroundColour(*(Mode ? wxBLACK : wxWHITE));
 			row->SetForegroundColour(*(Mode ? wxWHITE : wxBLACK));
 		}
 	}
 	else if(Mode == 2) {
-		wid->panel->SetBackgroundColour(BackColor::panel);
-		wid->mainMenu->SetBackgroundColour(BackColor::mainMenu);
-		wid->modeText->SetBackgroundColour(BackColor::modeText);
-		wid->modeChoiceBox->SetBackgroundColour(BackColor::modeChoiceBox);
-		wid->bannerText->SetBackgroundColour(BackColor::bannerText);
-		wid->bannerBox->SetBackgroundColour(BackColor::bannerBox);
-		wid->bannerBrowse->SetBackgroundColour(BackColor::bannerBrowse);
-		wid->bannerError->SetBackgroundColour(BackColor::bannerError);
-		wid->iconText->SetBackgroundColour(BackColor::iconText);
-		wid->iconBox->SetBackgroundColour(BackColor::iconBox);
-		wid->iconBrowse->SetBackgroundColour(BackColor::iconBrowse);
-		wid->iconError->SetBackgroundColour(BackColor::iconError);
-		wid->shortnameText->SetBackgroundColour(BackColor::shortnameText);
-		wid->shortnameBox->SetBackgroundColour(BackColor::shortnameBox);
-		wid->shortnameError->SetBackgroundColour(BackColor::shortnameError);
-		wid->longnameText->SetBackgroundColour(BackColor::longnameText);
-		wid->longnameBox->SetBackgroundColour(BackColor::longnameBox);
-		wid->longnameError->SetBackgroundColour(BackColor::longnameError);
-		wid->publisherText->SetBackgroundColour(BackColor::publisherText);
-		wid->publisherBox->SetBackgroundColour(BackColor::publisherBox);
-		wid->publisherError->SetBackgroundColour(BackColor::publisherError);
-		wid->copyBox->SetBackgroundColour(BackColor::copyBox);
-		wid->copyCheck->SetBackgroundColour(BackColor::copyCheck);
-		wid->bannerCustomText->SetBackgroundColour(BackColor::bannerCustomText);
-		wid->bannerPreviewText->SetBackgroundColour(BackColor::bannerPreviewText);
-		wid->iconPreview->SetBackgroundColour(BackColor::iconPreview);
-		wid->ffRewindCheck->SetBackgroundColour(BackColor::ffRewindCheck);
-		wid->dimCheck->SetBackgroundColour(BackColor::dimCheck);
-		wid->multiBannerPreview->SetBackgroundColour(BackColor::multiBannerPreview);
-		wid->multiBannerPreviewIndex->SetBackgroundColour(BackColor::multiBannerPreviewIndex);
-		wid->multiBannerPreviewLeft->SetBackgroundColour(BackColor::multiBannerPreviewLeft);
-		wid->multiBannerPreviewRight->SetBackgroundColour(BackColor::multiBannerPreviewRight);
-		wid->playerTitleText->SetBackgroundColour(BackColor::playerTitleText);
-		wid->moflexFileText->SetBackgroundColour(BackColor::moflexFileText);
-		wid->menuBannerText->SetBackgroundColour(BackColor::menuBannerText);
-		wid->mediaPanel->SetBackgroundColour(BackColor::mediaPanel);
-		wid->moflexBrowse->SetBackgroundColour(BackColor::moflexBrowse);
-		wid->multiBannerBrowse->SetBackgroundColour(BackColor::multiBannerBrowse);
-		wid->removeRow->SetBackgroundColour(BackColor::removeRow);
-		wid->appendRow->SetBackgroundColour(BackColor::appendRow);
-		wid->splitPatchButton->SetBackgroundColour(BackColor::splitPatchButton);
-		wid->rowText->SetBackgroundColour(BackColor::rowText);
-		wid->splitPatchUp->SetBackgroundColour(BackColor::splitPatchUp);
-		wid->splitPatchDown->SetBackgroundColour(BackColor::splitPatchDown);
-		wid->buildpanel->SetBackgroundColour(BackColor::buildpanel);
-		wid->titleIDText->SetBackgroundColour(BackColor::titleIDText);
-		wid->titleIDBox->SetBackgroundColour(BackColor::titleIDBox);
-		wid->zerozero->SetBackgroundColour(BackColor::zerozero);
-		wid->titleIDButton->SetBackgroundColour(BackColor::titleIDButton);
-		wid->applicationTitleText->SetBackgroundColour(BackColor::applicationTitleText);
-		wid->applicationTitleBox->SetBackgroundColour(BackColor::applicationTitleBox);
-		wid->productCodeText->SetBackgroundColour(BackColor::productCodeText);
-		wid->productCodeBox->SetBackgroundColour(BackColor::productCodeBox);
-		wid->statusText->SetBackgroundColour(BackColor::statusText);
-		//wid->buildBar->SetBackgroundColour(BackColor::buildBar);
-		wid->buildButton->SetBackgroundColour(BackColor::buildButton);
-		wid->cancelButton->SetBackgroundColour(BackColor::cancelButton);
-		wid->aboutpanel->SetBackgroundColour(BackColor::aboutpanel);
-		wid->byMeText->SetBackgroundColour(BackColor::byMeText);
-		wid->versionText->SetBackgroundColour(BackColor::versionText);
+		panel->SetBackgroundColour(BackColor::panel);
+		mainMenu->SetBackgroundColour(BackColor::mainMenu);
+		modeText->SetBackgroundColour(BackColor::modeText);
+		modeChoiceBox->SetBackgroundColour(BackColor::modeChoiceBox);
+		bannerText->SetBackgroundColour(BackColor::bannerText);
+		bannerBox->SetBackgroundColour(BackColor::bannerBox);
+		bannerBrowse->SetBackgroundColour(BackColor::bannerBrowse);
+		bannerError->SetBackgroundColour(BackColor::bannerError);
+		iconText->SetBackgroundColour(BackColor::iconText);
+		iconBox->SetBackgroundColour(BackColor::iconBox);
+		iconBrowse->SetBackgroundColour(BackColor::iconBrowse);
+		iconError->SetBackgroundColour(BackColor::iconError);
+		shortnameText->SetBackgroundColour(BackColor::shortnameText);
+		shortnameBox->SetBackgroundColour(BackColor::shortnameBox);
+		shortnameError->SetBackgroundColour(BackColor::shortnameError);
+		longnameText->SetBackgroundColour(BackColor::longnameText);
+		longnameBox->SetBackgroundColour(BackColor::longnameBox);
+		longnameError->SetBackgroundColour(BackColor::longnameError);
+		publisherText->SetBackgroundColour(BackColor::publisherText);
+		publisherBox->SetBackgroundColour(BackColor::publisherBox);
+		publisherError->SetBackgroundColour(BackColor::publisherError);
+		copyBox->SetBackgroundColour(BackColor::copyBox);
+		copyCheck->SetBackgroundColour(BackColor::copyCheck);
+		bannerCustomText->SetBackgroundColour(BackColor::bannerCustomText);
+		bannerPreviewText->SetBackgroundColour(BackColor::bannerPreviewText);
+		iconPreview->SetBackgroundColour(BackColor::iconPreview);
+		ffRewindCheck->SetBackgroundColour(BackColor::ffRewindCheck);
+		dimCheck->SetBackgroundColour(BackColor::dimCheck);
+		multiBannerPreview->SetBackgroundColour(BackColor::multiBannerPreview);
+		multiBannerPreviewIndex->SetBackgroundColour(BackColor::multiBannerPreviewIndex);
+		multiBannerPreviewLeft->SetBackgroundColour(BackColor::multiBannerPreviewLeft);
+		multiBannerPreviewRight->SetBackgroundColour(BackColor::multiBannerPreviewRight);
+		playerTitleText->SetBackgroundColour(BackColor::playerTitleText);
+		moflexFileText->SetBackgroundColour(BackColor::moflexFileText);
+		menuBannerText->SetBackgroundColour(BackColor::menuBannerText);
+		mediaPanel->SetBackgroundColour(BackColor::mediaPanel);
+		moflexBrowse->SetBackgroundColour(BackColor::moflexBrowse);
+		multiBannerBrowse->SetBackgroundColour(BackColor::multiBannerBrowse);
+		removeRow->SetBackgroundColour(BackColor::removeRow);
+		appendRow->SetBackgroundColour(BackColor::appendRow);
+		splitPatchButton->SetBackgroundColour(BackColor::splitPatchButton);
+		rowText->SetBackgroundColour(BackColor::rowText);
+		splitPatchUp->SetBackgroundColour(BackColor::splitPatchUp);
+		splitPatchDown->SetBackgroundColour(BackColor::splitPatchDown);
+		buildpanel->SetBackgroundColour(BackColor::buildpanel);
+		titleIDText->SetBackgroundColour(BackColor::titleIDText);
+		titleIDBox->SetBackgroundColour(BackColor::titleIDBox);
+		zerozero->SetBackgroundColour(BackColor::zerozero);
+		titleIDButton->SetBackgroundColour(BackColor::titleIDButton);
+		applicationTitleText->SetBackgroundColour(BackColor::applicationTitleText);
+		applicationTitleBox->SetBackgroundColour(BackColor::applicationTitleBox);
+		productCodeText->SetBackgroundColour(BackColor::productCodeText);
+		productCodeBox->SetBackgroundColour(BackColor::productCodeBox);
+		statusText->SetBackgroundColour(BackColor::statusText);
+		//buildBar->SetBackgroundColour(BackColor::buildBar);
+		buildButton->SetBackgroundColour(BackColor::buildButton);
+		cancelButton->SetBackgroundColour(BackColor::cancelButton);
+		aboutpanel->SetBackgroundColour(BackColor::aboutpanel);
+		byMeText->SetBackgroundColour(BackColor::byMeText);
+		versionText->SetBackgroundColour(BackColor::versionText);
 		
-		wid->panel->SetForegroundColour(ForeColor::panel);
-		wid->mainMenu->SetForegroundColour(ForeColor::mainMenu);
-		wid->modeText->SetForegroundColour(ForeColor::modeText);
-		wid->modeChoiceBox->SetForegroundColour(ForeColor::modeChoiceBox);
-		wid->bannerText->SetForegroundColour(ForeColor::bannerText);
-		wid->bannerBox->SetForegroundColour(ForeColor::bannerBox);
-		wid->bannerBrowse->SetForegroundColour(ForeColor::bannerBrowse);
-		wid->bannerError->SetForegroundColour(ForeColor::bannerError);
-		wid->iconText->SetForegroundColour(ForeColor::iconText);
-		wid->iconBox->SetForegroundColour(ForeColor::iconBox);
-		wid->iconBrowse->SetForegroundColour(ForeColor::iconBrowse);
-		wid->iconError->SetForegroundColour(ForeColor::iconError);
-		wid->shortnameText->SetForegroundColour(ForeColor::shortnameText);
-		wid->shortnameBox->SetForegroundColour(ForeColor::shortnameBox);
-		wid->shortnameError->SetForegroundColour(ForeColor::shortnameError);
-		wid->longnameText->SetForegroundColour(ForeColor::longnameText);
-		wid->longnameBox->SetForegroundColour(ForeColor::longnameBox);
-		wid->longnameError->SetForegroundColour(ForeColor::longnameError);
-		wid->publisherText->SetForegroundColour(ForeColor::publisherText);
-		wid->publisherBox->SetForegroundColour(ForeColor::publisherBox);
-		wid->publisherError->SetForegroundColour(ForeColor::publisherError);
-		wid->copyBox->SetForegroundColour(ForeColor::copyBox);
-		wid->copyCheck->SetForegroundColour(ForeColor::copyCheck);
-		wid->bannerCustomText->SetForegroundColour(ForeColor::bannerCustomText);
-		wid->bannerPreviewText->SetForegroundColour(ForeColor::bannerPreviewText);
-		wid->iconPreview->SetForegroundColour(ForeColor::iconPreview);
-		wid->ffRewindCheck->SetForegroundColour(ForeColor::ffRewindCheck);
-		wid->dimCheck->SetForegroundColour(ForeColor::dimCheck);
-		wid->multiBannerPreview->SetForegroundColour(ForeColor::multiBannerPreview);
-		wid->multiBannerPreviewIndex->SetForegroundColour(ForeColor::multiBannerPreviewIndex);
-		wid->multiBannerPreviewLeft->SetForegroundColour(ForeColor::multiBannerPreviewLeft);
-		wid->multiBannerPreviewRight->SetForegroundColour(ForeColor::multiBannerPreviewRight);
-		wid->playerTitleText->SetForegroundColour(ForeColor::playerTitleText);
-		wid->moflexFileText->SetForegroundColour(ForeColor::moflexFileText);
-		wid->menuBannerText->SetForegroundColour(ForeColor::menuBannerText);
-		wid->mediaPanel->SetForegroundColour(ForeColor::mediaPanel);
-		wid->moflexBrowse->SetForegroundColour(ForeColor::moflexBrowse);
-		wid->multiBannerBrowse->SetForegroundColour(ForeColor::multiBannerBrowse);
-		wid->removeRow->SetForegroundColour(ForeColor::removeRow);
-		wid->appendRow->SetForegroundColour(ForeColor::appendRow);
-		wid->splitPatchButton->SetForegroundColour(ForeColor::splitPatchButton);
-		wid->rowText->SetForegroundColour(ForeColor::rowText);
-		wid->splitPatchLine->SetColour(ForeColor::panel);
-		wid->splitPatchUp->SetForegroundColour(ForeColor::splitPatchUp);
-		wid->splitPatchDown->SetForegroundColour(ForeColor::splitPatchDown);
-		wid->buildpanel->SetForegroundColour(ForeColor::buildpanel);
-		wid->titleIDText->SetForegroundColour(ForeColor::titleIDText);
-		wid->titleIDBox->SetForegroundColour(ForeColor::titleIDBox);
-		wid->zerozero->SetForegroundColour(ForeColor::zerozero);
-		wid->titleIDButton->SetForegroundColour(ForeColor::titleIDButton);
-		wid->applicationTitleText->SetForegroundColour(ForeColor::applicationTitleText);
-		wid->applicationTitleBox->SetForegroundColour(ForeColor::applicationTitleBox);
-		wid->productCodeText->SetForegroundColour(ForeColor::productCodeText);
-		wid->productCodeBox->SetForegroundColour(ForeColor::productCodeBox);
-		wid->statusText->SetForegroundColour(ForeColor::statusText);
-		//wid->buildBar->SetForegroundColour(ForeColor::buildBar);
-		wid->buildButton->SetForegroundColour(ForeColor::buildButton);
-		wid->cancelButton->SetForegroundColour(ForeColor::cancelButton);
-		wid->aboutpanel->SetForegroundColour(ForeColor::aboutpanel);
-		wid->byMeText->SetForegroundColour(ForeColor::byMeText);
-		wid->versionText->SetForegroundColour(ForeColor::versionText);
+		panel->SetForegroundColour(ForeColor::panel);
+		mainMenu->SetForegroundColour(ForeColor::mainMenu);
+		modeText->SetForegroundColour(ForeColor::modeText);
+		modeChoiceBox->SetForegroundColour(ForeColor::modeChoiceBox);
+		bannerText->SetForegroundColour(ForeColor::bannerText);
+		bannerBox->SetForegroundColour(ForeColor::bannerBox);
+		bannerBrowse->SetForegroundColour(ForeColor::bannerBrowse);
+		bannerError->SetForegroundColour(ForeColor::bannerError);
+		iconText->SetForegroundColour(ForeColor::iconText);
+		iconBox->SetForegroundColour(ForeColor::iconBox);
+		iconBrowse->SetForegroundColour(ForeColor::iconBrowse);
+		iconError->SetForegroundColour(ForeColor::iconError);
+		shortnameText->SetForegroundColour(ForeColor::shortnameText);
+		shortnameBox->SetForegroundColour(ForeColor::shortnameBox);
+		shortnameError->SetForegroundColour(ForeColor::shortnameError);
+		longnameText->SetForegroundColour(ForeColor::longnameText);
+		longnameBox->SetForegroundColour(ForeColor::longnameBox);
+		longnameError->SetForegroundColour(ForeColor::longnameError);
+		publisherText->SetForegroundColour(ForeColor::publisherText);
+		publisherBox->SetForegroundColour(ForeColor::publisherBox);
+		publisherError->SetForegroundColour(ForeColor::publisherError);
+		copyBox->SetForegroundColour(ForeColor::copyBox);
+		copyCheck->SetForegroundColour(ForeColor::copyCheck);
+		bannerCustomText->SetForegroundColour(ForeColor::bannerCustomText);
+		bannerPreviewText->SetForegroundColour(ForeColor::bannerPreviewText);
+		iconPreview->SetForegroundColour(ForeColor::iconPreview);
+		ffRewindCheck->SetForegroundColour(ForeColor::ffRewindCheck);
+		dimCheck->SetForegroundColour(ForeColor::dimCheck);
+		multiBannerPreview->SetForegroundColour(ForeColor::multiBannerPreview);
+		multiBannerPreviewIndex->SetForegroundColour(ForeColor::multiBannerPreviewIndex);
+		multiBannerPreviewLeft->SetForegroundColour(ForeColor::multiBannerPreviewLeft);
+		multiBannerPreviewRight->SetForegroundColour(ForeColor::multiBannerPreviewRight);
+		playerTitleText->SetForegroundColour(ForeColor::playerTitleText);
+		moflexFileText->SetForegroundColour(ForeColor::moflexFileText);
+		menuBannerText->SetForegroundColour(ForeColor::menuBannerText);
+		mediaPanel->SetForegroundColour(ForeColor::mediaPanel);
+		moflexBrowse->SetForegroundColour(ForeColor::moflexBrowse);
+		multiBannerBrowse->SetForegroundColour(ForeColor::multiBannerBrowse);
+		removeRow->SetForegroundColour(ForeColor::removeRow);
+		appendRow->SetForegroundColour(ForeColor::appendRow);
+		splitPatchButton->SetForegroundColour(ForeColor::splitPatchButton);
+		rowText->SetForegroundColour(ForeColor::rowText);
+		splitPatchLine->SetColour(ForeColor::panel);
+		splitPatchUp->SetForegroundColour(ForeColor::splitPatchUp);
+		splitPatchDown->SetForegroundColour(ForeColor::splitPatchDown);
+		buildpanel->SetForegroundColour(ForeColor::buildpanel);
+		titleIDText->SetForegroundColour(ForeColor::titleIDText);
+		titleIDBox->SetForegroundColour(ForeColor::titleIDBox);
+		zerozero->SetForegroundColour(ForeColor::zerozero);
+		titleIDButton->SetForegroundColour(ForeColor::titleIDButton);
+		applicationTitleText->SetForegroundColour(ForeColor::applicationTitleText);
+		applicationTitleBox->SetForegroundColour(ForeColor::applicationTitleBox);
+		productCodeText->SetForegroundColour(ForeColor::productCodeText);
+		productCodeBox->SetForegroundColour(ForeColor::productCodeBox);
+		statusText->SetForegroundColour(ForeColor::statusText);
+		//buildBar->SetForegroundColour(ForeColor::buildBar);
+		buildButton->SetForegroundColour(ForeColor::buildButton);
+		cancelButton->SetForegroundColour(ForeColor::cancelButton);
+		aboutpanel->SetForegroundColour(ForeColor::aboutpanel);
+		byMeText->SetForegroundColour(ForeColor::byMeText);
+		versionText->SetForegroundColour(ForeColor::versionText);
 		
 		{
 			wxColor BackOdd = (BackColor::bannerBox.GetRGB() < 0x7F7F7F) ? (BackColor::bannerBox.GetRGB() + 0x141414) : (BackColor::bannerBox.GetRGB() - 0x141414);//FF/2=7F
 			//wxColor ForeOdd = (ForeColor::bannerBox.GetRGB() < 0x7F7F7F) ? (ForeColor::bannerBox.GetRGB() + 0x141414) : (ForeColor::bannerBox.GetRGB() - 0x141414);
 			
 			int rows = 0;
-			for(auto &row : wid->PlayerTitles) {
+			for(auto &row : PlayerTitles) {
 				if(rows % 2) {
 					row->SetBackgroundColour(BackOdd);
 				}
@@ -2218,7 +2415,7 @@ void setAppearance(InitWidgets* wid, unsigned int Mode) {
 				++rows;
 			}
 			rows = 0;
-			for(auto &row : wid->MoflexFiles) {
+			for(auto &row : MoflexFiles) {
 				if(rows % 2) {
 					row->SetBackgroundColour(BackOdd);
 				}
@@ -2229,7 +2426,7 @@ void setAppearance(InitWidgets* wid, unsigned int Mode) {
 				++rows;
 			}
 			rows = 0;
-			for(auto &row : wid->MenuBanners) {
+			for(auto &row : MenuBanners) {
 				if(rows % 2) {
 					row->SetBackgroundColour(BackOdd);
 				}
@@ -2241,11 +2438,11 @@ void setAppearance(InitWidgets* wid, unsigned int Mode) {
 			}
 		}
 		
-		for(auto &row : wid->MultiUp) {
+		for(auto &row : MultiUp) {
 			row->SetBackgroundColour(BackColor::splitPatchUp);
 			row->SetForegroundColour(ForeColor::splitPatchUp);
 		}
-		for(auto &row : wid->MultiDown) {
+		for(auto &row : MultiDown) {
 			row->SetBackgroundColour(BackColor::splitPatchDown);
 			row->SetForegroundColour(ForeColor::splitPatchDown);
 		}
@@ -2265,7 +2462,7 @@ void setAppearance(InitWidgets* wid, unsigned int Mode) {
 		
 		wxImage back(width, height); // LOOK LOOK IM RIGHT HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		
-		wxBrush MY_BRUSH(((Settings::ColorMode < 2) ? *(Settings::ColorMode ? wxBLACK : wxWHITE) : wid->aboutpanel->GetBackgroundColour()));
+		wxBrush MY_BRUSH(((Settings::ColorMode < 2) ? *(Settings::ColorMode ? wxBLACK : wxWHITE) : aboutpanel->GetBackgroundColour()));
 		//wxBrush MY_BRUSH(BackColor::aboutpanel); // what why not?
 		
 		
@@ -2296,20 +2493,20 @@ void setAppearance(InitWidgets* wid, unsigned int Mode) {
 		
 		back.Paste(top, 0, 0, wxIMAGE_ALPHA_BLEND_COMPOSE);
 		
-		wid->titleLogo->SetSize(width, height);
-		wid->titleLogo->SetBitmap(wxBitmap(back));
+		titleLogo->SetSize(width, height);
+		titleLogo->SetBitmap(wxBitmap(back));
 	}
-	wid->panel->Refresh();
-	wid->buildpanel->Refresh();
-	wid->aboutpanel->Refresh();
+	panel->Refresh();
+	buildpanel->Refresh();
+	aboutpanel->Refresh();
 }
 
-int loadParameters(InitWidgets* wid, VI9Pparameters* parameters) {
+int theWidgets::loadParameters(VI9Pparameters* parameters) {
 	VI9P::Loading = true;
 	int ret = 0;
 	{ // -rr
 		//wxMessageBox("holup");
-		ret = executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -rr \"" + VI9P::WorkingFile + '\"'));
+		ret = executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -rr \"" + VI9P::WorkingFile + '\"'));
 		
 		if(ret >= 0) {
 			parameters->rows = ret & 0xFF;
@@ -2322,7 +2519,7 @@ int loadParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 		wxArrayString output;
 		std::string pp;
 		
-		ret = executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -pp \"" + VI9P::WorkingFile + '\"'), &output);
+		ret = executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -pp \"" + VI9P::WorkingFile + '\"'), &output);
 		
 		for (auto &s : output) {
 			pp += std::string(s.ToUTF8()) + '\n';
@@ -2455,68 +2652,68 @@ int loadParameters(InitWidgets* wid, VI9Pparameters* parameters) {
 			}
 		}
 	}
-	applyParameters(wid, parameters);
+	applyParameters(parameters);
 	VI9P::Loading = false;
 	return ret;
 }
 
-void applyMode(InitWidgets* wid, VI9Pparameters* parameters) {
+void theWidgets::applyMode(VI9Pparameters* parameters) {
 	if(parameters->mode == 0) {
-		wid->copyBox->Enable(false);
-		wid->copyCheck->Enable(false);
+		copyBox->Enable(false);
+		copyCheck->Enable(false);
 		
-		wid->ffRewindCheck->Enable(true);
-		wid->dimCheck->Enable(true);
+		ffRewindCheck->Enable(true);
+		dimCheck->Enable(true);
 		
-		wid->rowText->Show(false);
-		wid->multiBannerPreview->Enable(false);
-		wid->multiBannerPreviewIndex->Show(false);
-		wid->multiBannerPreviewLeft->Enable(false);
-		wid->multiBannerPreviewRight->Enable(false);
+		rowText->Show(false);
+		multiBannerPreview->Enable(false);
+		multiBannerPreviewIndex->Show(false);
+		multiBannerPreviewLeft->Enable(false);
+		multiBannerPreviewRight->Enable(false);
 		if(parameters->rows > 1) {
-			wid->removeRow->Enable(true);
-			wid->splitPatchButton->Enable(true);
+			removeRow->Enable(true);
+			splitPatchButton->Enable(true);
 		}
 		else {
-			wid->removeRow->Enable(false);
-			wid->splitPatchButton->Enable(false);
+			removeRow->Enable(false);
+			splitPatchButton->Enable(false);
 		}
-		wid->appendRow->Enable(false);
+		appendRow->Enable(false);
 		bool first = true; // lol
-		for(const auto &row : wid->PlayerTitles) {
+		for(const auto &row : PlayerTitles) {
 			if(!first) {
 				row->Enable(false);
 			}
 			first = false;
 		}
 		first = true;
-		for(const auto &row : wid->MoflexFiles) {
+		for(const auto &row : MoflexFiles) {
 			if(!first) {
 				row->Enable(false);
 			}
 			first = false;
 		}
-		for(const auto &row : wid->MenuBanners) {
+		for(const auto &row : MenuBanners) {
 			row->Enable(false);
 		}
-		wid->multiBannerBrowse->Enable(false);
+		multiBannerBrowse->Enable(false);
 	}
 	else if(parameters->mode == 1) {
-		wid->copyBox->Enable(wid->copyCheck->GetValue());
-		wid->copyCheck->Enable(true);
+		copyBox->Enable(copyCheck->GetValue());
+		copyCheck->Enable(true);
 		
-		wid->ffRewindCheck->Enable(true);
-		wid->dimCheck->Enable(true);
+		ffRewindCheck->Enable(true);
+		dimCheck->Enable(true);
 		
-		wid->rowText->Show(true);
-		wid->multiBannerPreview->Enable(true);
-		wid->multiBannerPreviewIndex->Show(true);
+		rowText->Show(true);
+		multiBannerPreview->Enable(true);
+		multiBannerPreviewIndex->Show(true);
 		
-		EnableBannerLeftRight(wid);
-		wid->splitPatchButton->Enable(true);
+		EnableBannerLeftRight();
+		splitPatchButton->Enable(true);
 		
 		size_t count = 0;
-		for(const auto &row : wid->PlayerTitles) {
+		for(const auto &row : PlayerTitles) {
 			if(count < MAX_ROWS_MULTI) {
 				row->Enable(true);
 			}
@@ -2526,7 +2723,7 @@ void applyMode(InitWidgets* wid, VI9Pparameters* parameters) {
 			++count;
 		}
 		count = 0;
-		for(const auto &row : wid->MoflexFiles) {
+		for(const auto &row : MoflexFiles) {
 			row->Enable(true);
 			if(count < MAX_ROWS_MULTI) {
 				row->Enable(true);
@@ -2537,7 +2734,7 @@ void applyMode(InitWidgets* wid, VI9Pparameters* parameters) {
 			++count;
 		}
 		count = 0;
-		for(const auto &row : wid->MenuBanners) {
+		for(const auto &row : MenuBanners) {
 			row->Enable(true);
 			if(count < MAX_ROWS_MULTI) {
 				row->Enable(true);
@@ -2549,44 +2746,44 @@ void applyMode(InitWidgets* wid, VI9Pparameters* parameters) {
 		}
 		
 		if(parameters->rows > 1 && parameters->rows < MAX_ROWS_MULTI) {
-			wid->appendRow->Enable(true);
-			wid->removeRow->Enable(true);
+			appendRow->Enable(true);
+			removeRow->Enable(true);
 		}
 		if(parameters->rows <= 1) {
-			wid->appendRow->Enable(true);
-			wid->removeRow->Enable(false);
+			appendRow->Enable(true);
+			removeRow->Enable(false);
 		}
 		else if(parameters->rows >= MAX_ROWS_MULTI) {
-			wid->appendRow->Enable(false);
-			wid->removeRow->Enable(true);
+			appendRow->Enable(false);
+			removeRow->Enable(true);
 		}
-		setRowIndex(wid, parameters);
+		setRowIndex(parameters);
 		
-		wid->multiBannerBrowse->Enable(true);
+		multiBannerBrowse->Enable(true);
 	}
 	else if(parameters->mode == 2) {
-		wid->copyBox->Enable(false);
-		wid->copyCheck->Enable(false);
+		copyBox->Enable(false);
+		copyCheck->Enable(false);
 		
-		wid->ffRewindCheck->Enable(false);
-		wid->dimCheck->Enable(false);
+		ffRewindCheck->Enable(false);
+		dimCheck->Enable(false);
 		
-		wid->rowText->Show(true);
-		wid->multiBannerPreview->Enable(true);
-		wid->multiBannerPreviewIndex->Show(false);
-		wid->multiBannerPreviewLeft->Enable(false);
-		wid->multiBannerPreviewRight->Enable(false);
+		rowText->Show(true);
+		multiBannerPreview->Enable(true);
+		multiBannerPreviewIndex->Show(false);
+		multiBannerPreviewLeft->Enable(false);
+		multiBannerPreviewRight->Enable(false);
 		
-		wid->splitPatchButton->Enable(false);
+		splitPatchButton->Enable(false);
 		
-		for(const auto &row : wid->PlayerTitles) {
+		for(const auto &row : PlayerTitles) {
 			row->Enable(true);
 		}
-		for(const auto &row : wid->MoflexFiles) {
+		for(const auto &row : MoflexFiles) {
 			row->Enable(true);
 		}
 		bool first = true; // lol
-		for(const auto &row : wid->MenuBanners) {
+		for(const auto &row : MenuBanners) {
 			if(first) {
 				row->Enable(true);
 			}
@@ -2597,102 +2794,102 @@ void applyMode(InitWidgets* wid, VI9Pparameters* parameters) {
 		}
 		
 		if(parameters->rows > 1 && parameters->rows < MAX_ROWS) {
-			wid->appendRow->Enable(true);
-			wid->removeRow->Enable(true);
+			appendRow->Enable(true);
+			removeRow->Enable(true);
 		}
 		if(parameters->rows <= 1) {
-			wid->appendRow->Enable(true);
-			wid->removeRow->Enable(false);
+			appendRow->Enable(true);
+			removeRow->Enable(false);
 		}
 		else if(parameters->rows >= MAX_ROWS) {
-			wid->appendRow->Enable(false);
-			wid->removeRow->Enable(true);
+			appendRow->Enable(false);
+			removeRow->Enable(true);
 		}
-		setRowIndex(wid, parameters);
+		setRowIndex(parameters);
 		
-		wid->multiBannerBrowse->Enable(true);
+		multiBannerBrowse->Enable(true);
 	}
 	
-	EnableBannerLeftRight(wid);
-	setToolTips(wid);
-	setCursors(wid);
+	EnableBannerLeftRight();
+	setToolTips();
+	setCursors();
 }
 
-void applyParameters(InitWidgets* wid, VI9Pparameters* parameters) {
-	wid->modeChoiceBox->SetSelection(parameters->mode);
+void theWidgets::applyParameters(VI9Pparameters* parameters) {
+	modeChoiceBox->SetSelection(parameters->mode);
 
-	wid->bannerBox->SetValue(wxString::FromUTF8(parameters->banner));
+	bannerBox->SetValue(wxString::FromUTF8(parameters->banner));
 
-	wid->iconBox->SetValue(wxString::FromUTF8(parameters->icon));
+	iconBox->SetValue(wxString::FromUTF8(parameters->icon));
 
-	wid->shortnameBox->SetValue(wxString::FromUTF8(parameters->Sname));
-	wid->longnameBox->SetValue(wxString::FromUTF8(parameters->Lname));
-	wid->publisherBox->SetValue(wxString::FromUTF8(parameters->publisher));
+	shortnameBox->SetValue(wxString::FromUTF8(parameters->Sname));
+	longnameBox->SetValue(wxString::FromUTF8(parameters->Lname));
+	publisherBox->SetValue(wxString::FromUTF8(parameters->publisher));
 
-	wid->copyCheck->SetValue(parameters->copycheck);
-	wid->copyBox->SetValue(wxString::FromUTF8(parameters->copyrightInfo));
+	copyCheck->SetValue(parameters->copycheck);
+	copyBox->SetValue(wxString::FromUTF8(parameters->copyrightInfo));
 
-	wid->ffRewindCheck->SetValue(parameters->FFrewind);
-	wid->dimCheck->SetValue(parameters->FadeOpt);
+	ffRewindCheck->SetValue(parameters->FFrewind);
+	dimCheck->SetValue(parameters->FadeOpt);
 
-	if(wid->PlayerTitles.size() < parameters->rows) {
-		int count = parameters->rows - wid->PlayerTitles.size();
-		if(static_cast<int>(wid->PlayerTitles.size() & 0xFF) + count <= MAX_ROWS + 1) { // probably dangerous but i trust these enough
-			doAddRows(wid, count);
+	if(PlayerTitles.size() < parameters->rows) {
+		int count = parameters->rows - PlayerTitles.size();
+		if(static_cast<int>(PlayerTitles.size() & 0xFF) + count <= MAX_ROWS + 1) { // probably dangerous but i trust these enough
+			doAddRows(count);
 		}
 	}
-	else if(wid->PlayerTitles.size() > parameters->rows) {
-		int count = wid->PlayerTitles.size() - parameters->rows;
-		if(static_cast<int>(wid->PlayerTitles.size() & 0xFF) - count >= 0) {
+	else if(PlayerTitles.size() > parameters->rows) {
+		int count = PlayerTitles.size() - parameters->rows;
+		if(static_cast<int>(PlayerTitles.size() & 0xFF) - count >= 0) {
 			for(uint8_t i = 0; i < count; i++) {
-				wid->PlayerTitles.back()->Destroy();
-				wid->PlayerTitles.pop_back();
+				PlayerTitles.back()->Destroy();
+				PlayerTitles.pop_back();
 			}
 			for(uint8_t i = 0; i < count; i++) {
-				wid->MoflexFiles.back()->Destroy();
-				wid->MoflexFiles.pop_back();
+				MoflexFiles.back()->Destroy();
+				MoflexFiles.pop_back();
 			}
 			for(uint8_t i = 0; i < count; i++) {
-				wid->MenuBanners.back()->Destroy();
-				wid->MenuBanners.pop_back();
+				MenuBanners.back()->Destroy();
+				MenuBanners.pop_back();
 			}
 			for(uint8_t i = 0; i < count; i++) {
-				wid->MultiUp.back()->Destroy();
-				wid->MultiUp.pop_back();
+				MultiUp.back()->Destroy();
+				MultiUp.pop_back();
 			}
 			for(uint8_t i = 0; i < count; i++) {
-				wid->MultiDown.back()->Destroy();
-				wid->MultiDown.pop_back();
+				MultiDown.back()->Destroy();
+				MultiDown.pop_back();
 			}
 		}
 	}
 	
 	for(size_t row = 0; row < parameters->PTitleVec.size(); row++) {
-		wid->PlayerTitles.at(row)->SetValue(wxString::FromUTF8(parameters->PTitleVec.at(row)));
+		PlayerTitles.at(row)->SetValue(wxString::FromUTF8(parameters->PTitleVec.at(row)));
 	}
 	for(size_t row = 0; row < parameters->MoflexVec.size(); row++) {
-		wid->MoflexFiles.at(row)->SetValue(wxString::FromUTF8(parameters->MoflexVec.at(row)));
+		MoflexFiles.at(row)->SetValue(wxString::FromUTF8(parameters->MoflexVec.at(row)));
 	}
 	for(size_t row = 0; row < parameters->MBannerVec.size(); row++) {
-		wid->MenuBanners.at(row)->SetValue(wxString::FromUTF8(parameters->MBannerVec.at(row)));
+		MenuBanners.at(row)->SetValue(wxString::FromUTF8(parameters->MBannerVec.at(row)));
 	}
 	
-	wid->splitPatchButton->SetValue(parameters->splitPos ? 1 : 0);
+	splitPatchButton->SetValue(parameters->splitPos ? 1 : 0);
 	
-	applyMode(wid, parameters);
+	applyMode(parameters);
 }
 
-void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
+void theWidgets::addRows(VI9Pparameters* parameters, uint8_t count) {
 	if(parameters->rows + count <= MAX_ROWS) {
 		for(int i = 0; i < count; i++) {
 			{ // -ar
-				executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -ar \"" + VI9P::WorkingFile + "\" \"" + VI9P::WorkingFile + '\"'));
+				executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -ar \"" + VI9P::WorkingFile + "\" \"" + VI9P::WorkingFile + '\"'));
 			}
 		}
 	}
 	
 	{ // -rr
-		int ret = executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -rr \"" + VI9P::WorkingFile + '\"'));
+		int ret = executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -rr \"" + VI9P::WorkingFile + '\"'));
 		
 		if(ret >= 0) {
 			parameters->rows = ret & 0xFF;
@@ -2702,7 +2899,7 @@ void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 		wxArrayString output;
 		std::string pp;
 		
-		executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -pp \"" + VI9P::WorkingFile + '\"'), &output);
+		executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -pp \"" + VI9P::WorkingFile + '\"'), &output);
 		
 		for (auto &s : output) {
 			pp += std::string(s.ToUTF8()) + '\n';
@@ -2732,25 +2929,25 @@ void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 				parameters->MBannerVec.push_back(value);
 			}
 		}
-		int count = parameters->rows - wid->PlayerTitles.size();
+		int count = parameters->rows - PlayerTitles.size();
 		if(parameters->rows + count <= MAX_ROWS + 1) { // rows + (rows - size)
-			doAddRows(wid, count);
+			doAddRows(count);
 		}
 	}
-	positionWidgets(wid, parameters);
+	positionWidgets(parameters);
 }
 
-void removeRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
+void theWidgets::removeRows(VI9Pparameters* parameters, uint8_t count) {
 	if(parameters->rows - count >= 1) {
 		for(int i = 0; i < count; i++) {
 			{ // -sr
-				executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sr \"" + VI9P::WorkingFile + "\" \"" + VI9P::WorkingFile + '\"'));
+				executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sr \"" + VI9P::WorkingFile + "\" \"" + VI9P::WorkingFile + '\"'));
 			}
 		}
 	}
-	//loadParameters(wid, parameters);
+	//loadParameters(parameters);
 	{ // -rr
-		int ret = executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -rr \"" + VI9P::WorkingFile + '\"'));
+		int ret = executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -rr \"" + VI9P::WorkingFile + '\"'));
 		
 		if(ret >= 0) {
 			parameters->rows = ret & 0xFF;
@@ -2760,7 +2957,7 @@ void removeRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 		wxArrayString output;
 		std::string pp;
 		
-		executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -pp \"" + VI9P::WorkingFile + '\"'), &output);
+		executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -pp \"" + VI9P::WorkingFile + '\"'), &output);
 		
 		for (auto &s : output) {
 			pp += std::string(s.ToUTF8()) + '\n';
@@ -2790,51 +2987,51 @@ void removeRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count) {
 				parameters->MBannerVec.push_back(value);
 			}
 		}
-		int count = wid->PlayerTitles.size() - parameters->rows;
+		int count = PlayerTitles.size() - parameters->rows;
 		if(parameters->rows - count >= 0) { // ???????????????????
 			for(uint8_t i = 0; i < count; i++) {
-				wid->PlayerTitles.back()->Destroy();
-				wid->PlayerTitles.pop_back();
+				PlayerTitles.back()->Destroy();
+				PlayerTitles.pop_back();
 			}
 			for(uint8_t i = 0; i < count; i++) {
-				wid->MoflexFiles.back()->Destroy();
-				wid->MoflexFiles.pop_back();
+				MoflexFiles.back()->Destroy();
+				MoflexFiles.pop_back();
 			}
 			for(uint8_t i = 0; i < count; i++) {
-				wid->MenuBanners.back()->Destroy();
-				wid->MenuBanners.pop_back();
+				MenuBanners.back()->Destroy();
+				MenuBanners.pop_back();
 			}
 			for(uint8_t i = 0; i < count; i++) {
-				wid->MultiUp.back()->Destroy();
-				wid->MultiUp.pop_back();
+				MultiUp.back()->Destroy();
+				MultiUp.pop_back();
 			}
 			for(uint8_t i = 0; i < count; i++) {
-				wid->MultiDown.back()->Destroy();
-				wid->MultiDown.pop_back();
+				MultiDown.back()->Destroy();
+				MultiDown.pop_back();
 			}
 		}
 	}
 	
-	if(VI9P::MultiBannerIndex > wid->MenuBanners.size() - 1) {
-		VI9P::MultiBannerIndex = wid->MenuBanners.size() - 1;
+	if(VI9P::MultiBannerIndex > MenuBanners.size() - 1) {
+		VI9P::MultiBannerIndex = MenuBanners.size() - 1;
 	}
 	{ // -gp
 		std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/bannerpreview" + std::to_string(VI9P::MultiBannerIndex) + ".png";
 		
-		executeCommand(wid, wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters->rows * 2) + VI9P::MultiBannerIndex) + " \"" + imagePath + '\"'));
+		executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters->rows * 2) + VI9P::MultiBannerIndex) + " \"" + imagePath + '\"'));
 		
-		wid->multiBannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(imagePath), wxBITMAP_TYPE_ANY));
+		multiBannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(imagePath), wxBITMAP_TYPE_ANY));
 	}
-	EnableBannerLeftRight(wid);
+	EnableBannerLeftRight();
 
-	positionWidgets(wid, parameters);
+	positionWidgets(parameters);
 }
 
-void getBorders(InitWidgets* wid) {
+void theWidgets::getBorders() {
 	int ImageSize = 100; // width and height
 	
 	wxImage Picture = wxImage(ImageSize, ImageSize);
-	wxBitmapButton* tempButton = new wxBitmapButton(wid->panel, wxID_ANY, wxBitmap(Picture), wxDefaultPosition, wxDefaultSize);
+	wxBitmapButton* tempButton = new wxBitmapButton(panel, wxID_ANY, wxBitmap(Picture), wxDefaultPosition, wxDefaultSize);
 	// i think it already does this
 	tempButton->Fit();
 	
@@ -2847,12 +3044,12 @@ void getBorders(InitWidgets* wid) {
 	delete tempButton;
 }
 
-void setRowIndex(InitWidgets* wid, VI9Pparameters* parameters) {
+void theWidgets::setRowIndex(VI9Pparameters* parameters) {
 	if(parameters->mode == 1) {
-		wid->multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string((wid->MenuBanners.size() < MAX_ROWS_MULTI) ? wid->MenuBanners.size() : MAX_ROWS_MULTI)));
-		wid->rowText->SetLabel(wxString::FromUTF8(std::to_string((parameters->rows < MAX_ROWS_MULTI) ? parameters->rows : 27) + "/" + std::to_string(MAX_ROWS_MULTI)));
+		multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string((MenuBanners.size() < MAX_ROWS_MULTI) ? MenuBanners.size() : MAX_ROWS_MULTI)));
+		rowText->SetLabel(wxString::FromUTF8(std::to_string((parameters->rows < MAX_ROWS_MULTI) ? parameters->rows : 27) + "/" + std::to_string(MAX_ROWS_MULTI)));
 	}
 	else if(parameters->mode == 2) {
-		wid->rowText->SetLabel(wxString::FromUTF8(std::to_string(parameters->rows) + "/" + std::to_string(MAX_ROWS)));
+		rowText->SetLabel(wxString::FromUTF8(std::to_string(parameters->rows) + "/" + std::to_string(MAX_ROWS)));
 	}
 }

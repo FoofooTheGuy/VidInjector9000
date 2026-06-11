@@ -20,10 +20,273 @@
 
 #include "programStrings.hpp"
 #include "formatting.hpp"
+#include "language.hpp"
 #include "settings.hpp"
 #include "vi9p.hpp"
 
 #include <strings.hpp>
+
+// https://github.com/gammasoft71/Examples_wxWidgets/blob/0337d5a59aaf5753d9a2f11bc39198f7875c9677/wxCore/UserControls/Line/Line.cpp#L5
+class wxColouredLine : public wxPanel {
+public:
+	wxColouredLine(wxWindow* parent, const wxColour& colour, const wxPoint& position = wxDefaultPosition, const wxSize& size = wxDefaultSize) : wxPanel {parent, wxID_ANY, position, size} {
+		SetColour(colour);
+	}
+	
+	void SetColour(const wxColour& colour) {SetBackgroundColour(colour);}
+	wxColour GetColour() const {return GetBackgroundColour();}
+};
+
+class theWidgets
+{
+	public:
+		wxFrame* frame;
+		wxPanel* panel;
+		
+		// main menu
+		wxMenuBar* mainMenu;
+		
+		wxMenu* menuFile;
+		wxMenuItem* menuItemFileNew;
+		wxMenuItem* menuItemFileOpen;
+		wxMenuItem* menuItemFileSave;
+		wxMenuItem* menuItemFileSaveAs;
+		wxMenuItem* menuItemFileExport;
+		wxMenuItem* menuItemFileExtract;
+		wxMenuItem* menuItemFileImportSeed;
+		wxMenuItem* menuItemFileQuit;
+		wxMenu* menuOptions;
+		wxMenuItem* menuItemOptionsSystem;
+		wxMenuItem* menuItemOptionsLight;
+		wxMenuItem* menuItemOptionsDark;
+		wxMenuItem* menuItemOptionsLog;
+		wxMenuItem* menuItemOptionsDeleteTemp;
+		wxMenuItem* menuItemOptionsUpdateCheck;
+		wxMenu* menuLanguage;
+		wxMenu* menuHelp;
+		wxMenuItem* menuItemHelpAbout;
+		
+		// frame
+		wxLogWindow* consoleLog;
+		
+		// panel
+		wxStaticText* modeText;
+		wxChoice* modeChoiceBox;
+		
+		wxStaticText* bannerText;
+		wxTextCtrl* bannerBox;
+		wxButton* bannerBrowse;
+		wxStaticText* bannerError;
+		
+		wxStaticText* iconText;
+		wxTextCtrl* iconBox;
+		wxButton* iconBrowse;
+		wxStaticText* iconError;
+		
+		wxStaticText* shortnameText;
+		wxTextCtrl* shortnameBox;
+		wxStaticText* shortnameError;
+		
+		wxStaticText* longnameText;
+		wxTextCtrl* longnameBox;
+		wxStaticText* longnameError;
+		
+		wxStaticText* publisherText;
+		wxTextCtrl* publisherBox;
+		wxStaticText* publisherError;
+		
+		wxTextCtrl* copyBox;
+		wxCheckBox* copyCheck;
+		
+		wxStaticBitmap* bannerPreview;
+		wxStaticText* bannerCustomText;
+		wxStaticText* bannerPreviewText;
+		
+		//wxButton* iconPreview = new wxButton(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, {48, 48}, wxBORDER_NONE);
+		wxBitmapButton* iconPreview;
+		
+		wxCheckBox* ffRewindCheck;
+		wxCheckBox* dimCheck;
+		
+		wxBitmapButton* multiBannerPreview;
+		
+		wxStaticText* multiBannerPreviewIndex;
+		wxButton* multiBannerPreviewLeft;
+		wxButton* multiBannerPreviewRight;
+		
+		wxStaticText* playerTitleText;
+		wxStaticText* moflexFileText;
+		wxStaticText* menuBannerText;
+		
+		// mediaPanel
+		wxPanel* mediaPanel;
+		wxScrolled<wxPanel>* scrolledPanel;
+		
+		std::vector<wxTextCtrl*> PlayerTitles;
+		std::vector<wxTextCtrl*> MoflexFiles;
+		std::vector<wxTextCtrl*> MenuBanners;
+		
+		std::vector<wxButton*> MultiUp;
+		std::vector<wxButton*> MultiDown;
+		
+		wxButton* moflexBrowse;
+		wxButton* multiBannerBrowse;
+		
+		wxButton* removeRow;
+		wxButton* appendRow;
+		
+		wxToggleButton* splitPatchButton;
+		wxColouredLine* splitPatchLine;
+		wxButton* splitPatchUp;
+		wxButton* splitPatchDown;
+		
+		wxStaticText* rowText;
+		
+		wxFrame* buildframe;
+		wxPanel* buildpanel;
+		
+		wxStaticText* titleIDText;
+		wxTextCtrl* titleIDBox;
+		wxStaticText* zerozero;
+		wxButton* titleIDButton;
+		
+		wxStaticText* applicationTitleText;
+		wxTextCtrl* applicationTitleBox;
+		
+		wxStaticText* productCodeText;
+		wxTextCtrl* productCodeBox;
+		
+		wxStaticText* statusText;
+		
+		wxGauge* buildBar;
+		wxProcess* exportArchive;
+		wxTimer* barPulser;
+		wxTimer* exportLogger;
+		
+		wxButton* buildButton;
+		wxButton* cancelButton;
+		
+		wxProgressDialog* extractDialog;
+		wxProcess* extractArchive;
+		wxTimer* extractPulser;
+		wxTimer* extractLogger;
+		
+		wxFrame* aboutframe;
+		wxPanel* aboutpanel;
+		wxStaticBitmap* titleLogo;
+		wxStaticText* byMeText;
+		wxHyperlinkCtrl* gitHubLinker;
+		wxStaticText* versionText;
+		
+		// you need curl for this if you're linux
+		wxWebRequest* updateCheck;
+		
+		void initialize();
+		
+		// wxExecute and write output to log
+		// set Execution::flags to change what flags this uses
+		int executeCommand(const wxString &command, wxArrayString* output = nullptr, wxArrayString* errors = nullptr);
+		
+		void doAddRows(int rows);
+		
+		//void initAllWidgets();
+		void setFonts();
+		void EnableBannerLeftRight();
+		void ShowMultiUpDown();
+		void ShowPatchUpDown(VI9Pparameters* parameters);
+		void setToolTips();
+		void setCursors();
+		
+		void positionWidgets(VI9Pparameters* parameters);
+		
+		void getAppearance();
+		
+		/*
+		set all widgets on panel to color mode
+		0 light 1 dark 2 system
+		wait a minute... why does the wxStaticText change automatically? oh well, i'll do it anyway
+		*/
+		void setAppearance(unsigned int Mode);
+		
+		// send VI9P::WorkingFile to cli -pp to get parameters from the file
+		int loadParameters(VI9Pparameters* parameters);
+		
+		// the main stuff that changes based on what mode youre in
+		// this enables or disables stuff based on parameters->mode
+		void applyMode(VI9Pparameters* parameters);
+		
+		void applyParameters(VI9Pparameters* parameters);
+		
+		/*
+		count: how many rows to add
+		note that this also called -ar to the CLI to add rows to VI9P::WorkingFile
+		MAX_ROWS is maximum because if there are more then your 3ds will crash when loading it
+		hopefully this doesnt leak memory
+		*/
+		void addRows(VI9Pparameters* parameters, uint8_t count = 1);
+		
+		// similar to addRows, this will delete the last element of the wid vectors and pop_back from the wid and parameters vectors
+		void removeRows(VI9Pparameters* parameters, uint8_t count = 1);
+		
+		// This will find out what the size of the button borders are for your platform by creating a temporary button (oof)
+		// output is stored in Borders::width and Borders::height.
+		void getBorders();
+		
+		// sets the rowText and multiBannerPreviewIndex if mode 1
+		void setRowIndex(VI9Pparameters* parameters);
+		
+		// - language -
+		void initLanguage();
+		void applyLanguage(VI9Pparameters* parameters);
+		
+		// - events -
+		void frame_wxEVT_WEBREQUEST_STATE(wxWebRequestEvent* event);
+		void frame_wxEVT_CLOSE_WINDOW(wxCloseEvent* event);
+		void panel_wxEVT_SIZE(VI9Pparameters* parameters);
+		void modeChoiceBox_wxEVT_CHOICE(VI9Pparameters* parameters);
+		void bannerBox_wxEVT_TEXT(VI9Pparameters* parameters);
+		void bannerBrowse_wxEVT_BUTTON(VI9Pparameters* parameters);
+		void iconBox_wxEVT_TEXT(VI9Pparameters* parameters);
+		void iconPreview_wxEVT_BUTTON(VI9Pparameters* parameters);
+		void iconBrowse_wxEVT_BUTTON(VI9Pparameters* parameters);
+		void shortnameBox_wxEVT_TEXT(VI9Pparameters* parameters);
+		void longnameBox_wxEVT_TEXT(VI9Pparameters* parameters);
+		void publisherBox_wxEVT_TEXT(VI9Pparameters* parameters);
+		void copyBox_wxEVT_TEXT(VI9Pparameters* parameters);
+		void copyCheck_wxEVT_CHECKBOX(VI9Pparameters* parameters);
+		void ffRewindCheck_wxEVT_CHECKBOX(VI9Pparameters* parameters);
+		void dimCheck_wxEVT_CHECKBOX(VI9Pparameters* parameters);
+		void multiBannerPreview_wxEVT_BUTTON(VI9Pparameters* parameters);
+		void multiBannerPreviewLeft_wxEVT_BUTTON(VI9Pparameters* parameters);
+		void multiBannerPreviewRight_wxEVT_BUTTON(VI9Pparameters* parameters);
+		void PlayerTitles_wxEVT_TEXT(VI9Pparameters* parameters, wxTextCtrl* row);
+		void MoflexFiles_wxEVT_TEXT(VI9Pparameters* parameters, wxTextCtrl* row);
+		void MenuBanners_wxEVT_TEXT(VI9Pparameters* parameters, wxTextCtrl* row);
+		void MenuBanners_EVT_TEXT_ENTER(VI9Pparameters* parameters, wxTextCtrl* row);
+		void MultiUp_wxEVT_BUTTON(wxButton* row);
+		void MultiDown_wxEVT_BUTTON(wxButton* row);
+		void moflexBrowse_wxEVT_BUTTON(VI9Pparameters* parameters);
+		void multiBannerBrowse_wxEVT_BUTTON(VI9Pparameters* parameters);
+		void removeRow_wxEVT_BUTTON(VI9Pparameters* parameters);
+		void splitPatchButton_wxEVT_TOGGLEBUTTON(VI9Pparameters* parameters);
+		void splitPatchUp_wxEVT_BUTTON(VI9Pparameters* parameters);
+		void splitPatchDown_wxEVT_BUTTON(VI9Pparameters* parameters);
+		void buildframe_wxEVT_CLOSE_WINDOW(wxCloseEvent* event);
+		void buildpanel_wxEVT_SIZE(VI9Pparameters* parameters);
+		void titleIDBox_wxEVT_TEXT();
+		void titleIDButton_wxEVT_BUTTON();
+		void exportArchive_wxEVT_END_PROCESS(wxProcessEvent* event);
+		void buildButton_wxEVT_BUTTON(VI9Pparameters* parameters);
+		void cancelButton_wxEVT_BUTTON();
+		void barPulser_wxEVT_TIMER();
+		void exportLogger_wxEVT_TIMER();
+		void extractDialog_wxEVT_CLOSE_WINDOW(wxCloseEvent* event);
+		void extractArchive_wxEVT_END_PROCESS(wxProcessEvent* event);
+		void extractPulser_wxEVT_TIMER();
+		void extractLogger_wxEVT_TIMER();
+		void aboutframe_wxEVT_CLOSE_WINDOW(wxCloseEvent* event);
+		void aboutpanel_wxEVT_SIZE(VI9Pparameters* parameters);
+};
 
 /*
 OutCIA: the output .cia that you choose when exporting
@@ -79,182 +342,6 @@ enum wxOwnedID {
 	ID_LANG10, // sorry if you speak more than 10 languages
 	ID_ABOUT,
 };
-
-/*struct MediaPanelMedia { // just use the pointer as a unique ID number
-	uint8_t index;
-	wxTextCtrl* box;
-};*/
-
-// https://github.com/gammasoft71/Examples_wxWidgets/blob/0337d5a59aaf5753d9a2f11bc39198f7875c9677/wxCore/UserControls/Line/Line.cpp#L5
-class wxColouredLine : public wxPanel {
-public:
-	wxColouredLine(wxWindow* parent, const wxColour& colour, const wxPoint& position = wxDefaultPosition, const wxSize& size = wxDefaultSize) : wxPanel {parent, wxID_ANY, position, size} {
-		SetColour(colour);
-	}
-	
-	void SetColour(const wxColour& colour) {SetBackgroundColour(colour);}
-	wxColour GetColour() const {return GetBackgroundColour();}
-};
-
-struct InitWidgets {
-	wxFrame* frame = new wxFrame(nullptr, wxID_ANY, wxString::FromUTF8(frameText), wxDefaultPosition, {Settings::FrameWidth, Settings::FrameHeight});
-	wxPanel* panel = new wxPanel(frame);
-
-	//main menu
-	wxMenuBar* mainMenu = new wxMenuBar();
-
-	wxMenu* menuFile = new wxMenu();
-	wxMenuItem* menuItemFileNew = menuFile->Append(wxID_NEW, wxString::FromUTF8(fileNew + "\tCtrl+N"));
-	wxMenuItem* menuItemFileOpen = menuFile->Append(wxID_OPEN, wxString::FromUTF8(fileOpen + "\tCtrl+O"));
-	wxMenuItem* menuItemFileSave = menuFile->Append(wxID_SAVE, wxString::FromUTF8(fileSave + "\tCtrl+S"));
-	wxMenuItem* menuItemFileSaveAs = menuFile->Append(wxID_SAVEAS, wxString::FromUTF8(fileSaveAs + "\tCtrl+Shift+S"));
-	wxMenuItem* menuItemFileExport = menuFile->Append(ID_EXPORT, wxString::FromUTF8(fileExport + "\tCtrl+E"));
-	wxMenuItem* menuItemFileExtract = menuFile->Append(ID_EXTRACT, wxString::FromUTF8(fileExtract + "\tCtrl+Alt+E"));
-	wxMenuItem* menuItemFileImportSeed = menuFile->Append(ID_IMPORTSEED, wxString::FromUTF8(fileImportSeed));
-	wxMenuItem* menuItemFileQuit = menuFile->Append(ID_QUIT, wxString::FromUTF8(fileQuit));
-	wxMenu* menuOptions = new wxMenu();
-	wxMenuItem* menuItemOptionsSystem = menuOptions->Append(ID_SYSTEM, wxString::FromUTF8(optionsSystemMode), "", wxITEM_RADIO);
-	wxMenuItem* menuItemOptionsLight = menuOptions->Append(ID_LIGHT, wxString::FromUTF8(optionsLightMode), "", wxITEM_RADIO);
-	wxMenuItem* menuItemOptionsDark = menuOptions->Append(ID_DARK, wxString::FromUTF8(optionsDarkMode), "", wxITEM_RADIO);
-	wxMenuItem* menuItemOptionsLog = menuOptions->Append(ID_LOGBOOL, wxString::FromUTF8(optionsShowLog), "", wxITEM_CHECK);
-	wxMenuItem* menuItemOptionsDeleteTemp = menuOptions->Append(ID_DELETETEMP, wxString::FromUTF8(optionsDeleteTemp), "", wxITEM_CHECK);
-	wxMenuItem* menuItemOptionsUpdateCheck = menuOptions->Append(ID_UPDATECHECK, wxString::FromUTF8(optionsUpdateCheck), "", wxITEM_CHECK);
-	wxMenu* menuLanguage = new wxMenu();
-	wxMenu* menuHelp = new wxMenu();
-	wxMenuItem* menuItemHelpAbout = menuHelp->Append(ID_ABOUT, wxString::FromUTF8(helpAbout + "\tF1"));
-	
-	// frame
-	wxLogWindow* consoleLog = new wxLogWindow(frame, wxString::FromUTF8(logFrameText), false);
-
-	// panel
-	wxStaticText* modeText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(ModeText), {10, 10});
-	wxChoice* modeChoiceBox = new wxChoice(panel, wxID_ANY);
-	
-	wxStaticText* bannerText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(BannerText));
-	wxTextCtrl* bannerBox = new wxTextCtrl(panel, wxID_ANY, wxEmptyString);
-	wxButton* bannerBrowse = new wxButton(panel, wxID_ANY, wxString::FromUTF8(Browse));
-	wxStaticText* bannerError = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(ErrorText + ' ' + ImageInfoError + " (0) " + SeeLog));
-	
-	wxStaticText* iconText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(IconText));
-	wxTextCtrl* iconBox = new wxTextCtrl(panel, wxID_ANY, wxEmptyString);
-	wxButton* iconBrowse = new wxButton(panel, wxID_ANY, wxString::FromUTF8(Browse));
-	wxStaticText* iconError = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(ErrorText + ' ' + ImageInfoError + " (0) " + SeeLog));
-	
-	wxStaticText* shortnameText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(ShortNameText));
-	wxTextCtrl* shortnameBox = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-	wxStaticText* shortnameError = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(ErrorText + ' ' + TextTooLongError + " (0/64)"));
-
-	wxStaticText* longnameText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(LongNameText));
-	wxTextCtrl* longnameBox = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-	wxStaticText* longnameError = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(ErrorText + ' ' + TextTooLongError + " (0/128)"));
-
-	wxStaticText* publisherText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(PublisherText));
-	wxTextCtrl* publisherBox = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-	wxStaticText* publisherError = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(ErrorText + ' ' + TextTooLongError + " (0/64)"));
-
-	wxTextCtrl* copyBox = new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, {300, 200}, wxTE_MULTILINE | wxTE_CENTRE);
-	wxCheckBox* copyCheck = new wxCheckBox(panel, wxID_ANY, wxString::FromUTF8(CopyrightCheckText));
-	
-	wxStaticBitmap* bannerPreview = new wxStaticBitmap(panel, wxID_ANY, wxNullBitmap, wxDefaultPosition, {264, 154}, wxBORDER_NONE);
-	wxStaticText* bannerCustomText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(BannerCustomText));
-	wxStaticText* bannerPreviewText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(BannerPreviewText));
-	
-	//wxButton* iconPreview = new wxButton(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, {48, 48}, wxBORDER_NONE);
-	wxBitmapButton* iconPreview = new wxBitmapButton(panel, wxID_ANY, wxNullBitmap, wxDefaultPosition, {48, 48});
-	
-	wxCheckBox* ffRewindCheck = new wxCheckBox(panel, wxID_ANY, wxString::FromUTF8(FFrewindCheckText));
-	wxCheckBox* dimCheck = new wxCheckBox(panel, wxID_ANY, wxString::FromUTF8(DimCheckText));
-	
-	wxBitmapButton* multiBannerPreview = new wxBitmapButton(panel, wxID_ANY, wxNullBitmap, wxDefaultPosition, {400, 240});
-	
-	wxStaticText* multiBannerPreviewIndex = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8("/"));
-	wxButton* multiBannerPreviewLeft = new wxButton(panel, wxID_ANY, wxString::FromUTF8("←"));
-	wxButton* multiBannerPreviewRight = new wxButton(panel, wxID_ANY, wxString::FromUTF8("→"));
-	
-	wxStaticText* playerTitleText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(PlayerTitleText));
-	wxStaticText* moflexFileText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(MoflexFileText));
-	wxStaticText* menuBannerText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(MenuBannerText));
-	
-	// mediaPanel
-	wxPanel* mediaPanel = new wxPanel(panel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL | wxBORDER_THEME);
-	wxScrolled<wxPanel>* scrolledPanel = new wxScrolled<wxPanel>(mediaPanel);
-	
-	std::vector<wxTextCtrl*> PlayerTitles;
-	std::vector<wxTextCtrl*> MoflexFiles;
-	std::vector<wxTextCtrl*> MenuBanners;
-	
-	std::vector<wxButton*> MultiUp;
-	std::vector<wxButton*> MultiDown;
-	
-	wxButton* moflexBrowse = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8(Browse));
-	wxButton* multiBannerBrowse = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8(Browse));
-	
-	wxButton* removeRow = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8("-"));
-	wxButton* appendRow = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8("+"));
-	
-	wxToggleButton* splitPatchButton = new wxToggleButton(scrolledPanel, wxID_ANY, wxString::FromUTF8(SplitIntoAPatch));
-	wxColouredLine* splitPatchLine = new wxColouredLine(scrolledPanel, {0, 0, 0});
-	wxButton* splitPatchUp = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8("↑"), wxDefaultPosition, wxDefaultSize);
-	wxButton* splitPatchDown = new wxButton(scrolledPanel, wxID_ANY, wxString::FromUTF8("↓"), wxDefaultPosition, wxDefaultSize);
-	
-	wxStaticText* rowText = new wxStaticText(scrolledPanel, wxID_ANY, wxString::FromUTF8("1/" + std::to_string(MAX_ROWS)));
-	
-	wxFrame* buildframe = new wxFrame(frame, wxID_ANY, wxString::FromUTF8(buildFrameText), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxCLOSE_BOX|wxRESIZE_BORDER|wxFRAME_FLOAT_ON_PARENT|wxCLIP_CHILDREN);
-	wxPanel* buildpanel = new wxPanel(buildframe);
-	
-	wxStaticText* titleIDText = new wxStaticText(buildpanel, wxID_ANY, wxString::FromUTF8(TitleIDText));
-	wxTextCtrl* titleIDBox = new wxTextCtrl(buildpanel, wxID_ANY, wxEmptyString);
-	wxStaticText* zerozero = new wxStaticText(buildpanel, wxID_ANY, wxString::FromUTF8("00"));
-	wxButton* titleIDButton = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8("⚄"));
-	
-	wxStaticText* applicationTitleText = new wxStaticText(buildpanel, wxID_ANY, wxString::FromUTF8(ApplicationTitleText));
-	wxTextCtrl* applicationTitleBox = new wxTextCtrl(buildpanel, wxID_ANY, wxString::FromUTF8("video"));
-
-	wxStaticText* productCodeText = new wxStaticText(buildpanel, wxID_ANY, wxString::FromUTF8(ProductCodeText));
-	wxTextCtrl* productCodeBox = new wxTextCtrl(buildpanel, wxID_ANY, wxString::FromUTF8("VDIJ"));
-	
-	wxStaticText* statusText = new wxStaticText(buildpanel, wxID_ANY, "   ");
-	
-	wxGauge* buildBar = new wxGauge(buildpanel, wxID_ANY, 1, wxDefaultPosition, {-1, 25});
-	wxProcess* exportArchive = new wxProcess(frame);
-	wxTimer* barPulser = new wxTimer();
-	wxTimer* exportLogger = new wxTimer();
-	
-	wxButton* buildButton = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8(Build));
-	wxButton* cancelButton = new wxButton(buildpanel, wxID_ANY, wxString::FromUTF8(Cancel));
-	
-	wxProgressDialog* extractDialog = new wxProgressDialog(wxEmptyString, wxEmptyString);
-	wxProcess* extractArchive = new wxProcess(frame);
-	wxTimer* extractPulser = new wxTimer();
-	wxTimer* extractLogger = new wxTimer();
-	
-	wxFrame* aboutframe = new wxFrame(frame, wxID_ANY, wxString::FromUTF8(aboutFrameText), wxDefaultPosition, wxDefaultSize, wxRESIZE_BORDER|wxCAPTION|wxCLOSE_BOX|wxFRAME_FLOAT_ON_PARENT|wxCLIP_CHILDREN);
-	wxPanel* aboutpanel = new wxPanel(aboutframe);
-	wxStaticBitmap* titleLogo = new wxStaticBitmap(aboutpanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-	wxStaticText* byMeText = new wxStaticText(aboutpanel, wxID_ANY, wxString::FromUTF8(ByMeText));
-	wxHyperlinkCtrl* gitHubLinker = new wxHyperlinkCtrl(aboutpanel, wxID_ANY, wxString::FromUTF8(GitHubLinker), wxString::FromUTF8(githubRepoLink));
-	wxStaticText* versionText = new wxStaticText(aboutpanel, wxID_ANY, wxString::FromUTF8(version));
-	
-	//you need curl for this if you're linux
-	wxWebRequest* updateCheck = new wxWebRequest(wxWebSession::GetDefault().CreateRequest(frame, "https://api.github.com/repos/" + githubRepo + "/tags"));
-};
-
-// wxExecute and write output to log
-// set Execution::flags to change what flags this uses
-int executeCommand(InitWidgets* wid, const wxString &command, wxArrayString* output = nullptr, wxArrayString* errors = nullptr);
-
-void doAddRows(InitWidgets* wid, int rows);
-
-void initLanguage(InitWidgets* wid);
-void initAllWidgets(InitWidgets* initwidgets);
-void setFonts(InitWidgets* wid);
-void EnableBannerLeftRight(InitWidgets* wid);
-void ShowMultiUpDown(InitWidgets* wid);
-void ShowPatchUpDown(InitWidgets* wid, VI9Pparameters* parameters);
-void setToolTips(InitWidgets* initwidgets);
-void setCursors(InitWidgets* wid);
-
-void positionWidgets(InitWidgets* wid, VI9Pparameters* parameters);
 
 //dumb?
 class ForeColor
@@ -386,39 +473,3 @@ class BackColor
 	static wxColour byMeText;
 	static wxColour versionText;
 };
-
-void getAppearance(InitWidgets* wid);
-
-/*
-set all widgets on panel to color mode
-0 light 1 dark 2 system
-wait a minute... why does the wxStaticText change automatically? oh well, i'll do it anyway
-*/
-void setAppearance(InitWidgets* wid, unsigned int Mode);
-
-//send VI9P::WorkingFile to cli -pp to get parameters from the file
-int loadParameters(InitWidgets* wid, VI9Pparameters* parameters);
-
-// the main stuff that changes based on what mode youre in
-// this enables or disables stuff based on parameters->mode
-void applyMode(InitWidgets* wid, VI9Pparameters* parameters);
-
-void applyParameters(InitWidgets* wid, VI9Pparameters* parameters);
-
-/*count: how many rows to add
-note that this also called -ar to the CLI to add rows to VI9P::WorkingFile
-MAX_ROWS is maximum because if there are more then your 3ds will crash when loading it
-hopefully this doesnt leak memory*/
-void addRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count = 1);
-
-//similar to addRows, this will delete the last element of the wid vectors and pop_back from the wid and parameters vectors
-void removeRows(InitWidgets* wid, VI9Pparameters* parameters, uint8_t count = 1);
-
-//This will find out what the size of the button borders are for your platform by creating a temporary button (oof)
-//output is stored in Borders::width and Borders::height.
-void getBorders(InitWidgets* wid);
-
-// sets the rowText and multiBannerPreviewIndex if mode 1
-void setRowIndex(InitWidgets* wid, VI9Pparameters* parameters);
-
-#include "events.hpp"
