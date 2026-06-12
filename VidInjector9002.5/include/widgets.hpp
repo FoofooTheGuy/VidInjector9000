@@ -40,6 +40,7 @@ public:
 class theWidgets
 {
 	public:
+		VI9Pparameters parameters;
 		wxFrame* frame;
 		wxPanel* panel;
 		
@@ -189,15 +190,14 @@ class theWidgets
 		
 		void doAddRows(int rows);
 		
-		//void initAllWidgets();
 		void setFonts();
 		void EnableBannerLeftRight();
 		void ShowMultiUpDown();
-		void ShowPatchUpDown(VI9Pparameters* parameters);
+		void ShowPatchUpDown();
 		void setToolTips();
 		void setCursors();
 		
-		void positionWidgets(VI9Pparameters* parameters);
+		void positionWidgets();
 		
 		void getAppearance();
 		
@@ -209,13 +209,13 @@ class theWidgets
 		void setAppearance(unsigned int Mode);
 		
 		// send VI9P::WorkingFile to cli -pp to get parameters from the file
-		int loadParameters(VI9Pparameters* parameters);
+		int loadParameters();
 		
 		// the main stuff that changes based on what mode youre in
-		// this enables or disables stuff based on parameters->mode
-		void applyMode(VI9Pparameters* parameters);
+		// this enables or disables stuff based on parameters.mode
+		void applyMode();
 		
-		void applyParameters(VI9Pparameters* parameters);
+		void applyParameters();
 		
 		/*
 		count: how many rows to add
@@ -223,60 +223,60 @@ class theWidgets
 		MAX_ROWS is maximum because if there are more then your 3ds will crash when loading it
 		hopefully this doesnt leak memory
 		*/
-		void addRows(VI9Pparameters* parameters, uint8_t count = 1);
+		void addRows(uint8_t count = 1);
 		
 		// similar to addRows, this will delete the last element of the wid vectors and pop_back from the wid and parameters vectors
-		void removeRows(VI9Pparameters* parameters, uint8_t count = 1);
+		void removeRows(uint8_t count = 1);
 		
 		// This will find out what the size of the button borders are for your platform by creating a temporary button (oof)
 		// output is stored in Borders::width and Borders::height.
 		void getBorders();
 		
 		// sets the rowText and multiBannerPreviewIndex if mode 1
-		void setRowIndex(VI9Pparameters* parameters);
+		void setRowIndex();
 		
 		// - language -
 		void initLanguage();
-		void applyLanguage(VI9Pparameters* parameters);
+		void applyLanguage();
 		
 		// - events -
 		void frame_wxEVT_WEBREQUEST_STATE(wxWebRequestEvent* event);
 		void frame_wxEVT_CLOSE_WINDOW(wxCloseEvent* event);
-		void panel_wxEVT_SIZE(VI9Pparameters* parameters);
-		void modeChoiceBox_wxEVT_CHOICE(VI9Pparameters* parameters);
-		void bannerBox_wxEVT_TEXT(VI9Pparameters* parameters);
-		void bannerBrowse_wxEVT_BUTTON(VI9Pparameters* parameters);
-		void iconBox_wxEVT_TEXT(VI9Pparameters* parameters);
-		void iconPreview_wxEVT_BUTTON(VI9Pparameters* parameters);
-		void iconBrowse_wxEVT_BUTTON(VI9Pparameters* parameters);
-		void shortnameBox_wxEVT_TEXT(VI9Pparameters* parameters);
-		void longnameBox_wxEVT_TEXT(VI9Pparameters* parameters);
-		void publisherBox_wxEVT_TEXT(VI9Pparameters* parameters);
-		void copyBox_wxEVT_TEXT(VI9Pparameters* parameters);
-		void copyCheck_wxEVT_CHECKBOX(VI9Pparameters* parameters);
-		void ffRewindCheck_wxEVT_CHECKBOX(VI9Pparameters* parameters);
-		void dimCheck_wxEVT_CHECKBOX(VI9Pparameters* parameters);
-		void multiBannerPreview_wxEVT_BUTTON(VI9Pparameters* parameters);
-		void multiBannerPreviewLeft_wxEVT_BUTTON(VI9Pparameters* parameters);
-		void multiBannerPreviewRight_wxEVT_BUTTON(VI9Pparameters* parameters);
-		void PlayerTitles_wxEVT_TEXT(VI9Pparameters* parameters, wxTextCtrl* row);
-		void MoflexFiles_wxEVT_TEXT(VI9Pparameters* parameters, wxTextCtrl* row);
-		void MenuBanners_wxEVT_TEXT(VI9Pparameters* parameters, wxTextCtrl* row);
-		void MenuBanners_EVT_TEXT_ENTER(VI9Pparameters* parameters, wxTextCtrl* row);
+		void panel_wxEVT_SIZE();
+		void modeChoiceBox_wxEVT_CHOICE();
+		void bannerBox_wxEVT_TEXT();
+		void bannerBrowse_wxEVT_BUTTON();
+		void iconBox_wxEVT_TEXT();
+		void iconPreview_wxEVT_BUTTON();
+		void iconBrowse_wxEVT_BUTTON();
+		void shortnameBox_wxEVT_TEXT();
+		void longnameBox_wxEVT_TEXT();
+		void publisherBox_wxEVT_TEXT();
+		void copyBox_wxEVT_TEXT();
+		void copyCheck_wxEVT_CHECKBOX();
+		void ffRewindCheck_wxEVT_CHECKBOX();
+		void dimCheck_wxEVT_CHECKBOX();
+		void multiBannerPreview_wxEVT_BUTTON();
+		void multiBannerPreviewLeft_wxEVT_BUTTON();
+		void multiBannerPreviewRight_wxEVT_BUTTON();
+		void PlayerTitles_wxEVT_TEXT(wxTextCtrl* row);
+		void MoflexFiles_wxEVT_TEXT(wxTextCtrl* row);
+		void MenuBanners_wxEVT_TEXT(wxTextCtrl* row);
+		void MenuBanners_EVT_TEXT_ENTER(wxTextCtrl* row);
 		void MultiUp_wxEVT_BUTTON(wxButton* row);
 		void MultiDown_wxEVT_BUTTON(wxButton* row);
-		void moflexBrowse_wxEVT_BUTTON(VI9Pparameters* parameters);
-		void multiBannerBrowse_wxEVT_BUTTON(VI9Pparameters* parameters);
-		void removeRow_wxEVT_BUTTON(VI9Pparameters* parameters);
-		void splitPatchButton_wxEVT_TOGGLEBUTTON(VI9Pparameters* parameters);
-		void splitPatchUp_wxEVT_BUTTON(VI9Pparameters* parameters);
-		void splitPatchDown_wxEVT_BUTTON(VI9Pparameters* parameters);
+		void moflexBrowse_wxEVT_BUTTON();
+		void multiBannerBrowse_wxEVT_BUTTON();
+		void removeRow_wxEVT_BUTTON();
+		void splitPatchButton_wxEVT_TOGGLEBUTTON();
+		void splitPatchUp_wxEVT_BUTTON();
+		void splitPatchDown_wxEVT_BUTTON();
 		void buildframe_wxEVT_CLOSE_WINDOW(wxCloseEvent* event);
-		void buildpanel_wxEVT_SIZE(VI9Pparameters* parameters);
+		void buildpanel_wxEVT_SIZE();
 		void titleIDBox_wxEVT_TEXT();
 		void titleIDButton_wxEVT_BUTTON();
 		void exportArchive_wxEVT_END_PROCESS(wxProcessEvent* event);
-		void buildButton_wxEVT_BUTTON(VI9Pparameters* parameters);
+		void buildButton_wxEVT_BUTTON();
 		void cancelButton_wxEVT_BUTTON();
 		void barPulser_wxEVT_TIMER();
 		void exportLogger_wxEVT_TIMER();
@@ -285,7 +285,7 @@ class theWidgets
 		void extractPulser_wxEVT_TIMER();
 		void extractLogger_wxEVT_TIMER();
 		void aboutframe_wxEVT_CLOSE_WINDOW(wxCloseEvent* event);
-		void aboutpanel_wxEVT_SIZE(VI9Pparameters* parameters);
+		void aboutpanel_wxEVT_SIZE();
 };
 
 /*

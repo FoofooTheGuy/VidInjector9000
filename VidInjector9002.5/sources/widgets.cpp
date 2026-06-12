@@ -11,8 +11,9 @@ int Execution::flags = wxEXEC_SYNC | wxEXEC_NODISABLE;
 void theWidgets::initialize() {
 	frame = new wxFrame(nullptr, wxID_ANY, wxString::FromUTF8(frameText), wxDefaultPosition, {Settings::FrameWidth, Settings::FrameHeight});
 	frame->SetIcon(wxString::FromUTF8(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + imagePath + "/icon.png"));
-	
+		
 	panel = new wxPanel(frame);
+	getBorders();
 	
 	mainMenu = new wxMenuBar();
 	
@@ -268,76 +269,6 @@ void theWidgets::doAddRows(int rows) {
 		MultiDown.push_back(button);
 	}
 }
-
-/*
-void theWidgets::initAllWidgets() {
-	// main menu
-	menuItemFileNew->SetBitmap(wxArtProvider::GetBitmap(wxART_NEW, wxART_MENU));
-	menuItemFileOpen->SetBitmap(wxArtProvider::GetBitmap(wxART_FILE_OPEN, wxART_MENU));
-	menuItemFileSave->SetBitmap(wxArtProvider::GetBitmap(wxART_FILE_SAVE, wxART_MENU));
-	menuItemFileSaveAs->SetBitmap(wxArtProvider::GetBitmap(wxART_FILE_SAVE_AS, wxART_MENU));
-	menuItemFileExport->SetBitmap(wxArtProvider::GetBitmap(wxART_FILE_SAVE, wxART_MENU));
-	menuItemFileExtract->SetBitmap(wxArtProvider::GetBitmap(wxART_FILE_OPEN, wxART_MENU));
-	
-	menuItemHelpAbout->SetBitmap(wxArtProvider::GetBitmap(wxART_HELP_BOOK, wxART_MENU));
-	
-	mainMenu->Append(menuFile, wxString::FromUTF8(file));
-	mainMenu->Append(menuOptions, wxString::FromUTF8(options));
-	mainMenu->Append(menuLanguage, wxString::FromUTF8(language));
-	mainMenu->Append(menuHelp, wxString::FromUTF8(help));
-	
-	frame->SetMenuBar(mainMenu);
-	frame->SetIcon(wxString::FromUTF8(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + imagePath + "/icon.png"));
-	
-	// panel
-	for (const auto &s : {wxString::FromUTF8(SingleVideo), wxString::FromUTF8(MultiVideo), wxString::FromUTF8(ExtendedMulti)}) { // https://github.com/gammasoft71/Examples_wxWidgets/blob/adbd395081bf25c9034f2b64eee62608a943441f/src/CommonControls/Choice/Choice.cpp#L10
-        modeChoiceBox->Append(s);
-	}
-	//modeChoiceBox->SetSelection(0);
-	
-	scrolledPanel->SetScrollRate(10, 10);
-	
-	{ // row stuff
-		int rows = 1; // yes this is loop executes once. the plan is to reuse this code when adding many rows at once. yes, yes, I know...
-		
-		doAddRows(rows);
-		ShowMultiUpDown();
-	}
-	
-	{ // splitPatchUp
-		int width, height;
-		wxFont f = splitPatchUp->GetFont();
-		
-		splitPatchUp->GetTextExtent(splitPatchUp->GetLabel(), &width, &height, nullptr, nullptr, &f);
-		splitPatchUp->SetSize(width + Borders::width + 5, height + Borders::height);
-	}
-	{ // splitPatchDown
-		int width, height;
-		wxFont f = splitPatchDown->GetFont();
-		
-		splitPatchDown->GetTextExtent(splitPatchDown->GetLabel(), &width, &height, nullptr, nullptr, &f);
-		splitPatchDown->SetSize(width + Borders::width + 5, height + Borders::height);
-	}
-
-	{ // buildButton
-		int w, buttwidth, h, buttheight;
-		wxFont f;
-		
-		wxButton button(panel, wxID_ANY, buildButton->GetLabel());
-		button.Show(false);
-		button.GetSize(&buttwidth, &buttheight);
-		f = buildButton->GetFont();
-		buildButton->GetTextExtent(buildButton->GetLabel(), &w, &h, nullptr, nullptr, &f);
-		buttwidth = buttwidth - w;
-		buttheight = buttheight - h;
-
-		buildButton->SetSize(w + (buttwidth * 2), h + (buttheight * 2));
-	}
-	{ // extractDialog
-		extractDialog->Destroy();
-	}
-}
-*/
 
 void theWidgets::setFonts() {
 	{ // modeText
@@ -844,14 +775,14 @@ void theWidgets::ShowMultiUpDown() {
 	MultiDown.back()->Show(false);
 }
 
-void theWidgets::ShowPatchUpDown(VI9Pparameters* parameters) {
-	splitPatchUp->Enable(parameters->splitPos > 1);
-	splitPatchUp->Show(parameters->splitPos > 1);
-	splitPatchDown->Enable(parameters->splitPos < parameters->rows - 1);
-	splitPatchDown->Show(parameters->splitPos < parameters->rows - 1);
-	if(parameters->rows > MAX_ROWS_MULTI) {
-		splitPatchDown->Enable(parameters->splitPos < MAX_ROWS_MULTI - 1);
-		splitPatchDown->Show(parameters->splitPos < MAX_ROWS_MULTI - 1);
+void theWidgets::ShowPatchUpDown() {
+	splitPatchUp->Enable(parameters.splitPos > 1);
+	splitPatchUp->Show(parameters.splitPos > 1);
+	splitPatchDown->Enable(parameters.splitPos < parameters.rows - 1);
+	splitPatchDown->Show(parameters.splitPos < parameters.rows - 1);
+	if(parameters.rows > MAX_ROWS_MULTI) {
+		splitPatchDown->Enable(parameters.splitPos < MAX_ROWS_MULTI - 1);
+		splitPatchDown->Show(parameters.splitPos < MAX_ROWS_MULTI - 1);
 	}
 }
 
@@ -1018,7 +949,7 @@ void theWidgets::setCursors() {
 	cancelButton->SetCursor(titleIDButton->IsEnabled() ? wxCURSOR_HAND : wxCURSOR_NO_ENTRY);
 }
 
-void theWidgets::positionWidgets(VI9Pparameters* parameters) {
+void theWidgets::positionWidgets() {
 	{ // modeChoiceBox
 		int x, y, height;
 		modeText->GetPosition(&x, &y);
@@ -1437,7 +1368,7 @@ void theWidgets::positionWidgets(VI9Pparameters* parameters) {
 				
 				if(row > 0) {
 					PlayerTitles.at(row - 1)->GetPosition(NULL, &previousy);
-					if(row == parameters->splitPos) {
+					if(row == parameters.splitPos) {
 						splitPatchUp->GetSize(NULL, &upheight);
 						PlayerTitles.at(row)->Move(0 - (scrolledx * ppux), (previousy + height + upheight));
 					}
@@ -1482,7 +1413,7 @@ void theWidgets::positionWidgets(VI9Pparameters* parameters) {
 				//row->Move((width) - (scrolledx * ppux), (height * currentrow) - (scrolledy * ppuy));
 				if(row > 0) {
 					MoflexFiles.at(row - 1)->GetPosition(NULL, &previousy);
-					if(row == parameters->splitPos) {
+					if(row == parameters.splitPos) {
 						splitPatchUp->GetSize(NULL, &upheight);
 						MoflexFiles.at(row)->Move((width) - (scrolledx * ppux), (previousy + height + upheight));
 					}
@@ -1526,7 +1457,7 @@ void theWidgets::positionWidgets(VI9Pparameters* parameters) {
 				
 				if(row > 0) {
 					MenuBanners.at(row - 1)->GetPosition(NULL, &previousy);
-					if(row == parameters->splitPos) {
+					if(row == parameters.splitPos) {
 						splitPatchUp->GetSize(NULL, &upheight);
 						MenuBanners.at(row)->Move((width * 2) - (scrolledx * ppux), (previousy + height + upheight));
 					}
@@ -1633,8 +1564,8 @@ void theWidgets::positionWidgets(VI9Pparameters* parameters) {
 	}
 	{ // splitPatchDown
 		int x, y, width, mywidth, myheight;
-		MenuBanners.at(parameters->splitPos)->GetSize(&width, NULL);
-		MenuBanners.at(parameters->splitPos)->GetPosition(&x, &y);
+		MenuBanners.at(parameters.splitPos)->GetSize(&width, NULL);
+		MenuBanners.at(parameters.splitPos)->GetPosition(&x, &y);
 		splitPatchDown->GetSize(&mywidth, &myheight);
 		
 		splitPatchDown->Move((x + width) - mywidth, y - myheight);
@@ -1648,7 +1579,7 @@ void theWidgets::positionWidgets(VI9Pparameters* parameters) {
 	}
 	{ // splitPatchLine
 		int x, upx, upy, downwidth, upwidth, upheight;
-		PlayerTitles.at(parameters->splitPos)->GetPosition(&x, NULL);
+		PlayerTitles.at(parameters.splitPos)->GetPosition(&x, NULL);
 		splitPatchUp->GetPosition(&upx, &upy);
 		splitPatchUp->GetSize(&upwidth, &upheight);
 		splitPatchDown->GetSize(&downwidth, NULL);
@@ -2501,7 +2432,7 @@ void theWidgets::setAppearance(unsigned int Mode) {
 	aboutpanel->Refresh();
 }
 
-int theWidgets::loadParameters(VI9Pparameters* parameters) {
+int theWidgets::loadParameters() {
 	VI9P::Loading = true;
 	int ret = 0;
 	{ // -rr
@@ -2509,7 +2440,7 @@ int theWidgets::loadParameters(VI9Pparameters* parameters) {
 		ret = executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -rr \"" + VI9P::WorkingFile + '\"'));
 		
 		if(ret >= 0) {
-			parameters->rows = ret & 0xFF;
+			parameters.rows = ret & 0xFF;
 		}
 		else {
 			return ret;
@@ -2531,21 +2462,21 @@ int theWidgets::loadParameters(VI9Pparameters* parameters) {
 			parsePP(pp.c_str(), IntMultiParam, &value);
 			if(!ASCII2number<int>(&outnum, value)) {
 				// tbh this should never ever happen
-				parameters->mode = 0;
+				parameters.mode = 0;
 			}
 			else {
-				parameters->mode = ((outnum <= 2) ? outnum : 0);
+				parameters.mode = ((outnum <= 2) ? outnum : 0);
 			}
 		}
 		{//banner
 			std::string value = "";
 			parsePP(pp.c_str(), StrBannerParam, &value);
-			parameters->banner = value;
+			parameters.banner = value;
 		}
 		{//icon
 			std::string value = "";
 			parsePP(pp.c_str(), StrIconParam, &value);
-			parameters->icon = value;
+			parameters.icon = value;
 		}
 		{//iconBorder
 			std::string value = "";
@@ -2553,26 +2484,26 @@ int theWidgets::loadParameters(VI9Pparameters* parameters) {
 			parsePP(pp.c_str(), IntIconBorderParam, &value);
 			if(!ASCII2number<int>(&outnum, value)) {
 				//tbh this should never ever happen
-				parameters->iconBorder = 2;
+				parameters.iconBorder = 2;
 			}
 			else {
-				parameters->iconBorder = ((outnum > 2) ? 0 : outnum);
+				parameters.iconBorder = ((outnum > 2) ? 0 : outnum);
 			}
 		}
 		{//Sname
 			std::string value = "";
 			parsePP(pp.c_str(), StrSNameParam, &value);
-			parameters->Sname = value;
+			parameters.Sname = value;
 		}
 		{//Lname
 			std::string value = "";
 			parsePP(pp.c_str(), StrLNameParam, &value);
-			parameters->Lname = value;
+			parameters.Lname = value;
 		}
 		{//publisher
 			std::string value = "";
 			parsePP(pp.c_str(), StrPublisherParam, &value);
-			parameters->publisher = value;
+			parameters.publisher = value;
 		}
 		{//copycheck
 			std::string value = "";
@@ -2580,16 +2511,16 @@ int theWidgets::loadParameters(VI9Pparameters* parameters) {
 			parsePP(pp.c_str(), IntCopycheckParam, &value);
 			if(!ASCII2number<int>(&outnum, value)) {
 				//tbh this should never ever happen
-				parameters->copycheck = 0;
+				parameters.copycheck = 0;
 			}
 			else {
-				parameters->copycheck = (outnum ? 1 : 0);
+				parameters.copycheck = (outnum ? 1 : 0);
 			}
 		}
 		{//copyrightInfo
 			std::string value = "";
 			parsePP(pp.c_str(), StrCopyrightParam, &value);
-			parameters->copyrightInfo = value;
+			parameters.copyrightInfo = value;
 		}
 		{//FFrewind
 			std::string value = "";
@@ -2597,10 +2528,10 @@ int theWidgets::loadParameters(VI9Pparameters* parameters) {
 			parsePP(pp.c_str(), IntFFrewindParam, &value);
 			if(!ASCII2number<int>(&outnum, value)) {
 				//tbh this should never ever happen
-				parameters->FFrewind = 1;
+				parameters.FFrewind = 1;
 			}
 			else {
-				parameters->FFrewind = (outnum ? 1 : 0);
+				parameters.FFrewind = (outnum ? 1 : 0);
 			}
 		}
 		{//FadeOpt
@@ -2609,10 +2540,10 @@ int theWidgets::loadParameters(VI9Pparameters* parameters) {
 			parsePP(pp.c_str(), IntFadeOptParam, &value);
 			if(!ASCII2number<int>(&outnum, value)) {
 				//tbh this should never ever happen
-				parameters->FadeOpt = 1;
+				parameters.FadeOpt = 1;
 			}
 			else {
-				parameters->FadeOpt = (outnum ? 1 : 0);
+				parameters.FadeOpt = (outnum ? 1 : 0);
 			}
 		}
 		{//splitPos
@@ -2621,44 +2552,44 @@ int theWidgets::loadParameters(VI9Pparameters* parameters) {
 			parsePP(pp.c_str(), IntSplitPatchParam, &value);
 			if(!ASCII2number<int>(&outnum, value)) {
 				//tbh this should never ever happen
-				parameters->splitPos = 0;
+				parameters.splitPos = 0;
 			}
 			else {
-				parameters->splitPos = ((outnum < parameters->rows - 1) ? outnum : parameters->rows - 1);
+				parameters.splitPos = ((outnum < parameters.rows - 1) ? outnum : parameters.rows - 1);
 			}
 		}
 		{//PTitleVec
-			parameters->PTitleVec.clear();
-			for(uint8_t i = 0; i < parameters->rows; i++) {
+			parameters.PTitleVec.clear();
+			for(uint8_t i = 0; i < parameters.rows; i++) {
 				std::string value = "";
 				parsePP(pp.c_str(), StrPTitleParam + '(' + std::to_string(i) + ')', &value);
-				parameters->PTitleVec.push_back(value);
+				parameters.PTitleVec.push_back(value);
 			}
 		}
 		{//StrMoflexParam
-			parameters->MoflexVec.clear();
-			for(uint8_t i = 0; i < parameters->rows; i++) {
+			parameters.MoflexVec.clear();
+			for(uint8_t i = 0; i < parameters.rows; i++) {
 				std::string value = "";
 				parsePP(pp.c_str(), StrMoflexParam + '(' + std::to_string(i) + ')', &value);
-				parameters->MoflexVec.push_back(value);
+				parameters.MoflexVec.push_back(value);
 			}
 		}
 		{//StrMBannerParam
-			parameters->MBannerVec.clear();
-			for(uint8_t i = 0; i < parameters->rows; i++) {
+			parameters.MBannerVec.clear();
+			for(uint8_t i = 0; i < parameters.rows; i++) {
 				std::string value = "";
 				parsePP(pp.c_str(), StrMBannerParam + '(' + std::to_string(i) + ')', &value);
-				parameters->MBannerVec.push_back(value);
+				parameters.MBannerVec.push_back(value);
 			}
 		}
 	}
-	applyParameters(parameters);
+	applyParameters();
 	VI9P::Loading = false;
 	return ret;
 }
 
-void theWidgets::applyMode(VI9Pparameters* parameters) {
-	if(parameters->mode == 0) {
+void theWidgets::applyMode() {
+	if(parameters.mode == 0) {
 		copyBox->Enable(false);
 		copyCheck->Enable(false);
 		
@@ -2670,7 +2601,7 @@ void theWidgets::applyMode(VI9Pparameters* parameters) {
 		multiBannerPreviewIndex->Show(false);
 		multiBannerPreviewLeft->Enable(false);
 		multiBannerPreviewRight->Enable(false);
-		if(parameters->rows > 1) {
+		if(parameters.rows > 1) {
 			removeRow->Enable(true);
 			splitPatchButton->Enable(true);
 		}
@@ -2698,7 +2629,7 @@ void theWidgets::applyMode(VI9Pparameters* parameters) {
 		}
 		multiBannerBrowse->Enable(false);
 	}
-	else if(parameters->mode == 1) {
+	else if(parameters.mode == 1) {
 		copyBox->Enable(copyCheck->GetValue());
 		copyCheck->Enable(true);
 		
@@ -2745,23 +2676,23 @@ void theWidgets::applyMode(VI9Pparameters* parameters) {
 			++count;
 		}
 		
-		if(parameters->rows > 1 && parameters->rows < MAX_ROWS_MULTI) {
+		if(parameters.rows > 1 && parameters.rows < MAX_ROWS_MULTI) {
 			appendRow->Enable(true);
 			removeRow->Enable(true);
 		}
-		if(parameters->rows <= 1) {
+		if(parameters.rows <= 1) {
 			appendRow->Enable(true);
 			removeRow->Enable(false);
 		}
-		else if(parameters->rows >= MAX_ROWS_MULTI) {
+		else if(parameters.rows >= MAX_ROWS_MULTI) {
 			appendRow->Enable(false);
 			removeRow->Enable(true);
 		}
-		setRowIndex(parameters);
+		setRowIndex();
 		
 		multiBannerBrowse->Enable(true);
 	}
-	else if(parameters->mode == 2) {
+	else if(parameters.mode == 2) {
 		copyBox->Enable(false);
 		copyCheck->Enable(false);
 		
@@ -2793,19 +2724,19 @@ void theWidgets::applyMode(VI9Pparameters* parameters) {
 			first = false;
 		}
 		
-		if(parameters->rows > 1 && parameters->rows < MAX_ROWS) {
+		if(parameters.rows > 1 && parameters.rows < MAX_ROWS) {
 			appendRow->Enable(true);
 			removeRow->Enable(true);
 		}
-		if(parameters->rows <= 1) {
+		if(parameters.rows <= 1) {
 			appendRow->Enable(true);
 			removeRow->Enable(false);
 		}
-		else if(parameters->rows >= MAX_ROWS) {
+		else if(parameters.rows >= MAX_ROWS) {
 			appendRow->Enable(false);
 			removeRow->Enable(true);
 		}
-		setRowIndex(parameters);
+		setRowIndex();
 		
 		multiBannerBrowse->Enable(true);
 	}
@@ -2815,31 +2746,31 @@ void theWidgets::applyMode(VI9Pparameters* parameters) {
 	setCursors();
 }
 
-void theWidgets::applyParameters(VI9Pparameters* parameters) {
-	modeChoiceBox->SetSelection(parameters->mode);
+void theWidgets::applyParameters() {
+	modeChoiceBox->SetSelection(parameters.mode);
 
-	bannerBox->SetValue(wxString::FromUTF8(parameters->banner));
+	bannerBox->SetValue(wxString::FromUTF8(parameters.banner));
 
-	iconBox->SetValue(wxString::FromUTF8(parameters->icon));
+	iconBox->SetValue(wxString::FromUTF8(parameters.icon));
 
-	shortnameBox->SetValue(wxString::FromUTF8(parameters->Sname));
-	longnameBox->SetValue(wxString::FromUTF8(parameters->Lname));
-	publisherBox->SetValue(wxString::FromUTF8(parameters->publisher));
+	shortnameBox->SetValue(wxString::FromUTF8(parameters.Sname));
+	longnameBox->SetValue(wxString::FromUTF8(parameters.Lname));
+	publisherBox->SetValue(wxString::FromUTF8(parameters.publisher));
 
-	copyCheck->SetValue(parameters->copycheck);
-	copyBox->SetValue(wxString::FromUTF8(parameters->copyrightInfo));
+	copyCheck->SetValue(parameters.copycheck);
+	copyBox->SetValue(wxString::FromUTF8(parameters.copyrightInfo));
 
-	ffRewindCheck->SetValue(parameters->FFrewind);
-	dimCheck->SetValue(parameters->FadeOpt);
+	ffRewindCheck->SetValue(parameters.FFrewind);
+	dimCheck->SetValue(parameters.FadeOpt);
 
-	if(PlayerTitles.size() < parameters->rows) {
-		int count = parameters->rows - PlayerTitles.size();
+	if(PlayerTitles.size() < parameters.rows) {
+		int count = parameters.rows - PlayerTitles.size();
 		if(static_cast<int>(PlayerTitles.size() & 0xFF) + count <= MAX_ROWS + 1) { // probably dangerous but i trust these enough
 			doAddRows(count);
 		}
 	}
-	else if(PlayerTitles.size() > parameters->rows) {
-		int count = PlayerTitles.size() - parameters->rows;
+	else if(PlayerTitles.size() > parameters.rows) {
+		int count = PlayerTitles.size() - parameters.rows;
 		if(static_cast<int>(PlayerTitles.size() & 0xFF) - count >= 0) {
 			for(uint8_t i = 0; i < count; i++) {
 				PlayerTitles.back()->Destroy();
@@ -2864,23 +2795,23 @@ void theWidgets::applyParameters(VI9Pparameters* parameters) {
 		}
 	}
 	
-	for(size_t row = 0; row < parameters->PTitleVec.size(); row++) {
-		PlayerTitles.at(row)->SetValue(wxString::FromUTF8(parameters->PTitleVec.at(row)));
+	for(size_t row = 0; row < parameters.PTitleVec.size(); row++) {
+		PlayerTitles.at(row)->SetValue(wxString::FromUTF8(parameters.PTitleVec.at(row)));
 	}
-	for(size_t row = 0; row < parameters->MoflexVec.size(); row++) {
-		MoflexFiles.at(row)->SetValue(wxString::FromUTF8(parameters->MoflexVec.at(row)));
+	for(size_t row = 0; row < parameters.MoflexVec.size(); row++) {
+		MoflexFiles.at(row)->SetValue(wxString::FromUTF8(parameters.MoflexVec.at(row)));
 	}
-	for(size_t row = 0; row < parameters->MBannerVec.size(); row++) {
-		MenuBanners.at(row)->SetValue(wxString::FromUTF8(parameters->MBannerVec.at(row)));
+	for(size_t row = 0; row < parameters.MBannerVec.size(); row++) {
+		MenuBanners.at(row)->SetValue(wxString::FromUTF8(parameters.MBannerVec.at(row)));
 	}
 	
-	splitPatchButton->SetValue(parameters->splitPos ? 1 : 0);
+	splitPatchButton->SetValue(parameters.splitPos ? 1 : 0);
 	
-	applyMode(parameters);
+	applyMode();
 }
 
-void theWidgets::addRows(VI9Pparameters* parameters, uint8_t count) {
-	if(parameters->rows + count <= MAX_ROWS) {
+void theWidgets::addRows(uint8_t count) {
+	if(parameters.rows + count <= MAX_ROWS) {
 		for(int i = 0; i < count; i++) {
 			{ // -ar
 				executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -ar \"" + VI9P::WorkingFile + "\" \"" + VI9P::WorkingFile + '\"'));
@@ -2892,7 +2823,7 @@ void theWidgets::addRows(VI9Pparameters* parameters, uint8_t count) {
 		int ret = executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -rr \"" + VI9P::WorkingFile + '\"'));
 		
 		if(ret >= 0) {
-			parameters->rows = ret & 0xFF;
+			parameters.rows = ret & 0xFF;
 		}
 	}
 	{ // -pp		
@@ -2906,51 +2837,51 @@ void theWidgets::addRows(VI9Pparameters* parameters, uint8_t count) {
 		}
 		
 		{ // PTitleVec
-			parameters->PTitleVec.clear();
-			for(uint8_t i = 0; i < parameters->rows; i++) {
+			parameters.PTitleVec.clear();
+			for(uint8_t i = 0; i < parameters.rows; i++) {
 				std::string value = "";
 				parsePP(pp.c_str(), StrPTitleParam + '(' + std::to_string(i) + ')', &value);
-				parameters->PTitleVec.push_back(value);
+				parameters.PTitleVec.push_back(value);
 			}
 		}
 		{ // StrMoflexParam
-			parameters->MoflexVec.clear();
-			for(uint8_t i = 0; i < parameters->rows; i++) {
+			parameters.MoflexVec.clear();
+			for(uint8_t i = 0; i < parameters.rows; i++) {
 				std::string value = "";
 				parsePP(pp.c_str(), StrMoflexParam + '(' + std::to_string(i) + ')', &value);
-				parameters->MoflexVec.push_back(value);
+				parameters.MoflexVec.push_back(value);
 			}
 		}
 		{ // StrMBannerParam
-			parameters->MBannerVec.clear();
-			for(uint8_t i = 0; i < parameters->rows; i++) {
+			parameters.MBannerVec.clear();
+			for(uint8_t i = 0; i < parameters.rows; i++) {
 				std::string value = "";
 				parsePP(pp.c_str(), StrMBannerParam + '(' + std::to_string(i) + ')', &value);
-				parameters->MBannerVec.push_back(value);
+				parameters.MBannerVec.push_back(value);
 			}
 		}
-		int count = parameters->rows - PlayerTitles.size();
-		if(parameters->rows + count <= MAX_ROWS + 1) { // rows + (rows - size)
+		int count = parameters.rows - PlayerTitles.size();
+		if(parameters.rows + count <= MAX_ROWS + 1) { // rows + (rows - size)
 			doAddRows(count);
 		}
 	}
-	positionWidgets(parameters);
+	positionWidgets();
 }
 
-void theWidgets::removeRows(VI9Pparameters* parameters, uint8_t count) {
-	if(parameters->rows - count >= 1) {
+void theWidgets::removeRows(uint8_t count) {
+	if(parameters.rows - count >= 1) {
 		for(int i = 0; i < count; i++) {
 			{ // -sr
 				executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sr \"" + VI9P::WorkingFile + "\" \"" + VI9P::WorkingFile + '\"'));
 			}
 		}
 	}
-	//loadParameters(parameters);
+	//loadParameters();
 	{ // -rr
 		int ret = executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -rr \"" + VI9P::WorkingFile + '\"'));
 		
 		if(ret >= 0) {
-			parameters->rows = ret & 0xFF;
+			parameters.rows = ret & 0xFF;
 		}
 	}
 	{ // -pp
@@ -2964,31 +2895,31 @@ void theWidgets::removeRows(VI9Pparameters* parameters, uint8_t count) {
 		}
 		
 		{ // PTitleVec
-			parameters->PTitleVec.clear();
-			for(uint8_t i = 0; i < parameters->rows; i++) {
+			parameters.PTitleVec.clear();
+			for(uint8_t i = 0; i < parameters.rows; i++) {
 				std::string value = "";
 				parsePP(pp.c_str(), StrPTitleParam + '(' + std::to_string(i) + ')', &value);
-				parameters->PTitleVec.push_back(value);
+				parameters.PTitleVec.push_back(value);
 			}
 		}
 		{ // StrMoflexParam
-			parameters->MoflexVec.clear();
-			for(uint8_t i = 0; i < parameters->rows; i++) {
+			parameters.MoflexVec.clear();
+			for(uint8_t i = 0; i < parameters.rows; i++) {
 				std::string value = "";
 				parsePP(pp.c_str(), StrMoflexParam + '(' + std::to_string(i) + ')', &value);
-				parameters->MoflexVec.push_back(value);
+				parameters.MoflexVec.push_back(value);
 			}
 		}
 		{ // StrMBannerParam
-			parameters->MBannerVec.clear();
-			for(uint8_t i = 0; i < parameters->rows; i++) {
+			parameters.MBannerVec.clear();
+			for(uint8_t i = 0; i < parameters.rows; i++) {
 				std::string value = "";
 				parsePP(pp.c_str(), StrMBannerParam + '(' + std::to_string(i) + ')', &value);
-				parameters->MBannerVec.push_back(value);
+				parameters.MBannerVec.push_back(value);
 			}
 		}
-		int count = PlayerTitles.size() - parameters->rows;
-		if(parameters->rows - count >= 0) { // ???????????????????
+		int count = PlayerTitles.size() - parameters.rows;
+		if(parameters.rows - count >= 0) { // ???????????????????
 			for(uint8_t i = 0; i < count; i++) {
 				PlayerTitles.back()->Destroy();
 				PlayerTitles.pop_back();
@@ -3018,13 +2949,13 @@ void theWidgets::removeRows(VI9Pparameters* parameters, uint8_t count) {
 	{ // -gp
 		std::string imagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/bannerpreview" + std::to_string(VI9P::MultiBannerIndex) + ".png";
 		
-		executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters->rows * 2) + VI9P::MultiBannerIndex) + " \"" + imagePath + '\"'));
+		executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters.rows * 2) + VI9P::MultiBannerIndex) + " \"" + imagePath + '\"'));
 		
 		multiBannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(imagePath), wxBITMAP_TYPE_ANY));
 	}
 	EnableBannerLeftRight();
 
-	positionWidgets(parameters);
+	positionWidgets();
 }
 
 void theWidgets::getBorders() {
@@ -3044,12 +2975,12 @@ void theWidgets::getBorders() {
 	delete tempButton;
 }
 
-void theWidgets::setRowIndex(VI9Pparameters* parameters) {
-	if(parameters->mode == 1) {
+void theWidgets::setRowIndex() {
+	if(parameters.mode == 1) {
 		multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string((MenuBanners.size() < MAX_ROWS_MULTI) ? MenuBanners.size() : MAX_ROWS_MULTI)));
-		rowText->SetLabel(wxString::FromUTF8(std::to_string((parameters->rows < MAX_ROWS_MULTI) ? parameters->rows : 27) + "/" + std::to_string(MAX_ROWS_MULTI)));
+		rowText->SetLabel(wxString::FromUTF8(std::to_string((parameters.rows < MAX_ROWS_MULTI) ? parameters.rows : 27) + "/" + std::to_string(MAX_ROWS_MULTI)));
 	}
-	else if(parameters->mode == 2) {
-		rowText->SetLabel(wxString::FromUTF8(std::to_string(parameters->rows) + "/" + std::to_string(MAX_ROWS)));
+	else if(parameters.mode == 2) {
+		rowText->SetLabel(wxString::FromUTF8(std::to_string(parameters.rows) + "/" + std::to_string(MAX_ROWS)));
 	}
 }

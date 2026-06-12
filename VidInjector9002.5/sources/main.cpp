@@ -45,10 +45,10 @@ int progmain(int argc, char* argv[]) {
 			if(i == cases++) { // 0
 				continue; // :)
 			}
-			if(i == cases++) {// 1
+			if(i == cases++) { // 1
 				continue; // uhhh i dont care
 			}
-			if(i == cases++) {// 2
+			if(i == cases++) { // 2
 				continue; // this is actually bad so there should probably be a message here even though it's rare
 			}
 			
@@ -84,7 +84,6 @@ int progmain(int argc, char* argv[]) {
 	if(VI9P::WorkingFile.empty()) {
 		VI9P::WorkingFile = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + '/' + "parameters.vi9p";
 	}
-	VI9Pparameters parameters;
 	
 	// apply settings
 	if(Settings::ShowLog) {
@@ -110,16 +109,15 @@ int progmain(int argc, char* argv[]) {
 	
 	wid.consoleLog->Show(Settings::ShowLog);
 	
-	wid.getBorders();
 	wid.initLanguage();
 	if(Settings::DefaultLanguage < Languages::LanguageFiles.size()) {
 		if(loadLanguage(Languages::LanguageFiles.at(Settings::DefaultLanguage).File)) {
-			wid.applyLanguage(&parameters);
+			wid.applyLanguage();
 		}
 	}
-	//wid.initAllWidgets();
+	
 	wid.setFonts();
-	//wid.positionWidgets(&parameters);
+	//wid.positionWidgets();
 	wid.setToolTips();
 	wid.getAppearance();
 	wid.setAppearance(Settings::ColorMode);
@@ -139,23 +137,23 @@ int progmain(int argc, char* argv[]) {
 		for(const auto &row : wid.PlayerTitles) {
 			row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) { // memory leak city???
 				(void)event; // do as I say not as I do
-				wid.PlayerTitles_wxEVT_TEXT(&parameters, row);
+				wid.PlayerTitles_wxEVT_TEXT(row);
 			});
 		}
 		for(const auto &row : wid.MoflexFiles) {
 			row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
 				(void)event;
-				wid.MoflexFiles_wxEVT_TEXT(&parameters, row);
+				wid.MoflexFiles_wxEVT_TEXT(row);
 			});
 		}
 		for(const auto &row : wid.MenuBanners) {
 			row->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
 				(void)event;
-				wid.MenuBanners_wxEVT_TEXT(&parameters, row);
+				wid.MenuBanners_wxEVT_TEXT(row);
 			});
 			row->Bind(wxEVT_TEXT_ENTER, [&](wxCommandEvent& event) {
 				(void)event;
-				wid.MenuBanners_EVT_TEXT_ENTER(&parameters, row);
+				wid.MenuBanners_EVT_TEXT_ENTER(row);
 			});
 		}
 		for(const auto &row : wid.MultiUp) {
@@ -172,13 +170,13 @@ int progmain(int argc, char* argv[]) {
 		}
 		
 		wid.setAppearance(Settings::ColorMode);
-		wid.splitPatchLine->Show(parameters.splitPos);
-		wid.ShowPatchUpDown(&parameters);
+		wid.splitPatchLine->Show(wid.parameters.splitPos);
+		wid.ShowPatchUpDown();
 		wid.ShowMultiUpDown();
 		wid.setToolTips();
 		wid.setCursors();
 		
-		wid.setRowIndex(&parameters);
+		wid.setRowIndex();
 		
 		wid.multiBannerPreviewIndex->SetLabel(wxString::FromUTF8(std::to_string(VI9P::MultiBannerIndex + 1) + "/" + std::to_string(wid.MenuBanners.size())));
 	};
@@ -201,13 +199,13 @@ int progmain(int argc, char* argv[]) {
 		}
 		
 		VI9P::MultiBannerIndex = 0;
-		wid.loadParameters(&parameters);
-		wid.positionWidgets(&parameters);
+		wid.loadParameters();
+		wid.positionWidgets();
 		
 		applyAddRows();
 		VI9P::Loading = false;
 		
-		wid.MenuBanners_wxEVT_TEXT(&parameters, wid.MenuBanners.at(VI9P::MultiBannerIndex));
+		wid.MenuBanners_wxEVT_TEXT(wid.MenuBanners.at(VI9P::MultiBannerIndex));
 		Execution::flags = flags; // restore flags
 	};
 	
@@ -221,104 +219,104 @@ int progmain(int argc, char* argv[]) {
 	
 	wid.panel->Bind(wxEVT_SIZE, [&](wxSizeEvent& event) {
 		(void)event;
-		wid.panel_wxEVT_SIZE(&parameters);
+		wid.panel_wxEVT_SIZE();
 	});
 	
 	wid.modeChoiceBox->Bind(wxEVT_CHOICE, [&](wxCommandEvent& event) {
 		(void)event;
-		wid.modeChoiceBox_wxEVT_CHOICE(&parameters);
+		wid.modeChoiceBox_wxEVT_CHOICE();
 	});
 	
 	wid.bannerBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
 		(void)event;
-		wid.bannerBox_wxEVT_TEXT(&parameters);
+		wid.bannerBox_wxEVT_TEXT();
 	});
 	
 	wid.bannerBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		wid.bannerBrowse_wxEVT_BUTTON(&parameters);
+		wid.bannerBrowse_wxEVT_BUTTON();
 	});
 	
 	wid.iconBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
 		(void)event;
-		wid.iconBox_wxEVT_TEXT(&parameters);
+		wid.iconBox_wxEVT_TEXT();
 	});
 	
 	wid.iconPreview->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		wid.iconPreview_wxEVT_BUTTON(&parameters);
+		wid.iconPreview_wxEVT_BUTTON();
 	});
 	
 	wid.iconBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		wid.iconBrowse_wxEVT_BUTTON(&parameters);
+		wid.iconBrowse_wxEVT_BUTTON();
 	});
 	
 	wid.shortnameBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
 		(void)event;
-		wid.shortnameBox_wxEVT_TEXT(&parameters);
+		wid.shortnameBox_wxEVT_TEXT();
 	});
 	
 	wid.longnameBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
 		(void)event;
-		wid.longnameBox_wxEVT_TEXT(&parameters);
+		wid.longnameBox_wxEVT_TEXT();
 	});
 	
 	wid.publisherBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
 		(void)event;
-		wid.publisherBox_wxEVT_TEXT(&parameters);
+		wid.publisherBox_wxEVT_TEXT();
 	});
 	
 	wid.copyBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
 		(void)event;
-		wid.copyBox_wxEVT_TEXT(&parameters);
+		wid.copyBox_wxEVT_TEXT();
 	});
 	
 	wid.copyCheck->Bind(wxEVT_CHECKBOX, [&](wxCommandEvent& event) {
 		(void)event;
-		wid.copyCheck_wxEVT_CHECKBOX(&parameters);
+		wid.copyCheck_wxEVT_CHECKBOX();
 	});
 	
 	wid.ffRewindCheck->Bind(wxEVT_CHECKBOX, [&](wxCommandEvent& event) {
 		(void)event;
-		wid.ffRewindCheck_wxEVT_CHECKBOX(&parameters);
+		wid.ffRewindCheck_wxEVT_CHECKBOX();
 	});
 	
 	wid.dimCheck->Bind(wxEVT_CHECKBOX, [&](wxCommandEvent& event) {
 		(void)event;
-		wid.dimCheck_wxEVT_CHECKBOX(&parameters);
+		wid.dimCheck_wxEVT_CHECKBOX();
 	});
 	
 	wid.multiBannerPreview->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		wid.multiBannerPreview_wxEVT_BUTTON(&parameters);
+		wid.multiBannerPreview_wxEVT_BUTTON();
 	});
 	
 	wid.multiBannerPreviewLeft->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		wid.multiBannerPreviewLeft_wxEVT_BUTTON(&parameters);
+		wid.multiBannerPreviewLeft_wxEVT_BUTTON();
 	});
 	
 	wid.multiBannerPreviewRight->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		wid.multiBannerPreviewRight_wxEVT_BUTTON(&parameters);
+		wid.multiBannerPreviewRight_wxEVT_BUTTON();
 	});
 	
 	applyAddRows(); // make sure the row info is ok before we add events to it
 	
 	wid.moflexBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		wid.moflexBrowse_wxEVT_BUTTON(&parameters);
+		wid.moflexBrowse_wxEVT_BUTTON();
 	});
 	
 	wid.multiBannerBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		wid.multiBannerBrowse_wxEVT_BUTTON(&parameters);
+		wid.multiBannerBrowse_wxEVT_BUTTON();
 	});
 	
 	wid.removeRow->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		wid.removeRow_wxEVT_BUTTON(&parameters);
+		wid.removeRow_wxEVT_BUTTON();
 	});
 	
 	// add row
@@ -330,57 +328,57 @@ int progmain(int argc, char* argv[]) {
 		wid.removeRow->Enable(false); // disable so you cant press it too much
 		wid.appendRow->Enable(false);
 		
-		wid.addRows(&parameters);
+		wid.addRows();
 		
 		applyAddRows();
 		
-		if(parameters.mode == 0) {
+		if(wid.parameters.mode == 0) {
 			wid.splitPatchButton->Enable(false);
 			wid.rowText->Show(false);
 			wid.appendRow->Enable(false);
 		}
-		else if(parameters.mode == 1) {
-			wid.splitPatchButton->Enable((parameters.rows > 1));
+		else if(wid.parameters.mode == 1) {
+			wid.splitPatchButton->Enable((wid.parameters.rows > 1));
 			wid.EnableBannerLeftRight();
 			
 			wid.rowText->Show(true);
-			if(parameters.rows > 1 && parameters.rows < MAX_ROWS_MULTI) {
+			if(wid.parameters.rows > 1 && wid.parameters.rows < MAX_ROWS_MULTI) {
 				wid.appendRow->Enable(true);
 				wid.removeRow->Enable(true);
 			}
-			else if(parameters.rows <= 1) {
+			else if(wid.parameters.rows <= 1) {
 				wid.appendRow->Enable(true);
 				wid.removeRow->Enable(false);
 			}
-			else if(parameters.rows >= MAX_ROWS_MULTI) {
+			else if(wid.parameters.rows >= MAX_ROWS_MULTI) {
 				wid.appendRow->Enable(false);
 				wid.removeRow->Enable(true);
 			}
-			if(parameters.rows > MAX_ROWS_MULTI) { // is there a better place for this?
-				for(size_t i = MAX_ROWS_MULTI; i < parameters.rows; i++) {
+			if(wid.parameters.rows > MAX_ROWS_MULTI) { // is there a better place for this?
+				for(size_t i = MAX_ROWS_MULTI; i < wid.parameters.rows; i++) {
 					wid.PlayerTitles.at(i)->Enable(false);
 					wid.MoflexFiles.at(i)->Enable(false);
 					wid.MenuBanners.at(i)->Enable(false);
 				}
 			}
 		}
-		else if(parameters.mode == 2) {
+		else if(wid.parameters.mode == 2) {
 			wid.splitPatchButton->Enable(false);
 			
 			wid.rowText->Show(true);
-			if(parameters.rows > 1 && parameters.rows < MAX_ROWS) {
+			if(wid.parameters.rows > 1 && wid.parameters.rows < MAX_ROWS) {
 				wid.appendRow->Enable(true);
 				wid.removeRow->Enable(true);
-				for(size_t i = 1; i < parameters.rows; i++) {
+				for(size_t i = 1; i < wid.parameters.rows; i++) {
 					wid.MenuBanners.at(i)->Enable(false);
 				}
 				//wid.setCursors();
 			}
-			else if(parameters.rows <= 1) {
+			else if(wid.parameters.rows <= 1) {
 				wid.appendRow->Enable(true);
 				wid.removeRow->Enable(false);
 			}
-			else if(parameters.rows >= MAX_ROWS) {
+			else if(wid.parameters.rows >= MAX_ROWS) {
 				wid.appendRow->Enable(false);
 				wid.removeRow->Enable(true);
 			}
@@ -391,17 +389,17 @@ int progmain(int argc, char* argv[]) {
 	
 	wid.splitPatchButton->Bind(wxEVT_TOGGLEBUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		wid.splitPatchButton_wxEVT_TOGGLEBUTTON(&parameters);
+		wid.splitPatchButton_wxEVT_TOGGLEBUTTON();
 	});
 	
 	wid.splitPatchUp->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		wid.splitPatchUp_wxEVT_BUTTON(&parameters);
+		wid.splitPatchUp_wxEVT_BUTTON();
 	});
 	
 	wid.splitPatchDown->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		wid.splitPatchDown_wxEVT_BUTTON(&parameters);
+		wid.splitPatchDown_wxEVT_BUTTON();
 	});
 	
 	wid.mainMenu->Bind(wxEVT_MENU, [&](wxCommandEvent& event) {
@@ -677,10 +675,10 @@ int progmain(int argc, char* argv[]) {
 				for(size_t i = 0; i < LANG_IDs.size(); i++) {
 					if(event.GetId() == LANG_IDs.at(i)) {
 						if(loadLanguage(Languages::LanguageFiles.at(i).File)) {
-							wid.applyLanguage(&parameters);
+							wid.applyLanguage();
 						}
 						wid.setFonts();
-						wid.positionWidgets(&parameters);
+						wid.positionWidgets();
 						wid.setToolTips();
 						Settings::DefaultLanguage = i;
 						saveSettings();
@@ -696,7 +694,7 @@ int progmain(int argc, char* argv[]) {
 	
 	wid.buildpanel->Bind(wxEVT_SIZE, [&](wxSizeEvent& event) {
 		(void)event;
-		wid.buildpanel_wxEVT_SIZE(&parameters);
+		wid.buildpanel_wxEVT_SIZE();
 	});
 
 	wid.titleIDBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
@@ -715,7 +713,7 @@ int progmain(int argc, char* argv[]) {
 
 	wid.buildButton->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
 		(void)event;
-		wid.buildButton_wxEVT_BUTTON(&parameters);
+		wid.buildButton_wxEVT_BUTTON();
 	});
 
 	wid.cancelButton->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event) {
@@ -767,7 +765,7 @@ int progmain(int argc, char* argv[]) {
 	
 	wid.aboutpanel->Bind(wxEVT_SIZE, [&](wxSizeEvent& event) {
 		(void)event;
-		wid.aboutpanel_wxEVT_SIZE(&parameters);
+		wid.aboutpanel_wxEVT_SIZE();
 	});
 	
 	//consoleLog->LogTextAtLevel(0, wxString::Format("OUTPUT: %s", s));
@@ -839,7 +837,7 @@ int progmain(int argc, char* argv[]) {
 	}
 	
 	// make sure the window looks good
-	wid.positionWidgets(&parameters);
+	wid.positionWidgets();
 	
 	if(Settings::UpdateCheck) {
 		wid.updateCheck->Start();

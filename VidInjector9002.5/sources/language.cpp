@@ -25,7 +25,7 @@ bool loadLanguage(std::string LangPath) {
 	return true;
 }
 
-void theWidgets::applyLanguage(VI9Pparameters* parameters) {
+void theWidgets::applyLanguage() {
 	//consoleLog->SetLabel(wxString::FromUTF8(logFrameText)); // wxLogWindow is so weird idk how to change anything about it
 	
 	frame->SetLabel(wxString::FromUTF8(frameText));
@@ -87,20 +87,20 @@ void theWidgets::applyLanguage(VI9Pparameters* parameters) {
 	byMeText->SetLabel(wxString::FromUTF8(ByMeText));
 	gitHubLinker->SetLabel(wxString::FromUTF8(GitHubLinker));
 	
-	if(!parameters->banner.empty()) { // so it doesn't overwrite the actual information
-		bannerBox_wxEVT_TEXT(parameters); // it actually should do this because the other thing was removing the error code
+	if(!parameters.banner.empty()) { // so it doesn't overwrite the actual information
+		bannerBox_wxEVT_TEXT(); // it actually should do this because the other thing was removing the error code
 	}
-	if(!parameters->icon.empty()) {
-		iconBox_wxEVT_TEXT(parameters);
+	if(!parameters.icon.empty()) {
+		iconBox_wxEVT_TEXT();
 	}
-	if(!parameters->Sname.empty()) {
-		shortnameBox_wxEVT_TEXT(parameters);
+	if(!parameters.Sname.empty()) {
+		shortnameBox_wxEVT_TEXT();
 	}
-	if(!parameters->Lname.empty()) {
-		longnameBox_wxEVT_TEXT(parameters);
+	if(!parameters.Lname.empty()) {
+		longnameBox_wxEVT_TEXT();
 	}
-	if(!parameters->publisher.empty()) {
-		publisherBox_wxEVT_TEXT(parameters);
+	if(!parameters.publisher.empty()) {
+		publisherBox_wxEVT_TEXT();
 	}
 }
 
