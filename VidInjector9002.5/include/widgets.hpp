@@ -351,9 +351,9 @@ public:
 	void frame_wxEVT_CLOSE_WINDOW(wxCloseEvent* event);
 	void panel_wxEVT_SIZE();
 	void modeChoiceBox_wxEVT_CHOICE();
-	void bannerBox_wxEVT_TEXT();
+	void bannerBox_wxEVT_TEXT(bool setValue = false);
 	void bannerBrowse_wxEVT_BUTTON();
-	void iconBox_wxEVT_TEXT();
+	void iconBox_wxEVT_TEXT(bool setValue = false);
 	void iconPreview_wxEVT_BUTTON();
 	void iconBrowse_wxEVT_BUTTON();
 	void shortnameBox_wxEVT_TEXT();

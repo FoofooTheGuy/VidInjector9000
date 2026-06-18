@@ -219,7 +219,7 @@ int progmain(int argc, char* argv[]) {
 	});
 	
 	wid.bannerBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& WXUNUSED(event)) {
-		wid.bannerBox_wxEVT_TEXT();
+		wid.bannerBox_wxEVT_TEXT(true);
 	});
 	
 	wid.bannerBrowse->Bind(wxEVT_BUTTON, [&](wxCommandEvent& WXUNUSED(event)) {
@@ -227,7 +227,7 @@ int progmain(int argc, char* argv[]) {
 	});
 	
 	wid.iconBox->Bind(wxEVT_TEXT, [&](wxCommandEvent& WXUNUSED(event)) {
-		wid.iconBox_wxEVT_TEXT();
+		wid.iconBox_wxEVT_TEXT(true);
 	});
 	
 	wid.iconPreview->Bind(wxEVT_BUTTON, [&](wxCommandEvent& WXUNUSED(event)) {

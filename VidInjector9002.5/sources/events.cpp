@@ -114,12 +114,14 @@ void theWidgets::modeChoiceBox_wxEVT_CHOICE() {
 	applyMode();
 }
 
-void theWidgets::bannerBox_wxEVT_TEXT() {
+void theWidgets::bannerBox_wxEVT_TEXT(bool setValue) {
 	if(!bannerBox->IsEnabled()) {
 		return;
 	}
-	bannerBox->SetFullPath(bannerBox->GetValue());
-	parameters.banner = std::string(bannerBox->GetFullPath().ToUTF8());
+	if(setValue) {
+		bannerBox->SetFullPath(bannerBox->GetValue());
+		parameters.banner = std::string(bannerBox->GetFullPath().ToUTF8());
+	}
 	int ret = 0;
 	
 	{ // -sp
@@ -149,10 +151,6 @@ void theWidgets::bannerBox_wxEVT_TEXT() {
 	else {
 		bannerError->Show(false);
 	}
-	
-	if(!bannerBox->HasFocus()) {
-		bannerBox->DisplayShortPath();
-	}
 }
 
 void theWidgets::bannerBrowse_wxEVT_BUTTON() {
@@ -164,14 +162,20 @@ void theWidgets::bannerBrowse_wxEVT_BUTTON() {
 	if (openFileDialog.ShowModal() == wxID_OK) {
 		bannerBox->SetValue(openFileDialog.GetPath());
 	}
+	
+	if(!bannerBox->HasFocus()) {
+		bannerBox->DisplayShortPath();
+	}
 }
 
-void theWidgets::iconBox_wxEVT_TEXT() {
+void theWidgets::iconBox_wxEVT_TEXT(bool setValue) {
 	if(!iconBox->IsEnabled()) {
 		return;
 	}
-	iconBox->SetFullPath(iconBox->GetValue());
-	parameters.icon = std::string(iconBox->GetFullPath().ToUTF8());
+	if(setValue) {
+		iconBox->SetFullPath(iconBox->GetValue());
+		parameters.icon = std::string(iconBox->GetFullPath().ToUTF8());
+	}
 	int ret = 0;
 	
 	if (VI9P::Loading) { // so it doesnt mess up everything
@@ -275,10 +279,6 @@ void theWidgets::iconBox_wxEVT_TEXT() {
 	else {
 		iconError->Show(false);
 	}
-	
-	if(!iconBox->HasFocus()) {
-		iconBox->DisplayShortPath();
-	}
 }
 
 void theWidgets::iconPreview_wxEVT_BUTTON() {
@@ -310,6 +310,10 @@ void theWidgets::iconBrowse_wxEVT_BUTTON() {
 	openFileDialog.SetFilterIndex(0);
 	if(openFileDialog.ShowModal() == wxID_OK) {
 		iconBox->SetValue(openFileDialog.GetPath());
+	}
+	
+	if(!iconBox->HasFocus()) {
+		iconBox->DisplayShortPath();
 	}
 }
 
