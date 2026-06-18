@@ -21,8 +21,26 @@ return: instr + extension
 */
 std::string addMissingFileExtension(std::string instr, std::string extension);
 
-//replace " with \"
+// replace " with \"
 std::string fixDoubleQuote(std::string str);
+
+// find the index to half way through a utf8 string
+size_t getHalfPos(const std::string &input);
+
+// separate input into first and second with getHalfPos
+void splitAtHalf(const std::string &input, std::string *first, std::string *second);
+
+// remove the first character from a utf8 string
+void removeFirstCharacter(std::string *str);
+
+// remove the last character from a utf8 string
+void removeLastCharacter(std::string *str);
+
+/* remove characters from the middle of a utf8 string
+input: inout string
+loop: number of trimming iterations
+*/
+std::string shortenStr(const std::string &input, size_t loop);
 
 std::error_code copyfile(std::string inpath, std::string outpath);
 

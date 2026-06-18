@@ -8,7 +8,7 @@ int Borders::height = 0;
 
 int Execution::flags = wxEXEC_SYNC | wxEXEC_NODISABLE;
 
-void theWidgets::initialize() {
+theWidgets::theWidgets() {
 	frame = new wxFrame(nullptr, wxID_ANY, wxString::FromUTF8(frameText), wxDefaultPosition, {Settings::FrameWidth, Settings::FrameHeight});
 	frame->SetIcon(wxString::FromUTF8(std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + imagePath + "/icon.png"));
 		
@@ -65,12 +65,12 @@ void theWidgets::initialize() {
 	}
 	
 	bannerText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(BannerText));
-	bannerBox = new wxTextCtrl(panel, wxID_ANY, wxEmptyString);
+	bannerBox = new wxPathCtrl(panel, wxID_ANY, wxEmptyString);
 	bannerBrowse = new wxButton(panel, wxID_ANY, wxString::FromUTF8(Browse));
 	bannerError = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(ErrorText + ' ' + ImageInfoError + " (0) " + SeeLog));
 	
 	iconText = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(IconText));
-	iconBox = new wxTextCtrl(panel, wxID_ANY, wxEmptyString);
+	iconBox = new wxPathCtrl(panel, wxID_ANY, wxEmptyString);
 	iconBrowse = new wxButton(panel, wxID_ANY, wxString::FromUTF8(Browse));
 	iconError = new wxStaticText(panel, wxID_ANY, wxString::FromUTF8(ErrorText + ' ' + ImageInfoError + " (0) " + SeeLog));
 	
@@ -113,8 +113,8 @@ void theWidgets::initialize() {
 	scrolledPanel->SetScrollRate(10, 10);
 	
 	//std::vector<wxTextCtrl*> PlayerTitles;
-	//std::vector<wxTextCtrl*> MoflexFiles;
-	//std::vector<wxTextCtrl*> MenuBanners;
+	//std::vector<wxPathCtrl*> MoflexFiles;
+	//std::vector<wxPathCtrl*> MenuBanners;
 	
 	//std::vector<wxButton*> MultiUp;
 	//std::vector<wxButton*> MultiDown;
@@ -236,11 +236,11 @@ void theWidgets::doAddRows(int rows) {
 		PlayerTitles.push_back(box);
 	}
 	for(int i = 0; i < rows; i++) {
-		wxTextCtrl* box = new wxTextCtrl(scrolledPanel, wxID_ANY, wxEmptyString);
+		wxPathCtrl* box = new wxPathCtrl(scrolledPanel, wxID_ANY, wxEmptyString);
 		MoflexFiles.push_back(box);
 	}
 	for(int i = 0; i < rows; i++) {
-		wxTextCtrl* box = new wxTextCtrl(scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER);
+		wxPathCtrl* box = new wxPathCtrl(scrolledPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER);
 		MenuBanners.push_back(box);
 	}
 	
@@ -751,6 +751,7 @@ void theWidgets::EnableBannerLeftRight() {
 		// stop at last enabled row or last row
 		if(VI9P::MultiBannerIndex >= disabled_row - 1 || VI9P::MultiBannerIndex >= MenuBanners.size() - 1) {
 			multiBannerPreviewRight->Enable(false);
+			multiBannerPreviewLeft->Enable(true);
 		}
 	}
 	else {
@@ -796,14 +797,14 @@ void theWidgets::setToolTips() {
 	longnameBox->SetToolTip(wxString::FromUTF8(longnameBoxTip));
 	publisherBox->SetToolTip(wxString::FromUTF8(publisherBoxTip));
 	
-	if(modeChoiceBox->GetSelection() == 1) {
+	if(parameters.mode == 1) {
 		copyBox->SetToolTip(wxString::FromUTF8(copyBoxTip));
 	}
 	else {
 		copyBox->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
 	}
 	
-	if(modeChoiceBox->GetSelection() == 1) {
+	if(parameters.mode == 1) {
 		copyCheck->SetToolTip(wxString::FromUTF8(copyCheckTip));
 	}
 	else {
@@ -814,7 +815,7 @@ void theWidgets::setToolTips() {
 	ffRewindCheck->SetToolTip(wxString::FromUTF8(ffRewindCheckTip));
 	dimCheck->SetToolTip(wxString::FromUTF8(dimCheckTip));
 	
-	if(modeChoiceBox->GetSelection() == 0) {
+	if(parameters.mode == 0) {
 		multiBannerPreview->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
 	}
 	else {
@@ -831,13 +832,13 @@ void theWidgets::setToolTips() {
 		MoflexFiles.at(row)->SetToolTip(wxString::FromUTF8(moflexFilesTip + " (" + std::to_string(row + 1) + ')'));
 	}
 	for(size_t row = 0; row < MenuBanners.size(); row++) {
-		if(modeChoiceBox->GetSelection() == 0) {
+		if(parameters.mode == 0) {
 			MenuBanners.at(row)->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
 		}
-		else if(modeChoiceBox->GetSelection() == 1) {
+		else if(parameters.mode == 1) {
 			MenuBanners.at(row)->SetToolTip(wxString::FromUTF8(menuBannersTip + " (" + std::to_string(row + 1) + ')'));
 		}
-		else if(modeChoiceBox->GetSelection() == 2) {
+		else if(parameters.mode == 2) {
 			if(row == 0) {
 				MenuBanners.at(row)->SetToolTip(wxString::FromUTF8(topImageTip));
 			}
@@ -855,32 +856,32 @@ void theWidgets::setToolTips() {
 	
 	moflexBrowse->SetToolTip(wxString::FromUTF8(moflexBrowseTip));
 	
-	if(modeChoiceBox->GetSelection() == 0) {
+	if(parameters.mode == 0) {
 		multiBannerBrowse->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
 	}
-	else if(modeChoiceBox->GetSelection() == 1) {
+	else if(parameters.mode == 1) {
 		multiBannerBrowse->SetToolTip(wxString::FromUTF8(multiBannerBrowseTip));
 	}
-	else if(modeChoiceBox->GetSelection() == 2) {
+	else if(parameters.mode == 2) {
 		multiBannerBrowse->SetToolTip(wxString::FromUTF8(extendedTopImageBrowseTip));
 	}
 	
 	removeRow->SetToolTip(wxString::FromUTF8(removeRowTip));
 	
-	if(modeChoiceBox->GetSelection() == 0) {
+	if(parameters.mode == 0) {
 		appendRow->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
 	}
 	else {
 		appendRow->SetToolTip(wxString::FromUTF8(appendRowTip));
 	}
 	
-	if(modeChoiceBox->GetSelection() == 0) {
+	if(parameters.mode == 0) {
 		splitPatchButton->SetToolTip(wxString::FromUTF8(splitPatchTip + '\n' + onlyMultiVideo));
 	}
-	else if(modeChoiceBox->GetSelection() == 1) {
+	else if(parameters.mode == 1) {
 		splitPatchButton->SetToolTip(wxString::FromUTF8(splitPatchTip));
 	}
-	else if(modeChoiceBox->GetSelection() == 2) {
+	else if(parameters.mode == 2) {
 		splitPatchButton->SetToolTip(wxString::FromUTF8(onlyMultiVideo));
 	}
 	
@@ -2750,8 +2751,12 @@ void theWidgets::applyParameters() {
 	modeChoiceBox->SetSelection(parameters.mode);
 
 	bannerBox->SetValue(wxString::FromUTF8(parameters.banner));
+	bannerBox->SetFullPath(bannerBox->GetValue());
+	bannerBox->DisplayShortPath();
 
 	iconBox->SetValue(wxString::FromUTF8(parameters.icon));
+	iconBox->SetFullPath(iconBox->GetValue());
+	iconBox->DisplayShortPath();
 
 	shortnameBox->SetValue(wxString::FromUTF8(parameters.Sname));
 	longnameBox->SetValue(wxString::FromUTF8(parameters.Lname));
@@ -2800,9 +2805,13 @@ void theWidgets::applyParameters() {
 	}
 	for(size_t row = 0; row < parameters.MoflexVec.size(); row++) {
 		MoflexFiles.at(row)->SetValue(wxString::FromUTF8(parameters.MoflexVec.at(row)));
+		MoflexFiles.at(row)->SetFullPath(MoflexFiles.at(row)->GetValue());
+		MoflexFiles.at(row)->DisplayShortPath();
 	}
 	for(size_t row = 0; row < parameters.MBannerVec.size(); row++) {
 		MenuBanners.at(row)->SetValue(wxString::FromUTF8(parameters.MBannerVec.at(row)));
+		MenuBanners.at(row)->SetFullPath(MenuBanners.at(row)->GetValue());
+		MenuBanners.at(row)->DisplayShortPath();
 	}
 	
 	splitPatchButton->SetValue(parameters.splitPos ? 1 : 0);
@@ -2970,8 +2979,6 @@ void theWidgets::getBorders() {
 	// border should be larger than the image in the button
 	Borders::width -= ImageSize;
 	Borders::height -= ImageSize;
-	//wxMessageBox(std::to_string(Borders::width));
-	//wxMessageBox(std::to_string(Borders::height));
 	delete tempButton;
 }
 

@@ -118,7 +118,8 @@ void theWidgets::bannerBox_wxEVT_TEXT() {
 	if(!bannerBox->IsEnabled()) {
 		return;
 	}
-	parameters.banner = std::string(bannerBox->GetValue().ToUTF8());
+	bannerBox->SetFullPath(bannerBox->GetValue());
+	parameters.banner = std::string(bannerBox->GetFullPath().ToUTF8());
 	int ret = 0;
 	
 	{ // -sp
@@ -127,7 +128,7 @@ void theWidgets::bannerBox_wxEVT_TEXT() {
 	{ // -gp
 		std::string bannerImagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/bannerpreview.png";
 		
-		executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 1 \"" + bannerImagePath + '\"'));
+		ret = executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 1 \"" + bannerImagePath + '\"'));
 		
 		bannerPreview->SetBitmap(wxBitmap(wxString::FromUTF8(bannerImagePath), wxBITMAP_TYPE_ANY));
 	}
@@ -145,7 +146,9 @@ void theWidgets::bannerBox_wxEVT_TEXT() {
 		bannerError->SetLabel(wxString::FromUTF8(ErrorText + ' ' + ImageInfoError + " (" + std::to_string(ret) + ") " + SeeLog));
 		bannerError->Show();
 	}
-	else bannerError->Show(false);
+	else {
+		bannerError->Show(false);
+	}
 }
 
 void theWidgets::bannerBrowse_wxEVT_BUTTON() {
@@ -163,7 +166,8 @@ void theWidgets::iconBox_wxEVT_TEXT() {
 	if(!iconBox->IsEnabled()) {
 		return;
 	}
-	parameters.icon = std::string(iconBox->GetValue().ToUTF8());
+	iconBox->SetFullPath(iconBox->GetValue());
+	parameters.icon = std::string(iconBox->GetFullPath().ToUTF8());
 	int ret = 0;
 	
 	if (VI9P::Loading) { // so it doesnt mess up everything
@@ -459,6 +463,9 @@ void theWidgets::PlayerTitles_wxEVT_TEXT(wxTextCtrl* row) {
 	size_t rowReal;
 	for(rowReal = 0; rowReal < PlayerTitles.size(); rowReal++) { // get row
 		if(reinterpret_cast<intptr_t>(PlayerTitles.at(rowReal)) == reinterpret_cast<intptr_t>(row)) { // compare pointers
+			if(!row->IsEnabled()) {
+				return;
+			}
 			parameters.PTitleVec.at(rowReal) = std::string(row->GetValue().ToUTF8());
 			
 			{ // -sp
@@ -468,11 +475,16 @@ void theWidgets::PlayerTitles_wxEVT_TEXT(wxTextCtrl* row) {
 	}
 }
 
-void theWidgets::MoflexFiles_wxEVT_TEXT(wxTextCtrl* row) {
+void theWidgets::MoflexFiles_wxEVT_TEXT(wxPathCtrl* row) {
 	size_t rowReal;
 	for(rowReal = 0; rowReal < MoflexFiles.size(); rowReal++) { // get row
 		if(reinterpret_cast<intptr_t>(MoflexFiles.at(rowReal)) == reinterpret_cast<intptr_t>(row)) { // compare pointers
-			parameters.MoflexVec.at(rowReal) = std::string(row->GetValue().ToUTF8());
+			if(!row->IsEnabled()) {
+				return;
+			}
+			
+			row->SetFullPath(row->GetValue());
+			parameters.MoflexVec.at(rowReal) = std::string(row->GetFullPath().ToUTF8());
 			
 			{ // -sp
 				executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + parameters.rows + rowReal) + " \"" + parameters.MoflexVec.at(rowReal) + "\" \"" + VI9P::WorkingFile + '\"'));
@@ -481,10 +493,13 @@ void theWidgets::MoflexFiles_wxEVT_TEXT(wxTextCtrl* row) {
 	}
 }
 
-void theWidgets::MenuBanners_wxEVT_TEXT(wxTextCtrl* row) {
+void theWidgets::MenuBanners_wxEVT_TEXT(wxPathCtrl* row, bool setValue) {
 	size_t rowReal;
 	for(rowReal = 0; rowReal < MenuBanners.size(); rowReal++) { // get row
 		if(reinterpret_cast<intptr_t>(MenuBanners.at(rowReal)) == reinterpret_cast<intptr_t>(row)) { // compare pointers
+			if(!row->IsEnabled()) {
+				return;
+			}
 			size_t disabled_row;
 			for(disabled_row = 0; disabled_row < MenuBanners.size(); disabled_row++) {
 				if(!MenuBanners.at(disabled_row)->IsEnabled()) {
@@ -495,9 +510,10 @@ void theWidgets::MenuBanners_wxEVT_TEXT(wxTextCtrl* row) {
 				VI9P::MultiBannerIndex = rowReal;
 			}
 			
-			EnableBannerLeftRight();
-			
-			parameters.MBannerVec.at(rowReal) = std::string(row->GetValue().ToUTF8());
+			if(setValue) {
+				row->SetFullPath(row->GetValue());
+				parameters.MBannerVec.at(rowReal) = std::string(row->GetFullPath().ToUTF8());
+			}
 			
 			{ // -sp
 				executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + (parameters.rows * 2) + rowReal) + " \"" + parameters.MBannerVec.at(rowReal) + "\" \"" + VI9P::WorkingFile + '\"'));
@@ -515,7 +531,7 @@ void theWidgets::MenuBanners_wxEVT_TEXT(wxTextCtrl* row) {
 	}
 }
 
-void theWidgets::MenuBanners_EVT_TEXT_ENTER(wxTextCtrl* row) {
+void theWidgets::MenuBanners_EVT_TEXT_ENTER(wxPathCtrl* row) {
 	MenuBanners_wxEVT_TEXT(row); // lool
 }
 
@@ -538,14 +554,20 @@ void theWidgets::MultiUp_wxEVT_BUTTON(wxButton* row) {
 					PlayerTitles.at(rowReal - 1)->SetValue(tempStr);
 				}
 				{ // MoflexFiles
-					wxString tempStr(MoflexFiles.at(rowReal)->GetValue());
-					MoflexFiles.at(rowReal)->SetValue(MoflexFiles.at(rowReal - 1)->GetValue());
+					wxString tempStr(MoflexFiles.at(rowReal)->GetFullPath());
+					MoflexFiles.at(rowReal)->SetValue(MoflexFiles.at(rowReal - 1)->GetFullPath());
 					MoflexFiles.at(rowReal - 1)->SetValue(tempStr);
+					
+					MoflexFiles.at(rowReal)->DisplayShortPath();
+					MoflexFiles.at(rowReal - 1)->DisplayShortPath();
 				}
 				{ // MenuBanners
-					wxString tempStr(MenuBanners.at(rowReal)->GetValue());
-					MenuBanners.at(rowReal)->SetValue(MenuBanners.at(rowReal - 1)->GetValue());
+					wxString tempStr(MenuBanners.at(rowReal)->GetFullPath());
+					MenuBanners.at(rowReal)->SetValue(MenuBanners.at(rowReal - 1)->GetFullPath());
 					MenuBanners.at(rowReal - 1)->SetValue(tempStr);
+					
+					MenuBanners.at(rowReal)->DisplayShortPath();
+					MenuBanners.at(rowReal - 1)->DisplayShortPath();
 				}
 			}
 			row->Enable(true);
@@ -573,14 +595,20 @@ void theWidgets::MultiDown_wxEVT_BUTTON(wxButton* row) {
 					PlayerTitles.at(rowReal + 1)->SetValue(tempStr);
 				}
 				{ // MoflexFiles
-					wxString tempStr(MoflexFiles.at(rowReal)->GetValue());
-					MoflexFiles.at(rowReal)->SetValue(MoflexFiles.at(rowReal + 1)->GetValue());
+					wxString tempStr(MoflexFiles.at(rowReal)->GetFullPath());
+					MoflexFiles.at(rowReal)->SetValue(MoflexFiles.at(rowReal + 1)->GetFullPath());
 					MoflexFiles.at(rowReal + 1)->SetValue(tempStr);
+					
+					MoflexFiles.at(rowReal)->DisplayShortPath();
+					MoflexFiles.at(rowReal + 1)->DisplayShortPath();
 				}
 				{ // MenuBanners
-					wxString tempStr(MenuBanners.at(rowReal)->GetValue());
-					MenuBanners.at(rowReal)->SetValue(MenuBanners.at(rowReal + 1)->GetValue());
+					wxString tempStr(MenuBanners.at(rowReal)->GetFullPath());
+					MenuBanners.at(rowReal)->SetValue(MenuBanners.at(rowReal + 1)->GetFullPath());
 					MenuBanners.at(rowReal + 1)->SetValue(tempStr);
+					
+					MenuBanners.at(rowReal)->DisplayShortPath();
+					MenuBanners.at(rowReal + 1)->DisplayShortPath();
 				}
 			}
 			row->Enable(true);
