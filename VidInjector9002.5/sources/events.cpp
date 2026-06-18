@@ -471,9 +471,6 @@ void theWidgets::PlayerTitles_wxEVT_TEXT(wxTextCtrl* row) {
 	size_t rowReal;
 	for(rowReal = 0; rowReal < PlayerTitles.size(); rowReal++) { // get row
 		if(reinterpret_cast<intptr_t>(PlayerTitles.at(rowReal)) == reinterpret_cast<intptr_t>(row)) { // compare pointers
-			if(!row->IsEnabled()) {
-				return;
-			}
 			parameters.PTitleVec.at(rowReal) = std::string(row->GetValue().ToUTF8());
 			
 			{ // -sp
@@ -487,10 +484,6 @@ void theWidgets::MoflexFiles_wxEVT_TEXT(wxPathCtrl* row) {
 	size_t rowReal;
 	for(rowReal = 0; rowReal < MoflexFiles.size(); rowReal++) { // get row
 		if(reinterpret_cast<intptr_t>(MoflexFiles.at(rowReal)) == reinterpret_cast<intptr_t>(row)) { // compare pointers
-			if(!row->IsEnabled()) {
-				return;
-			}
-			
 			row->SetFullPath(row->GetValue());
 			parameters.MoflexVec.at(rowReal) = std::string(row->GetFullPath().ToUTF8());
 			
@@ -509,9 +502,6 @@ void theWidgets::MenuBanners_wxEVT_TEXT(wxPathCtrl* row, bool setValue) {
 	size_t rowReal;
 	for(rowReal = 0; rowReal < MenuBanners.size(); rowReal++) { // get row
 		if(reinterpret_cast<intptr_t>(MenuBanners.at(rowReal)) == reinterpret_cast<intptr_t>(row)) { // compare pointers
-			if(!row->IsEnabled()) {
-				return;
-			}
 			size_t disabled_row;
 			for(disabled_row = 0; disabled_row < MenuBanners.size(); disabled_row++) {
 				if(!MenuBanners.at(disabled_row)->IsEnabled()) {
