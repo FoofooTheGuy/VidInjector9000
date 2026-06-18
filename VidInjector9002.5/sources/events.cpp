@@ -149,6 +149,10 @@ void theWidgets::bannerBox_wxEVT_TEXT() {
 	else {
 		bannerError->Show(false);
 	}
+	
+	if(!bannerBox->HasFocus()) {
+		bannerBox->DisplayShortPath();
+	}
 }
 
 void theWidgets::bannerBrowse_wxEVT_BUTTON() {
@@ -270,6 +274,10 @@ void theWidgets::iconBox_wxEVT_TEXT() {
 	}
 	else {
 		iconError->Show(false);
+	}
+	
+	if(!iconBox->HasFocus()) {
+		iconBox->DisplayShortPath();
 	}
 }
 
@@ -489,6 +497,10 @@ void theWidgets::MoflexFiles_wxEVT_TEXT(wxPathCtrl* row) {
 			{ // -sp
 				executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + parameters.rows + rowReal) + " \"" + parameters.MoflexVec.at(rowReal) + "\" \"" + VI9P::WorkingFile + '\"'));
 			}
+			
+			if(!row->HasFocus()) {
+				row->DisplayShortPath();
+			}
 		}
 	}
 }
@@ -527,6 +539,10 @@ void theWidgets::MenuBanners_wxEVT_TEXT(wxPathCtrl* row, bool setValue) {
 			}
 			setRowIndex();
 			EnableBannerLeftRight();
+			
+			if(!row->HasFocus()) {
+				row->DisplayShortPath();
+			}
 		}
 	}
 }
