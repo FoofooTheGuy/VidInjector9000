@@ -60,10 +60,7 @@ public:
 		const wxValidator &validator = wxDefaultValidator,
 		const wxString &name = wxTextCtrlNameStr
 	) : wxTextCtrl{parent, id, value, pos, size, style, validator, name} {
-		// these binds are actually handled after the other ones in main
-		Bind(wxEVT_SIZE, [&](wxSizeEvent& WXUNUSED(event)) {
-			DisplayShortPath();
-		});
+		// these binds are actually handled after the other ones in main (on linux?)
 		
 		// typing in the box
 		Bind(wxEVT_SET_FOCUS, [&](wxFocusEvent& WXUNUSED(event)) {
@@ -133,10 +130,14 @@ public:
 	
 	void DisplayFullPath() {
 		ChangeValue(Full);
+		FitInside();
+		Refresh();
 	}
 	
 	void DisplayShortPath() {
 		ChangeValue(GetShortPath());
+		FitInside();
+		Refresh();
 	}
 
 private:
@@ -341,6 +342,9 @@ public:
 	
 	// sets the rowText and multiBannerPreviewIndex if mode 1
 	void setRowIndex();
+	
+	// call DisplayShortPath on every wxPathCtrl
+	void updateShortPaths();
 		
 	// - language -
 	void initLanguage();

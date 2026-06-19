@@ -427,6 +427,9 @@ void theWidgets::multiBannerPreview_wxEVT_BUTTON() {
 	openFileDialog.SetFilterIndex(0);
 	if (openFileDialog.ShowModal() == wxID_OK) {
 		MenuBanners.at(VI9P::MultiBannerIndex)->SetValue((openFileDialog.GetPath()));
+		if(!MenuBanners.at(VI9P::MultiBannerIndex)->HasFocus()) {
+			MenuBanners.at(VI9P::MultiBannerIndex)->DisplayShortPath();
+		}
 	}
 }
 
@@ -494,10 +497,6 @@ void theWidgets::MoflexFiles_wxEVT_TEXT(wxPathCtrl* row) {
 			{ // -sp
 				executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" " + std::to_string(12 + parameters.rows + rowReal) + " \"" + parameters.MoflexVec.at(rowReal) + "\" \"" + VI9P::WorkingFile + '\"'));
 			}
-			
-			if(!row->HasFocus()) {
-				row->DisplayShortPath();
-			}
 		}
 	}
 }
@@ -533,10 +532,6 @@ void theWidgets::MenuBanners_wxEVT_TEXT(wxPathCtrl* row, bool setValue) {
 			}
 			setRowIndex();
 			EnableBannerLeftRight();
-			
-			if(!row->HasFocus()) {
-				row->DisplayShortPath();
-			}
 		}
 	}
 }
@@ -645,11 +640,17 @@ void theWidgets::moflexBrowse_wxEVT_BUTTON() {
 		paths.Sort(); // it already sorts them without this but meh
 		if(paths.GetCount() == 1) {
 			MoflexFiles.at(row)->SetValue(paths.Last());
+			if(!MoflexFiles.at(row)->HasFocus()) {
+				MoflexFiles.at(row)->DisplayShortPath();
+			}
 		}
 		else {
 			for(size_t i = 0; i < paths.GetCount(); i++) {
 				if(i < MoflexFiles.size()) {
 					MoflexFiles.at(i)->SetValue(paths.Item(i));
+					if(!MoflexFiles.at(i)->HasFocus()) {
+						MoflexFiles.at(i)->DisplayShortPath();
+					}
 				}
 			}
 		}
@@ -678,11 +679,17 @@ void theWidgets::multiBannerBrowse_wxEVT_BUTTON() {
 		paths.Sort();
 		if(paths.GetCount() == 1) {
 			MenuBanners.at(row)->SetValue(paths.Last());
+			if(!MenuBanners.at(row)->HasFocus()) {
+				MenuBanners.at(row)->DisplayShortPath();
+			}
 		}
 		else {
 			for(size_t i = 0; i < paths.GetCount(); i++) {
 				if(i < MenuBanners.size()) {
 					MenuBanners.at(i)->SetValue(paths.Item(i));
+					if(!MenuBanners.at(i)->HasFocus()) {
+						MenuBanners.at(i)->DisplayShortPath();
+					}
 				}
 			}
 		}

@@ -1786,6 +1786,8 @@ void theWidgets::positionWidgets() {
 		else
 			versionText->Move((panelwidth - mywidth) / 2, y + bymeheight + linkheight);
 	}
+	
+	updateShortPaths();
 }
 
 wxColour BackColor::panel;
@@ -2752,11 +2754,9 @@ void theWidgets::applyParameters() {
 
 	bannerBox->SetValue(wxString::FromUTF8(parameters.banner));
 	bannerBox->SetFullPath(bannerBox->GetValue());
-	bannerBox->DisplayShortPath();
 
 	iconBox->SetValue(wxString::FromUTF8(parameters.icon));
 	iconBox->SetFullPath(iconBox->GetValue());
-	iconBox->DisplayShortPath();
 
 	shortnameBox->SetValue(wxString::FromUTF8(parameters.Sname));
 	longnameBox->SetValue(wxString::FromUTF8(parameters.Lname));
@@ -2806,17 +2806,16 @@ void theWidgets::applyParameters() {
 	for(size_t row = 0; row < parameters.MoflexVec.size(); row++) {
 		MoflexFiles.at(row)->SetValue(wxString::FromUTF8(parameters.MoflexVec.at(row)));
 		MoflexFiles.at(row)->SetFullPath(MoflexFiles.at(row)->GetValue());
-		MoflexFiles.at(row)->DisplayShortPath();
 	}
 	for(size_t row = 0; row < parameters.MBannerVec.size(); row++) {
 		MenuBanners.at(row)->SetValue(wxString::FromUTF8(parameters.MBannerVec.at(row)));
 		MenuBanners.at(row)->SetFullPath(MenuBanners.at(row)->GetValue());
-		MenuBanners.at(row)->DisplayShortPath();
 	}
 	
 	splitPatchButton->SetValue(parameters.splitPos ? 1 : 0);
 	
 	applyMode();
+	updateShortPaths();
 }
 
 void theWidgets::addRows(uint8_t count) {
@@ -2989,5 +2988,18 @@ void theWidgets::setRowIndex() {
 	}
 	else if(parameters.mode == 2) {
 		rowText->SetLabel(wxString::FromUTF8(std::to_string(parameters.rows) + "/" + std::to_string(MAX_ROWS)));
+	}
+}
+
+void theWidgets::updateShortPaths() {
+	bannerBox->DisplayShortPath();
+
+	iconBox->DisplayShortPath();
+
+	for(const auto &row : MoflexFiles) {
+		row->DisplayShortPath();
+	}
+	for(const auto &row : MenuBanners) {
+		row->DisplayShortPath();
 	}
 }
