@@ -204,7 +204,7 @@ VidInjector9002-CLI -extract_cia \<input .cia file\> \<seed file\> \<output dire
 <details>
 <summary>-extract_tar | -et</summary>
 
-Extract patch parameters from a .tar to a directory which will contain the romfs directory and .vi9p file. Set <output directory> to the directory of an extracted .cia to combine it all.
+Extract patch parameters from a .tar to a directory which will contain the romfs directory and .vi9p file. Set \<output directory\> to the directory of an extracted .cia to combine it all.
 
 Usage:
 
