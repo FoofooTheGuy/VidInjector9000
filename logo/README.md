@@ -2,4 +2,4 @@
 
 hello guys look at this projet logo i made!1 kawaii desu ne??
 - credits to Teekatas Suwannakrua for clipart of that download vine thing
-- Inspired by art by [SAWARATSUKI](https://github.com/SAWARATSUKI/KawaiiLogos)
+- design inspired by art by [SAWARATSUKI](https://github.com/SAWARATSUKI/KawaiiLogos)
