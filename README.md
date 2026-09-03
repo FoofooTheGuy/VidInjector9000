@@ -1,4 +1,4 @@
-<img src="./logo/VidInjector9000.png" alt="drawing" width="450"/>
+<img src="./logo/VidInjector9000.png" alt="drawing" width="50%"/>
 
 # VidInjector9000
 A cross platform injector for 3DS video CIAs
