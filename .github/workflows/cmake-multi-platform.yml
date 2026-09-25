@@ -54,18 +54,7 @@ jobs:
       run: |
            mkdir -p ${{github.workspace}}/bin/VidInjector9000/VidInjector9000Resources
 
-    - name: (VidInjector9002.5) Configure CMake
-      working-directory: ${{github.workspace}}/VidInjector9002.5
-      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
-    - name: (VidInjector9002.5) Build
-      working-directory: ${{github.workspace}}/VidInjector9002.5
-      # Build your program with the given configuration
-      run: cmake --build build --config ${{env.BUILD_TYPE}}
-
-    
     - name: (VidInjector9002-CLI) Configure CMake
       working-directory: ${{github.workspace}}/VidInjector9002-CLI
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
@@ -74,6 +63,18 @@ jobs:
 
     - name: (VidInjector9002-CLI) Build
       working-directory: ${{github.workspace}}/VidInjector9002-CLI
+      # Build your program with the given configuration
+      run: cmake --build build --config ${{env.BUILD_TYPE}}
+
+
+    - name: (VidInjector9002.5) Configure CMake
+      working-directory: ${{github.workspace}}/VidInjector9002.5
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: (VidInjector9002.5) Build
+      working-directory: ${{github.workspace}}/VidInjector9002.5
       # Build your program with the given configuration
       run: cmake --build build --config ${{env.BUILD_TYPE}}
 
@@ -134,17 +135,6 @@ jobs:
       run: |
            mkdir -p ${{github.workspace}}/bin/VidInjector9000
 
-    - name: (VidInjector9002.5) Configure CMake
-      working-directory: ${{github.workspace}}/VidInjector9002.5
-      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-
-    - name: (VidInjector9002.5) Build
-      working-directory: ${{github.workspace}}/VidInjector9002.5
-      # Build your program with the given configuration
-      run: cmake --build build --config ${{env.BUILD_TYPE}}
-
 
     - name: (VidInjector9002-CLI) Configure CMake
       working-directory: ${{github.workspace}}/VidInjector9002-CLI
@@ -154,6 +144,18 @@ jobs:
 
     - name: (VidInjector9002-CLI) Build
       working-directory: ${{github.workspace}}/VidInjector9002-CLI
+      # Build your program with the given configuration
+      run: cmake --build build --config ${{env.BUILD_TYPE}}
+
+
+    - name: (VidInjector9002.5) Configure CMake
+      working-directory: ${{github.workspace}}/VidInjector9002.5
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: (VidInjector9002.5) Build
+      working-directory: ${{github.workspace}}/VidInjector9002.5
       # Build your program with the given configuration
       run: cmake --build build --config ${{env.BUILD_TYPE}}
 
@@ -199,18 +201,7 @@ jobs:
       run: |
            mkdir -p ${{github.workspace}}/bin/VidInjector9000/VidInjector9000Resources/image
 
-    - name: (VidInjector9002.5) Configure CMake
-      working-directory: ${{github.workspace}}/VidInjector9002.5
-      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
-    - name: (VidInjector9002.5) Build
-      working-directory: ${{github.workspace}}/VidInjector9002.5
-      # Build your program with the given configuration
-      run: cmake --build build --config ${{env.BUILD_TYPE}}
-
-    
     - name: (VidInjector9002-CLI) Configure CMake
       working-directory: ${{github.workspace}}/VidInjector9002-CLI
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
@@ -219,6 +210,18 @@ jobs:
 
     - name: (VidInjector9002-CLI) Build
       working-directory: ${{github.workspace}}/VidInjector9002-CLI
+      # Build your program with the given configuration
+      run: cmake --build build --config ${{env.BUILD_TYPE}}
+
+
+    - name: (VidInjector9002.5) Configure CMake
+      working-directory: ${{github.workspace}}/VidInjector9002.5
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: (VidInjector9002.5) Build
+      working-directory: ${{github.workspace}}/VidInjector9002.5
       # Build your program with the given configuration
       run: cmake --build build --config ${{env.BUILD_TYPE}}
 
