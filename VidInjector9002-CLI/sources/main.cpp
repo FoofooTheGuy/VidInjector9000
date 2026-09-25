@@ -229,7 +229,7 @@ std::string WstrToUtf8Str(const std::wstring& wstr)
 int wmain(int argc, wchar_t** argv) {
 	// put argv in std::vector (yay!)
 	std::vector<std::string> argvecmb;
-	for(size_t i = 0; i < argc; i++) {
+	for(int i = 0; i < argc; i++) {
 		std::string arg = WstrToUtf8Str(argv[i]);
 		argvecmb.push_back(arg);
 	}
