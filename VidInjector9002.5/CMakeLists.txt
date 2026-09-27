@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(PRODUCT_VER "3,5,2,0")
 
 # https://stackoverflow.com/a/53635241
-set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
+#set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
 
 # https://stackoverflow.com/a/32259072
 if (UNIX AND NOT APPLE)
@@ -21,11 +21,8 @@ if (LINUX)
 endif()
 
 if (NOT MSVC)
-set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+	set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 endif()
-
-# https://docs.wxwidgets.org/3.3/overview_string.html I'm not sure if this fixed anything or not but it seems good to keep
-#set(wxUSE_UNICODE_UTF8 TRUE)
 
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 #set(CMAKE_CXX_FLAGS_RELEASE "-O2")
@@ -173,7 +170,7 @@ endif()
 
 
 # https://docs.wxwidgets.org/3.3.1/overview_cmake.html
-# static binary (huuge) and other thing to make it not break everything because of our wmain for some reason
+# static binary (not that huge) and other thing to make it not break everything because of our wmain for some reason
 set(wxBUILD_SHARED OFF)
 set(wxUSE_XRC OFF)
 add_subdirectory(wxWidgets-3.3.1)
