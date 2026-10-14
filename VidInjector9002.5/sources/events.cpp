@@ -128,7 +128,7 @@ void theWidgets::bannerBox_wxEVT_TEXT(bool setValue) {
 		executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -sp \"" + VI9P::WorkingFile + "\" 1 \"" + parameters.banner + "\" \"" + VI9P::WorkingFile + '\"'));
 	}
 	{ // -gp
-		std::string bannerImagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/bannerpreview.png";
+		std::string bannerImagePath = std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + tempPath + "/bannerpreview.png"; // TODO: fix stbi unicode paths in CLI
 		
 		ret = executeCommand(wxString::FromUTF8('\"' + std::string(ProgramDir.ToUTF8()) + '/' + resourcesPath + '/' + CLIFile + "\" -gp \"" + VI9P::WorkingFile + "\" 1 \"" + bannerImagePath + '\"'));
 		

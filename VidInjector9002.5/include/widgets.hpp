@@ -93,13 +93,9 @@ public:
 	
 	wxString GetShortPath() {
 		// get only the filename
-		std::string filename;
-		size_t start = Full.find_last_of("\\/");
-		if(start == std::string::npos) { // no path
-			filename = Full;
-		}
-		else {
-			filename = Full;
+		std::string filename = Full.utf8_string();
+		size_t start = filename.find_last_of("\\/");
+		if(start != std::string::npos) {
 			filename.erase(filename.begin(), filename.begin() + start);
 			// remove the leading \\/
 			removeFirstCharacter(&filename);
