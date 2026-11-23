@@ -201,7 +201,7 @@ theWidgets::theWidgets() {
 	aboutpanel = new wxPanel(aboutframe);
 	titleLogo = new wxStaticBitmap(aboutpanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	byMeText = new wxStaticText(aboutpanel, wxID_ANY, wxString::FromUTF8(ByMeText));
-	gitHubLinker = new wxHyperlinkCtrl(aboutpanel, wxID_ANY, wxString::FromUTF8(GitHubLinker), wxString::FromUTF8(githubRepoLink));
+	gitHubLinker = new wxHyperlinkCtrl(aboutpanel, wxID_ANY, wxString::FromUTF8(GitHubLinker), wxString::FromUTF8(githubRepoLink)); // doesn't work on wine (anymore????)
 	versionText = new wxStaticText(aboutpanel, wxID_ANY, wxString::FromUTF8(version));
 	
 	updateCheck = new wxWebRequest(wxWebSession::GetDefault().CreateRequest(frame, "https://api.github.com/repos/" + githubRepo + "/tags"));
